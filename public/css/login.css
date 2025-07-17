@@ -1,0 +1,60 @@
+body{
+    background-color: #fff;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+body .logForm{
+    width: 300px;
+    height: 500px;
+    padding: 25px;
+    border-radius: 20px;
+    background-color: #fff;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+
+}
+
+.logForm input{
+    width: 90%;
+    height: 30px;
+    border-radius: 10px;
+}
+
+.logForm button{
+    padding: 10px;
+    width: 80%;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #f79c00;
+}
+
+.loginForm h2{
+    margin: 0;
+    font-size: 5rem;
+    line-height: normal;
+
+}
+
+.logForm p{
+    text-align: center;
+}
+
+.logForm span{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+span p{
+    line-height: normal;
+    margin: 0;
+}
