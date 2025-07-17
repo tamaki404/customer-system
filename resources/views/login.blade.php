@@ -10,9 +10,9 @@
 </head>
 <body>
     <form action="/login-user" class="logForm">
-        <h2>Login</h2>
+        <h2>Welcome back!</h2>
         <p>Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod</p>
-        <span><p>New user?</p> <a href="/register-user">Create account</a></span>
+        <span><p>New user?</p> <a href="/register-view">Create account</a></span>
           <input type="text" placeholder="Username" name="username">
           <input type="password" placeholder="Password" name="password">
           <button>Login</button>
