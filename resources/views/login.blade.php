@@ -9,14 +9,24 @@
     <title>Login</title>
 </head>
 <body>
-    <form action="/login-user" class="logForm">
-        <h2>Welcome back!</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod</p>
-        <span><p>New user?</p> <a href="/register-view">Create account</a></span>
-          <input type="text" placeholder="Username" name="username">
-          <input type="password" placeholder="Password" name="password">
-          <button>Login</button>
-          <a href="/forgot-password">Forgot password</a>
-    </form>
+<form method="POST" action="/login-user" class="logForm">
+    @csrf
+
+    <h2>Welcome back!</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod</p>
+    <span><p>New user?</p> <a href="/register-view">Create account</a></span>
+
+    @if ($errors->has('loginError'))
+        <div style="color: red;">{{ $errors->first('loginError') }}</div>
+    @endif
+
+    <input type="text" name="username" placeholder="Username" value="{{ old('username') }}" required>
+    <input type="password" name="password" placeholder="Password" required>
+
+    <button type="submit">Login</button>
+    <a href="/forgot-password">Forgot password</a>
+</form>
+
+
 </body>
 </html>

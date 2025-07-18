@@ -9,14 +9,57 @@
     <title>Sign Up</title>
 </head>
 <body>
-    <form method="POST" action="/register-user" class="logForm">
-        @csrf
-        <h2>Create Account</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod</p>
-        <span><p>Already have an account?</p> <a href="/">Sign In</a></span>
-          <input type="text" placeholder="Username" name="username">
-          <input type="password" placeholder="Password" name="password">
-          <button>Sign Up</button>
-    </form>
+<form method="POST" action="/register-user" class="logForm" id="registerForm">
+    @csrf
+    <h2>Create Account</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod</p>
+    <span><p>Already have an account?</p> <a href="/">Sign In</a></span>
+
+    <input type="text" name="username" id="username" placeholder="Username" required>
+    <small id="username-feedback" style="color:red;"></small>
+
+    <input type="password" name="password" id="password" placeholder="Password" required>
+    <small id="password-feedback" style="color:red;"></small>
+
+    <button type="submit">Sign Up</button>
+</form>
+
+<script>
+    const passwordInput = document.getElementById('password');
+    const passwordFeedback = document.getElementById('password-feedback');
+    const usernameInput = document.getElementById('username');
+    const usernameFeedback = document.getElementById('username-feedback');
+    const form = document.getElementById('registerForm');
+
+    passwordInput.addEventListener('input', function () {
+        if (passwordInput.value.length < 8) {
+            passwordFeedback.textContent = "Password must be at least 8 characters.";
+        } else {
+            passwordFeedback.textContent = "";
+        }
+    });
+
+    usernameInput.addEventListener('blur', function () {
+        const username = usernameInput.value;
+        fetch(`/check-username?username=${username}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.available) {
+                    usernameFeedback.textContent = "Username already taken.";
+                } else {
+                    usernameFeedback.textContent = "";
+                }
+            });
+    });
+
+    form.addEventListener('submit', function (e) {
+        if (passwordInput.value.length < 8) {
+            e.preventDefault();
+            passwordFeedback.textContent = "Password must be at least 8 characters.";
+        }
+    });
+</script>
+
+
 </body>
 </html>
