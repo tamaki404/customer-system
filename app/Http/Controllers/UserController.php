@@ -15,16 +15,29 @@ class UserController extends Controller
 
 public function register(Request $request)
 {
-    $incomingFields = $request->validate([
+    $validated = $request->validate([
         'username' => 'required|string|min:3|max:50|unique:users,username',
         'password' => 'required|string|min:6|max:100',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
     ]);
 
+    // Handle image upload
+    if ($request->hasFile('image')) {
+        $imageName = time() . '.' . $request->image->extension();
+        $request->image->move(public_path('images'), $imageName);
+        $validated['image'] = $imageName;
+    } else {
+        $validated['image'] = null;
+    }
+
+    // Create the user
     $user = User::create([
-        'username' => $incomingFields['username'],
-        'password' => Hash::make($incomingFields['password']), 
+        'username' => $validated['username'],
+        'password' => Hash::make($validated['password']),
+        'image' => $validated['image'],
     ]);
 
+    // Login the user
     auth()->login($user);
     return redirect('/dashboard');
 }
@@ -55,6 +68,22 @@ public function login(Request $request)
 
     return redirect('/dashboard');
 }
+
+public function logout()
+{
+    auth()->logout();
+    return redirect('/');
+}
+
+public function dashboard()
+{
+    $user = auth()->user(); 
+
+    return view('dashboard', ['user' => $user]);
+}
+
+
+
 
 
 }

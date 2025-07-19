@@ -9,7 +9,7 @@
     <title>Sign Up</title>
 </head>
 <body>
-<form method="POST" action="/register-user" class="logForm" id="registerForm">
+<form method="POST" action="/register-user" class="logForm" id="registerForm" enctype="multipart/form-data">
     @csrf
     <h2>Create Account</h2>
     <p>Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod</p>
@@ -20,6 +20,8 @@
 
     <input type="password" name="password" id="password" placeholder="Password" required>
     <small id="password-feedback" style="color:red;"></small>
+
+    <input type="file" name="image" accept="image/*" required>
 
     <button type="submit">Sign Up</button>
 </form>

@@ -1,0 +1,238 @@
+body{
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+}
+
+body .mainFrame{
+    justify-content: start;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+
+}
+
+
+/*                      SIDE ACCESS                         */
+
+
+.mainFrame .sideAccess{
+    width: 16%;
+    height: 100%;
+    background-color: #e9e9e9;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+}
+
+.sideAccess .userProfile{
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+    gap: 10px;
+    background-color: transparent;
+    cursor: pointer;
+    border: none;
+
+}
+
+.userProfile .imgFrame{
+    overflow: hidden;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+}
+
+.userProfile .nameFrame{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1px;
+    align-items: start;
+}
+
+ .searchFrame{
+    height: 50px;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    gap: 7px;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.searchFrame .searchCon{
+    background-color:rgba(255, 255, 255, 0.568);
+    border:1px solid rgba(128, 128, 128, 0.425);
+    width: 100%;
+    height: 75%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+}
+
+
+
+.searchCon input{
+    width: 80%;
+    height: 90%;
+    border: none;
+    outline: none;
+    background-color: transparent;
+
+}
+
+
+
+
+.nameFrame p{
+    margin: 0;
+}
+.nameFrame .userName{
+    font-size: 15px;
+    font-weight: bold;
+}
+.nameFrame .userTitle{
+    font-size: 13px;
+    font-weight: normal;
+    color: grey;
+}
+
+.sideAccess .sideMenu{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    height: 280px;
+    background-color: transparent;
+}
+
+.sideMenu button{
+    height: 50px;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    gap: 10px;
+    justify-content: start;
+    align-items: center;
+
+}
+.sideMenu button:hover{
+    background-color: #d0d0d0;
+    font-weight: bold;
+}
+
+.buttonDiv span{
+    color: #f59c00;
+    font-size: 25px;
+    margin-left: 10px;
+}
+
+.buttonDiv p{
+    color: black;
+    font-size: 13px;
+    margin: 0;
+}
+
+.ownFrame{
+    width: 100%;
+    height: 75px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    justify-content: start;
+    align-items: start;
+    background-color: transparent;
+    margin-bottom: 10px;
+    gap: 5px;
+}
+
+.ownFrame p{
+    color: grey;
+    font-size: 12px;
+    margin: 0;
+    text-align: start;
+
+}
+
+.ownFrame img{
+    width: auto;
+    height: 60px;
+    margin: 0;
+}
+
+
+.logoutFrame{
+    height: 50px;
+    width: 100%;
+    margin-top: auto;
+    margin-bottom: 10px;
+}
+.logoutFrame form{
+    height: 100%;
+    width: 100%;
+}
+form .logoutButton{
+    height: 100%;
+    width: 100%;   
+    border: none;
+    cursor: pointer;
+
+}
+
+form .logoutButton:hover{
+    background-color: #d0d0d0;
+    font-weight: bold;
+}
+
+.deskFrame{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap: 5px;
+    background-color: transparent;
+
+}
+
+.deskFrame p{
+    font-size: 13px;
+        color: grey;
+        margin: 0;
+
+}
+
+
+
+/*                      SHOW SCREEN                     */
+
+.mainFrame .showScreen{
+    width: 84%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

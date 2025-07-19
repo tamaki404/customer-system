@@ -9,23 +9,33 @@
     <title>Login</title>
 </head>
 <body>
-<form method="POST" action="/login-user" class="logForm">
-    @csrf
+        <!-- <div class="texts">
+            <span><h2>Rizal Poultry</h2> <h4>&</h4></span> 
+            <h3>Livestock association inc.</h3>
+            <p>We’re more than just poultry — we support Filipino farmers, promote sustainability, and help ensure food security for every household.</p>
+            
+        </div> -->
+        <form method="POST" action="/login-user" class="logForm">
+            @csrf
 
-    <h2>Welcome back!</h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod</p>
-    <span><p>New user?</p> <a href="/register-view">Create account</a></span>
+            <p>Goodmorning!</p>
+            <p>Hello, Please enter your details</p>
 
-    @if ($errors->has('loginError'))
-        <div style="color: red;">{{ $errors->first('loginError') }}</div>
-    @endif
+            @if ($errors->has('loginError'))
+                <div style="color: red;">{{ $errors->first('loginError') }}</div>
+            @endif
 
-    <input type="text" name="username" placeholder="Username" value="{{ old('username') }}" required>
-    <input type="password" name="password" placeholder="Password" required>
+            <input type="text" name="username" placeholder="Username" value="{{ old('username') }}" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <a href="/forgot-password" class="forgotPass">Forgot password</a>
 
-    <button type="submit">Login</button>
-    <a href="/forgot-password">Forgot password</a>
-</form>
+            <button type="submit">Login</button>
+
+            <span><p>New user?</p> <a href="/register-view">Create account</a></span>
+
+        </form>
+
+
 
 
 </body>

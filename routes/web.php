@@ -5,11 +5,14 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\DB;
 
 Route::post('/login-user', [UserController::class, 'login']);
+Route::post('/logout-user', [UserController::class, 'logout']);
 
 
 Route::get('/', function () {
     return view('login');
 });
+
+
 
 Route::post('/register-user', [UserController::class, 'register']);
 Route::get('/register-view', function () {
