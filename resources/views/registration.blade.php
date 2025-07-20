@@ -21,6 +21,8 @@
     <input type="password" name="password" id="password" placeholder="Password" required>
     <small id="password-feedback" style="color:red;"></small>
 
+    <input type="text" name="user_type" value="Customer" hidden>
+
     <input type="file" name="image" accept="image/*" required>
 
     <button type="submit">Sign Up</button>

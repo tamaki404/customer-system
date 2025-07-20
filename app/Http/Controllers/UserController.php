@@ -19,6 +19,7 @@ public function register(Request $request)
         'username' => 'required|string|min:3|max:50|unique:users,username',
         'password' => 'required|string|min:6|max:100',
         'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'user_type' => 'required',
     ]);
 
     // Handle image upload
@@ -35,6 +36,7 @@ public function register(Request $request)
         'username' => $validated['username'],
         'password' => Hash::make($validated['password']),
         'image' => $validated['image'],
+        'user_type' => $validated['user_type'],
     ]);
 
     // Login the user
@@ -46,7 +48,7 @@ public function login(Request $request)
 {
     $incomingFields = $request->validate([
         'username' => ['required'],
-        'password' => ['required']
+        'password' => ['required'],
     ]);
 
     $user = User::where('username', $incomingFields['username'])->first();

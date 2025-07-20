@@ -1,0 +1,36 @@
+.dashBody{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-content: start;
+    justify-content: start;
+}
+
+.dashBody .header{
+    width: 100%;
+    height: 7%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+    background-color: #e9e9e9;
+    padding: 10px;
+    
+}
+
+.dashBody .header h1{
+    font-size: 20px;
+    color: #f59c00;
+    font-weight: bold;
+}
+
+.dashBody .content{
+    background-color: pink;
+    height: 90%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 7px;
+}

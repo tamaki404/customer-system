@@ -15,6 +15,7 @@ return new class extends Migration
             $table -> string ('username');
             $table -> longText ('password');
             $table->string('image')->nullable();
+            $table->string('user_type');
 
 
         });

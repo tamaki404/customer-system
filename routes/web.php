@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\ViewController;
 
 Route::post('/login-user', [UserController::class, 'login']);
 Route::post('/logout-user', [UserController::class, 'logout']);
@@ -24,7 +25,17 @@ Route::get('/check-username', function (\Illuminate\Http\Request $request) {
     return response()->json(['available' => !$exists]);
 });
 
-
+// views
 Route::get('/dashboard', function () {
     return view('dashboard');
 });
+Route::get('/profile', function () {
+    return view('profile');
+})->name('profile');
+Route::get('/tickets', function () {
+    return view('tickets');
+})->name('tickets');
+
+Route::get('/staffs', function () {
+    return view('staffs');
+})->name('staffs');

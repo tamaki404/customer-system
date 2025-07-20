@@ -32,7 +32,7 @@
     <div class="sideAccess">
         <button class="userProfile">
             <div class="imgFrame"> <img src="{{ asset('images/' . auth()->user()->image) }}" alt="Customer Image" width="100"></div>
-            <div class="nameFrame"><p class="userName">Nicole Tumpag</p><p class="userTitle">IT Admin</p> </div>
+            <div class="nameFrame"><p class="userName">Nicole Tumpag</p><p class="userTitle">{{ auth()->user()->user_type }}</p> </div>
         </button>
         <div class="searchFrame">
             <div class="searchCon">
@@ -42,6 +42,11 @@
 
         </div>
         <div class="sideMenu">
+            @if(auth()->user()->user_type === 'Admin')
+            <button class="buttonDiv">
+                <span class="material-symbols-outlined">person</span>
+                <p>Profile</p>
+            </button>
             <button class="buttonDiv">
                 <span class="material-symbols-outlined">dashboard</span>
                 <p>Dashboard</p>
@@ -51,9 +56,13 @@
                 <p>Tickets</p>
             </button>
             <button class="buttonDiv">
+                <span class="material-symbols-outlined">dynamic_feed</span>
+                <p>Feed</p>
+            </button>     
+            <a class="buttonDiv" href="{{ route('staffs') }}">
                 <span class="material-symbols-outlined">person</span>
-                <p>Profile</p>
-            </button>
+                <p>Staffs</p>
+            </a>
             <button class="buttonDiv">
                 <span class="material-symbols-outlined">groups</span>
                 <p>Customers</p>
@@ -62,13 +71,66 @@
                 <span class="material-symbols-outlined">assignment</span>
                 <p>Reports</p>
             </button>
+
+            @elseif(auth()->user()->user_type === 'Staff')
+            <button class="buttonDiv">
+                <span class="material-symbols-outlined">person</span>
+                <p>Profile</p>
+            </button>
+            <button class="buttonDiv">
+                <span class="material-symbols-outlined">confirmation_number</span>
+                <p>Tickets</p>
+            </button>
+            <button class="buttonDiv">
+                <span class="material-symbols-outlined">dynamic_feed</span>
+                <p>Feed</p>
+            </button>        
+            <button class="buttonDiv">
+                <span class="material-symbols-outlined">groups</span>
+                <p>Customers</p>
+            </button>
+
+
+            @else
+            <a class="buttonDiv" href="{{ route('profile') }}">
+                <span class="material-symbols-outlined">person</span>
+                <p>Profile</p>
+            </a>
+
+            <a class="buttonDiv" href="{{ route('tickets') }}">
+                <span class="material-symbols-outlined">confirmation_number</span>
+                <p>Tickets Sent</p>
+            </a>
+
+            <button class="buttonDiv">
+                <span class="material-symbols-outlined">dynamic_feed</span>
+                <p>Feed</p>
+            </button>
+
+            <button class="buttonDiv">
+                <span class="material-symbols-outlined">assignment</span>
+                <p>Filed Reports</p>
+            </button>
+            <button class="buttonDiv">
+                <span class="material-symbols-outlined">help</span>
+                <p>Help</p>
+            </button>
+
+
+            @endif
+         
         </div>
-   
+
+        @if(auth()->user()->user_type === 'Customer')
 
         <div class="deskFrame">
             <p>INQUIRIES</p>
             <p>For any inquiries, please contact us at rplai_riza@gmail.com or call us at 09123456789</p>
         </div>
+   
+        @endif
+
+
 
         <div class="logoutFrame">
             <form action="/logout-user" method="post">
