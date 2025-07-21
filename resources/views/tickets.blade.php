@@ -80,7 +80,7 @@
         @csrf
         <input type="text" name="title" placeholder="title">
         <input type="text" name="body" placeholder="Body">
-        <input type="file" name="ticketImg" accept="image/*" required>
+        <input type="file" name="image" accept="image/*" required>
         <input type="text" name="id" value="{{ auth()->user()->id }}" hidden>
         <input type="date" name="startDate">
         <input type="date" name="endDate">
