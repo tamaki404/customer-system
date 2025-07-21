@@ -36,6 +36,10 @@ Route::get('/tickets', function () {
     return view('tickets');
 })->name('tickets');
 
-Route::get('/staffs', function () {
-    return view('staffs');
-})->name('staffs');
+
+// call the func for showStaffs to display her ein vieww
+Route::get('/staffs', [ViewController::class, 'showStaffs'])->name('staffs');
+
+//add staffs and admin
+Route::post('/add-staff', [UserController::class, 'addStaff']);
+

@@ -24,6 +24,7 @@
     <input type="text" name="user_type" value="Customer" hidden>
 
     <input type="file" name="image" accept="image/*" required>
+    <input type="text" name="acc_status"  value="Pending" hidden>
 
     <button type="submit">Sign Up</button>
 </form>

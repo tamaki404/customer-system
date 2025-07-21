@@ -85,6 +85,38 @@ public function dashboard()
 }
 
 
+public function addStaff(Request $request)
+{
+    $validated = $request->validate([
+        'username' => 'required|string|min:3|max:50|unique:users,username',
+        'password' => 'required|string|min:6|max:100',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'user_type' => 'required',
+        'acc_status' => 'required',
+    ]);
+
+    // Handle image upload
+    if ($request->hasFile('image')) {
+        $imageName = time() . '.' . $request->image->extension();
+        $request->image->move(public_path('images'), $imageName);
+        $validated['image'] = $imageName;
+    } else {
+        $validated['image'] = null;
+    }
+
+    // Create the user
+    $user = User::create([
+        'username' => $validated['username'],
+        'password' => Hash::make($validated['password']),
+        'image' => $validated['image'],
+        'user_type' => $validated['user_type'],
+        'acc_status' => $validated['acc_status'],
+    ]);
+
+    // Login the user
+    auth()->login($user);
+    return redirect('/staffs');
+}
 
 
 

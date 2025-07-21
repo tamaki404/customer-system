@@ -12,4 +12,10 @@ class ViewController extends Controller
     return view('profile', compact('user'));
 }
 
+public function showStaffs(){
+    $users = User::whereIn('user_type', ['admin', 'staff'])->get();
+    return view('staffs', compact('users'));
+}
+
+
 }
