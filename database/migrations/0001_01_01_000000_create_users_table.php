@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('user_type');
             $table->string('acc_status');
+            $table->string('action_by');
 
 
         });
@@ -34,6 +35,7 @@ return new class extends Migration
             $table->text('user_agent')->nullable();
             $table->longText('payload');
             $table->integer('last_activity')->index();
+
         });
     }
 

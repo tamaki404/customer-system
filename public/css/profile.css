@@ -1,0 +1,13 @@
+.profileFrame{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.profileFrame form{
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    height: 100%;
+}

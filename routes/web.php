@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\DB;
@@ -43,3 +44,5 @@ Route::get('/staffs', [ViewController::class, 'showStaffs'])->name('staffs');
 //add staffs and admin
 Route::post('/add-staff', [UserController::class, 'addStaff']);
 
+Route::post('/submit-ticket', [TicketController::class, 'submitTicket']);
+Route::get('/tickets', [TicketController::class, 'showTickets'])->name('tickets');

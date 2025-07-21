@@ -93,6 +93,7 @@ public function addStaff(Request $request)
         'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         'user_type' => 'required',
         'acc_status' => 'required',
+        'action_by' => 'string',
     ]);
 
     // Handle image upload
@@ -111,6 +112,8 @@ public function addStaff(Request $request)
         'image' => $validated['image'],
         'user_type' => $validated['user_type'],
         'acc_status' => $validated['acc_status'],
+        'action_by' => $validated['action_by'],
+
     ]);
 
     // Login the user

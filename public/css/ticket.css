@@ -1,0 +1,5 @@
+.ticketForm{
+    display: flex;
+    flex-direction: column;
+
+}
