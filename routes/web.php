@@ -15,6 +15,7 @@ Route::get('/', function () {
     return view('login');
 });
 
+Route::get('/receipts_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipts.view');
 
 
 Route::post('/register-user', [UserController::class, 'register']);

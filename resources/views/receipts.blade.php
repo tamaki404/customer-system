@@ -30,7 +30,7 @@
                     </thead>
                     <tbody>
                     @forelse($receipts as $receipt)
-                        <tr>
+                        <tr style="cursor:pointer" onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
                             <td>{{ $receipt->receipt_number }}</td>
                             <td>{{ $receipt->customer ? $receipt->customer->username : 'N/A' }}</td>
                             <td>{{ $receipt->store_name }}</td>

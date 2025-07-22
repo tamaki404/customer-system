@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ReceiptController extends Controller{
 
+    public function viewReceipt($receipt_id)
+    {
+        $receipt = \App\Models\Receipt::with('customer')->findOrFail($receipt_id);
+        return view('receipts_view', compact('receipt'));
+    }
+
     public function showUserReceipts()
     {
         $user = auth()->user();
