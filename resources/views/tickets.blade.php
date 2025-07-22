@@ -16,7 +16,7 @@
         @if(auth()->user()->user_type === 'Customer')
 
                     <h2>Create a New Ticket</h2>
-                    <form action="/submit-ticket" method="POST">
+                    <form action="/submit-ticket" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="id" value="{{ auth()->user()->id }}">
                         <input type="text" name="title" placeholder="Ticket Title" required>
