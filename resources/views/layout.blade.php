@@ -72,7 +72,7 @@
                 <p>Reports</p>
             </button>
 
-            @elseif(auth()->user()->user_type === 'Staff')
+            @elseif(auth()->user()->user_type === 'staff')
             <button class="buttonDiv">
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>

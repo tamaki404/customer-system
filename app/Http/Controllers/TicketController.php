@@ -48,14 +48,42 @@ public function submitTicket(Request $request)
     return redirect('/tickets');
 }
 
+
+// public function showTickets()
+// {
+//     $userId = auth()->id(); 
+
+//     $tickets = Tickets::where('id', $userId)->get();
+
+//     return view('tickets', compact('tickets'));
+// }
 public function showTickets()
 {
-    $userId = auth()->id(); 
-
-    $tickets = Tickets::where('id', $userId)->get();
-
+    $tickets = Tickets::all(); 
     return view('tickets', compact('tickets'));
 }
 
 
+
+public function specTicket($ticketID)
+{
+    $ticket = Tickets::where('ticketID', $ticketID)->firstOrFail();
+    return view('specTicket', compact('ticket'));
 }
+
+public function ticketsUpdate(Request $request, $ticketID)
+{
+    $ticket = Tickets::where('ticketID', $ticketID)->firstOrFail();
+
+    \Log::info("Updating ticket", ['id' => $ticket->ticketID, 'user' => auth()->user()->id]);
+
+    $ticket->resolved_at = $request->input('resolved_at');
+    $ticket->status = $request->input('status');
+    $ticket->received_by = $request->input('received_by');
+    $ticket->save();
+
+    return redirect()->back()->with('success', 'Ticket updated successfully');
+}
+
+}
+?>

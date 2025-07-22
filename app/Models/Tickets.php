@@ -16,9 +16,22 @@ class Tickets extends Model
         'startDate',
         'endDate',
         'id',
+        'status',
+        'received_by',
+        'resolved_at',
+
     ];
 
+    
+
    
+}
+
+class Ticket extends Model
+{
+    protected $primaryKey = 'ticketID';
+    public $incrementing = true;
+    protected $keyType = 'int';
 }
 
 ?>

@@ -17,10 +17,12 @@ return new class extends Migration
             $table -> longText ('body');
             $table->string('image')->nullable();
             $table->date('startDate');
-             $table->integer('id');
+            $table->integer('id');
             $table->date('endDate');
-            $table->string('user_type');
-            $table->string('acc_status');
+            $table->string('status')->default('open');
+            $table->integer('received_by')->nullable();
+            $table -> date('resolved_at')->default(today());
+
             $table->timestamps();
 
 

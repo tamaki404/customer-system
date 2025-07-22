@@ -38,6 +38,7 @@ Route::get('/tickets', function () {
 })->name('tickets');
 
 
+
 // call the func for showStaffs to display her ein vieww
 Route::get('/staffs', [ViewController::class, 'showStaffs'])->name('staffs');
 
@@ -45,4 +46,10 @@ Route::get('/staffs', [ViewController::class, 'showStaffs'])->name('staffs');
 Route::post('/add-staff', [UserController::class, 'addStaff']);
 
 Route::post('/submit-ticket', [TicketController::class, 'submitTicket']);
+Route::get('/specTicket/{ticketID}', [TicketController::class, 'specTicket'])->name('specTicket');
+
+// tickets
+// Route::get('/all-tickets', [TicketController::class, 'showAllTickets']);
+
+Route::put('/tickets/update/{ticketID}', [TicketController::class, 'ticketsUpdate'])->name('tickets.update');
 Route::get('/tickets', [TicketController::class, 'showTickets'])->name('tickets');

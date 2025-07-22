@@ -12,89 +12,34 @@
 <body>
 
 
-@if(auth()->user()->user_type === 'customer')
-<div class="ticketsBody">
-    <h3>Tickets you've sent</h3>
-    <div style="border:2px solid black">
-        @foreach ($tickets as $ticket)
-    <div>
-        <h3>{{ $ticket->title }}</h3>
-        <p>{{ $ticket->body }}</p>
-        <p>Start: {{ $ticket->startDate }}</p>
-        <p>End: {{ $ticket->endDate }}</p>
-    </div>
-       @endforeach
+    <div class="tickFrame" style="width: 80%; height: 80%; overflow-y: scroll; display: flex; flex-direction: column;">
+        @if(auth()->user()->user_type === 'Customer')
+            @foreach ($tickets as $ticket)
+                @if($ticket->id == auth()->user()->id)
+                <a href="{{ route('specTicket', $ticket->ticketID) }}" style="border: 1px solid black">
+                    <span><h3>{{ $ticket->title }}</h3> - <p>{{ $ticket->status }}</p> </span>
+                    <p>{{ $ticket->body }}</p>
+                    <p>Start: {{ $ticket->startDate }}</p>
+                    <p>End: {{ $ticket->endDate }}</p>
+                </a>        @endif
+            @endforeach
+        @elseif(auth()->user()->user_type === 'Staff')
+            @foreach ($tickets as $ticket)
+                <a href="{{ route('specTicket', $ticket->ticketID) }}" style="border: 1px solid black">
+                    <span style="width: 100%; display: flex; flex-direction: row;"><h3>{{ $ticket->title }}</h3> - <p>{{ $ticket->status }}</p> </span>
+                    <p>{{ $ticket->body }}</p>
+                    <p>Start: {{ $ticket->startDate }}</p>
+                    <p>End: {{ $ticket->endDate }}</p>
+                </a>
+            @endforeach
+        @endif
 
     </div>
 
 
-
-    <h3>Submit a Ticket</h3>
-    <p>Make your message detailed so the staff can understand it</p>
-
-     <div class="sentTickets">
-
-     </div>
-
-     <form class="ticketForm" action="/submit-ticket" method="POST" enctype="multipart/form-data">
-
-        @csrf
-        <input type="text" name="title" placeholder="title">
-        <input type="text" name="body" placeholder="Body">
-        <input type="file" name="ticketImg" accept="image/*" required>
-        <input type="text" name="id" value="{{ auth()->user()->id }}" hidden>
-        <input type="date" name="startDate">
-        <input type="date" name="endDate">
-
-        <button  type="submit">Send Ticket</button>
-     </form>
-
-</div>
-
-@elseif(auth()->user()->user_type === 'staff')
-<div class="ticketsBody">
-    <h3>Tickets</h3>
-    <div style="border:2px solid black">
-        @foreach ($tickets as $ticket)
-    <div>
-        <h3>{{ $ticket->title }}</h3>
-        <p>{{ $ticket->body }}</p>
-        <p>Start: {{ $ticket->startDate }}</p>
-        <p>End: {{ $ticket->endDate }}</p>
-    </div>
-       @endforeach
-
-    </div>
-
-
-
-    <h3>Submit a Ticket</h3>
-    <p>Make your message detailed so the staff can understand it</p>
-
-     <div class="sentTickets">
-
-     </div>
-
-     <form class="ticketForm" action="/submit-ticket" method="POST" enctype="multipart/form-data">
-
-        @csrf
-        <input type="text" name="title" placeholder="title">
-        <input type="text" name="body" placeholder="Body">
-        <input type="file" name="image" accept="image/*" required>
-        <input type="text" name="id" value="{{ auth()->user()->id }}" hidden>
-        <input type="date" name="startDate">
-        <input type="date" name="endDate">
-
-        <button  type="submit">Send Ticket</button>
-     </form>
-
-</div>
-
-@endif
 
 </body>
 </html>
 
 
- 
 @endsection
