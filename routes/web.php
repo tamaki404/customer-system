@@ -38,7 +38,7 @@ Route::get('/profile', function () {
 Route::get('/tickets', function () {
     return view('tickets');
 })->name('tickets');
-Route::get('/receipts', [\App\Http\Controllers\ReceiptController::class, 'showUserReceipts'])->name('receipts');
+Route::get('/receipts', [ReceiptController::class, 'showUserReceipts'])->name('receipts');
 
 
 // call the func for showStaffs to display her ein vieww
@@ -57,3 +57,4 @@ Route::put('/tickets/update/{ticketID}', [TicketController::class, 'ticketsUpdat
 Route::get('/tickets', [TicketController::class, 'showTickets'])->name('tickets');
 
 Route::post('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');
+Route::get('/customers', [ViewController::class, 'showCustomers'])->name('customers');

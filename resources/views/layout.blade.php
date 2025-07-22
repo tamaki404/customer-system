@@ -88,11 +88,11 @@
             <button class="buttonDiv">
                 <span class="material-symbols-outlined">dynamic_feed</span>
                 <p>Feed</p>
-            </button>        
-            <button class="buttonDiv">
+            </button>
+            <a class="buttonDiv" href="{{ route('customers') }}">
                 <span class="material-symbols-outlined">groups</span>
                 <p>Customers</p>
-            </button>
+            </a>
 
 
             @else

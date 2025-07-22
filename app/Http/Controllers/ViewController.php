@@ -6,16 +6,21 @@ use Illuminate\Http\Request;
 
 class ViewController extends Controller
 {
- public function profile()
-{
-    $user = auth()->user();
-    return view('profile', compact('user'));
-}
+    public function profile()
+    {
+        $user = auth()->user();
+        return view('profile', compact('user'));
+    }
 
-public function showStaffs(){
-    $users = User::whereIn('user_type', ['admin', 'staff'])->get();
-    return view('staffs', compact('users'));
-}
+    public function showStaffs()
+    {
+        $users = User::whereIn('user_type', ['admin', 'staff'])->get();
+        return view('staffs', compact('users'));
+    }
 
-
+    public function showCustomers()
+    {
+        $users = User::where('user_type', 'Customer')->get();
+        return view('customers', compact('users'));
+    }
 }
