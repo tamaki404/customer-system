@@ -23,6 +23,7 @@ class Receipt extends Model
         'receipt_number',
     ];
 
+    protected $primaryKey = 'receipt_id';
     // Relationships
     public function customer()
     {

@@ -33,7 +33,7 @@
         <form action="/submit-receipt" class="receiptForm" method="POST" enctype="multipart/form-data">
             @csrf
             <p>Manage your receipts below</p>
-            <input type="text" name="id"  value="{{ auth()->user()->id }}"  required>
+            <input type="text" name="customer_id"  value="{{ auth()->user()->id }}"  required>
             <input type="text" name="store_name" placeholder="Store Name" value="{{ auth()->user()->store_name }}">
             <input type="text" name="username"  value="{{ auth()->user()->username }}"  required>
             <input type="number" name="receipt_number" placeholder="Receipt Number" required>

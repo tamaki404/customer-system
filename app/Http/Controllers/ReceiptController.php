@@ -22,7 +22,7 @@ class ReceiptController extends Controller
             'notes' => 'nullable|string',
             'status' => 'required|string',
             'receipt_number' => 'required|numeric',
-            'id' => 'nullable|integer',
+            'customer_id' => 'nullable|integer',
         ]);
 
         // Handle image upload
@@ -34,7 +34,7 @@ class ReceiptController extends Controller
 
         // Attach customer_id if user is logged in
         if (Auth::check()) {
-            $validated['id'] = Auth::id();
+            $validated['customer_id'] = Auth::id();
         }
 
         // Save receipt
