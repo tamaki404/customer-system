@@ -14,7 +14,7 @@
             @method('PUT')
             <input type="hidden" name="ticketID" value="{{ $ticket->ticketID }}">
             <input type="hidden" name="received_by" value="{{ auth()->user()->id }}">
-            <input type="hidden" name="status" value="changed">
+            <input type="hidden" name="status" value="hello">
             <button type="submit">Received</button>
         </form>
 

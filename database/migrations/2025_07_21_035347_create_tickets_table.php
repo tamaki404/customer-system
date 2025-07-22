@@ -11,22 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tickets', function (Blueprint $table) {
-
-            $table -> string ('title');
-            $table -> longText ('body');
-            $table->string('image')->nullable();
-            $table->date('startDate');
-            $table->integer('id');
-            $table->date('endDate');
-            $table->string('status')->default('open');
-            $table->integer('received_by')->nullable();
-            $table -> date('resolved_at')->default(today());
-
-            $table->timestamps();
-
-
-        });
+    Schema::create('tickets', function (Blueprint $table) {
+        $table->increments('ticketID'); 
+        $table->string('title');
+        $table->longText('body');
+        $table->string('image')->nullable();
+        $table->date('startDate');
+        $table->integer('id'); 
+        $table->date('endDate');
+        $table->string('status')->default('open');
+        $table->integer('received_by')->nullable();
+        $table->date('resolved_at')->default(today());
+        $table->timestamps();
+    });
     }
 
     /**

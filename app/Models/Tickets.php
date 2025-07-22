@@ -9,6 +9,10 @@ class Tickets extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'ticketID'; 
+    public $incrementing = true;
+    protected $keyType = 'int';
+
     protected $fillable = [
         'title',
         'body',
@@ -19,12 +23,7 @@ class Tickets extends Model
         'status',
         'received_by',
         'resolved_at',
-
     ];
-
-    
-
-   
 }
 
 class Ticket extends Model
