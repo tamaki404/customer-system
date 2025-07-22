@@ -18,6 +18,13 @@
     <input type="text" name="username" id="username" placeholder="Username" required>
     <small id="username-feedback" style="color:red;"></small>
 
+    <input type="text" name="store_name" id="store_name" placeholder="Store name" required>
+    <small id="store-name-feedback" style="color:red;"></small>
+
+
+    
+
+
     <input type="password" name="password" id="password" placeholder="Password" required>
     <small id="password-feedback" style="color:red;"></small>
 
@@ -25,6 +32,8 @@
 
     <input type="file" name="image" accept="image/*" required>
     <input type="text" name="acc_status"  value="Pending" hidden>
+
+    <input type="text" name="action_by" value="Admin" hidden>
 
     <button type="submit">Sign Up</button>
 </form>

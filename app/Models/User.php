@@ -23,7 +23,8 @@ class User extends Authenticatable
         'image',
         'user_type',
         'acc_status',
-        'action_by'
+        'action_by',
+        'store_name',
     ];
 
     /**

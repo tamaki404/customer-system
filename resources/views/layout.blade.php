@@ -32,7 +32,7 @@
     <div class="sideAccess">
         <button class="userProfile">
             <div class="imgFrame"> <img src="{{ asset('images/' . auth()->user()->image) }}" alt="Customer Image" width="100"></div>
-            <div class="nameFrame"><p class="userName">Nicole Tumpag</p><p class="userTitle">{{ auth()->user()->user_type }}</p> </div>
+            <div class="nameFrame"><p class="userName">{{ auth()->user()->store_name }}</p><p class="userTitle">{{ auth()->user()->user_type }}</p> </div>
         </button>
         <div class="searchFrame">
             <div class="searchCon">

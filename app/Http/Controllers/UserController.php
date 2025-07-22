@@ -20,6 +20,9 @@ public function register(Request $request)
         'password' => 'required|string|min:6|max:100',
         'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         'user_type' => 'required',
+        'store_name' => 'nullable|string|max:255',
+        'acc_status' => 'required|string|max:255',
+        'action_by' => 'nullable|string|max:255',
     ]);
 
     // Handle image upload
@@ -37,6 +40,9 @@ public function register(Request $request)
         'password' => Hash::make($validated['password']),
         'image' => $validated['image'],
         'user_type' => $validated['user_type'],
+        'store_name' => $validated['store_name'],
+        'acc_status' => $validated['acc_status'],
+        'action_by' => $validated['action_by'],
     ]);
 
     // Login the user

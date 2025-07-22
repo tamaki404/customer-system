@@ -12,12 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
+            $table->id();
             $table -> string ('username');
             $table -> longText ('password');
             $table->string('image')->nullable();
             $table->string('user_type');
             $table->string('acc_status');
             $table->string('action_by');
+            $table->string('store_name')->nullable();
 
 
         });
@@ -37,6 +39,9 @@ return new class extends Migration
             $table->integer('last_activity')->index();
 
         });
+        Schema::table('users', function (Blueprint $table) {
+        $table->timestamps(); 
+});
     }
 
     /**
