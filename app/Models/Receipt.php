@@ -3,13 +3,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+ 
 
 class Receipt extends Model
 {
     use HasFactory;
-
+    protected $table = 'receipts';
     protected $fillable = [
-        'id',
+        'customer_id',
         'receipt_image',
         'purchase_date',
         'store_name',
@@ -19,6 +20,7 @@ class Receipt extends Model
         'status',
         'verified_by',
         'verified_at',
+        'receipt_number',
     ];
 
     // Relationships

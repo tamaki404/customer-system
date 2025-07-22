@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ViewController;
+use App\Http\Controllers\ReceiptController;
 
 Route::post('/login-user', [UserController::class, 'login']);
 Route::post('/logout-user', [UserController::class, 'logout']);
@@ -36,7 +37,9 @@ Route::get('/profile', function () {
 Route::get('/tickets', function () {
     return view('tickets');
 })->name('tickets');
-
+Route::get('/receipts', function () {
+    return view('receipts');
+})->name('receipts');
 
 
 // call the func for showStaffs to display her ein vieww
@@ -53,3 +56,5 @@ Route::get('/specTicket/{ticketID}', [TicketController::class, 'specTicket'])->n
 
 Route::put('/tickets/update/{ticketID}', [TicketController::class, 'ticketsUpdate'])->name('tickets.update');
 Route::get('/tickets', [TicketController::class, 'showTickets'])->name('tickets');
+
+Route::post('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');

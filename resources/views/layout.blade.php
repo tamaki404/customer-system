@@ -96,7 +96,10 @@
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
             </a>
-
+            <a class="buttonDiv" href="{{ route('receipts') }}">
+                <span class="material-symbols-outlined">receipt</span>
+                <p>Receipts</p>
+            </a>
             <a class="buttonDiv" href="{{ route('tickets') }}">
                 <span class="material-symbols-outlined">confirmation_number</span>
                 <p>Tickets Sent</p>
