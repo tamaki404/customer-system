@@ -13,6 +13,41 @@
 <body>
 
     <div class="receiptFrame">
+        @isset($receipts)
+            <h2>Your Receipts</h2>
+            <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                <thead>
+                    <tr>
+                        <th>Receipt #</th>
+                        <th>Store Name</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @forelse($receipts as $receipt)
+                    <tr>
+                        <td>{{ $receipt->receipt_number }}</td>
+                        <td>{{ $receipt->store_name }}</td>
+                        <td>{{ $receipt->total_amount }}</td>
+                        <td>{{ $receipt->purchase_date }}</td>
+                        <td>{{ $receipt->status }}</td>
+                        <td>
+                            @if($receipt->receipt_image)
+                                <img src="{{ asset('images/' . $receipt->receipt_image) }}" alt="Receipt Image" style="max-width:60px; max-height:60px;">
+                            @else
+                                N/A
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="6">No receipts found.</td></tr>
+                @endforelse
+                </tbody>
+            </table>
+        @endisset
         @if(session('success'))
             <div style="color: green; margin-bottom: 10px;">
                 {{ session('success') }}

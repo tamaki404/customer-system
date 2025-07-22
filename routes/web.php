@@ -37,9 +37,7 @@ Route::get('/profile', function () {
 Route::get('/tickets', function () {
     return view('tickets');
 })->name('tickets');
-Route::get('/receipts', function () {
-    return view('receipts');
-})->name('receipts');
+Route::get('/receipts', [\App\Http\Controllers\ReceiptController::class, 'showUserReceipts'])->name('receipts');
 
 
 // call the func for showStaffs to display her ein vieww

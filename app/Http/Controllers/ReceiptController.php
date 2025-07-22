@@ -5,10 +5,14 @@ use App\Models\Receipt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ReceiptController extends Controller
-{
+class ReceiptController extends Controller{
 
-
+    public function showUserReceipts()
+    {
+        $userId = auth()->id();
+        $receipts = \App\Models\Receipt::where('customer_id', $userId)->get();
+        return view('receipts', compact('receipts'));
+    }
 
 
     public function submitReceipt(Request $request)
@@ -25,20 +29,17 @@ class ReceiptController extends Controller
             'customer_id' => 'nullable|integer',
         ]);
 
-        // Handle image upload
         if ($request->hasFile('receipt_image')) {
             $imageName = time() . '.' . $request->file('receipt_image')->extension();
             $request->file('receipt_image')->move(public_path('images'), $imageName);
             $validated['receipt_image'] = $imageName;
         }
 
-        // Attach customer_id if user is logged in
         if (Auth::check()) {
             $validated['customer_id'] = Auth::id();
         }
 
-        // Save receipt
-        \App\Models\Receipt::create($validated);
+        Receipt::create($validated);
 
         return redirect()->back()->with('success', 'Receipt submitted successfully!');
     }
