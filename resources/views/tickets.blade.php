@@ -14,14 +14,30 @@
 
     <div class="tickFrame" style="width: 80%; height: 80%; overflow-y: scroll; display: flex; flex-direction: column;">
         @if(auth()->user()->user_type === 'Customer')
+
+                    <h2>Create a New Ticket</h2>
+                    <form action="/submit-ticket" method="POST">
+                        @csrf
+                        <input type="hidden" name="id" value="{{ auth()->user()->id }}">
+                        <input type="text" name="title" placeholder="Ticket Title" required>
+                        <input type="text" name="body" placeholder="Ticket Body" required>
+                        <input type="date" name="startDate" required>
+                        <input type="date" name="endDate" required>
+                        <input type="file" name="image" accept="image/*" required>
+                    <button type="submit">Submit</button>
+                </form>
+        <h2>My Tickets</h2>
             @foreach ($tickets as $ticket)
                 @if($ticket->id == auth()->user()->id)
+ 
                 <a href="{{ route('specTicket', $ticket->ticketID) }}" style="border: 1px solid black">
                     <span><h3>{{ $ticket->title }}</h3> - <p>{{ $ticket->status }}</p> </span>
                     <p>{{ $ticket->body }}</p>
                     <p>Start: {{ $ticket->startDate }}</p>
                     <p>End: {{ $ticket->endDate }}</p>
-                </a>        @endif
+                </a>  
+                @endif
+            
             @endforeach
         @elseif(auth()->user()->user_type === 'Staff')
             @foreach ($tickets as $ticket)
