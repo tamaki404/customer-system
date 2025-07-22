@@ -9,9 +9,13 @@ class ReceiptController extends Controller{
 
     public function showUserReceipts()
     {
-        $userId = auth()->id();
-        $receipts = \App\Models\Receipt::where('customer_id', $userId)->get();
-        return view('receipts', compact('receipts'));
+        $user = auth()->user();
+        if ($user->user_type === 'Staff') {
+            $receipts = \App\Models\Receipt::all();
+        } else {
+            $receipts = \App\Models\Receipt::where('customer_id', $user->id)->get();
+        }
+        return view('receipts', compact('receipts', 'user'));
     }
 
 

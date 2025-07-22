@@ -77,6 +77,10 @@
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
             </button>
+                        <a class="buttonDiv" href="{{ route('receipts') }}">
+                <span class="material-symbols-outlined">receipt</span>
+                <p>Receipts</p>
+            </a>
             <button class="buttonDiv">
                 <span class="material-symbols-outlined">confirmation_number</span>
                 <p>Tickets</p>
