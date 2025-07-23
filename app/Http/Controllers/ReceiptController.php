@@ -4,8 +4,28 @@ namespace App\Http\Controllers;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+
 
 class ReceiptController extends Controller{
+
+
+
+    public function index(Request $request)
+    {
+       $user = auth()->user();
+       $query = Receipt::with('customer');
+
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $from = Carbon::parse($request->from_date)->startOfDay();
+            $to = Carbon::parse($request->to_date)->endOfDay();
+            $query->whereBetween('purchase_date', [$from, $to]);
+        }
+
+        $receipts = $query->orderBy('created_at', 'desc')->get();
+
+        return view('receipts', compact('receipts', 'user'));
+    }
 
     public function viewReceipt($receipt_id)
     {
@@ -23,6 +43,7 @@ class ReceiptController extends Controller{
         }
         return view('receipts', compact('receipts', 'user'));
     }
+
 
 
     public function submitReceipt(Request $request)
@@ -53,4 +74,12 @@ class ReceiptController extends Controller{
 
         return redirect()->back()->with('success', 'Receipt submitted successfully!');
     }
+
+    public function getReceiptImage($receipt_id)
+    {
+        $receipt = Receipt::findOrFail($receipt_id);
+        return view('receipt_image', compact('receipt'));
+    }
+
+    
 }

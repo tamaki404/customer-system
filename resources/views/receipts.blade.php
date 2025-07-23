@@ -15,7 +15,12 @@
     <title>Document</title>
 </head>
 <body>
+
+
+
     <div class="receipt-wrapper">
+
+        
     <div class="receipt-container">
         @isset($receipts)
             @if($user->user_type === 'Staff')
@@ -24,11 +29,12 @@
                     <table class="receipt-table">
                         <thead>
                             <tr>
+                                <th>Date</th>
                                 <th>Receipt #</th>
                                 <th>Customer</th>
                                 <th>Store</th>
                                 <th>Amount</th>
-                                <th>Date</th>
+                                <th>Purchase date</th>
                                 <th>Status</th>
                                 <th>Image</th>
                             </tr>
@@ -36,6 +42,7 @@
                         <tbody>
                             @forelse($receipts as $receipt)
                                 <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
+                                    <td>{{ $receipt->created_at->format('F j, Y') }}</td>
                                     <td>{{ $receipt->receipt_number }}</td>
                                     <td>{{ $receipt->customer->username ?? 'N/A' }}</td>
                                     <td>{{ $receipt->store_name }}</td>

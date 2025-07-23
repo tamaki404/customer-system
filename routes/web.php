@@ -59,4 +59,7 @@ Route::get('/tickets', [TicketController::class, 'showTickets'])->name('tickets'
 Route::post('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');
 Route::get('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');
 
-Route::get('/customers', [ViewController::class, 'showCustomers'])->name('customers');
+Route::get('/customers', action: [ViewController::class, 'showCustomers'])->name('customers');
+Route::get('/customer_view/{customer_id}', action: [ViewController::class, 'viewCustomer'])->name('customer.view');
+Route::get('/receipt-image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
+

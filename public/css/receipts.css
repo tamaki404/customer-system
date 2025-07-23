@@ -172,6 +172,17 @@ body {
     transition: background 0.3s;
 }
 
+.date-filter-form {
+    margin-bottom: 20px;
+}
+
+.date-filter-form input[type="date"],
+.date-filter-form button {
+    margin-left: 10px;
+    padding: 5px 10px;
+}
+
+
 .submit-btn:hover {
     background: #0d47a1;
     .receipt-container {

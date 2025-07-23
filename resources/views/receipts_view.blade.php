@@ -16,11 +16,15 @@
         <tr>
             <th>Image:</th>
             <td>
-                @if($receipt->receipt_image)
-                    <img src="{{ asset('images/' . $receipt->receipt_image) }}" alt="Receipt Image" style="max-width:200px;max-height:200px;">
-                @else
-                    N/A
-                @endif
+                <tr onclick="window.location='{{ url('/receipt_image/' . $receipt->receipt_id) }}'">
+                    <td>
+                        @if($receipt->receipt_image)
+                            <img src="{{ asset('images/' . $receipt->receipt_image) }}" alt="Receipt Image" style="max-width:200px;max-height:200px;">
+                        @else
+                            N/A
+                        @endif
+                    </td>
+                </tr>
             </td>
         </tr>
     </table>
