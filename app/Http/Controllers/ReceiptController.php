@@ -77,9 +77,11 @@ class ReceiptController extends Controller{
 
     public function getReceiptImage($receipt_id)
     {
+               $user = auth()->user();
+
         $receipt = Receipt::findOrFail($receipt_id);
         return view('receipt_image', compact('receipt'));
     }
 
-    
+
 }
