@@ -1,4 +1,6 @@
 .ticketForm{
+    font-size: 13px;
+    font-family: 'Open Sans', sans-serif;
     display: flex;
     flex-direction: column;
 

@@ -9,7 +9,7 @@ class ReceiptController extends Controller{
 
     public function viewReceipt($receipt_id)
     {
-        $receipt = \App\Models\Receipt::with('customer')->findOrFail($receipt_id);
+        $receipt = Receipt::with('customer')->findOrFail($receipt_id);
         return view('receipts_view', compact('receipt'));
     }
 
@@ -17,9 +17,9 @@ class ReceiptController extends Controller{
     {
         $user = auth()->user();
         if ($user->user_type === 'Staff') {
-            $receipts = \App\Models\Receipt::all();
+            $receipts = Receipt::all();
         } else {
-            $receipts = \App\Models\Receipt::where('customer_id', $user->id)->get();
+            $receipts = Receipt::where('customer_id', $user->id)->get();
         }
         return view('receipts', compact('receipts', 'user'));
     }
