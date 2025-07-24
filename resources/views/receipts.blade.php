@@ -134,7 +134,6 @@
                                             <tr>
                                                 <th>Receipt #</th>
                                                 <th>Customer</th>
-                                                <th>Store</th>
                                                 <th>Amount</th>
                                                 <th>Purchase date</th>
                                                 <th>Status</th>
@@ -145,7 +144,6 @@
                                             @foreach($dayReceipts as $receipt)
                                                 <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
                                                     <td>{{ $receipt->receipt_number }}</td>
-                                                    <td>{{ $receipt->customer->username ?? 'N/A' }}</td>
                                                     <td>{{ $receipt->store_name }}</td>
                                                     <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
                                                     <td>{{ $receipt->purchase_date}}</td>
