@@ -26,7 +26,7 @@ class ViewController extends Controller
     public function viewCustomer($customer_id)
     {
         $customer = User::findOrFail($customer_id);
-        // Get all receipts for this customer
+
         $receipts = \App\Models\Receipt::where('customer_id', $customer_id)->orderBy('created_at', 'desc')->get();
         return view('customer_view', compact('customer', 'receipts'));
     }

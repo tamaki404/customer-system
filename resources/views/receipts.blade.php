@@ -13,113 +13,16 @@
     <link rel="stylesheet" href="{{ asset('css/receipts.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <title>Document</title>
+    <link rel="stylesheet" href="{{ asset('css/open-modal.css') }}">
 </head>
 <body>
 
 
 
-    <div class="receipt-wrapper">
-
-        
-    <div class="receipt-container">
-        @isset($receipts)
-            @if($user->user_type === 'Staff')
-                <h2 class="title">All Receipts</h2>
-                <div class="table-wrapper">
-                    <table class="receipt-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Receipt #</th>
-                                <th>Customer</th>
-                                <th>Store</th>
-                                <th>Amount</th>
-                                <th>Purchase date</th>
-                                <th>Status</th>
-                                <th>Image</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($receipts as $receipt)
-                                <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
-                                    <td>{{ $receipt->created_at->format('F j, Y') }}</td>
-                                    <td>{{ $receipt->receipt_number }}</td>
-                                    <td>{{ $receipt->customer->username ?? 'N/A' }}</td>
-                                    <td>{{ $receipt->store_name }}</td>
-                                    <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                    <td>{{ $receipt->purchase_date }}</td>
-                                    <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
-                                    <td>
-                                        @if($receipt->receipt_image)
-                                            <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
-                                        @else
-                                            N/A
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="7">No receipts found.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            @elseif($user->user_type === 'Customer')
-                <h2 class="title">Your Receipts</h2>
-                <div class="table-wrapper">
-                    <table class="receipt-table">
-                        <thead>
-                            <tr>
-                                <th>Receipt #</th>
-                                <th>Store</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Image</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $userReceipts = $receipts->where('customer_id', $user->id);
-                            @endphp
-                            @forelse($userReceipts as $receipt)
-                                <tr>
-                                    <td>{{ $receipt->receipt_number }}</td>
-                                    <td>{{ $receipt->store_name }}</td>
-                                    <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                    <td>{{ $receipt->purchase_date }}</td>
-                                    <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
-                                    <td>
-                                        @if($receipt->receipt_image)
-                                            <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
-                                        @else
-                                            N/A
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="6">No receipts found.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        @endisset
-
-        @if(session('success'))
-            <div class="alert success">{{ session('success') }}</div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert error">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        @if($user->user_type !== 'Staff')
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+     @if($user->user_type !== 'Staff')
         <div class="form-section">
             <h3 class="form-title">Submit New Receipt</h3>
             <form action="/submit-receipt" class="receipt-form" method="POST" enctype="multipart/form-data">
@@ -185,9 +88,127 @@
             </form>
         </div>
         @endif
-    </div>
+  </div>
 </div>
+
+
+
+    <div class="receipt-wrapper">
+
+        
+        <div class="receipt-container">
+
+            @isset($receipts)
+                @if($user->user_type === 'Staff')
+                    <h2 class="title">All Receipts</h2>
+                    <div class="table-wrapper">
+                        <table class="receipt-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Receipt #</th>
+                                    <th>Customer</th>
+                                    <th>Store</th>
+                                    <th>Amount</th>
+                                    <th>Purchase date</th>
+                                    <th>Status</th>
+                                    <th>Image</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($receipts as $receipt)
+                                    <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
+                                        <td>{{ $receipt->created_at->format('F j, Y') }}</td>
+                                        <td>{{ $receipt->receipt_number }}</td>
+                                        <td>{{ $receipt->customer->username ?? 'N/A' }}</td>
+                                        <td>{{ $receipt->store_name }}</td>
+                                        <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                        <td>{{ $receipt->purchase_date }}</td>
+                                        <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
+                                        <td>
+                                            @if($receipt->receipt_image)
+                                                <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
+                                            @else
+                                                N/A
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="7">No receipts found.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                @elseif($user->user_type === 'Customer')
+                    <div class="title-wrapper">
+                        <h2 class="title">Your Receipts</h2>  
+                        <button id="openModalBtn">Submit a Receipt</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="receipt-table">
+                            <thead>
+                                <tr>
+                                    <th>Receipt #</th>
+                                    <th>Store</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Image</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $userReceipts = $receipts->where('customer_id', $user->id);
+                                @endphp
+                                @forelse($userReceipts as $receipt)
+                                    <tr>
+                                        <td>{{ $receipt->receipt_number }}</td>
+                                        <td>{{ $receipt->store_name }}</td>
+                                        <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                        <td>{{ $receipt->purchase_date }}</td>
+                                        <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
+                                        <td>
+                                            @if($receipt->receipt_image)
+                                                <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
+                                            @else
+                                                N/A
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="6">No receipts found.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            @endisset
+
+            @if(session('success'))
+                <div class="alert success">{{ session('success') }}</div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert error">
+                    <ul>
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+        
+        </div>
+    </div>
+
+<script src="{{ asset('scripts/open-modal.js') }}"></script>
+
+
 </body>
 </html>
+
+
+
 
 @endsection
