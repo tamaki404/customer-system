@@ -56,7 +56,7 @@ class ReceiptController extends Controller{
             'invoice_number' => 'required|string|max:255',
             'notes' => 'nullable|string',
             'status' => 'required|string',
-            'receipt_number' => 'required|numeric',
+            'receipt_number' => 'required|string',
             'customer_id' => 'nullable|integer',
         ]);
 

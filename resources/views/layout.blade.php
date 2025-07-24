@@ -156,6 +156,7 @@
         </div>
     </div>
     <div class="showScreen">
+
         @yield('content')
 
     </div>

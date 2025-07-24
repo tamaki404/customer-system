@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('status')->default('Pending');
             $table->string('verified_by')->nullable();
             $table->date('verified_at')->nullable();
-            $table->bigInteger(column: 'receipt_number')->nullable();
+            $table->string('receipt_number')->nullable();
         });
     }
 
