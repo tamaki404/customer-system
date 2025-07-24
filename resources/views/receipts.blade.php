@@ -96,10 +96,9 @@
     <div class="receipt-wrapper">
         <div class="wrapper-title">
             <h2 class="title">Receipts</h2>
-            <form action="" class="date-search">
-                <input type="date" name="search_date" placeholder="Search by date">
-                <input type="date" name="search_date" placeholder="Search by date">
-                <button type="submit">Search</button>
+            <form action="/date-search" class="date-search">
+                <p>Date picker</p>
+                <input type="month" class="search-date" name="search_date" placeholder="Search by date">
             </form>
         </div>
         <div class="receipt-container">
@@ -142,7 +141,7 @@
                                                 <td>{{ $receipt->customer->username ?? 'N/A' }}</td>
                                                 <td>{{ $receipt->store_name }}</td>
                                                 <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                                <td>{{ $receipt->purchase_date }}</td>
+                                                <td>{{ $receipt->purchase_date}}</td>
                                                 <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
                                                 <td>
                                                     @if($receipt->receipt_image)

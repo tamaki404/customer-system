@@ -84,4 +84,9 @@ class ReceiptController extends Controller{
     }
 
 
+    public function date_search(Request $request){
+        
+    }
+
+
 }

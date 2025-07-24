@@ -7,12 +7,13 @@
     <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
 
 
-    <title>Dashboard</title>
+
+    <title>Rizal Poultry</title>
 </head>
 <body>
 
@@ -35,7 +36,7 @@
 <div class="mainFrame">
     <div class="sideAccess">
         <button class="userProfile">
-            <div class="imgFrame"> <img src="{{ asset('images/' . auth()->user()->image) }}" alt="Customer Image" width="100"></div>
+            <div class="imgFrame"> <img src="{{ asset('images/' . auth()->user()->image) }}" alt="Customer Image"></div>
             <div class="nameFrame"><p class="userName">{{ auth()->user()->store_name }}</p><p class="userTitle">{{ auth()->user()->user_type }}</p> </div>
         </button>
         <div class="searchFrame">
@@ -76,6 +77,11 @@
                 <p>Reports</p>
             </button>
 
+
+
+                  
+                                 {{-- STAFF --}}
+
             @elseif(auth()->user()->user_type === 'Staff')
             <button class="buttonDiv">
                 <span class="material-symbols-outlined">person</span>
@@ -100,6 +106,11 @@
 
 
             @else
+
+
+
+
+
             <a class="buttonDiv" href="{{ route('profile') }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
@@ -152,7 +163,7 @@
 
         <div class="ownFrame">
             <p>OWNED BY</p>
-            <img src="{{ asset('assets/rplai_logo.svg') }}" alt="Owner Image" width="100">
+            <img src="{{ asset('assets/rplai_logo-wname.png') }}" alt="Owner Image" width="100">
         </div>
     </div>
     <div class="showScreen">
