@@ -10,14 +10,21 @@
     <link rel="stylesheet" href="{{ asset('css/staffs.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+        <link rel="stylesheet" href="{{ asset('css/open-modal.css') }}">
+
 
 </head>
 <body>
-    
-<div class="bodyFrame">
-    <h1>Admin and Staff Users</h1>
 
+
+@auth
     
+{{-- add staff modal --}}
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+     @if(auth()->user()->user_type === 'Staff')
+      
         <form action="/add-staff" class="addStaff"  method="post" enctype="multipart/form-data">
             @csrf
             <input type="text" name="username" id="" placeholder="username">
@@ -25,11 +32,24 @@
             <img src="" name="image" alt="">
             <input type="text" name="user_type"  value="Staff" hidden>
             <input type="text" name="acc_status"  value="Active" hidden>
+            <input type="text" name="store_name" placeholder="Store Name" value="Rizal Poultry & Livestock Assoctiation .Inc" hidden>
             <input type="file" name="image" accept="image/*" required>
             <input type="text" name="action_by" value="{{ auth()->user()->username}}" hidden>
 
              <button>Add Staff</button>
         </form>
+    @endif
+
+    
+  </div>
+</div>
+    
+<div class="bodyFrame">
+    <h1>Staffs</h1>
+        <button id="openModalBtn">Submit a Receipt</button>
+
+    
+
     <div class="userTable">
         <table border="1" class="usersList">
             <tr>
@@ -60,10 +80,10 @@
 </body>
 </html>
 
+@endauth
+
+<script src="{{ asset('scripts/open-modal.js') }}"></script>
 
 
-</body>
-</html>
 
- 
 @endsection

@@ -14,8 +14,9 @@ class ViewController extends Controller
 
     public function showStaffs()
     {
+        $user = auth()->user();
         $users = User::whereIn('user_type', ['admin', 'staff'])->get();
-        return view('staffs', compact('users'));
+        return view('staffs', compact('users', 'user'));
     }
 
     public function showCustomers()
@@ -29,5 +30,17 @@ class ViewController extends Controller
 
         $receipts = \App\Models\Receipt::where('customer_id', $customer_id)->orderBy('created_at', 'desc')->get();
         return view('customer_view', compact('customer', 'receipts'));
+    }
+    public function dashboard()
+    {
+        $user = auth()->user();
+        return view('dashboard', compact('user'));
+    }
+
+    public function staffs()
+    {
+
+        $user = auth()->user();
+        return view('staffs', compact('user'));
     }
 }

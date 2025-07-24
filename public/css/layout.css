@@ -38,22 +38,28 @@ body .mainFrame{
 .sideAccess .userProfile{
     display: flex;
     flex-direction: row;
-    height: 50px;
+    height: 55px;
     width: 100%;
     overflow: hidden;
     margin-top: 20px;
     gap: 10px;
     background-color: transparent;
-    cursor: pointer;
     border: none;
+    justify-content: center;
+    align-items: center;
+            cursor: default;
+
 
 }
 
 .userProfile .imgFrame{
     overflow: hidden;
     border-radius: 50%;
-    height: 40px;
-    width: 40px;
+    height: 50px;
+    width: 50px;
+    background-color: transparent;
+    cursor: default;
+
 }
 
 .imgFrame img{
@@ -68,7 +74,36 @@ body .mainFrame{
     justify-content: center;
     gap: 1px;
     align-items: start;
+    overflow: hidden;
+    background-color: transparent;
+    width: 80%;
+        cursor: default;
+
 }
+
+
+
+.nameFrame p{
+    margin: 0;
+}
+.nameFrame .userName{
+    font-size: 15px;
+    font-weight: bold;
+    color: #f59c00;
+    white-space: nowrap;        
+    overflow: hidden;      
+    width: 95%;   
+    text-overflow: ellipsis;
+    text-align: start;
+
+}
+.nameFrame .userTitle{
+    font-size: 13px;
+    font-weight: normal;
+    color: grey;
+}
+
+
 
  .searchFrame{
     height: 50px;
@@ -110,21 +145,6 @@ body .mainFrame{
 
 
 
-
-.nameFrame p{
-    margin: 0;
-}
-.nameFrame .userName{
-    font-size: 15px;
-    font-weight: bold;
-        color: #f59c00;
-
-}
-.nameFrame .userTitle{
-    font-size: 13px;
-    font-weight: normal;
-    color: grey;
-}
 
 .sideAccess .sideMenu{
     display: flex;
@@ -170,7 +190,7 @@ body .mainFrame{
 
 .ownFrame{
     width: 100%;
-    height: 75px;
+    height: 90px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -191,7 +211,7 @@ body .mainFrame{
 
 .ownFrame img{
     width: auto;
-    height: 60px;
+    height: 65px;
     margin: 0;
 }
 

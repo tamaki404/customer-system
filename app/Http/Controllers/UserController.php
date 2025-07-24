@@ -74,7 +74,7 @@ public function login(Request $request)
     auth()->login($user);
     $request->session()->regenerate();
 
-    return redirect('/dashboard');
+    return redirect('/receipts');
 }
 
 public function logout()
@@ -122,8 +122,7 @@ public function addStaff(Request $request)
 
     ]);
 
-    // Login the user
-    auth()->login($user);
+
     return redirect('/staffs');
 }
 

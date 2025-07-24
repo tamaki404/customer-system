@@ -23,15 +23,13 @@ Route::get('/register-view', function () {
     return view('registration');
 });
 
-Route::get('/check-username', function (\Illuminate\Http\Request $request) {
+Route::get('/check-username', function (Request $request) {
     $exists = DB::table('users')->where('username', $request->username)->exists();
     return response()->json(['available' => !$exists]);
 });
 
 // views
-Route::get('/dashboard', function () {
-    return view('dashboard');
-});
+Route::get('/dashboard', [ViewController::class, 'dashboard'])->name('dashboard');
 Route::get('/profile', function () {
     return view('profile');
 })->name('profile');

@@ -22,9 +22,10 @@
 <div id="myModal" class="modal">
   <div class="modal-content">
     <span class="close-btn">&times;</span>
-     @if($user->user_type !== 'Staff')
+     @if($user->user_type === 'Customer')
         <div class="form-section">
             <h3 class="form-title">Submit New Receipt</h3>
+            <p>Please upload your receipt below. Ensure all information is accurate before submission.</p>
             <form action="/submit-receipt" class="receipt-form" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-grid">
@@ -33,14 +34,14 @@
                     <input type="hidden" name="verified_by">
                     <input type="hidden" name="verified_at">
 
-                    <div>
+                    <div style="display: none">
                         <label>Store Name</label>
-                        <input type="text" name="store_name" value="{{ auth()->user()->store_name }}" placeholder="Store name">
+                        <input type="text" name="store_name" value="{{ auth()->user()->store_name }}" placeholder="Store name" hidden>
                     </div>
 
-                    <div>
+                    <div style="display: none">
                         <label>Username</label>
-                        <input type="text" name="username" value="{{ auth()->user()->username }}">
+                        <input type="text" name="username" value="{{ auth()->user()->username }}" hidden>
                     </div>
 
                     <div>
@@ -55,7 +56,7 @@
 
                     <div>
                         <label>Purchase Date</label>
-                        <input type="text" name="purchase_date" placeholder="e.g. 2025-07-22" required>
+                        <input type="date" name="purchase_date" placeholder="e.g. 2025-07-22" required>
                     </div>
 
                     <div>
@@ -78,16 +79,18 @@
                         <textarea name="notes" rows="3" placeholder="Optional notes"></textarea>
                     </div>
 
-                    <div>
+                    {{-- <div>
                         <label>Date of Entry</label>
                         <input type="date" name="date" required>
-                    </div>
+                    </div> --}}
                 </div>
 
-                <button type="submit" class="submit-btn">Submit Receipt</button>
+                <button type="submit" class="submit-btn" id="submitBtn">Submit Receipt</button>
             </form>
         </div>
-        @endif
+    @endif
+
+    
   </div>
 </div>
 
@@ -104,7 +107,7 @@
         <div class="receipt-container">
 
             @isset($receipts)
-                @if($user->user_type === 'Staff')
+                @if(auth()->user()->user_type === 'Staff')
                     @php
                         // group receipts by year, month, and day
                         $grouped = $receipts->sortByDesc('created_at')->groupBy(function($item) {
@@ -157,7 +160,10 @@
                             </div>
                         @endforeach
                     @endforeach
-                @elseif($user->user_type === 'Customer')
+               
+                   
+                   
+                    @elseif($user->user_type === 'Customer')
                     <div class="title-wrapper">
                         <h2 class="title">Your Receipts</h2>  
                         <button id="openModalBtn">Submit a Receipt</button>
@@ -199,7 +205,10 @@
                             </tbody>
                         </table>
                     </div>
-                @endif
+               
+                    @endif
+            @else
+                <p>No receipts found.</p>
             @endisset
 
             @if(session('success'))
@@ -221,7 +230,7 @@
     </div>
 
 <script src="{{ asset('scripts/open-modal.js') }}"></script>
-
+<script></script>
 
 </body>
 </html>

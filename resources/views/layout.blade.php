@@ -9,6 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Favicon: ICO for best compatibility, SVG for modern browsers -->
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
 
 
@@ -37,7 +40,16 @@
     <div class="sideAccess">
         <button class="userProfile">
             <div class="imgFrame"> <img src="{{ asset('images/' . auth()->user()->image) }}" alt="Customer Image"></div>
-            <div class="nameFrame"><p class="userName">{{ auth()->user()->store_name }}</p><p class="userTitle">{{ auth()->user()->user_type }}</p> </div>
+            <div class="nameFrame">
+                @if(auth()->user()->user_type === 'Admin')
+                <p class="userName">{{ auth()->user()->store_name }}</p>
+                @elseif(auth()->user()->user_type === 'Customer')
+                <p class="userName">{{ auth()->user()->store_name }}</p>
+                @elseif(auth()->user()->user_type === 'Staff')
+                <p class="userName">{{ auth()->user()->username }}</p>
+                @endif
+                <p class="userTitle">{{ auth()->user()->user_type }}</p> 
+            </div>
         </button>
         <div class="searchFrame">
             <div class="searchCon">
@@ -52,26 +64,23 @@
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
             </button>
-            <button class="buttonDiv">
+            <a class="buttonDiv" href="{{ route('dashboard') }}">
                 <span class="material-symbols-outlined">dashboard</span>
                 <p>Dashboard</p>
-            </button>
-            <button class="buttonDiv">
-                <span class="material-symbols-outlined">confirmation_number</span>
-                <p>Tickets</p>
-            </button>
-            <button class="buttonDiv">
-                <span class="material-symbols-outlined">dynamic_feed</span>
-                <p>Feed</p>
-            </button>     
+            </a>
+            <a class="buttonDiv" href="{{ route('receipts') }}">
+                <span class="material-symbols-outlined">receipt</span>
+                <p>Receipts</p>
+            </a>
+
             <a class="buttonDiv" href="{{ route('staffs') }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Staffs</p>
             </a>
-            <button class="buttonDiv">
+            <a class="buttonDiv" href="{{ route('customers') }}">
                 <span class="material-symbols-outlined">groups</span>
                 <p>Customers</p>
-            </button>
+            </a>
             <button class="buttonDiv">
                 <span class="material-symbols-outlined">assignment</span>
                 <p>Reports</p>
@@ -83,11 +92,11 @@
                                  {{-- STAFF --}}
 
             @elseif(auth()->user()->user_type === 'Staff')
-            <button class="buttonDiv">
+            <a class="buttonDiv" href="{{ route('profile') }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
-            </button>
-                        <a class="buttonDiv" href="{{ route('receipts') }}">
+            </a>
+            <a class="buttonDiv" href="{{ route('receipts') }}">
                 <span class="material-symbols-outlined">receipt</span>
                 <p>Receipts</p>
             </a>
@@ -95,6 +104,10 @@
                 <span class="material-symbols-outlined">confirmation_number</span>
                 <p>Tickets</p>
             </button>
+            <a class="buttonDiv" href="{{ route('staffs') }}">
+                <span class="material-symbols-outlined">person</span>
+                <p>Staffs</p>
+            </a>
             <button class="buttonDiv">
                 <span class="material-symbols-outlined">dynamic_feed</span>
                 <p>Feed</p>
