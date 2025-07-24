@@ -100,18 +100,18 @@
                 <span class="material-symbols-outlined">receipt</span>
                 <p>Receipts</p>
             </a>
-            <button class="buttonDiv">
+            {{-- <button class="buttonDiv">
                 <span class="material-symbols-outlined">confirmation_number</span>
                 <p>Tickets</p>
-            </button>
+            </button> --}}
             <a class="buttonDiv" href="{{ route('staffs') }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Staffs</p>
             </a>
-            <button class="buttonDiv">
+            {{-- <button class="buttonDiv">
                 <span class="material-symbols-outlined">dynamic_feed</span>
                 <p>Feed</p>
-            </button>
+            </button> --}}
             <a class="buttonDiv" href="{{ route('customers') }}">
                 <span class="material-symbols-outlined">groups</span>
                 <p>Customers</p>
@@ -137,19 +137,19 @@
                 <p>Tickets Sent</p>
             </a>
 
-            <button class="buttonDiv">
+            {{-- <button class="buttonDiv">
                 <span class="material-symbols-outlined">dynamic_feed</span>
                 <p>Feed</p>
-            </button>
-
+            </button> --}}
+{{-- 
             <button class="buttonDiv">
                 <span class="material-symbols-outlined">assignment</span>
                 <p>Filed Reports</p>
-            </button>
-            <button class="buttonDiv">
+            </button> --}}
+            <a class="buttonDiv">
                 <span class="material-symbols-outlined">help</span>
                 <p>Help</p>
-            </button>
+            </a>
 
 
             @endif

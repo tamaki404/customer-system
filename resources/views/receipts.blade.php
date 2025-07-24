@@ -99,12 +99,13 @@
     <div class="receipt-wrapper">
         <div class="wrapper-title">
             <h2 class="title">Receipts</h2>
-            <form action="/date-search" class="date-search">
+            <form action="/date-search" class="date-search" method="GET">
                 <p>Date picker</p>
-                <input type="month" class="search-date" name="search_date" placeholder="Search by date">
+                <input type="month" class="search-date" name="search_date" placeholder="Search by date" value="{{ isset($month) ? $month : now()->format('Y-m') }}" onchange="this.form.submit()">
             </form>
         </div>
         <div class="receipt-container">
+
 
             @isset($receipts)
                 @if(auth()->user()->user_type === 'Staff')
@@ -114,101 +115,103 @@
                             return $item->created_at->format('Y-F');
                         });
                     @endphp
-                    @foreach($grouped as $monthYear => $monthReceipts)
-                        @php
-                            $monthName = \Carbon\Carbon::parse($monthReceipts->first()->created_at)->format('F Y');
-                            $days = $monthReceipts->groupBy(function($item) {
-                                return $item->created_at->format('F j, Y');
-                            });
-                        @endphp
-                        <h1 class="month-title" style="font-size: 1.3rem; font-weight: bold; text-align: center; color:#f59c00;">{{ $monthName }}</h1>
-                        @foreach($days as $day => $dayReceipts)
-                            <h2 class="day-title" style="margin:1.5rem 0 0.5rem 0; color:#333; font-size:1rem;  background-color: #f9f9f9; padding: 8px; align-items: center;">{{ $day }}</h2>
-                            <div class="table-wrapper">
-                                <table class="receipt-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Receipt #</th>
-                                            <th>Customer</th>
-                                            <th>Store</th>
-                                            <th>Amount</th>
-                                            <th>Purchase date</th>
-                                            <th>Status</th>
-                                            <th>Image</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($dayReceipts as $receipt)
-                                            <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
-                                                <td>{{ $receipt->receipt_number }}</td>
-                                                <td>{{ $receipt->customer->username ?? 'N/A' }}</td>
-                                                <td>{{ $receipt->store_name }}</td>
-                                                <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                                <td>{{ $receipt->purchase_date}}</td>
-                                                <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
-                                                <td>
-                                                    @if($receipt->receipt_image)
-                                                        <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
-                                                    @else
-                                                        N/A
-                                                    @endif
-                                                </td>
+                    @if($receipts->isEmpty())
+                        <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts for this month.</div>
+                    @else
+                        @foreach($grouped as $monthYear => $monthReceipts)
+                            @php
+                                $monthName = \Carbon\Carbon::parse($monthReceipts->first()->created_at)->format('F Y');
+                                $days = $monthReceipts->groupBy(function($item) {
+                                    return $item->created_at->format('F j, Y');
+                                });
+                            @endphp
+                            <h1 class="month-title" style="font-size: 1.3rem; font-weight: bold; text-align: center; color:#f59c00;">{{ $monthName }}</h1>
+                            @foreach($days as $day => $dayReceipts)
+                                <h2 class="day-title" style="margin:1.5rem 0 0.5rem 0; color:#333; font-size:1rem;  background-color: #f9f9f9; padding: 8px; align-items: center;">{{ $day }}</h2>
+                                <div class="table-wrapper">
+                                    <table class="receipt-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Receipt #</th>
+                                                <th>Customer</th>
+                                                <th>Store</th>
+                                                <th>Amount</th>
+                                                <th>Purchase date</th>
+                                                <th>Status</th>
+                                                <th>Image</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($dayReceipts as $receipt)
+                                                <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
+                                                    <td>{{ $receipt->receipt_number }}</td>
+                                                    <td>{{ $receipt->customer->username ?? 'N/A' }}</td>
+                                                    <td>{{ $receipt->store_name }}</td>
+                                                    <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                                    <td>{{ $receipt->purchase_date}}</td>
+                                                    <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
+                                                    <td>
+                                                        @if($receipt->receipt_image)
+                                                            <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
+                                                        @else
+                                                            N/A
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endforeach
                         @endforeach
-                    @endforeach
-               
-                   
-                   
-                    @elseif($user->user_type === 'Customer')
+                    @endif
+                @elseif($user->user_type === 'Customer')
                     <div class="title-wrapper">
                         <h2 class="title">Your Receipts</h2>  
                         <button id="openModalBtn">Submit a Receipt</button>
                     </div>
-                    <div class="table-wrapper">
-                        <table class="receipt-table">
-                            <thead>
-                                <tr>
-                                    <th>Receipt #</th>
-                                    <th>Store</th>
-                                    <th>Amount</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Image</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php
-                                    $userReceipts = $receipts->where('customer_id', $user->id);
-                                @endphp
-                                @forelse($userReceipts as $receipt)
+                    @php
+                        $userReceipts = $receipts->where('customer_id', $user->id);
+                    @endphp
+                    @if($userReceipts->isEmpty())
+                        <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts for this month.</div>
+                    @else
+                        <div class="table-wrapper">
+                            <table class="receipt-table">
+                                <thead>
                                     <tr>
-                                        <td>{{ $receipt->receipt_number }}</td>
-                                        <td>{{ $receipt->store_name }}</td>
-                                        <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                        <td>{{ $receipt->purchase_date }}</td>
-                                        <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
-                                        <td>
-                                            @if($receipt->receipt_image)
-                                                <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
-                                            @else
-                                                N/A
-                                            @endif
-                                        </td>
+                                        <th>Receipt #</th>
+                                        <th>Store</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Image</th>
                                     </tr>
-                                @empty
-                                    <tr><td colspan="6">No receipts found.</td></tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-               
+                                </thead>
+                                <tbody>
+                                    @foreach($userReceipts as $receipt)
+                                        <tr>
+                                            <td>{{ $receipt->receipt_number }}</td>
+                                            <td>{{ $receipt->store_name }}</td>
+                                            <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                            <td>{{ $receipt->purchase_date }}</td>
+                                            <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
+                                            <td>
+                                                @if($receipt->receipt_image)
+                                                    <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     @endif
+                @endif
             @else
-                <p>No receipts found.</p>
+                <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts for this month.</div>
             @endisset
 
             @if(session('success'))

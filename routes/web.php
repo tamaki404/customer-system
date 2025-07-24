@@ -61,4 +61,4 @@ Route::get('/customers', action: [ViewController::class, 'showCustomers'])->name
 Route::get('/customer_view/{customer_id}', action: [ViewController::class, 'viewCustomer'])->name('customer.view');
 Route::get('/receipt_image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
 
-// Route::get('/date-search', [ReceiptController::class, 'index'])->name('date.search');
+Route::get('/date-search', [\App\Http\Controllers\ReceiptController::class, 'dateSearch'])->name('date.search');

@@ -84,8 +84,28 @@ class ReceiptController extends Controller{
     }
 
 
-    public function date_search(Request $request){
-        
+    public function dateSearch(Request $request)
+    {
+        $user = auth()->user();
+        $query = Receipt::with('customer');
+
+        $month = $request->input('search_date');
+        if ($month) {
+            $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+            $end =Carbon::createFromFormat('Y-m', $month)->endOfMonth();
+            $query->whereBetween('purchase_date', [$start, $end]);
+        }
+
+        if ($user->user_type === 'Staff') {
+            $receipts = $query->get();
+        } else {
+            $receipts = $query->where('customer_id', $user->id)->get();
+        }
+        return view('receipts', [
+            'receipts' => $receipts,
+            'user' => $user,
+            'month' => $month
+        ]);
     }
 
 
