@@ -125,7 +125,7 @@
                                     return $item->created_at->format('F j, Y');
                                 });
                             @endphp
-                            <h1 class="month-title" style="font-size: 1.3rem; font-weight: bold; text-align: center; color:#f59c00;">{{ $monthName }}</h1>
+                            <h1 class="month-title" style="font-size: 1.3rem; font-weight: bold; text-align: center; color:#feee07;">{{ $monthName }}</h1>
                             @foreach($days as $day => $dayReceipts)
                                 <h2 class="day-title" style="margin:1.5rem 0 0.5rem 0; color:#333; font-size:1rem;  background-color: #f9f9f9; padding: 8px; align-items: center;">{{ $day }}</h2>
                                 <div class="table-wrapper">

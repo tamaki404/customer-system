@@ -47,12 +47,12 @@ body {
 }
 
 .date-search input{
-    background-color: #fff;
+    background-color: #fffbee;
 }
 
 .date-search button {
     padding: 8px 12px;
-    background-color: #f59c00;
+    background-color: #feee07;
     color: white;
     border: none;
     border-radius: 4px;
@@ -64,12 +64,12 @@ body {
 .date-search p{
     margin: 0;
     font-size: 14px;
-    color: #fff;
+    color: black;
 }
 
 .date-search input{
     padding: 8px 12px;
-    border: 1px solid #ccc;
+    border: 1px solid black;
     border-radius: 4px;
     font-size: 14px;
     margin-right: 10px;
@@ -84,13 +84,13 @@ body {
     justify-content: left;
     align-items: center;
     height: 7%;
-    background-color: #f59c00;
+    background-color: #feee07;
     justify-content: space-between;
 }
 
 .wrapper-title h2 {
-    color: white;
-    font-size: 1.7rem;
+    color: black;
+    font-size: 18px;
     font-weight: 600;
     margin: 0;
     margin-left: 50px;
@@ -106,7 +106,7 @@ body {
 .title {
     font-size: 1.8rem;
     font-weight: 600;
-    color: #f59c00;
+    color: #feee07;
     margin-bottom: 20px;
 }
 
@@ -279,7 +279,7 @@ body {
 }
 
 .title-wrapper button {
-    background-color: #f59c00;
+    background-color: #feee07;
     color: white;
     border: none;
     padding: 10px 20px;

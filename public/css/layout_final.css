@@ -1,0 +1,30 @@
+body {
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+
+.bgFrame{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: #cbc9c9;
+    justify-content: center;
+    align-items: center;
+}
+
+.bgFrame .lower{
+    width: 95%;
+    height: 80%;
+    margin: 0 auto;
+    display: flex;
+    background-color: #fff;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

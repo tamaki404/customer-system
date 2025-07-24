@@ -45,7 +45,13 @@
 </div>
     
 <div class="bodyFrame">
-    <h1>Staffs</h1>
+    <div class="titleFrame">
+        <h2>Staffs</h2>
+        @if(auth()->user()->user_type === 'Staff')
+        <button id="openModalBtn">Add Staff</button>
+        @endif
+    </div>
+    {{-- <h1>Staffs</h1>
         <button id="openModalBtn">Submit a Receipt</button>
 
     
@@ -73,7 +79,7 @@
                 </tr>
             @endforeach
         </table>
-    </div>
+    </div> --}}
 
 </div>
 

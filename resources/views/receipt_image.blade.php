@@ -10,6 +10,6 @@
     @else
         <p>Receipt image not found.</p>
     @endif
-    <a href="{{ url()->previous() }}" class="btn" style="display:inline-block;margin-top:24px;padding:10px 24px;background:#f59c00;color:#fff;border-radius:5px;text-decoration:none;">&larr; Return</a>
+    <a href="{{ url()->previous() }}" class="btn" style="display:inline-block;margin-top:24px;padding:10px 24px;background:#feee07;color:#fff;border-radius:5px;text-decoration:none;">&larr; Return</a>
 </div>
 @endsection

@@ -102,7 +102,7 @@ body {
 .btn-submit {
     margin-top: 50px;
     padding: 14px 0;
-    background: #f59c00;
+    background: #feee07;
     color: #fff;
     font-size: 0.9rem;
     font-weight: 600;
@@ -142,7 +142,7 @@ body {
 }
 .profile-info h2 {
     font-size: 1.4rem;
-    color: #f59c00;
+    color: #feee07;
 }
 
 .profile-info p {
@@ -153,7 +153,7 @@ body {
 .updatePassword {
     display: inline-block;
     margin-top: 20px;
-    color: #f59c00;
+    color: #feee07;
     text-decoration: none;
     font-weight: 600;
 }

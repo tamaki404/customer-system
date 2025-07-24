@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout_final.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,29 +15,17 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
 
-
-
-    <title>Rizal Poultry</title>
+    <title>Sunny&Scrambles</title>
 </head>
 <body>
 
 
 @auth
-<!-- <h1>Welcome, {{ auth()->user()->username }}!</h1>
 
 
-<form action="/logout-user" method="post">
-    @csrf
-    <button>logout</button>
-</form>
-<button>Manage staffs</button>
-<button>Customers</button>
-<button>Receipts</button>
-<button>Profile</button>
-<button>Reports</button>
-<button>Help</button> -->
 
-<div class="mainFrame">
+
+ <div class="mainFrame">
     <div class="sideAccess">
         <button class="userProfile">
             <div class="imgFrame"> <img src="{{ asset('images/' . auth()->user()->image) }}" alt="Customer Image"></div>
@@ -89,7 +78,6 @@
 
 
                   
-                                 {{-- STAFF --}}
 
             @elseif(auth()->user()->user_type === 'Staff')
             <a class="buttonDiv" href="{{ route('profile') }}">
@@ -100,18 +88,12 @@
                 <span class="material-symbols-outlined">receipt</span>
                 <p>Receipts</p>
             </a>
-            {{-- <button class="buttonDiv">
-                <span class="material-symbols-outlined">confirmation_number</span>
-                <p>Tickets</p>
-            </button> --}}
+   
             <a class="buttonDiv" href="{{ route('staffs') }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Staffs</p>
             </a>
-            {{-- <button class="buttonDiv">
-                <span class="material-symbols-outlined">dynamic_feed</span>
-                <p>Feed</p>
-            </button> --}}
+
             <a class="buttonDiv" href="{{ route('customers') }}">
                 <span class="material-symbols-outlined">groups</span>
                 <p>Customers</p>
@@ -137,15 +119,7 @@
                 <p>Tickets Sent</p>
             </a>
 
-            {{-- <button class="buttonDiv">
-                <span class="material-symbols-outlined">dynamic_feed</span>
-                <p>Feed</p>
-            </button> --}}
-{{-- 
-            <button class="buttonDiv">
-                <span class="material-symbols-outlined">assignment</span>
-                <p>Filed Reports</p>
-            </button> --}}
+  
             <a class="buttonDiv">
                 <span class="material-symbols-outlined">help</span>
                 <p>Help</p>
@@ -158,15 +132,15 @@
 
         @if(auth()->user()->user_type === 'Customer')
 
-        <div class="deskFrame">
-            <p>INQUIRIES</p>
-            <p>For any inquiries, please contact us at rplai_riza@gmail.com or call us at 09123456789</p>
-        </div>
    
         @endif
 
 
 
+        <div class="deskFrame">
+            <p class="inquiry">INQUIRIES</p>
+            <p>For any inquiries, please contact us at rplai_riza@gmail.com or call us at 09123456789</p>
+        </div>
         <div class="logoutFrame">
             <form action="/logout-user" method="post">
                 @csrf
@@ -176,7 +150,7 @@
 
         <div class="ownFrame">
             <p>OWNED BY</p>
-            <img src="{{ asset('assets/rplai_logo-wname.png') }}" alt="Owner Image" width="100">
+            <img src="{{ asset('assets/sunnyLogo.png') }}" alt="Owner Image" width="100" class="ownerImage">
         </div>
     </div>
     <div class="showScreen">
@@ -186,6 +160,9 @@
     </div>
 
 </div>
+
+
+
 
 
 @else

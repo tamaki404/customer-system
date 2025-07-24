@@ -31,7 +31,7 @@
   max-width: 480px;
   position: relative;
   animation: modalFadeIn 0.3s;
-  border-top: 8px solid #f59c00;
+  border-top: 8px solid #feee07;
 }
 
 @keyframes modalFadeIn {
@@ -44,7 +44,7 @@
   right: 18px;
   top: 14px;
   font-size: 2rem;
-  color: #f59c00;
+  color: #feee07;
   background: none;
   border: none;
   cursor: pointer;
@@ -82,7 +82,7 @@
   margin-top: 1.5rem;
   width: 100%;
   padding: 0.7rem 0;
-  background: #f59c00;
+  background: #feee07;
   color: #fff;
   border: none;
   border-radius: 6px;
