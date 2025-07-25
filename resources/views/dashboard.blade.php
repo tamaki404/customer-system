@@ -75,8 +75,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const storeLabels = @json(collect($topStores ?? [])->pluck('name'));
-    const storeSales = @json(collect($topStores ?? [])->pluck('sales'));
+    const topStores = @json($topStores ?? []);
+    // Shorten label with ellipsis if over 15 chars, but keep full name for tooltip
+    const storeLabels = topStores.map(s => s.name.length > 15 ? s.name.slice(0, 15) + '…' : s.name);
+    const storeSales = topStores.map(s => s.sales);
+    const fullStoreNames = topStores.map(s => s.name);
     const ctx = document.getElementById('topStoresChart');
     if (ctx) {
         new Chart(ctx, {
@@ -95,7 +98,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 responsive: true,
                 plugins: {
                     legend: { display: false },
-                    title: { display: true, text: 'Top Stores by Sales' }
+                    title: { display: true, text: 'Top Stores by Sales' },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                // Show full store name in tooltip
+                                const idx = context[0].dataIndex;
+                                return fullStoreNames[idx];
+                            }
+                        }
+                    }
                 },
                 scales: {
                     y: { beginAtZero: true }

@@ -106,7 +106,7 @@ public function showDashboard()
             ];
         })
         ->sortByDesc('sales')
-        ->take(10)
+        ->take(5)
         ->values();
 
     return view('dashboard', compact('pendingWeekCount', 'pendingDayCount', 'activeUsers', 'pendingJoins', 'monthlyTotal', 'totalReceipts', 'topStores'));
