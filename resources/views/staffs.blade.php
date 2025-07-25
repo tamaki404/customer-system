@@ -86,7 +86,7 @@
 <div id="myModal" class="modal">
   <div class="modal-content">
     <span class="close-btn">&times;</span>
-     @if(auth()->user()->user_type === 'Staff')
+     @if(auth()->user()->user_type === 'Admin')
       
         <form action="/add-staff" class="addStaff"  method="post" enctype="multipart/form-data">
             @csrf
@@ -114,7 +114,7 @@
             <input type="text" name="search" placeholder="Search by ID, Name, or User Type" value="{{ request('search') }}" style="padding:8px 12px; border-radius:4px; border:1px solid #ccc; width:260px;">
             <button type="submit" style="background:#1976d2;color:#fff;border:none;padding:8px 16px;border-radius:4px;font-weight:600;cursor:pointer;">Search</button>
         </form>
-        @if(auth()->user()->user_type === 'Staff')
+        @if(auth()->user()->user_type === 'Admin')
         <button id="openModalBtn">Add Staff</button>
         @endif
     </div>
@@ -132,7 +132,7 @@
             </thead>
             <tbody>
                 @foreach ($users as $user)
-                <tr>
+                <tr accesskey="`{{ $user->id }}`" onclick="window.location='{{ url('/staff_view/' . $user->id) }}'">
                     <td>{{ $user->id }}</td>
                     <td>
                         <img src="{{ asset('images/' . $user->image) }}" alt="Customer Image" style="max-width:50px;max-height:50px;border-radius:6px;object-fit:cover;border:1px solid #ccc;">

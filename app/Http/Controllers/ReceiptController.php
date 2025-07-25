@@ -122,7 +122,9 @@ class ReceiptController extends Controller{
                 $q->where('receipt_number', 'like', "%$search%")
                   ->orWhere('store_name', 'like', "%$search%")
                   ->orWhere('total_amount', 'like', "%$search%")
-                  ->orWhere('purchase_date', 'like', "%$search%");
+                  ->orWhere('purchase_date', 'like', "%$search%")
+                  ->orWhere('status', 'like', "%$search%");
+
             });
         }
 

@@ -54,4 +54,19 @@ class ViewController extends Controller
         $user = auth()->user();
         return view('staffs', compact('user'));
     }
+    public function acceptCustomer($customer_id)
+    {
+        $customer = User::findOrFail($customer_id);
+        $customer->acc_status = 'accepted';
+        $customer->save();
+        return redirect()->route('customer.view', $customer_id)->with('success', 'Customer accepted successfully!');
+    }
+
+    public function suspendCustomer($customer_id)
+    {
+        $customer = User::findOrFail($customer_id);
+        $customer->acc_status = 'suspended';
+        $customer->save();
+        return redirect()->route('customer.view', $customer_id)->with('success', 'Customer suspended successfully!');
+    }
 }

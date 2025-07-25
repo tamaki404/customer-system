@@ -74,6 +74,17 @@
 </head>
 <body>
     <div class="customerFrame" style="max-width:900px;margin:40px auto;padding:30px;background:#fff;border-radius:10px;box-shadow:0 2px 12px #0001;">
+
+        <div style="margin-bottom: 18px;">
+            <form action="{{ url('/customer/accept/' . $customer->id) }}" method="POST" style="display:inline-block;margin-right:10px;">
+                @csrf
+                <button type="submit" style="background:#1976d2;color:#fff;padding:8px 22px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Accept</button>
+            </form>
+            <form action="{{ url('/customer/suspend/' . $customer->id) }}" method="POST" style="display:inline-block;">
+                @csrf
+                <button type="submit" style="background:#d32f2f;color:#fff;padding:8px 22px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Suspend</button>
+            </form>
+        </div>
         
         <h2 style="margin-bottom:24px;">Customer Details</h2>
 

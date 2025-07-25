@@ -159,6 +159,7 @@
                                                 <th>Amount</th>
                                                 <th>Purchase date</th>
                                                 <th>Status</th>
+                                                <th>Verified by</th>
                                                 <th>Image</th>
                                             </tr>
                                         </thead>
@@ -170,6 +171,7 @@
                                                     <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
                                                     <td>{{ $receipt->purchase_date}}</td>
                                                     <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
+                                                    <td>{{ $receipt->verified_by }}</td>
                                                     <td>
                                                         @if($receipt->receipt_image)
                                                             <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
@@ -204,6 +206,7 @@
                                         <th>Amount</th>
                                         <th>Date</th>
                                         <th>Status</th>
+                                        <th>Verified by</th>
                                         <th>Image</th>
                                     </tr>
                                 </thead>
@@ -214,6 +217,7 @@
                                             <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
                                             <td>{{ $receipt->purchase_date }}</td>
                                             <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
+                                            <td>{{ $receipt->verified_by }}</td>
                                             <td>
                                                 @if($receipt->receipt_image)
                                                     <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">

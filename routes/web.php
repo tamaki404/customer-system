@@ -1,4 +1,5 @@
 
+
 <?php
 
 use App\Http\Controllers\TicketController;
@@ -62,8 +63,12 @@ Route::get('/customers', action: [ViewController::class, 'showCustomers'])->name
 Route::get('/customer_view/{customer_id}', action: [ViewController::class, 'viewCustomer'])->name('customer.view');
 Route::get('/receipt_image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
 
-Route::get('/date-search', [\App\Http\Controllers\ReceiptController::class, 'dateSearch'])->name('date.search');
+Route::get('/date-search', [ReceiptController::class, 'dateSearch'])->name('date.search');
 
 // Receipt verification and cancellation
-Route::post('/receipts/verify/{receipt_id}', [\App\Http\Controllers\ReceiptController::class, 'verifyReceipt'])->name('receipts.verify');
-Route::post('/receipts/cancel/{receipt_id}', [\App\Http\Controllers\ReceiptController::class, 'cancelReceipt'])->name('receipts.cancel');
+Route::post('/receipts/verify/{receipt_id}', [ReceiptController::class, 'verifyReceipt'])->name('receipts.verify');
+Route::post('/receipts/cancel/{receipt_id}', [ReceiptController::class, 'cancelReceipt'])->name('receipts.cancel');
+
+// Customer accept/suspend actions
+Route::post('/customer/accept/{customer_id}', [ViewController::class, 'acceptCustomer'])->name('customer.accept');
+Route::post('/customer/suspend/{customer_id}', [ViewController::class, 'suspendCustomer'])->name('customer.suspend');
