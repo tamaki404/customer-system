@@ -4,6 +4,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        .customerFrame {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px #0001;
+        }
+        .customerFrame h2 {
+            color: #1976d2;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+        .customerFrame p {
+            font-size: 1.1rem;
+            color: #333;
+            margin: 8px 0;
+        }
+        .customerFrame hr {
+            margin: 32px 0;
+            border: none;
+            border-top: 1.5px solid #eee;
+        }
+        .customerFrame h3 {
+            color: #ffde59;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .customerFrame table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .customerFrame th, .customerFrame td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
+            font-size: 1rem;
+            color: #333;
+        }
+        .customerFrame th {
+            background: #ffde59;
+            color: #333;
+            font-weight: 600;
+        }
+        .customerFrame tr:hover {
+            background: #e3f2fd;
+            cursor: pointer;
+        }
+        .no-receipts {
+            color: #888;
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.1rem;
+        }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -24,30 +86,29 @@
         <h3>Receipts</h3>
         @if(isset($receipts) && count($receipts) > 0)
             <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;margin-top:16px;">
-                <thead>
-                    <tr style="background:#f7f7fa;">
-                        <th style="padding:8px;text-align:left;">Receipt #</th>
-                        <th style="padding:8px;text-align:left;">Amount</th>
-                        <th style="padding:8px;text-align:left;">Date</th>
-                        <th style="padding:8px;text-align:left;">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($receipts as $receipt)
-                        <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
-                            <td style="padding:8px;">{{ $receipt->receipt_number }}</td>
-                            <td style="padding:8px;">₱{{ number_format($receipt->total_amount, 2) }}</td>
-                            <td style="padding:8px;">{{ $receipt->purchase_date }}</td>
-                            <td style="padding:8px;">{{ $receipt->status }}</td>
-                           
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Receipt #</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach($receipts as $receipt)
+                        <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
+                            <td>{{ $receipt->receipt_number }}</td>
+                            <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                            <td>{{ $receipt->purchase_date }}</td>
+                            <td>{{ $receipt->status }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @else
-            <p style="color:#888;">No receipts found for this customer.</p>
+            <div class="no-receipts">No receipts found for this customer.</div>
         @endif
 
 

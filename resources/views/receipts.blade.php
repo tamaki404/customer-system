@@ -191,13 +191,13 @@
                         <button id="openModalBtn">Submit a Receipt</button>
                     </div>
                     @php
-                        $userReceipts = $receipts->where('customer_id', $user->id);
+                        $userReceipts = $receipts->where('customer_id', $user->id)->sortByDesc('created_at');
                     @endphp
                     @if($userReceipts->isEmpty())
                         <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts for this month.</div>
                     @else
                         <div class="table-wrapper">
-                                    <table class="receipt-table">
+                            <table class="receipt-table">
                                 <thead>
                                     <tr>
                                         <th>Receipt #</th>

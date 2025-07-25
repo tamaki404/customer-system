@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Http\Controllers\TicketController;
@@ -62,3 +63,7 @@ Route::get('/customer_view/{customer_id}', action: [ViewController::class, 'view
 Route::get('/receipt_image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
 
 Route::get('/date-search', [\App\Http\Controllers\ReceiptController::class, 'dateSearch'])->name('date.search');
+
+// Receipt verification and cancellation
+Route::post('/receipts/verify/{receipt_id}', [\App\Http\Controllers\ReceiptController::class, 'verifyReceipt'])->name('receipts.verify');
+Route::post('/receipts/cancel/{receipt_id}', [\App\Http\Controllers\ReceiptController::class, 'cancelReceipt'])->name('receipts.cancel');

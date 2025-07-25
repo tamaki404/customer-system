@@ -8,6 +8,25 @@ use Carbon\Carbon;
 
 
 class ReceiptController extends Controller{
+    public function verifyReceipt($receipt_id)
+    {
+        $receipt = \App\Models\Receipt::findOrFail($receipt_id);
+        $receipt->status = 'Verified';
+        $receipt->verified_by = auth()->user()->username;
+        $receipt->verified_at = now();
+        $receipt->save();
+        return redirect()->route('receipts.view', $receipt_id)->with('success', 'Receipt verified successfully!');
+    }
+
+    public function cancelReceipt($receipt_id)
+    {
+        $receipt = \App\Models\Receipt::findOrFail($receipt_id);
+        $receipt->status = 'Cancelled';
+        $receipt->verified_by = auth()->user()->username;
+        $receipt->verified_at = now();
+        $receipt->save();
+        return redirect()->route('receipts.view', $receipt_id)->with('success', 'Receipt cancelled successfully!');
+    }
 
 
 

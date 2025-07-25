@@ -15,7 +15,18 @@ class ViewController extends Controller
     public function showStaffs()
     {
         $user = auth()->user();
-        $users = User::whereIn('user_type', ['admin', 'staff'])->get();
+        $query = User::query();
+        $query->whereIn('user_type', ['admin', 'staff']);
+
+        $search = request('search');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'like', "%$search%")
+                  ->orWhere('username', 'like', "%$search%")
+                  ->orWhere('user_type', 'like', "%$search%");
+            });
+        }
+        $users = $query->get();
         return view('staffs', compact('users', 'user'));
     }
 

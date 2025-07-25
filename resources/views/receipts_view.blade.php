@@ -38,6 +38,15 @@
                 </td>
             </tr>
         </table>
+
+        <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;margin-right:10px;">
+            @csrf
+            <button type="submit" style="background:#1976d2;color:#fff;padding:10px 24px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Verify</button>
+        </form>
+        <form action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
+            @csrf
+            <button type="submit" style="background:#d32f2f;color:#fff;padding:10px 24px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Cancelled</button>
+        </form>
         <a href="{{ url('/receipts') }}" style="display:inline-block;margin-top:20px;">&larr; Back to Receipts</a>
     </div>
 </body>
