@@ -78,7 +78,7 @@ public function showDashboard()
 {
     // Recent Activities: Receipts verified today
     $today = Carbon::today();
-    $verifiedReceiptsToday = \App\Models\Receipt::whereNotNull('verified_by')
+    $verifiedReceiptsToday = Receipt::whereNotNull('verified_by')
         ->whereDate('verified_at', $today)
         ->orderByDesc('verified_at')
         ->limit(5)
@@ -116,7 +116,31 @@ public function showDashboard()
         ->take(5)
         ->values();
 
-    return view('dashboard', compact('pendingWeekCount', 'pendingDayCount', 'activeUsers', 'pendingJoins', 'monthlyTotal', 'totalReceipts', 'topStores', 'verifiedReceiptsToday'));
+      $hour = now()->format('H');
+
+    if ($hour >= 5 && $hour < 12) {
+        $greeting = 'Good morning';
+    } elseif ($hour >= 12 && $hour < 17) {
+        $greeting = 'Good afternoon';
+    } elseif ($hour >= 17 && $hour < 21) {
+        $greeting = 'Good evening';
+    } else {
+        $greeting = 'Good night';
+    }
+
+
+   return view('dashboard', compact(
+    'pendingWeekCount',
+    'pendingDayCount',
+    'activeUsers',
+    'pendingJoins',
+    'monthlyTotal',
+    'totalReceipts',
+    'topStores',
+    'verifiedReceiptsToday',
+    'greeting'
+));
+
 }
 
 }

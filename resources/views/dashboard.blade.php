@@ -14,7 +14,7 @@
 
 <div class="dashBody">
     <div class="dashGreet">
-        <h1>Goodmorning, {{ auth()->user()->username }} 👋</h1>
+       <h1>{{ $greeting }}, {{ auth()->user()->username }} 👋</h1>
         <h4>Here's your dashboard overview.</h4>
     </div>
     <div class="dashFrame" >
@@ -89,7 +89,7 @@
                     <a class="activityCard" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
                         <span style="font-weight: bold">{{ $activity->verified_by }} </span> 
                         <span> verified receipt </span> <span>{{ $activity->receipt_number }}</span>
-                        <span style="margin-left: auto; font-weight: bold;">{{ \Carbon\Carbon::parse($activity->verified_at)->timezone('Asia/Manila')->format('h:i A') }}</span>
+                        <span style="margin-left: auto; font-weight: bold;">{{ \Carbon\Carbon::parse($activity->verified_at)->format('h:i A') }}</span>
                     </a>
                 @endforeach
         @else
