@@ -116,7 +116,7 @@
         </form>
         @if(auth()->user()->user_type === 'Admin')
         <button id="openModalBtn">Add Staff</button>
-        @endifr
+        @endif
     </div>
     <div class="userTable">
         <table class="usersList">

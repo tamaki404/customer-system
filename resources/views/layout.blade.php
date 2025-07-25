@@ -14,7 +14,7 @@
 
     <!-- Favicon: ICO for best compatibility, SVG for modern browsers -->
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
-    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <link rel="icon" href="{{ asset('faviconSVG.svg') }}" type="image/svg+xml">
 
     <title>Sunny&Scrambles</title>
 </head>
@@ -159,9 +159,9 @@
             </form>
         </div>
 
-        <div class="ownFrame">
+        <div class="ownFrame" style="">
             <p>OWNED BY</p>
-            <img src="{{ asset('assets/sunnyLogo.png') }}" alt="Owner Image" width="100" class="ownerImage">
+            <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image" width="100" class="ownerImage">
         </div>
     </div>
     <div class="showScreen">
