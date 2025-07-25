@@ -89,11 +89,22 @@ class ReceiptController extends Controller{
         $user = auth()->user();
         $query = Receipt::with('customer');
 
-        $month = $request->input('search_date');
-        if ($month) {
-            $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
-            $end =Carbon::createFromFormat('Y-m', $month)->endOfMonth();
-            $query->whereBetween('purchase_date', [$start, $end]);
+        $from = $request->input('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $to = $request->input('to_date', now()->endOfMonth()->format('Y-m-d'));
+
+        if ($from && $to) {
+            $query->whereBetween('created_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()]);
+        }
+
+        // Search filter
+        $search = $request->input('search');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('receipt_number', 'like', "%$search%")
+                  ->orWhere('store_name', 'like', "%$search%")
+                  ->orWhere('total_amount', 'like', "%$search%")
+                  ->orWhere('purchase_date', 'like', "%$search%");
+            });
         }
 
         if ($user->user_type === 'Staff') {
@@ -104,7 +115,9 @@ class ReceiptController extends Controller{
         return view('receipts', [
             'receipts' => $receipts,
             'user' => $user,
-            'month' => $month
+            'from_date' => $from,
+            'to_date' => $to,
+            'search' => $search
         ]);
     }
 

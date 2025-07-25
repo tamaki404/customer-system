@@ -55,13 +55,13 @@ body{
 .titleFrame h2{
     font-size: 25px;
     font-weight: 600;
-    color: #feee07;
+    color: #ffde59;
 }
 
 .titleFrame button{
     width: 150px;
     height: 40px;
-    background-color: #feee07;
+    background-color: #ffde59;
     color: white;
     border: none;
     border-radius: 5px;

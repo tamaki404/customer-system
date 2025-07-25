@@ -26,7 +26,7 @@ body .mainFrame{
 .mainFrame .sideAccess{
     width: 16%;
     height: 100%;
-    background-color: #feee07;
+    background-color: #ffde59;
     display: flex;
     flex-direction: column;
     gap: 5px;

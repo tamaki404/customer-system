@@ -1,3 +1,13 @@
+<style>
+    .receipt-table th, .receipt-table td {
+        width: 120px;
+        max-width: 120px;
+        min-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
 
 
 @extends('layout')
@@ -22,7 +32,7 @@
 <div id="myModal" class="modal">
   <div class="modal-content">
     <span class="close-btn">&times;</span>
-     @if($user->user_type === 'Customer')
+     @if(auth()->user()->user_type === 'Customer')
         <div class="form-section">
             <h3 class="form-title">Submit New Receipt</h3>
             <p>Please upload your receipt below. Ensure all information is accurate before submission.</p>
@@ -98,13 +108,25 @@
 
     <div class="receipt-wrapper">
         <div class="wrapper-title">
+            <form action="/date-search" class="date-search" method="GET" style="margin-bottom: 10px;">
+                <input type="text" name="search" class="search-bar" placeholder="Search receipt #, customer, amount, or date" value="{{ request('search') }}" style="padding:8px 12px; width:260px; border-radius:4px; border:1px solid #ccc; margin-right:12px;">
+                <button type="submit" style="padding:8px 16px; border-radius:4px; background:#1976d2; color:#fff; border:none;">Search</button>
+            </form>
             <h2 class="title">Receipts</h2>
             <form action="/date-search" class="date-search" method="GET">
-                <p>Date picker</p>
-                <input type="month" class="search-date" name="search_date" placeholder="Search by date" value="{{ isset($month) ? $month : now()->format('Y-m') }}" onchange="this.form.submit()">
+                <span style="margin:0 8px;">From</span>
+                <input type="date" name="from_date" class="search-date" value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
+                <span style="margin:0 8px;">To</span>
+                <input type="date" name="to_date" class="search-date" value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
             </form>
         </div>
         <div class="receipt-container">
+
+            @if($receipts->count())
+                <div style="margin-bottom: 1rem; font-size: 1.1rem; color: #1976d2; font-weight: 600;">
+                    Total Amount for Selected Range: ₱{{ number_format($receipts->sum('total_amount'), 2) }}
+                </div>
+            @endif
 
 
             @isset($receipts)
@@ -125,7 +147,7 @@
                                     return $item->created_at->format('F j, Y');
                                 });
                             @endphp
-                            <h1 class="month-title" style="font-size: 1.3rem; font-weight: bold; text-align: center; color:#feee07;">{{ $monthName }}</h1>
+                            <h1 class="month-title" style="font-size: 1.3rem; font-weight: bold; text-align: center; color:#ffde59;">{{ $monthName }}</h1>
                             @foreach($days as $day => $dayReceipts)
                                 <h2 class="day-title" style="margin:1.5rem 0 0.5rem 0; color:#333; font-size:1rem;  background-color: #f9f9f9; padding: 8px; align-items: center;">{{ $day }}</h2>
                                 <div class="table-wrapper">
@@ -163,7 +185,7 @@
                             @endforeach
                         @endforeach
                     @endif
-                @elseif($user->user_type === 'Customer')
+                @elseif(auth()->user()->user_type === 'Customer')
                     <div class="title-wrapper">
                         <h2 class="title">Your Receipts</h2>  
                         <button id="openModalBtn">Submit a Receipt</button>
@@ -175,11 +197,10 @@
                         <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts for this month.</div>
                     @else
                         <div class="table-wrapper">
-                            <table class="receipt-table">
+                                    <table class="receipt-table">
                                 <thead>
                                     <tr>
                                         <th>Receipt #</th>
-                                        <th>Store</th>
                                         <th>Amount</th>
                                         <th>Date</th>
                                         <th>Status</th>
@@ -190,7 +211,6 @@
                                     @foreach($userReceipts as $receipt)
                                         <tr>
                                             <td>{{ $receipt->receipt_number }}</td>
-                                            <td>{{ $receipt->store_name }}</td>
                                             <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
                                             <td>{{ $receipt->purchase_date }}</td>
                                             <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
