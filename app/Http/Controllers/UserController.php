@@ -74,7 +74,7 @@ public function login(Request $request)
     auth()->login($user);
     $request->session()->regenerate();
 
-    return redirect('/receipts');
+    return redirect('/dashboard');
 }
 
 public function logout()

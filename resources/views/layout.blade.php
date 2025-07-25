@@ -49,13 +49,13 @@
         </div>
         <div class="sideMenu">
             @if(auth()->user()->user_type === 'Admin')
-            <button class="buttonDiv">
-                <span class="material-symbols-outlined">person</span>
-                <p>Profile</p>
-            </button>
             <a class="buttonDiv" href="{{ route('dashboard') }}">
                 <span class="material-symbols-outlined">dashboard</span>
                 <p>Dashboard</p>
+            </a>
+            <a href="{{ route('profile') }}" class="buttonDiv">
+                <span class="material-symbols-outlined">person</span>
+                <p>Profile</p>
             </a>
             <a class="buttonDiv" href="{{ route('receipts') }}">
                 <span class="material-symbols-outlined">receipt</span>
@@ -80,6 +80,10 @@
                   
 
             @elseif(auth()->user()->user_type === 'Staff')
+            <a class="buttonDiv" href="{{ route('dashboard') }}">
+                <span class="material-symbols-outlined">dashboard</span>
+                <p>Dashboard</p>
+            </a>
             <a class="buttonDiv" href="{{ route('profile') }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
@@ -104,7 +108,10 @@
 
 
 
-
+            <a class="buttonDiv" href="{{ route('dashboard') }}">
+                <span class="material-symbols-outlined">dashboard</span>
+                <p>Dashboard</p>
+            </a>
 
             <a class="buttonDiv" href="{{ route('profile') }}">
                 <span class="material-symbols-outlined">person</span>

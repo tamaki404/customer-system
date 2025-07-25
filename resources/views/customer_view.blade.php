@@ -92,6 +92,8 @@
         <p><strong>Username:</strong> {{ $customer->username }}</p>
         <p><strong>Store Name:</strong> {{ $customer->store_name}}</p>
         <p><strong>Account Status:</strong> {{ $customer->acc_status}}</p>
+        <p><strong>Joined:</strong> {{ $customer->created_at}}</p>
+
 
         <hr style="margin:32px 0;">
         <h3>Receipts</h3>
@@ -111,7 +113,7 @@
                         <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
                             <td>{{ $receipt->receipt_number }}</td>
                             <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                            <td>{{ $receipt->purchase_date }}</td>
+                            <td>{{ $receipt->created_at }}</td>
                             <td>{{ $receipt->status }}</td>
                         </tr>
                         @endforeach
