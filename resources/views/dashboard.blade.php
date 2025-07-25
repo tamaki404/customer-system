@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Dashboard</title>
 </head>
 <body>
@@ -31,7 +31,9 @@
 
     </div>
 
-    <h2>Projects you're working on</h2>
+    
+
+    {{-- <h2>Projects you're working on</h2>
     <div class="dashFrame">
         <div class="card">
             <p>Sales from accepted receipts</p>
@@ -55,16 +57,53 @@
             <a href="">View Customers</a>
         </div>
 
-    </div>
+    </div> --}}
 
     <h2>Recent Activities</h2>
+
+    <h2>Top Stores</h2>
+    <div class="dashFrame">
+        <canvas id="topStoresChart" height="100"></canvas>
+    </div>
+    <p>This week</p>
+    
+
+    {{-- <h2>Recent Activities</h2>
     <div class="actFrame">
 
-    </div>
-
-</div>
+</div> --}}
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const storeLabels = @json(collect($topStores ?? [])->pluck('name'));
+    const storeSales = @json(collect($topStores ?? [])->pluck('sales'));
+    const ctx = document.getElementById('topStoresChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: storeLabels,
+                datasets: [{
+                    label: 'Sales',
+                    data: storeSales,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Top Stores by Sales' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+});
 function formatPesoShort(amount) {
     const absAmount = Math.abs(amount);
     let formatted;

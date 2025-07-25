@@ -86,12 +86,30 @@ public function showDashboard()
     $activeUsers = User::where('last_seen_at', '>=', now()->subMinutes(15))->count();
     $pendingJoins = User::where('acc_status', 'pending')->count();
     $monthlyTotal = Receipt::whereMonth('created_at', now()->month)
-    ->whereYear('created_at', now()->year)
-    ->sum('total_amount');
+        ->whereYear('created_at', now()->year)
+        ->sum('total_amount');
     $totalReceipts = Receipt::where('created_at', '>=', now()->subDays(7))->count();
 
+    // Top Stores: get all customers, sum their total_amount from receipts IN THIS WEEK
+    $weekStart = Carbon::now()->startOfWeek();
+    $weekEnd = Carbon::now()->endOfWeek();
+    $topStores = User::where('user_type', 'Customer')
+        ->whereNotNull('store_name')
+        ->get()
+        ->map(function($user) use ($weekStart, $weekEnd) {
+            $total = Receipt::where('customer_id', $user->id)
+                ->whereBetween('created_at', [$weekStart, $weekEnd])
+                ->sum('total_amount');
+            return [
+                'name' => $user->store_name,
+                'sales' => (float) $total,
+            ];
+        })
+        ->sortByDesc('sales')
+        ->take(10)
+        ->values();
 
-    return view('dashboard', compact('pendingWeekCount', 'pendingDayCount', 'activeUsers', 'pendingJoins', 'monthlyTotal', 'totalReceipts'));
+    return view('dashboard', compact('pendingWeekCount', 'pendingDayCount', 'activeUsers', 'pendingJoins', 'monthlyTotal', 'totalReceipts', 'topStores'));
 }
 
 }
