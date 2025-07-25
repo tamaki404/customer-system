@@ -76,6 +76,13 @@ class ViewController extends Controller
 
 public function showDashboard()
 {
+    // Recent Activities: Receipts verified today
+    $today = Carbon::today();
+    $verifiedReceiptsToday = \App\Models\Receipt::whereNotNull('verified_by')
+        ->whereDate('verified_at', $today)
+        ->orderByDesc('verified_at')
+        ->limit(5)
+        ->get(['verified_by', 'receipt_number', 'verified_at']);
     $oneWeekAgo = Carbon::now()->subWeek();
 
     $pendingWeekCount = Receipt::where('status', 'Verified')
@@ -109,7 +116,7 @@ public function showDashboard()
         ->take(5)
         ->values();
 
-    return view('dashboard', compact('pendingWeekCount', 'pendingDayCount', 'activeUsers', 'pendingJoins', 'monthlyTotal', 'totalReceipts', 'topStores'));
+    return view('dashboard', compact('pendingWeekCount', 'pendingDayCount', 'activeUsers', 'pendingJoins', 'monthlyTotal', 'totalReceipts', 'topStores', 'verifiedReceiptsToday'));
 }
 
 }

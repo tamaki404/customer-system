@@ -18,27 +18,31 @@
         <h4>Here's your dashboard overview.</h4>
     </div>
     <div class="dashFrame" >
-        <a class="actCard" style="border-right: 1px solid rgb(216, 215, 215);">
+        <a class="actCard" href="{{ route('receipts') }}" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid rgb(216, 215, 215);">
             <p class="cardTit">Pending Receipts</p>
             <h1 id="pendingDayCount">{{$pendingDayCount}}</h1>
             <p class="dayP">On this day</p>
         </a>
-        <div class="actCard" style="border-right: 1px solid rgb(216, 215, 215);">
+        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
             <p class="cardTit">Accomplished Receipts</p>
             <h1 id="pendingWeekCount">{{$pendingWeekCount}}</h1>
             <p class="dayP"> Past 7 Days</p>
-        </div>        
-        <div class="actCard"  style="border-right: 1px solid rgb(216, 215, 215);">
+        </a>        
+        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
             <p class="cardTit">Weekly Receipt Count</p>
             <h1 id="totalReceipts">{{$totalReceipts}}</h1>
             <p class="dayP"> Past 7 Days</p>
-        </div>
-        <div class="actCard">
+        </a>
+        {{-- <a class="actCard" href="{{ route('receipts') }}" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border: 1px solid rgb(216, 215, 215);">
             <p class="cardTit">Received amount</p>
             <h1 id="monthlyTotal" style="color:green">{{ $monthlyTotal }}</h1>
             <p class="dayP">On this day </p>
-        </div>    
-
+        </a>     --}}
+        <a class="actCard" href="{{ route('customers') }}" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border: 1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Pending Joins</p>
+            <h1 id="pendingJoins" style="color:green">{{ $pendingJoins }}</h1>
+            {{-- <p class="dayP">On this day </p> --}}
+        </a>
     </div>
 
     
@@ -70,11 +74,28 @@
     </div> --}}
 
      <div class="graphFrame">
+
         <h2>Top Stores on this week</h2>
         <div class="dashFrame" style="position:relative; height:350px; min-height:200px;">
             <canvas id="topStoresChart" style="width:100%;height:100%;"></canvas>
         </div>
      </div>
+
+    <h2>Today's Verified Receipts</h2>
+    <div class="activities">
+
+        @if(isset($verifiedReceiptsToday) && count($verifiedReceiptsToday))
+                @foreach($verifiedReceiptsToday as $activity)
+                    <div class="activityCard">
+                        <span style="font-weight: bold">{{ $activity->verified_by }} </span> 
+                        <span> verified receipt </span> <span>{{ $activity->receipt_number }}</span>
+                        <span style="margin-left: auto; font-weight: bold;">{{ \Carbon\Carbon::parse($activity->verified_at)->timezone('Asia/Manila')->format('h:i A') }}</span>
+                    </div>
+                @endforeach
+        @else
+            <div style="color:#888;">No receipts verified today.</div>
+        @endif
+    </div>
 
     
 
@@ -128,6 +149,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalReceiptsEl = document.getElementById('totalReceipts');
     if (totalReceiptsEl) {
         totalReceiptsEl.textContent = formatCountShort(Number(totalReceiptsEl.textContent));
+    }
+    const pendingJoinsEl = document.getElementById('pendingJoins');
+    if (pendingJoinsEl) {
+        pendingJoinsEl.textContent = formatCountShort(Number(pendingJoinsEl.textContent));
     }
 
     const topStores = @json($topStores ?? []);
