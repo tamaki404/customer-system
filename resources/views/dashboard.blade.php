@@ -86,11 +86,11 @@
 
         @if(isset($verifiedReceiptsToday) && count($verifiedReceiptsToday))
                 @foreach($verifiedReceiptsToday as $activity)
-                    <div class="activityCard">
+                    <a class="activityCard" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
                         <span style="font-weight: bold">{{ $activity->verified_by }} </span> 
                         <span> verified receipt </span> <span>{{ $activity->receipt_number }}</span>
                         <span style="margin-left: auto; font-weight: bold;">{{ \Carbon\Carbon::parse($activity->verified_at)->timezone('Asia/Manila')->format('h:i A') }}</span>
-                    </div>
+                    </a>
                 @endforeach
         @else
             <div style="color:#888;">No receipts verified today.</div>
@@ -169,8 +169,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     label: 'Sales',
                     data: storeSales,
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'RGB(255, 222, 89)',
+                    borderColor: 'RGB(212, 183, 65)',
                     borderWidth: 1
                 }]
             },

@@ -82,7 +82,7 @@ public function showDashboard()
         ->whereDate('verified_at', $today)
         ->orderByDesc('verified_at')
         ->limit(5)
-        ->get(['verified_by', 'receipt_number', 'verified_at']);
+        ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at']);
     $oneWeekAgo = Carbon::now()->subWeek();
 
     $pendingWeekCount = Receipt::where('status', 'Verified')

@@ -91,6 +91,7 @@
 
 .actCard h1{
     margin: 0;
+    color: #ffde59;
 }
 
 
@@ -178,6 +179,8 @@
     border: 1px solid rgb(216, 215, 215);
     border-radius: 10px;
         background-color: #fefefe;
+    overflow: hidden;
+    overflow-y: auto;
 
 }
 
@@ -191,6 +194,8 @@
     border-radius: 10px;
     gap:6px;
     align-items: center;
+    text-decoration: none;
+    cursor: pointer;
 
 }
 
@@ -198,5 +203,9 @@
     font-size: 14px !important;
     color: #333;
     font-weight: normal;
+}
+.activityCard:hover{
+    background-color: #f9f9f9;
+
 }
 

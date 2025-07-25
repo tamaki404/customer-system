@@ -50,5 +50,5 @@
         <a href="{{ url('/receipts') }}" style="display:inline-block;margin-top:20px;">&larr; Back to Receipts</a>
     </div>
 </body>
-</html>
+</html>r
 @endsection

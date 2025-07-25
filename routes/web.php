@@ -77,4 +77,6 @@ Route::post('/customer/suspend/{customer_id}', [ViewController::class, 'suspendC
 // Sum data for dashboard
 Route::get('/dashboard', [ViewController::class, 'showDashboard'])->name('dashboard');
 
+Route::get('/receipt_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipt_view');
+
 
