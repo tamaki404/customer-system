@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Receipt;
+use Carbon\Carbon;
+
 
 class ViewController extends Controller
 {
@@ -39,7 +42,7 @@ class ViewController extends Controller
     {
         $customer = User::findOrFail($customer_id);
 
-        $receipts = \App\Models\Receipt::where('customer_id', $customer_id)->orderBy('created_at', 'desc')->get();
+        $receipts = Receipt::where('customer_id', $customer_id)->orderBy('created_at', 'desc')->get();
         return view('customer_view', compact('customer', 'receipts'));
     }
     public function dashboard()
@@ -69,4 +72,26 @@ class ViewController extends Controller
         $customer->save();
         return redirect()->route('customer.view', $customer_id)->with('success', 'Customer suspended successfully!');
     }
+
+
+public function showDashboard()
+{
+    $oneWeekAgo = Carbon::now()->subWeek();
+
+    $pendingWeekCount = Receipt::where('status', 'Verified')
+        ->where('created_at', '>=', $oneWeekAgo)
+        ->count();
+
+    $pendingDayCount = Receipt::where('status', 'Pending')->count();
+    $activeUsers = User::where('last_seen_at', '>=', now()->subMinutes(15))->count();
+    $pendingJoins = User::where('acc_status', 'pending')->count();
+    $monthlyTotal = Receipt::whereMonth('created_at', now()->month)
+    ->whereYear('created_at', now()->year)
+    ->sum('total_amount');
+    $totalReceipts = Receipt::where('created_at', '>=', now()->subDays(7))->count();
+
+
+    return view('dashboard', compact('pendingWeekCount', 'pendingDayCount', 'activeUsers', 'pendingJoins', 'monthlyTotal', 'totalReceipts'));
+}
+
 }

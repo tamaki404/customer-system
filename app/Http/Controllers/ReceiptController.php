@@ -10,7 +10,7 @@ use Carbon\Carbon;
 class ReceiptController extends Controller{
     public function verifyReceipt($receipt_id)
     {
-        $receipt = \App\Models\Receipt::findOrFail($receipt_id);
+        $receipt = Receipt::findOrFail($receipt_id);
         $receipt->status = 'Verified';
         $receipt->verified_by = auth()->user()->username;
         $receipt->verified_at = now();
@@ -20,7 +20,7 @@ class ReceiptController extends Controller{
 
     public function cancelReceipt($receipt_id)
     {
-        $receipt = \App\Models\Receipt::findOrFail($receipt_id);
+        $receipt = Receipt::findOrFail($receipt_id);
         $receipt->status = 'Cancelled';
         $receipt->verified_by = auth()->user()->username;
         $receipt->verified_at = now();
@@ -141,6 +141,7 @@ class ReceiptController extends Controller{
             'search' => $search
         ]);
     }
+
 
 
 }

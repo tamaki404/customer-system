@@ -15,7 +15,7 @@ body .mainFrame{
     flex-direction: row;
     width: 100%;
     height: 100%;
-    background-color: #fff;
+    background-color: #fefefe;
 
 }
 
@@ -24,9 +24,9 @@ body .mainFrame{
 
 
 .mainFrame .sideAccess{
-    width: 16%;
+    width: 15%;
     height: 100%;
-    background-color: #ffde59;
+    background-color: #fefefe;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -38,7 +38,7 @@ body .mainFrame{
 .sideAccess .userProfile{
     display: flex;
     flex-direction: row;
-    height: 55px;
+    height: 65px;
     width: 100%;
     overflow: hidden;
     margin-top: 20px;
@@ -47,7 +47,7 @@ body .mainFrame{
     border: none;
     justify-content: center;
     align-items: center;
-            cursor: default;
+    cursor: default;
 
 
 }
@@ -151,10 +151,23 @@ body .mainFrame{
 .sideAccess .sideMenu{
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 11px;
     width: 100%;
     height: auto;
+    margin-top: 15px;;
     background-color: transparent;
+}
+
+
+.buttonDiv.active {
+    background-color: transparent;
+    color: #ffde59;
+    border-left: #ffde59 5px solid;
+}
+.buttonDiv.active p,
+.buttonDiv.active span {
+    color: black;
+    font-weight: bold;
 }
 
 .sideMenu a{
@@ -165,20 +178,22 @@ body .mainFrame{
     display: flex;
     flex-direction: row;
     cursor: pointer;
-    gap: 10px;
+    gap: 15px;
     justify-content: start;
     align-items: center;
     text-decoration: none;
 
 }
-.sideMenu a:hover{
-    background-color: #eede05;
+
+.buttonDiv:hover p,
+.buttonDiv:hover span {
+    color: black; 
     font-weight: bold;
 }
 
 .buttonDiv span{
-    color: black;
-    font-size: 25px;
+    color: #b6b6b6;
+    font-size: 20px;
     margin-left: 10px;
      text-decoration: none;
     font-weight: bold;
@@ -186,8 +201,8 @@ body .mainFrame{
 }
 
 .buttonDiv p{
-    color: black;
-    font-size: 16px;
+    color: #b6b6b6;
+    font-size: 14px;
     margin: 0;
 }
 
@@ -237,15 +252,15 @@ form .logoutButton{
     width: 100%;   
     border: none;
     cursor: pointer;
-    background-color: #d4c604;   
+    background-color: #f1f1f1;   
     border-radius: 10px;
-    font-size: 14px; 
+    font-size: 13px; 
     font-weight: bold;
 
 }
 
 form .logoutButton:hover{
-    background-color: #ffffff;
+    background-color: #ebebeb;
     font-weight: bold;
 }
 

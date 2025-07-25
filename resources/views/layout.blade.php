@@ -6,7 +6,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout_final.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif !important; }</style>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -40,40 +41,43 @@
                 <p class="userTitle">{{ auth()->user()->user_type }}</p> 
             </div>
         </button>
-        <div class="searchFrame">
+        {{-- <div class="searchFrame">
             <div class="searchCon">
                 <span class="material-symbols-outlined">search</span>
                 <input type="text" placeholder="Search...">
             </div>
 
-        </div>
+        </div> --}}
         <div class="sideMenu">
+            @php
+                $currentRoute = Route::currentRouteName();
+            @endphp
             @if(auth()->user()->user_type === 'Admin')
-            <a class="buttonDiv" href="{{ route('dashboard') }}">
+            <a class="buttonDiv{{ $currentRoute == 'dashboard' ? ' active' : '' }}" href="{{ route('dashboard') }}">
                 <span class="material-symbols-outlined">dashboard</span>
                 <p>Dashboard</p>
             </a>
-            <a href="{{ route('profile') }}" class="buttonDiv">
+            <a href="{{ route('profile') }}" class="buttonDiv{{ $currentRoute == 'profile' ? ' active' : '' }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
             </a>
-            <a class="buttonDiv" href="{{ route('receipts') }}">
+            <a class="buttonDiv{{ $currentRoute == 'receipts' ? ' active' : '' }}" href="{{ route('receipts') }}">
                 <span class="material-symbols-outlined">receipt</span>
                 <p>Receipts</p>
             </a>
 
-            <a class="buttonDiv" href="{{ route('staffs') }}">
+            <a class="buttonDiv{{ $currentRoute == 'staffs' ? ' active' : '' }}" href="{{ route('staffs') }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Staffs</p>
             </a>
-            <a class="buttonDiv" href="{{ route('customers') }}">
+            <a class="buttonDiv{{ $currentRoute == 'customers' ? ' active' : '' }}" href="{{ route('customers') }}">
                 <span class="material-symbols-outlined">groups</span>
                 <p>Customers</p>
             </a>
-            <button class="buttonDiv">
+            {{-- <button class="buttonDiv">
                 <span class="material-symbols-outlined">assignment</span>
                 <p>Reports</p>
-            </button>
+            </button> --}}
 
 
 

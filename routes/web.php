@@ -72,3 +72,9 @@ Route::post('/receipts/cancel/{receipt_id}', [ReceiptController::class, 'cancelR
 // Customer accept/suspend actions
 Route::post('/customer/accept/{customer_id}', [ViewController::class, 'acceptCustomer'])->name('customer.accept');
 Route::post('/customer/suspend/{customer_id}', [ViewController::class, 'suspendCustomer'])->name('customer.suspend');
+
+
+// Sum data for dashboard
+Route::get('/dashboard', [ViewController::class, 'showDashboard'])->name('dashboard');
+
+
