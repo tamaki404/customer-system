@@ -32,32 +32,36 @@
                     @csrf
                         <div class="form-group">
                             <label>Name</label>
-                            <input type="text" name="username" value="Nicole Tumpag" disabled>
+                            <input type="text" name="username" value="{{auth()->user()->name}}" style=" width:300px;">
                         </div>             
                         <div class="form-group">
                             <label>Username</label>
-                            <input type="text" name="username" value="{{ auth()->user()->username }}" disabled>
+                            <input type="text" name="username" value="{{ auth()->user()->username }}" style=" width:200px;" disabled>
                         </div>
-                        <div class="form-group">
-                            <label>Company</label>
-                            <input type="text" name="company" value="{{ auth()->user()->store_name }}" disabled>
-                        </div>
+
                         <div class="form-group">
                             <label>Address</label>
-                            <input type="text" name="address" value="Rodriguez, Rizal">
+                            <input type="text" name="address"  value="{{auth()->user()->address}}" style=" width:400px;">
                         </div>
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" name="email" value="xeultu@gmail.com" disabled>
+                            <input type="email" name="email"  value="{{auth()->user()->email}}" disabled style=" width:240px;">
                         </div>
-                        <div class="form-group">
-                            <label>Phone Number</label>
-                            <input type="tel" name="number" value="+63912345678">
+                        <div class="formSection">
+                            <div class="form-group" style="width: auto;">
+                                <label>Phone Number</label>
+                                <input type="tel" name="number"  value="{{auth()->user()->mobile}}" style=" width:250px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Telephone</label>
+                                <input type="text" name="company" value="{{ auth()->user()->telephone }}" disabled  style=" width:250px;">
+                            </div>
                         </div>
+
                     <button class="btn-submit" style="font-style: 13px;" type="submit">Save Changes</button>
                 </form>
 
-                <a href="/update-password" class="updatePassword">Update Password</a>
+                <p class="updatePassword">To update password, use the forgot password on login</p>
             </div>
 
             @elseif(auth()->user()->user_type === 'Staff')
@@ -108,7 +112,7 @@
                 @csrf
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" name="username" value="Nicole Tumpag" style=" width:300px;">
+                        <input type="text" name="username" value="name" style=" width:300px;">
                     </div>             
                     <div class="form-group">
                         <label>Username</label>
@@ -137,7 +141,7 @@
                 <button class="editProfileBtn" type="submit">Save changes</button>
                 
             </form>
-            <a href="" class="updatePass">Update Password</a>
+                <p class="updatePassword">To update password, use the forgot password on login</p>
             
 
             </div>
