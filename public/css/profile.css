@@ -9,8 +9,10 @@ body {
 .profile-wrapper {
     display: flex;
     justify-content: center;
-    width: 100%;
-    height: 100vh;
+    width: 97%;
+    height: 97%;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 15px;
 }
 
 .profile-card {
@@ -36,7 +38,12 @@ body {
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #1976d2;
+    border: 3px solid #e4c64c;
+}
+
+.profile-title{
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .profile-name {
@@ -53,35 +60,39 @@ body {
 
 .profile-body {
     margin-top: 20px;
+    height: 70%;
 }
 
 .profile-form {
-    display: flex;
     flex-direction: column;
-    gap: 20px;
-}
-
-.form-row {
-    display: flex;
-    gap: 20px;
+    gap: 7px;
+    height: 80%;
+    width: 100%;
     flex-wrap: wrap;
 }
 
-.form-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+.form-row {
+    gap: 20px;
+    flex-wrap: nowrap;
+    width: auto;
 }
 
-.form-group.full {
-    flex: 100%;
+.form-group {
+    flex-direction: column;
+    width: 70%;
+    display: flex;
+    align-items: start;
+    margin-top: 7px;
+    gap: 2px;
 }
+
+
 
 .form-group label {
     font-size: 13px;
     font-weight: 600;
-    margin-bottom: 6px;
     color: #333;
+    align-items: center;
 }
 
 .form-group input {
@@ -90,6 +101,7 @@ body {
     border-radius: 8px;
     background-color: #f9f9f9;
     font-size: 13px;
+    width: 100%;
     transition: border-color 0.2s ease;
 }
 
@@ -104,7 +116,7 @@ body {
     padding: 14px 0;
     background: #ffde59;
     color: #fff;
-    font-size: 0.9rem;
+    font-size: 13px;
     font-weight: 600;
     border: none;
     border-radius: 8px;
@@ -120,10 +132,15 @@ body {
 
 .info-box {
     background: #f0f4f8;
-    border: 1px solid #ccc;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
+    height: 100%;
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    justify-content: start;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
 .btn-disabled {
@@ -142,7 +159,8 @@ body {
 }
 .profile-info h2 {
     font-size: 1.4rem;
-    color: #ffde59;
+    color: #e4c64c;
+    font-weight: bold
 }
 
 .profile-info p {
@@ -156,6 +174,37 @@ body {
     color: #ffde59;
     text-decoration: none;
     font-weight: 600;
+}
+
+.editProfileBtn{
+    background-color: #ffde59;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    width: 200px;
+    align-self: center;
+    justify-self: center;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 50px;
+}
+
+.editProfileBtn:hover{
+    background-color: #e4c64c;
+}
+
+.updatePass{
+    text-decoration: none;
+    font-size: 14px;
+    margin-top: 5px;
+    height: 50px;
+}
+.updatePass:hover{
+    
 }
 
 @media (max-width: 768px) {

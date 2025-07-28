@@ -6,6 +6,7 @@ use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use App\Http\Controllers\ViewController;
 use App\Http\Controllers\ReceiptController;
 
@@ -25,10 +26,7 @@ Route::get('/register-view', function () {
     return view('registration');
 });
 
-Route::get('/check-username', function (Request $request) {
-    $exists = DB::table('users')->where('username', $request->username)->exists();
-    return response()->json(['available' => !$exists]);
-});
+Route::get('/check-username', [UserController::class, 'checkUsername']);
 
 // views
 Route::get('/dashboard', [ViewController::class, 'dashboard'])->name('dashboard');

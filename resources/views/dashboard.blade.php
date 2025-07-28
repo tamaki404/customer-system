@@ -93,7 +93,7 @@
                     </a>
                 @endforeach
         @else
-            <div style="color:#888;">No receipts verified today.</div>
+            <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">No receipts verified today.</div>
         @endif
     </div>
 

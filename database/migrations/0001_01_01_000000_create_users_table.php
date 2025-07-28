@@ -13,15 +13,19 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table -> string ('username');
-            $table -> longText ('password');
+            $table->string('name');
+            $table->string('username')->unique();
+            $table->string('email')->unique();
+            $table->string('mobile', 15);
+            $table->string('telephone')->nullable();
+            $table->string('address')->nullable();
+            $table->longText('password');
             $table->string('image')->nullable();
             $table->string('user_type');
             $table->string('acc_status');
-            $table->string('action_by');
+            $table->string('action_by')->nullable();
             $table->string('store_name')->nullable();
-
-
+            $table->timestamps(); // Moved here for clarity
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -37,20 +41,18 @@ return new class extends Migration
             $table->text('user_agent')->nullable();
             $table->longText('payload');
             $table->integer('last_activity')->index();
-
         });
-        Schema::table('users', function (Blueprint $table) {
-        $table->timestamps(); 
-});
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['name', 'email', 'mobile', 'telephone', 'address']);
+        });
     }
+
 };
