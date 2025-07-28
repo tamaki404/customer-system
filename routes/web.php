@@ -9,11 +9,19 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ViewController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\EmailVerificationController;
+
 
 Route::post('/login-user', [UserController::class, 'login']);
 Route::post('/logout-user', [UserController::class, 'logout']);
+Route::get('/logout', [UserController::class, 'logout']);
 
-
+Route::get('/success-signup', function () {
+    return view('verified');
+});
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
 Route::get('/', function () {
     return view('login');
 });
@@ -29,7 +37,7 @@ Route::get('/register-view', function () {
 Route::get('/check-username', [UserController::class, 'checkUsername']);
 
 // views
-Route::get('/dashboard', [ViewController::class, 'dashboard'])->name('dashboard');
+// Route::get('/dashboard', [ViewController::class, 'dashboard'])->name('dashboard');
 Route::get('/profile', function () {
     return view('profile');
 })->name('profile');
@@ -72,9 +80,29 @@ Route::post('/customer/accept/{customer_id}', [ViewController::class, 'acceptCus
 Route::post('/customer/suspend/{customer_id}', [ViewController::class, 'suspendCustomer'])->name('customer.suspend');
 
 
-// Sum data for dashboard
-Route::get('/dashboard', [ViewController::class, 'showDashboard'])->name('dashboard');
+
+// Dashboard (only one route, with correct middleware)
+Route::get('/dashboard', [ViewController::class, 'showDashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/receipt_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipt_view');
 
+
+
+
+// Email verification routes
+Route::get('/email/verify', [EmailVerificationController::class, 'show'])
+    ->middleware('auth')
+    ->name('verification.notice');
+Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+    ->middleware(['auth', 'signed'])
+    ->name('verification.verify');
+
+Route::get('/verify-email/{token}', [UserController::class, 'verifyEmail'])->name('verify.email');
+Route::post('/resend-verification', [UserController::class, 'resendVerification'])->name('verification.resend')->middleware('throttle:3,1');
+
+// Laravel's built-in resend verification route
+Route::post('/email/verification-notification', function (Illuminate\Http\Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
