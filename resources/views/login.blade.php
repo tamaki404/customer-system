@@ -27,7 +27,7 @@
 
             <input type="text" name="username" placeholder="Username" value="{{ old('username') }}" required>
             <input type="password" name="password" placeholder="Password" required>
-            <a href="/forgot-password" class="forgotPass">Forgot password</a>
+            <a href="/password/forgot" class="forgotPass">Forgot password</a>
 
             <button type="submit">Login</button>
 

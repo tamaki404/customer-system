@@ -14,7 +14,7 @@
 
 <div class="dashBody">
     <div class="dashGreet">
-       <h1>{{ $greeting }}, {{ auth()->user()->username }} 👋</h1>
+       <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
         <h4>Here's your dashboard overview.</h4>
     </div>
     <div class="dashFrame" >
