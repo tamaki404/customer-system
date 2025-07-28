@@ -213,7 +213,39 @@ public function checkUsername(Request $request)
 }
 
 
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
 
+        if ($user->user_type === 'Customer') {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'address' => 'nullable|string|max:255',
+                'mobile' => 'nullable|string|max:20',
+                'telephone' => 'nullable|string|max:20'
+
+            ]);
+            $user->name = $request->input('name');
+            $user->address = $request->input('address');
+            $user->mobile = $request->input('mobile');
+            $user->telephone = $request->input('telephone');
+
+            $user->save();
+        } elseif ($user->user_type === 'Admin') {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'store_name' => 'nullable|string|max:255',
+                'mobile' => 'nullable|string|max:20',
+            ]);
+            $user->name = $request->input('name');
+            $user->store_name = $request->input('store_name');
+            $user->mobile = $request->input('mobile');
+            $user->save();
+        }
+        // Staff: no update allowed
+
+        return back()->with('success', 'Profile updated successfully.');
+    }
 
 
 }

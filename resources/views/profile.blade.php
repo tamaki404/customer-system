@@ -32,7 +32,7 @@
                     @csrf
                         <div class="form-group">
                             <label>Name</label>
-                            <input type="text" name="username" value="{{auth()->user()->name}}" style=" width:300px;">
+                            <input type="text" name="name" value="{{auth()->user()->name}}" style=" width:300px;">
                         </div>             
                         <div class="form-group">
                             <label>Username</label>
@@ -50,17 +50,71 @@
                         <div class="formSection">
                             <div class="form-group" style="width: auto;">
                                 <label>Phone Number</label>
-                                <input type="tel" name="number"  value="{{auth()->user()->mobile}}" style=" width:250px;">
+                                <input type="tel" name="mobile"  value="{{auth()->user()->mobile}}" style=" width:250px;">
                             </div>
                             <div class="form-group">
                                 <label>Telephone</label>
-                                <input type="text" name="company" value="{{ auth()->user()->telephone }}" disabled  style=" width:250px;">
+                                <input type="text" name="telephone" value="{{ auth()->user()->telephone }}"   style=" width:250px;">
                             </div>
                         </div>
 
-                    <button class="btn-submit" style="font-style: 13px;" type="submit">Save Changes</button>
+                    <button class="editProfileBtn" style="font-style: 13px;" type="submit">Save Changes</button>
                 </form>
 
+                {{-- <form action="/edit-profile" method="POST" class="profile-form">
+                    @csrf
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" value="{{ auth()->user()->name }}" style="width:300px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" value="{{ auth()->user()->username }}" style="width:200px;" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" name="address" value="{{ auth()->user()->address }}" style="width:400px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" value="{{ auth()->user()->email }}" disabled style="width:240px;">
+                    </div>
+                    <div class="formSection">
+                        <div class="form-group" style="width: auto;">
+                            <label>Phone Number</label>
+                            <input type="tel" name="mobile" value="{{ auth()->user()->mobile }}" style="width:250px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Telephone</label>
+                            <input type="text" value="{{ auth()->user()->telephone }}" disabled style="width:250px;">
+                        </div>
+                    </div>
+                    <button class="editProfileBtn" style="font-style: 13px;" type="submit">Save Changes</button>
+                </form> --}}
+                {{-- <form action="/edit-profile" method="POST" class="profile-form">
+                    @csrf
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" value="{{ auth()->user()->name }}" style="width:300px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" value="{{ auth()->user()->username }}" style="width:200px;" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Company</label>
+                        <input type="text" name="store_name" value="{{ auth()->user()->store_name }}" style="width:400px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" value="{{ auth()->user()->email }}" placeholder="Working email address" style="width:240px;" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="mobile" value="{{ auth()->user()->mobile }}" placeholder="ex: 09123456789" maxlength="10" style="width:150px;">
+                    </div>
+                    <button class="editProfileBtn" type="submit">Save changes</button>
+                </form> --}}
                 <p class="updatePassword">To update password, use the forgot password on login</p>
             </div>
 

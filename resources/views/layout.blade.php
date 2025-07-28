@@ -82,27 +82,29 @@
 
 
                   
-
+            @php
+                $currentRoute = Route::currentRouteName();
+            @endphp
             @elseif(auth()->user()->user_type === 'Staff')
-            <a class="buttonDiv" href="{{ route('dashboard') }}">
+            <a class="buttonDiv{{ $currentRoute == 'dashboard' ? ' active' : '' }}" href="{{ route('dashboard') }}">
                 <span class="material-symbols-outlined">dashboard</span>
                 <p>Dashboard</p>
             </a>
-            <a class="buttonDiv" href="{{ route('profile') }}">
+            <a class="buttonDiv{{ $currentRoute == 'profile' ? ' active' : '' }}" href="{{ route('profile') }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
             </a>
-            <a class="buttonDiv" href="{{ route('receipts') }}">
+            <a class="buttonDiv{{ $currentRoute == 'receipts' ? ' active' : '' }}" href="{{ route('receipts') }}">
                 <span class="material-symbols-outlined">receipt</span>
                 <p>Receipts</p>
             </a>
    
-            <a class="buttonDiv" href="{{ route('staffs') }}">
+            <a class="buttonDiv{{ $currentRoute == 'staffs' ? ' active' : '' }}" href="{{ route('staffs') }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Staffs</p>
             </a>
 
-            <a class="buttonDiv" href="{{ route('customers') }}">
+            <a class="buttonDiv{{ $currentRoute == 'customers' ? ' active' : '' }}" href="{{ route('customers') }}">
                 <span class="material-symbols-outlined">groups</span>
                 <p>Customers</p>
             </a>
@@ -112,26 +114,23 @@
 
 
 
-            <a class="buttonDiv" href="{{ route('dashboard') }}">
+            <a class="buttonDiv{{ $currentRoute == 'dashboard' ? ' active' : '' }}" href="{{ route('dashboard') }}">
                 <span class="material-symbols-outlined">dashboard</span>
                 <p>Dashboard</p>
             </a>
 
-            <a class="buttonDiv" href="{{ route('profile') }}">
+            <a class="buttonDiv{{ $currentRoute == 'profile' ? ' active' : '' }}" href="{{ route('profile') }}">
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
             </a>
-            <a class="buttonDiv" href="{{ route('receipts') }}">
+            <a class="buttonDiv{{ $currentRoute == 'receipts' ? ' active' : '' }}" href="{{ route('receipts') }}">
                 <span class="material-symbols-outlined">receipt</span>
                 <p>Receipts</p>
             </a>
-            <a class="buttonDiv" href="{{ route('tickets') }}">
-                <span class="material-symbols-outlined">confirmation_number</span>
-                <p>Tickets Sent</p>
-            </a>
+
 
   
-            <a class="buttonDiv">
+            <a class="buttonDiv{{ $currentRoute == 'help' ? ' active' : '' }}" href="{{ route('help') }}">
                 <span class="material-symbols-outlined">help</span>
                 <p>Help</p>
             </a>

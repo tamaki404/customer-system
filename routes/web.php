@@ -115,3 +115,6 @@ Route::get('password/forgot', [ForgotPasswordController::class, 'showLinkRequest
 Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+//edit profile
+Route::post('/edit-profile', [UserController::class, 'updateProfile'])->middleware('auth');
