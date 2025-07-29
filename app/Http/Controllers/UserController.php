@@ -56,16 +56,14 @@ class UserController extends Controller
             'image' => $validated['image'] ?? null,
             'user_type' => $validated['user_type'],
             'store_name' => $validated['store_name'],
-            'acc_status' => 'Pending', // Keep pending until email verified
+            'acc_status' => 'Pending', 
             'action_by' => $validated['action_by'],
-            'email_verified_at' => null, // Not verified yet
+            'email_verified_at' => null, 
         ]);
 
-        // Generate and send verification token
         $token = bin2hex(random_bytes(32));
         EmailVerificationToken::createToken($validated['email']);
         
-        // Send verification email
         Mail::to($user->email)->send(new EmailVerification($user, $token));
 
         return redirect('/email/verify')->with('success', 'Registration successful! Please check your email to verify your account.');

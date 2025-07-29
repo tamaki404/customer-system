@@ -1,4 +1,4 @@
-body{
+/* body{
     font-family: 'Open Sans', sans-serif;
     background-color: #fff;
     width: 100vw;
@@ -68,4 +68,178 @@ body{
     font-size: 20px;
     text-align: center;
 }
+ */
 
+
+body{
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+} 
+
+ .loginPage{
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    background-color: #fffbef;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    gap:20px;
+ }
+
+ .loginPage .left{
+    height: 90%;
+    width: 35%;
+    background-color: #ffde59;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+   overflow: hidden;
+}
+
+.left img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+
+}
+
+ .loginPage .right{
+    height: 90%;
+    width: 37%;
+    background-color: transparent;   
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+ }
+
+ .right h1{
+    margin: 0;
+    font-size: 30px;
+    color: #333;
+    margin-top: 20px;
+ }
+
+ .right .kindly-mess{
+    margin: 0;
+    color: #333;
+    font-size: 15px;
+
+ }
+
+ .right img{
+    height: 100px;
+    margin: 15px;
+
+}
+
+.right span{
+    font-size: 15px;
+    margin-top: 20px;
+}
+
+ .right form{
+    height: 350px;
+    width: 90%;
+    background-color: transparent;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+        justify-content: space-between;
+    margin-top: 45px;
+
+ }
+
+ .loginForm .form-group{
+    width: 100%;
+    height: 100px;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+ }
+
+ .loginForm button{
+    padding: 10px;
+    width: 300px;
+    height: 50px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    border: none;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 20px;
+    cursor: pointer;
+    background-color: #ffde59;
+ }
+  .loginForm button:hover{
+        background-color: #ebcc50;
+
+  }
+
+ form a{
+    width: auto;
+    text-decoration: none;
+    font-size: 15px;
+    display: flex;
+    width: 80%;
+    text-align: right;
+    color: #fb8f2493;
+    font-weight: bold
+     
+ }
+
+ form a:hover{
+    font-weight: bold;
+    color: #fb8e24;
+    
+ }
+
+ .form-group input{
+    width: 80%;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    background-color: #ffde5947;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    padding: 10px;
+    font-size: 15px;
+}
+
+ .form-group p{
+    font-size: 14px;
+        width: 80%;
+
+    margin: 0;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: left;
+ }
+
+ span a{
+    font-weight: bold;
+    color: #fb8e24;
+    font-size: 15px;
+    text-decoration: none;
+ }
+
+ span a:hover{
+    color: #d77c20;
+ }
+
+
+
+ input:focus {
+    outline: none;
+}

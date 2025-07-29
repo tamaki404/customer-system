@@ -120,43 +120,28 @@
 
             @elseif(auth()->user()->user_type === 'Staff')
             <div class="info-box">
-                <p style="font-size: 15px;">Please review and update your profile details. For other changes, kindly contact the admin.</p>
 
                 <form action="/edit-profile" method="POST" class="profile-form">
                 @csrf
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group" >
                         <label>Name</label>
-                        <input type="text" name="username" value="Nicole Tumpag" disabled>
+                        <input type="text" name="username" value="{{ auth()->user()->name}}" disabled style="width: 300px;">
                     </div>             
                     <div class="form-group">
                         <label>Username</label>
-                        <input type="text" name="username" value="{{ auth()->user()->username }}" disabled>
+                        <input type="text" name="username" value="{{ auth()->user()->username }} " disabled style="width: 150px;">
                     </div>
-                    <div class="form-group">
-                        <label>Company</label>
-                        <input type="text" name="company" value="{{ auth()->user()->store_name }}" disabled>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Address</label>
-                        <input type="text" name="address" value="Rodriguez, Rizal" disabled>
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" name="email" value="xeultu@gmail.com" disabled>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group full">
-                        <label>Phone Number</label>
-                        <input type="tel" name="number" value="+63912345678" disabled>
-                    </div>
+
                 </div>
 
-                <p>You're not allowed to edit</p>
+
+
             </form>
+
+                <p style="font-size: 15px; color: #333; font-weight: bold; text-align: center; align-items: center; width: 100%;">You're not allowed to edit, kindly contact the admin for any changes.</p>
+
+
             </div>
            
             @elseif(auth()->user()->user_type === 'Admin')

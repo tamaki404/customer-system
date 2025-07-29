@@ -38,7 +38,7 @@
     >
     <span>Telephone (optional)</span>
     <input type="tel" name="telephone" 
-    value="02-1234567"
+    
        placeholder="ex: 02-1234567 or 045-1234567" 
        pattern="^0\d{1,3}-\d{6,7}$"
     >
