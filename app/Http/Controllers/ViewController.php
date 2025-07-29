@@ -85,11 +85,16 @@ public function showDashboard()
     $weekStart = Carbon::now()->startOfWeek();
     $weekEnd = Carbon::now()->endOfWeek();
     $today = Carbon::today();
-    $verifiedReceiptsToday = Receipt::whereNotNull('verified_by')
-        ->whereDate('verified_at', $today)
-        ->orderByDesc('verified_at')
-        ->limit(5)
-        ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at']);
+    $verifiedReceiptsToday = Receipt::where(function ($query) use ($today) {
+        $query->whereNotNull('verified_by')
+              ->whereDate('verified_at', $today);
+    })
+    ->orWhereIn('status', ['Cancelled', 'Rejected'])
+    ->orderByDesc('verified_at')
+    ->limit(5)
+    ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at', 'status']);
+
+
     $oneWeekAgo = Carbon::now()->subWeek();
 
     $pendingWeekCount = Receipt::where('status', 'Verified')

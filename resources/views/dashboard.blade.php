@@ -59,16 +59,32 @@
     <h2>Today's Verified Receipts</h2>
     <div class="activities">
 
+
         @if(isset($verifiedReceiptsToday) && count($verifiedReceiptsToday))
-                @foreach($verifiedReceiptsToday as $activity)
-                    <a class="activityCard" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
-                        <span style="font-weight: bold">{{ $activity->verified_by }} </span> 
-                        <span> verified receipt </span> <span>{{ $activity->receipt_number }}</span>
-                        <span style="margin-left: auto; font-weight: bold;">{{ \Carbon\Carbon::parse($activity->verified_at)->format('h:i A') }}</span>
-                    </a>
-                @endforeach
-        @else
-            <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">No receipts verified today.</div>
+        @foreach($verifiedReceiptsToday as $activity)
+            @php
+                $status = strtolower($activity->status ?? 'verified');
+                switch ($status) {
+                    case 'cancelled':
+                        $action = 'cancelled receipt';
+                        break;
+                    case 'rejected':
+                        $action = 'rejected receipt';
+                        break;
+                    default:
+                        $action = 'verified receipt';
+                        break;
+                }
+            @endphp
+
+            <a class="activityCard" style="height: 50px;" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
+                <span style="font-weight: bold">{{ $activity->verified_by ?? 'System' }} </span> 
+                <span>{{ $action }}</span> <span> #{{ $activity->receipt_number }}</span>
+                <span style="margin-left: auto; color: #333">
+                    {{ \Carbon\Carbon::parse($activity->verified_at ?? $activity->created_at)->format('F j, Y, g:i A') }}
+                </span>
+            </a>
+        @endforeach
         @endif
     </div>
     @elseif(auth()->user()->user_type === 'Staff')
@@ -107,16 +123,32 @@
     <h2>Today's Verified Receipts</h2>
     <div class="activities">
 
+
         @if(isset($verifiedReceiptsToday) && count($verifiedReceiptsToday))
-                @foreach($verifiedReceiptsToday as $activity)
-                    <a class="activityCard" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
-                        <span style="font-weight: bold">{{ $activity->verified_by }} </span> 
-                        <span> verified receipt </span> <span>{{ $activity->receipt_number }}</span>
-                        <span style="margin-left: auto; font-weight: bold;">{{ \Carbon\Carbon::parse($activity->verified_at)->format('h:i A') }}</span>
-                    </a>
-                @endforeach
-        @else
-            <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">No receipts verified today.</div>
+        @foreach($verifiedReceiptsToday as $activity)
+            @php
+                $status = strtolower($activity->status ?? 'verified');
+                switch ($status) {
+                    case 'cancelled':
+                        $action = 'cancelled receipt';
+                        break;
+                    case 'rejected':
+                        $action = 'rejected receipt';
+                        break;
+                    default:
+                        $action = 'verified receipt';
+                        break;
+                }
+            @endphp
+
+            <a class="activityCard" style="height: 50px;" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
+                <span style="font-weight: bold">{{ $activity->verified_by ?? 'System' }} </span> 
+                <span>{{ $action }}</span> <span> #{{ $activity->receipt_number }}</span>
+                <span style="margin-left: auto; color: #333">
+                    {{ \Carbon\Carbon::parse($activity->verified_at ?? $activity->created_at)->format('F j, Y, g:i A') }}
+                </span>
+            </a>
+        @endforeach
         @endif
     </div>
     @elseif(auth()->user()->user_type === 'Customer')
