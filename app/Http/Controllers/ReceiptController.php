@@ -12,7 +12,7 @@ class ReceiptController extends Controller{
     {
         $receipt = Receipt::findOrFail($receipt_id);
         $receipt->status = 'Verified';
-        $receipt->verified_by = auth()->user()->username;
+        $receipt->verified_by = auth()->user()->name;
         $receipt->verified_at = now();
         $receipt->save();
         return redirect()->route('receipts.view', $receipt_id)->with('success', 'Receipt verified successfully!');

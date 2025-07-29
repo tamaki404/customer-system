@@ -86,6 +86,7 @@ Route::post('/customer/suspend/{customer_id}', [ViewController::class, 'suspendC
 // Dashboard (only one route, with correct middleware)
 Route::get('/dashboard', [ViewController::class, 'showDashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
+
 Route::get('/receipt_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipt_view');
 
 

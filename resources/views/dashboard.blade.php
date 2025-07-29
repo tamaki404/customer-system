@@ -16,11 +16,11 @@
 
     @if(auth()->user()->user_type === 'Admin')
 
-    <div class="dashGreet">
+     <div class="dashGreet">
        <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
         <h4>Here's your dashboard overview.</h4>
-    </div>
-    <div class="dashFrame" >
+     </div>
+     <div class="dashFrame" >
         <a class="actCard" href="{{ route('receipts') }}" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid rgb(216, 215, 215);">
             <p class="cardTit">Pending Receipts</p>
             <h1 id="pendingDayCount">{{$pendingDayCount}}</h1>
@@ -118,8 +118,45 @@
             <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">No receipts verified today.</div>
         @endif
     </div>
-    @endif
+    @elseif(auth()->user()->user_type === 'Customer')
 
+    <div class="dashGreet">
+       <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
+        <h4>Here's your dashboard overview.</h4>
+    </div>
+    <div class="dashFrame" >
+        <a class="actCard" href="{{ route('receipts') }}" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Pending Receipts</p>
+           <h1 id="pendingDayCount">{{ $userPendingReceipts->count() }}</h1>
+            <p class="dayP">On this week</p>
+        </a>
+        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Approved Receipts</p>
+         <h1 id="pendingWeekCount">{{ $userApprovedReceipts->count() }}</h1>
+              <p class="dayP"> On this week</p>
+        </a>        
+    </div>
+
+
+    <h2 style="margin-bottom: 0px;">Week's History</h2>
+    <p style="margin: 0; font-size: 14px;">These are your receipt verification updates from staff for the current week.</p>
+    <div class="activities" style="height: 400px; overflow-y: scroll;">
+
+        @if(isset($userVerifiedReceiptsWeek) && count($userVerifiedReceiptsWeek))
+                @foreach($userVerifiedReceiptsWeek as $activity)
+                    <a class="activityCard" style="height: 50px;" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
+                        <span style="font-weight: bold">{{ $activity->verified_by }} </span> 
+                        <span> verified your receipt </span> <span>#{{ $activity->receipt_number }}</span>
+                        <span style="margin-left: auto; color: #333">{{ \Carbon\Carbon::parse($activity->verified_at)->format('F j, Y, g:i A') }}</span>
+                    </a>
+                @endforeach
+               
+        @else
+            <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">No receipts verified today.</div>
+        @endif
+    </div>
+
+    @endif
 
 
 

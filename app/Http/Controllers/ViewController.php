@@ -76,7 +76,14 @@ class ViewController extends Controller
 
 public function showDashboard()
 {
+
+    $user = auth()->user();
+    $id = $user->id;
+
+
     // Recent Activities: Receipts verified today
+    $weekStart = Carbon::now()->startOfWeek();
+    $weekEnd = Carbon::now()->endOfWeek();
     $today = Carbon::today();
     $verifiedReceiptsToday = Receipt::whereNotNull('verified_by')
         ->whereDate('verified_at', $today)
@@ -97,9 +104,33 @@ public function showDashboard()
         ->sum('total_amount');
     $totalReceipts = Receipt::where('created_at', '>=', now()->subDays(7))->count();
 
-    // Top Stores: get all customers, sum their total_amount from receipts IN THIS WEEK
-    $weekStart = Carbon::now()->startOfWeek();
-    $weekEnd = Carbon::now()->endOfWeek();
+    $userPendingReceipts = Receipt::where('status', 'Pending') 
+        ->where('customer_id', $id)
+        ->whereBetween('created_at', [$weekStart, $weekEnd])
+        ->get();
+
+    $userApprovedReceipts = Receipt::where('status', 'Verified')
+        ->where('customer_id', $id)
+        ->where('created_at', '>=', $oneWeekAgo)
+        ->get();
+
+    $userVerifiedReceiptsWeek = Receipt::whereNotNull('verified_by')
+        ->whereNotNull('verified_at')
+        ->whereBetween('verified_at', [$weekStart, $weekEnd])
+        ->where('customer_id', $id)
+        ->orderByDesc('verified_at')
+        ->limit(5)
+        ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at']);
+
+    $userVerifiedReceiptsWeek = Receipt::whereNotNull('verified_by')
+        ->whereBetween('verified_at', [$weekStart, $weekEnd])
+        ->orderByDesc('verified_at')
+        ->where('customer_id', $id)
+        ->limit(10)
+        ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at']);
+
+  // Top Stores: get all customers, sum their total_amount from receipts IN THIS WEEK
+
     $topStores = User::where('user_type', 'Customer')
         ->whereNotNull('store_name')
         ->get()
@@ -129,6 +160,8 @@ public function showDashboard()
     }
 
 
+       
+
    return view('dashboard', compact(
     'pendingWeekCount',
     'pendingDayCount',
@@ -138,9 +171,18 @@ public function showDashboard()
     'totalReceipts',
     'topStores',
     'verifiedReceiptsToday',
-    'greeting'
+    'greeting',
+    'userApprovedReceipts',
+    'userVerifiedReceiptsWeek',
+    'userPendingReceipts',
+    'userVerifiedReceiptsWeek'
+
+
 ));
 
 }
+
+
+
 
 }
