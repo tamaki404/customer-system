@@ -99,10 +99,6 @@
                 <p>Receipts</p>
             </a>
    
-            <a class="buttonDiv{{ $currentRoute == 'staffs' ? ' active' : '' }}" href="{{ route('staffs') }}">
-                <span class="material-symbols-outlined">person</span>
-                <p>Staffs</p>
-            </a>
 
             <a class="buttonDiv{{ $currentRoute == 'customers' ? ' active' : '' }}" href="{{ route('customers') }}">
                 <span class="material-symbols-outlined">groups</span>
@@ -127,13 +123,6 @@
                 <span class="material-symbols-outlined">receipt</span>
                 <p>Receipts</p>
             </a>
-
-{{-- 
-  
-            <a class="buttonDiv{{ $currentRoute == 'help' ? ' active' : '' }}" href="{{ route('help') }}">
-                <span class="material-symbols-outlined">help</span>
-                <p>Help</p>
-            </a> --}}
 
 
             @endif

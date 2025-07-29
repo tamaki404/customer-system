@@ -35,8 +35,19 @@ class ViewController extends Controller
 
     public function showCustomers()
     {
-        $users = User::where('user_type', 'Customer')->get();
-        return view('customers', compact('users'));
+        $query = User::where('user_type', 'Customer');
+        $search = request('search');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'like', "%$search%")
+                  ->orWhere('store_name', 'like', "%$search%")
+                  ->orWhere('acc_status', 'like', "%$search%")
+                  ->orWhere('username', 'like', "%$search%");
+            });
+        }
+        $users = $query->get();
+        $verifiedCustomersCount = User::where('user_type', 'Customer')->where('acc_status', 'accepted')->count();
+        return view('customers', compact('users', 'verifiedCustomersCount'));
     }
     public function viewCustomer($customer_id)
     {
