@@ -51,7 +51,9 @@
             <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image">
             <h1>Welcome Kabayan👋!</h1>
             <p class="kindly-mess">Please log in to your account below</p>
-            
+
+
+
             <form action="/login-user" method="POST" class="loginForm" autocomplete="off">
                 @csrf
                 <div class="form-group">
@@ -62,27 +64,31 @@
                     <p>Password</p>
                     <input type="password" name="password" autocomplete="off" required>
                 </div>
-
-            @if ($errors->has('loginError'))
-                <div style="color: red;">{{ $errors->first('loginError') }}</div>
-            @endif
-
-            @if(session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-
                 <a href="/password/forgot">Forgot password?</a>
+
+
+            <div class="error-display">     
+                @if ($errors->has('loginError'))
+                        <p>{{ $errors->first('loginError') }}</p>
+                @endif
+
+                @if(session('error'))
+                        <p>{{ session('error') }}</p>
+                @endif
+
+                @if(session('success'))
+                        <p>{{ session('success') }}</p>
+                @endif
+
+            </div>
+
                 <button type="submit">Sign in</button>
+
+                
+                
             </form>
+
+            
 
             <span>Doesn't have an ccount? <a href="/register-view">Create account</a></span>
 

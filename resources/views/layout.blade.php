@@ -16,7 +16,7 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="icon" href="{{ asset('faviconSVG.svg') }}" type="image/svg+xml">
 
-    <title>Sunny&Scrambles</title>
+    <title>Sunny & Scramble</title>
 </head>
 <body>
 
@@ -128,12 +128,12 @@
                 <p>Receipts</p>
             </a>
 
-
+{{-- 
   
             <a class="buttonDiv{{ $currentRoute == 'help' ? ' active' : '' }}" href="{{ route('help') }}">
                 <span class="material-symbols-outlined">help</span>
                 <p>Help</p>
-            </a>
+            </a> --}}
 
 
             @endif

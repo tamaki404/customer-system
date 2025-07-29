@@ -23,20 +23,23 @@
         </div>
 
         <div class="profile-body">
-            
             @if(auth()->user()->user_type === 'Customer')
-            <div class="info-box">
-                <p style="font-size: 15px;">For other changes, kindly email the suppoort team or admin detailing your concern.</p>
+            <p class="info-help">Your company’s information is required to ensure accurate identification and processing of transactions.</p>
 
+            <div class="info-box">
+                <p style="font-size: 15px;">For other changes, kindly email the support team or admin detailing your concern.</p>
+                <p class="acc_creation">
+                    Account created on {{ auth()->user()->created_at->format('F j, Y') }}
+                </p>
                 <form action="/edit-profile" method="POST" class="profile-form">
                     @csrf
                         <div class="form-group">
                             <label>Name</label>
-                            <input type="text" name="name" value="{{auth()->user()->name}}" style=" width:300px;">
+                            <input type="text" name="name" value="{{auth()->user()->name}}" style=" width:300px;"  >
                         </div>             
                         <div class="form-group">
                             <label>Username</label>
-                            <input type="text" name="username" value="{{ auth()->user()->username }}" style=" width:200px;" disabled>
+                            <input type="text" name="username" value="{{ auth()->user()->username }}" style=" width:200px;" disabled title="This field is not editable">
                         </div>
 
                         <div class="form-group">
@@ -45,7 +48,7 @@
                         </div>
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" name="email"  value="{{auth()->user()->email}}" disabled style=" width:240px;">
+                            <input type="email" name="email"  value="{{auth()->user()->email}}" disabled style=" width:240px;" title="This field is not editable">
                         </div>
                         <div class="formSection">
                             <div class="form-group" style="width: auto;">
@@ -120,7 +123,9 @@
 
             @elseif(auth()->user()->user_type === 'Staff')
             <div class="info-box">
-
+                <p class="acc_creation">
+                    Account created on {{ auth()->user()->created_at->format('F j, Y') }}
+                </p>
                 <form action="/edit-profile" method="POST" class="profile-form">
                 @csrf
                 <div class="form-row">

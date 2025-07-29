@@ -149,6 +149,11 @@ body {
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
+.info-box .acc_creation{
+    font-size: 14px;
+    margin-left: auto;
+}
+
 .btn-disabled {
     margin-top: 10px;
     padding: 12px 0;
@@ -210,8 +215,16 @@ body {
     margin-top: 5px;
     height: 50px;
 }
-.updatePass:hover{
-    
+
+.profile-body .info-help{
+    font-size: 14px;
+    color: #333;
+    margin: 10px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+
 }
 
 @media (max-width: 768px) {

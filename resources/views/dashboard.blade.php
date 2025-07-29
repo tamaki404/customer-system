@@ -13,6 +13,9 @@
 <body>
 
 <div class="dashBody">
+
+    @if(auth()->user()->user_type === 'Admin')
+
     <div class="dashGreet">
        <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
         <h4>Here's your dashboard overview.</h4>
@@ -41,37 +44,8 @@
         <a class="actCard" href="{{ route('customers') }}" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border: 1px solid rgb(216, 215, 215);">
             <p class="cardTit">Pending Joins</p>
             <h1 id="pendingJoins" style="color:green">{{ $pendingJoins }}</h1>
-            {{-- <p class="dayP">On this day </p> --}}
         </a>
     </div>
-
-    
-
-    {{-- <h2>Projects you're working on</h2>
-    <div class="dashFrame">
-        <div class="card">
-            <p>Sales from accepted receipts</p>
-            <h1 id="monthlyTotal" style="color:green">{{ $monthlyTotal }}</h1>
-            <p class="pSmall">On this day</p>
-        </div>     
-        <div class="card">
-            <p>Total Receipts</p>
-            <h1>{{$totalReceipts}}</h1>
-            <p class="pSmall">In last 7 days</p>
-        </div>
-   
-        <div class="card">
-            <p>Pending Joins</p>
-            <h1>{{$pendingJoins}}</h1>
-            <a href="">View Customers</a>
-        </div>
-        <div class="card">
-            <p>Active users</p>
-            <h1>25</h1>
-            <a href="">View Customers</a>
-        </div>
-
-    </div> --}}
 
      <div class="graphFrame">
 
@@ -96,13 +70,58 @@
             <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">No receipts verified today.</div>
         @endif
     </div>
+    @elseif(auth()->user()->user_type === 'Staff')
 
-    
+    <div class="dashGreet">
+       <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
+        <h4>Here's your dashboard overview.</h4>
+    </div>
+    <div class="dashFrame" >
+        <a class="actCard" href="{{ route('receipts') }}" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Pending Receipts</p>
+            <h1 id="pendingDayCount">{{$pendingDayCount}}</h1>
+            <p class="dayP">On this day</p>
+        </a>
+        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Accomplished Receipts</p>
+            <h1 id="pendingWeekCount">{{$pendingWeekCount}}</h1>
+            <p class="dayP"> Past 7 Days</p>
+        </a>        
+        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215); border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
+            <p class="cardTit">Weekly Receipt Count</p>
+            <h1 id="totalReceipts">{{$totalReceipts}}</h1>
+            <p class="dayP"> Past 7 Days</p>
+        </a>
 
-    {{-- <h2>Recent Activities</h2>
-    <div class="actFrame">
+    </div>
 
-</div> --}}
+     <div class="graphFrame">
+
+        <h2>Top Stores on this week</h2>
+        <div class="dashFrame" style="position:relative; height:350px; min-height:200px;">
+            <canvas id="topStoresChart" style="width:100%;height:100%;"></canvas>
+        </div>
+     </div>
+
+    <h2>Today's Verified Receipts</h2>
+    <div class="activities">
+
+        @if(isset($verifiedReceiptsToday) && count($verifiedReceiptsToday))
+                @foreach($verifiedReceiptsToday as $activity)
+                    <a class="activityCard" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
+                        <span style="font-weight: bold">{{ $activity->verified_by }} </span> 
+                        <span> verified receipt </span> <span>{{ $activity->receipt_number }}</span>
+                        <span style="margin-left: auto; font-weight: bold;">{{ \Carbon\Carbon::parse($activity->verified_at)->format('h:i A') }}</span>
+                    </a>
+                @endforeach
+        @else
+            <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">No receipts verified today.</div>
+        @endif
+    </div>
+    @endif
+
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
