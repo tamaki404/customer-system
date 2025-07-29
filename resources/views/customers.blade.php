@@ -40,7 +40,7 @@
             </thead>
             <tbody>
                 @foreach($users as $i => $user)
-                <tr style="border-bottom:1px solid #eee; align-items: center;w" onclick="window.location='{{ url('/customer_view/' . $user->id) }}'">
+                <tr style="border-bottom:1px solid #eee; align-items: center;" onclick="window.location='{{ url('/customer_view/' . $user->id) }}'">
                     <td style="padding:10px 8px;">{{  $user->id }}</td>
                     <td style="padding:10px 8px;">
                         @if($user->image)

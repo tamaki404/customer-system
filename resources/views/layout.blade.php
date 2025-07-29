@@ -99,6 +99,10 @@
                 <p>Receipts</p>
             </a>
    
+            <a class="buttonDiv{{ $currentRoute == 'staffs' ? ' active' : '' }}" href="{{ route('staffs') }}">
+                <span class="material-symbols-outlined">person</span>
+                <p>Staffs</p>
+            </a>
 
             <a class="buttonDiv{{ $currentRoute == 'customers' ? ' active' : '' }}" href="{{ route('customers') }}">
                 <span class="material-symbols-outlined">groups</span>

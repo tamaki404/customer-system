@@ -13,7 +13,7 @@ body{
     display: flex;
     flex-direction: column;
     overflow: auto;
-    padding: 5px;
+    padding: 60px;
     gap: 10px;
     background-color: #fff;
         width: 97%;
@@ -43,9 +43,46 @@ body{
         background-color: transparent;
 }
 
+.date-search {
+    align-items: center;
+    flex-direction: row;
+    display: flex;
+    gap: 5px;
+
+}
+.date-search input {
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: none;
+    width: 300px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+
+.date-search .search-btn {
+    padding: 10px;
+    background-color: #ffde59;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 70px;
+    height: 41px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+.date-search button:hover {
+    transition: background-color 0.3s ease;
+    background-color: #ffd700;
+}
+
 .userTable .usersList{
     height: 100%;
-
+    
     width: 100%;
 }
 
@@ -74,4 +111,37 @@ body{
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.userList{
+    height: 80%;
+    overflow-y: scroll;
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    border-radius: 10px;
+}
+
+
+.bodyFrame table tr {
+    cursor: pointer;
+    font-size: 16px;
+}
+.bodyFrame table tr:hover {
+    background: #ffde59;
+    box-shadow: 0 2px 8px #0001;
+    font-weight: bold;
+}
+
+.titleCount{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.bodyFrame h2 {
+    color: #333;
+    font-size: 25px;
+    margin: 15px;
+    font-weight: bold;
 }
