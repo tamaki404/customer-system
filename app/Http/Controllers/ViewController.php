@@ -122,12 +122,18 @@ public function showDashboard()
         ->limit(5)
         ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at']);
 
-    $userVerifiedReceiptsWeek = Receipt::whereNotNull('verified_by')
-        ->whereBetween('verified_at', [$weekStart, $weekEnd])
+    $userVerifiedReceiptsWeek = Receipt::where('customer_id', $id)
+        ->where(function ($query) use ($weekStart, $weekEnd) {
+            $query->where(function ($q) use ($weekStart, $weekEnd) {
+                $q->whereNotNull('verified_by')
+                ->whereBetween('verified_at', [$weekStart, $weekEnd]);
+            })
+            ->orWhereIn('status', ['Cancelled', 'Rejected']);
+        })
         ->orderByDesc('verified_at')
-        ->where('customer_id', $id)
         ->limit(10)
-        ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at']);
+        ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at', 'status']);
+
 
   // Top Stores: get all customers, sum their total_amount from receipts IN THIS WEEK
 

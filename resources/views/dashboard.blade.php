@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Dashboard</title>
 </head>
 <body>
@@ -138,22 +138,41 @@
     </div>
 
 
-    <h2 style="margin-bottom: 0px;">Week's History</h2>
-    <p style="margin: 0; font-size: 14px;">These are your receipt verification updates from staff for the current week.</p>
-    <div class="activities" style="height: 400px; overflow-y: scroll;">
+        <h2 style="margin-bottom: 0px;">Week's History</h2>
+        <p style="margin: 0; font-size: 14px;">These are your receipt verification updates from staff for the current week.</p>
+        <div class="activities" style="height: 400px; overflow-y: scroll;">
 
         @if(isset($userVerifiedReceiptsWeek) && count($userVerifiedReceiptsWeek))
-                @foreach($userVerifiedReceiptsWeek as $activity)
-                    <a class="activityCard" style="height: 50px;" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
-                        <span style="font-weight: bold">{{ $activity->verified_by }} </span> 
-                        <span> verified your receipt </span> <span>#{{ $activity->receipt_number }}</span>
-                        <span style="margin-left: auto; color: #333">{{ \Carbon\Carbon::parse($activity->verified_at)->format('F j, Y, g:i A') }}</span>
-                    </a>
-                @endforeach
-               
-        @else
-            <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">No receipts verified today.</div>
-        @endif
+        @foreach($userVerifiedReceiptsWeek as $activity)
+            @php
+                $status = strtolower($activity->status ?? 'verified');
+                switch ($status) {
+                    case 'cancelled':
+                        $action = 'cancelled your receipt';
+                        break;
+                    case 'rejected':
+                        $action = 'rejected your receipt';
+                        break;
+                    default:
+                        $action = 'verified your receipt';
+                        break;
+                }
+            @endphp
+
+            <a class="activityCard" style="height: 50px;" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
+                <span style="font-weight: bold">{{ $activity->verified_by ?? 'System' }} </span> 
+                <span>{{ $action }}</span> <span> #{{ $activity->receipt_number }}</span>
+                <span style="margin-left: auto; color: #333">
+                    {{ \Carbon\Carbon::parse($activity->verified_at ?? $activity->created_at)->format('F j, Y, g:i A') }}
+                </span>
+            </a>
+        @endforeach
+    @else
+        <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">
+            No recent receipt activity this week.
+        </div>
+    @endif
+
     </div>
 
     @endif

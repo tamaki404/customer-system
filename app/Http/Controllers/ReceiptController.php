@@ -22,10 +22,20 @@ class ReceiptController extends Controller{
     {
         $receipt = Receipt::findOrFail($receipt_id);
         $receipt->status = 'Cancelled';
-        $receipt->verified_by = auth()->user()->username;
+        $receipt->verified_by = auth()->user()->name;
         $receipt->verified_at = now();
         $receipt->save();
         return redirect()->route('receipts.view', $receipt_id)->with('success', 'Receipt cancelled successfully!');
+    }
+
+    public function rejectReceipt($receipt_id)
+    {
+        $receipt = Receipt::findOrFail($receipt_id);
+        $receipt->status = 'Rejected';
+        $receipt->verified_by = auth()->user()->name;
+        $receipt->verified_at = now();
+        $receipt->save();
+        return redirect()->route('receipts.view', $receipt_id)->with('success', 'Receipt rejected successfully!');
     }
 
 

@@ -122,11 +122,11 @@
         </div>
         <div class="receipt-container">
 
-            @if($receipts->count())
-                <div style="margin-bottom: 1rem; font-size: 1.1rem; color: #1976d2; font-weight: 600;">
-                    Total Amount for Selected Range: ₱{{ number_format($receipts->sum('total_amount'), 2) }}
-                </div>
-            @endif
+        @if($receipts->where('status', 'Verified')->count())
+            <div style="margin-bottom: 1rem; font-size: 1.1rem; color: #1976d2; font-weight: 600;">
+                Total Amount for Verified Receipts: ₱{{ number_format($receipts->where('status', 'Verified')->sum('total_amount'), 2) }}
+            </div>
+        @endif
 
 
             @isset($receipts)
