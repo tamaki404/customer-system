@@ -46,8 +46,9 @@ Route::get('/profile', function () {
 Route::get('/tickets', function () {
     return view('tickets');
 })->name('tickets');
-Route::get('/receipts', [ReceiptController::class, 'showUserReceipts'])->name('receipts');
-
+Route::get('/receipts', [ReceiptController::class, 'showUserReceipts'])
+    ->middleware('auth')
+    ->name('receipts');
 
 // call the func for showStaffs to display her ein vieww
 Route::get('/staffs', [ViewController::class, 'showStaffs'])->name('staffs');

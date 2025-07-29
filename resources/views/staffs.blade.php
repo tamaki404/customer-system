@@ -71,6 +71,7 @@
     </style>
     <title>Users List</title>
     <link rel="stylesheet" href="{{ asset('css/staffs.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
         <link rel="stylesheet" href="{{ asset('css/open-modal.css') }}">
@@ -78,7 +79,7 @@
 
 </head>
 <body>
-
+<script src="{{ asset('js/fadein.js') }}"></script>
 
 @auth
     

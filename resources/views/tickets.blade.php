@@ -7,10 +7,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ asset('css/ticket.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
     <title>Tickets</title>
 </head>
 <body>
-
+<script src="{{ asset('js/fadein.js') }}"></script>
 
     <div class="tickFrame" style="width: 80%; height: 80%; overflow-y: scroll; display: flex; flex-direction: column;">
         @if(auth()->user()->user_type === 'Customer')

@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
     <title>Document</title>
 </head>
 <body>
@@ -21,7 +22,7 @@
                 <p class="profile-role">{{ ucfirst(auth()->user()->user_type) }}</p>
             </div>
         </div>
-
+<script src="{{ asset('js/fadein.js') }}"></script>
         <div class="profile-body">
             @if(auth()->user()->user_type === 'Customer')
             <p class="info-help">Your company’s information is required to ensure accurate identification and processing of transactions.</p>

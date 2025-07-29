@@ -18,7 +18,7 @@ body {
 }
 
 .receipt-container {
-    background: white;
+    background: #fff;
     padding: 40px;
     width: 100%;
     height: 100%;
@@ -36,31 +36,67 @@ body {
     align-items: center;
     flex-direction: row;
     gap: 5px;
+    overflow: hidden;
+    width: auto;
+    height: 100%;
+    
 
 
+}
+
+.date-search span{
+    font-size: 14px;
+}
+
+.input-date{
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border: none;
+}
+
+.search-btn i{
+    font-size: 16px;
+}
+
+.searchCon{
+    height: 100%;
+        background-color: pink;
 }
 
 .date-search input[type="month"] {
     padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 10px;
     font-size: 14px;
     margin-right: 10px;
     color: #333;
+    
 }
+
 
 .date-search input{
     background-color: #fffbee;
+    padding: 10px;
+        border-radius: 10px;
+    font-size: 14px;
 }
 
 .date-search button {
-    padding: 8px 12px;
+    padding: 10px;
     background-color: #ffde59;
-    color: white;
+    color: #333;
     border: none;
-    border-radius: 4px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 14px;
+    width: 70px;
+    height: 41px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.date-search button:hover {
+    background-color: #ffd700;
 }
 
 
@@ -71,12 +107,13 @@ body {
 }
 
 .date-search input{
-    padding: 8px 12px;
-    border: 1px solid black;
-    border-radius: 4px;
+    border-radius: 10px;
     font-size: 14px;
-    margin-right: 10px;
-
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
 
 }
 
@@ -85,9 +122,9 @@ body {
     width: 100%;
     display: flex;
     justify-content: left;
-    align-items: center;
     height: 7%;
-    background-color: #ffde59;
+    padding: 10px;
+    background-color: #fff;
     justify-content: space-between;
 }
 
@@ -283,13 +320,20 @@ body {
 
 .title-wrapper button {
     background-color: #ffde59;
-    color: white;
+    color: #333;
     border: none;
     padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 15px;
     font-weight: 600;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    transition: background-color 0.3s;
+}
+
+.title-wrapper button:hover {
+    background-color: #ffd700;
 }
 
 

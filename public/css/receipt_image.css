@@ -1,0 +1,55 @@
+.receiptFrame{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    background-color: #fff;
+    padding: 60px;
+    gap: 10px;
+    width: 97%;
+    height: 97%;
+
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 15px;
+}
+
+.receiptFrame .downloadBtn{
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #ffde59;
+    height: 50px;
+    width: 200px;
+    color: #333;
+    font-weight: bold;
+    font-size: 15px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    gap: 10px;
+    transition: background-color 0.3s ease;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}   
+
+.receiptFrame .downloadBtn:hover{
+    background-color: #ffd700;
+}
+
+.returnBtn{
+    padding: 10px;
+    border-radius: 10px;
+    background-color: transparent;
+    height: 50px;
+    width: 200px;
+    color: #333;
+    font-weight: bold;
+    font-size: 15px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    gap: 10px;
+    transition: background-color 0.3s ease;
+}

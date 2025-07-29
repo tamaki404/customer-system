@@ -85,3 +85,16 @@ table td{
 .receipt_num{
     font-weight: bold;
 }
+
+
+
+.date-search{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.date-search input{
+    border-radius: 10px;
+}

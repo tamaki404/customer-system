@@ -9,9 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('css/receipts_view.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <title>Receipt Details</title>
 </head>
 <body>
+    <script src="{{ asset('js/fadein.js') }}"></script>
     <div class="receiptFrame">
         <h2>Invoice</h2>
 
@@ -39,7 +43,7 @@
                     
                    </table>
 
-                    @if(auth()->user()->user_type === 'Customer')
+                    @if(auth()->user()->user_type === 'Staff' && auth()->user()->user_type === 'Admin')
 
                         <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;margin-right:10px;">
                             @csrf
@@ -63,7 +67,13 @@
                         @if($receipt->receipt_image)
                         <p>Receipt Image</p>
                         
-                        <img onclick="window.location='{{ url('/receipt_image/' . $receipt->receipt_id) }}'" style="cursor: pointer;" src="{{ asset('images/' . $receipt->receipt_image) }}" alt="Receipt Image">
+                            <a href="{{ url('/receipt_image/' . $receipt->receipt_id) }}" target="_blank">
+                                <img 
+                                    src="{{ asset('images/' . $receipt->receipt_image) }}" 
+                                    alt="Receipt Image" 
+                                    style="cursor: pointer;"
+                                >
+                            </a>
                         @else
                             N/A
                         @endif

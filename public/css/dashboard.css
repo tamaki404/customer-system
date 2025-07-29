@@ -1,6 +1,5 @@
  .dashBody {
     font-family: 'Inter', sans-serif;
-
     display: flex;
     flex-direction: column;
     align-content: start;
@@ -23,6 +22,7 @@
     flex-direction: column;
     align-content: start;
     justify-content: start;
+
 
 }
 

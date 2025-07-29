@@ -21,12 +21,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('css/receipts.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>Document</title>
     <link rel="stylesheet" href="{{ asset('css/open-modal.css') }}">
 </head>
 <body>
-
+<script src="{{ asset('js/fadein.js') }}"></script>
 
 
 <div id="myModal" class="modal">
@@ -108,16 +110,16 @@
 
     <div class="receipt-wrapper">
         <div class="wrapper-title">
-            <form action="/date-search" class="date-search" method="GET" style="margin-bottom: 10px;">
-                <input type="text" name="search" class="search-bar" placeholder="Search receipt #, customer, amount, or date" value="{{ request('search') }}" style="padding:8px 12px; width:260px; border-radius:4px; border:1px solid #ccc; margin-right:12px;">
-                <button type="submit" style="padding:8px 16px; border-radius:4px; background:#1976d2; color:#fff; border:none;">Search</button>
+            <form action="/date-search" id="searchCon" style="margin-left: 10px" class="date-search" method="GET">
+                <input type="text" style="    width: 390px; border: none;" name="search" class="search-bar" placeholder="Search receipt #, customer, amount, or date" value="{{ request('search') }}">
+                <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>
-            <h2 class="title">Receipts</h2>
+            {{-- <h2 class="title">Receipts</h2> --}}
             <form action="/date-search" class="date-search" method="GET">
-                <span style="margin:0 8px;">From</span>
-                <input type="date" name="from_date" class="search-date" value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
-                <span style="margin:0 8px;">To</span>
-                <input type="date" name="to_date" class="search-date" value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
+                <span>From</span>
+                <input type="date" name="from_date" class="input-date" value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
+                <span >To</span>
+                <input type="date" name="to_date" class="input-date" value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
             </form>
         </div>
         <div class="receipt-container">
@@ -212,10 +214,10 @@
                                 </thead>
                                 <tbody>
                                     @foreach($userReceipts as $receipt)
-                                        <tr>
+                                        <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
                                             <td>{{ $receipt->receipt_number }}</td>
                                             <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                            <td>{{ $receipt->purchase_date }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('F j, Y') }}</td>
                                             <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
                                             <td>{{ $receipt->verified_by }}</td>
                                             <td>
@@ -255,7 +257,9 @@
     </div>
 
 <script src="{{ asset('scripts/open-modal.js') }}"></script>
-<script></script>
+
+
+
 
 </body>
 </html>

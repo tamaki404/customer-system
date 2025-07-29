@@ -13,6 +13,8 @@ body {
     height: 97%;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     border-radius: 15px;
+        animation: fadeIn 0.6s ease-out;
+
 }
 
 .profile-card {
@@ -21,7 +23,6 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.06);
     padding: 40px;
     width: 100%;
-    animation: fadeIn 0.6s ease-out;
 }
 
 .profile-header {
