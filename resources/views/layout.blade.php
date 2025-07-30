@@ -41,13 +41,7 @@
                 <p class="userTitle">{{ auth()->user()->user_type }}</p> 
             </div>
         </button>
-        {{-- <div class="searchFrame">
-            <div class="searchCon">
-                <span class="material-symbols-outlined">search</span>
-                <input type="text" placeholder="Search...">
-            </div>
 
-        </div> --}}
         <div class="sideMenu">
             @php
                 $currentRoute = Route::currentRouteName();
@@ -74,10 +68,7 @@
                 <span class="material-symbols-outlined">groups</span>
                 <p>Customers</p>
             </a>
-            {{-- <button class="buttonDiv">
-                <span class="material-symbols-outlined">assignment</span>
-                <p>Reports</p>
-            </button> --}}
+
 
 
 
@@ -99,10 +90,7 @@
                 <p>Receipts</p>
             </a>
    
-            <a class="buttonDiv{{ $currentRoute == 'staffs' ? ' active' : '' }}" href="{{ route('staffs') }}">
-                <span class="material-symbols-outlined">person</span>
-                <p>Staffs</p>
-            </a>
+
 
             <a class="buttonDiv{{ $currentRoute == 'customers' ? ' active' : '' }}" href="{{ route('customers') }}">
                 <span class="material-symbols-outlined">groups</span>
