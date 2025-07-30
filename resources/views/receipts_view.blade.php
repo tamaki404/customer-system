@@ -17,29 +17,27 @@
 <body>
     <script src="{{ asset('js/fadein.js') }}"></script>
     <div class="receiptFrame">
-        <h2>Invoice</h2>
+        <span style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;"><h2>Receipt #{{ $receipt->invoice_number }}</h2> <p>{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p></span>
 
         <div class="mainBlock">
 
                 <div class="receiptBlock">
 
                     <table style="width:100%; border-collapse:collapse; ">
-                        <p class="receipt_num">Receipt #{{ $receipt->receipt_number }}</p>
                         <p class="receipt_num">Invoice {{ $receipt->invoice_number }}</p>
 
-                        <p class="date">{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p>
-
-                        <tr><th>Store:</th><td>{{ $receipt->customer ? $receipt->customer->store_name : 'N/A' }}</td></tr>
+                        <tr><th>Store:</th><td style="font-size: 20px; font-weight: bold;">{{ $receipt->customer ? $receipt->customer->store_name : 'N/A' }}</td></tr>
                         <tr><th>Customer:</th><td>{{ $receipt->customer ? $receipt->customer->name : 'N/A' }}</td></tr>
                     @if(auth()->user()->user_type === 'Staff' && auth()->user()->user_type === 'Admin')
                         <tr><th>Representative:</th><td>{{ $receipt->name }}</td></tr>
                     @endif
-                        <tr><th>Amount:</th>  <td id="receiptAmount" data-amount="{{ $receipt->total_amount }}">
+                        <tr><th>Amount:</th>  <td id="receiptAmount" style="font-size: 18px; font-weight: bold; color: green;" data-amount="{{ $receipt->total_amount }}">
                         {{ $receipt->total_amount }}
                         </td></tr>
                         <tr><th>Purchase Date:</th><td>{{ $receipt->purchase_date }}</td></tr>
                         <tr><th>Status:</th><td>{{ $receipt->status }}</td></tr>
-                        <tr><th>Notes:</th><td>{{ $receipt->notes }}</td></tr>
+
+                        
 
                     @if($receipt->verified_by !== NULL)
                         <tr><th>Action By:</th><td>{{ $receipt->verified_by ?? 'N/A' }}</td></tr>
@@ -65,6 +63,11 @@
                         </form>                        <a href="{{ url('/receipts') }}" style="display:inline-block;margin-top:20px;">&larr; Back to Receipts</a> 
                     @endif
 
+                    <div style="display: flex; flex-direction: column; width: 100%;">
+                    <p style="font-size: 18px; font-weight: bold;">Notes:</p>
+                    <div class="notes-display">{{ $receipt->notes }}</div>
+                </div>
+
 
                 </div>
 
@@ -83,8 +86,10 @@
                         @else
                             N/A
                         @endif
+
+                        
                 </div>
-            
+             
         
 
         </div>

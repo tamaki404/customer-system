@@ -26,9 +26,10 @@ body {
     height: 100%;
     flex-direction: column;
     overflow-x: auto;
-    
+
 
 }
+
 :focus {
     outline: none;
 }
@@ -41,16 +42,16 @@ body {
     overflow: hidden;
     width: auto;
     height: 100%;
-    
+
 
 
 }
 
-.date-search span{
+.date-search span {
     font-size: 14px;
 }
 
-.input-date{
+.input-date {
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
     border-radius: 10px;
     padding: 10px;
@@ -58,13 +59,13 @@ body {
     border: none;
 }
 
-.search-btn i{
+.search-btn i {
     font-size: 16px;
 }
 
-.searchCon{
+.searchCon {
     height: 100%;
-        background-color: pink;
+    background-color: pink;
 }
 
 .date-search input[type="month"] {
@@ -73,14 +74,14 @@ body {
     font-size: 14px;
     margin-right: 10px;
     color: #333;
-    
+
 }
 
 
-.date-search input{
+.date-search input {
     background-color: #fffbee;
     padding: 10px;
-        border-radius: 10px;
+    border-radius: 10px;
     font-size: 14px;
 }
 
@@ -102,13 +103,13 @@ body {
 }
 
 
-.date-search p{
+.date-search p {
     margin: 0;
     font-size: 14px;
     color: black;
 }
 
-.date-search input{
+.date-search input {
     border-radius: 10px;
     font-size: 14px;
     color: #333;
@@ -124,7 +125,7 @@ body {
     width: 100%;
     display: flex;
     justify-content: left;
-    height: 7%;
+    height: 8%;
     padding: 10px;
     background-color: #fff;
     justify-content: space-between;
@@ -164,7 +165,8 @@ body {
     height: auto;
 }
 
-.receipt-table th, .receipt-table td {
+.receipt-table th,
+.receipt-table td {
     padding: 12px 14px;
     border-bottom: 1px solid #e0e0e0;
     text-align: left;
@@ -247,7 +249,7 @@ body {
     gap: 20px;
 }
 
-.form-grid > div {
+.form-grid>div {
     flex: 1 1 45%;
     min-width: 180px;
     display: flex;
@@ -342,14 +344,17 @@ body {
 
 .submit-btn:hover {
     background: #0d47a1;
+
     .receipt-container {
         padding: 18px 6px;
         max-width: 98vw;
     }
+
     .form-section {
         padding: 18px 6px;
         max-width: 98vw;
     }
+
     background-color: #0d47a1;
 }
 
@@ -362,7 +367,8 @@ body {
         flex-direction: column;
     }
 
-    .receipt-table th, .receipt-table td {
+    .receipt-table th,
+    .receipt-table td {
         font-size: 0.85rem;
     }
 }
