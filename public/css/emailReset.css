@@ -121,6 +121,28 @@ form button:hover {
     justify-self: center;
 }
 
+.error-password{
+    margin: 5px;
+    font-size: 15px;
+    color: #e72228;
+    align-self: center;
+    display: flex;
+    justify-self: center;
+}
+
+.resetFrame span{
+    font-size: 15px;
+    color: #333;
+    margin: 0;
+    text-align: center;
+}
+
+span p{
+    font-size: 14px;
+    color: #f8912a;
+    margin: 0;
+    font-weight: bold;
+}
 
 /* Tablet view */
 @media (max-width: 768px) {
