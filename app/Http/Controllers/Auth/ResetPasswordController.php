@@ -24,9 +24,12 @@ class ResetPasswordController extends Controller
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
+            function ($user, $password) use ($request) {
                 $user->password = Hash::make($password);
                 $user->save();
+
+                // delete any email verification tokens for this email
+                \App\Models\EmailVerificationToken::where('email', $request->email)->delete();
             }
         );
 
