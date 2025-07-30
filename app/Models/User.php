@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Str;
+
+
 class User extends Authenticatable implements MustVerifyEmail
 {
     public $incrementing = false;
@@ -70,6 +73,15 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => $this->freshTimestamp(),
         ])->save();
     }
-
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = Str::ulid(); 
+            }
+        });
+    }
 
 }

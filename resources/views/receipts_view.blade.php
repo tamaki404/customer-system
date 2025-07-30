@@ -30,15 +30,21 @@
                         <p class="date">{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p>
 
                         <tr><th>Store:</th><td>{{ $receipt->customer ? $receipt->customer->store_name : 'N/A' }}</td></tr>
+                        <tr><th>Customer:</th><td>{{ $receipt->customer ? $receipt->customer->name : 'N/A' }}</td></tr>
+                    @if(auth()->user()->user_type === 'Staff' && auth()->user()->user_type === 'Admin')
                         <tr><th>Representative:</th><td>{{ $receipt->name }}</td></tr>
+                    @endif
                         <tr><th>Amount:</th>  <td id="receiptAmount" data-amount="{{ $receipt->total_amount }}">
                         {{ $receipt->total_amount }}
                         </td></tr>
                         <tr><th>Purchase Date:</th><td>{{ $receipt->purchase_date }}</td></tr>
                         <tr><th>Status:</th><td>{{ $receipt->status }}</td></tr>
                         <tr><th>Notes:</th><td>{{ $receipt->notes }}</td></tr>
+
+                    @if($receipt->verified_by !== NULL)
                         <tr><th>Action By:</th><td>{{ $receipt->verified_by ?? 'N/A' }}</td></tr>
                         <tr><th></th>Action At:</th><td>{{ $receipt->verified_at ?? 'N/A' }}</td></tr>
+                    @endif
                    
                     
                    </table>

@@ -85,6 +85,10 @@
                 </span>
             </a>
         @endforeach
+        @else
+            <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">
+                No recent receipt activity today.
+            </div>
         @endif
     </div>
     @elseif(auth()->user()->user_type === 'Staff')

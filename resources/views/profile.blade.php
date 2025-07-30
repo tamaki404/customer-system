@@ -157,7 +157,7 @@
                 @csrf
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" name="username" value="name" style=" width:300px;">
+                        <input type="text" name="username" value="{{ auth()->user()->name }}" style=" width:300px;">
                     </div>             
                     <div class="form-group">
                         <label>Username</label>

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\EmailVerificationToken;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailVerification;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller 
 {
@@ -63,6 +64,9 @@ class UserController extends Controller
 
         $token = bin2hex(random_bytes(32));
         EmailVerificationToken::createToken($validated['email']);
+
+        Auth::login($user);
+
         
         Mail::to($user->email)->send(new EmailVerification($user, $token));
 

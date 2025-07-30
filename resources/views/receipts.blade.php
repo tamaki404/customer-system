@@ -132,7 +132,7 @@
 
 
             @isset($receipts)
-                @if(auth()->user()->user_type === 'Staff')
+               @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
                     @php
                         // group receipts by year, month, and day
                         $grouped = $receipts->sortByDesc('created_at')->groupBy(function($item) {
