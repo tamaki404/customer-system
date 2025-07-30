@@ -22,7 +22,7 @@ class ReceiptController extends Controller{
     {
         $receipt = Receipt::findOrFail($receipt_id);
         $receipt->status = 'Cancelled';
-        $receipt->verified_by = auth()->user()->name;
+        $receipt->verified_by = auth()->user()->name; 
         $receipt->verified_at = now();
         $receipt->save();
         return redirect()->route('receipts.view', $receipt_id)->with('success', 'Receipt cancelled successfully!');
@@ -68,7 +68,7 @@ class ReceiptController extends Controller{
         if ($user->user_type === 'Staff') {
             $receipts = Receipt::all();
         } else {
-            $receipts = Receipt::where('customer_id', $user->id)->get();
+            $receipts = Receipt::where('id', $user->id)->get();
         }
         return view('receipts', compact('receipts', 'user'));
     }
@@ -86,7 +86,7 @@ class ReceiptController extends Controller{
             'notes' => 'nullable|string',
             'status' => 'required|string',
             'receipt_number' => 'required|string',
-            'customer_id' => 'nullable|integer',
+            'id' => 'nullable|string',
         ]);
 
         if ($request->hasFile('receipt_image')) {
@@ -96,7 +96,7 @@ class ReceiptController extends Controller{
         }
 
         if (Auth::check()) {
-            $validated['customer_id'] = Auth::id();
+            $validated['id'] = Auth::id();
         }
 
         Receipt::create($validated);
@@ -141,7 +141,7 @@ class ReceiptController extends Controller{
         if ($user->user_type === 'Staff') {
             $receipts = $query->get();
         } else {
-            $receipts = $query->where('customer_id', $user->id)->get();
+            $receipts = $query->where('id', $user->id)->get();
         }
         return view('receipts', [
             'receipts' => $receipts,

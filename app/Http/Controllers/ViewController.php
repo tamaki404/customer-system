@@ -49,11 +49,11 @@ class ViewController extends Controller
         $verifiedCustomersCount = User::where('user_type', 'Customer')->where('acc_status', 'accepted')->count();
         return view('customers', compact('users', 'verifiedCustomersCount'));
     }
-    public function viewCustomer($customer_id)
+    public function viewCustomer($id)
     {
-        $customer = User::findOrFail($customer_id);
+        $customer = User::findOrFail($id);
 
-        $receipts = Receipt::where('customer_id', $customer_id)->orderBy('created_at', 'desc')->get();
+        $receipts = Receipt::where('id', $id)->orderBy('created_at', 'desc')->get();
         return view('customer_view', compact('customer', 'receipts'));
     }
     public function dashboard()
@@ -68,20 +68,20 @@ class ViewController extends Controller
         $user = auth()->user();
         return view('staffs', compact('user'));
     }
-    public function acceptCustomer($customer_id)
+    public function acceptCustomer($id)
     {
-        $customer = User::findOrFail($customer_id);
+        $customer = User::findOrFail($id);
         $customer->acc_status = 'accepted';
         $customer->save();
-        return redirect()->route('customer.view', $customer_id)->with('success', 'Customer accepted successfully!');
+        return redirect()->route('customer.view', $id)->with('success', 'Customer accepted successfully!');
     }
 
-    public function suspendCustomer($customer_id)
+    public function suspendCustomer($id)
     {
-        $customer = User::findOrFail($customer_id);
+        $customer = User::findOrFail($id);
         $customer->acc_status = 'suspended';
         $customer->save();
-        return redirect()->route('customer.view', $customer_id)->with('success', 'Customer suspended successfully!');
+        return redirect()->route('customer.view', $id)->with('success', 'Customer suspended successfully!');
     }
 
 
@@ -121,24 +121,24 @@ public function showDashboard()
     $totalReceipts = Receipt::where('created_at', '>=', now()->subDays(7))->count();
 
     $userPendingReceipts = Receipt::where('status', 'Pending') 
-        ->where('customer_id', $id)
+        ->where('id', $id)
         ->whereBetween('created_at', [$weekStart, $weekEnd])
         ->get();
 
     $userApprovedReceipts = Receipt::where('status', 'Verified')
-        ->where('customer_id', $id)
+        ->where('id', $id)
         ->where('created_at', '>=', $oneWeekAgo)
         ->get();
 
     $userVerifiedReceiptsWeek = Receipt::whereNotNull('verified_by')
         ->whereNotNull('verified_at')
         ->whereBetween('verified_at', [$weekStart, $weekEnd])
-        ->where('customer_id', $id)
+        ->where('id', $id)
         ->orderByDesc('verified_at')
         ->limit(5)
         ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at']);
 
-    $userVerifiedReceiptsWeek = Receipt::where('customer_id', $id)
+    $userVerifiedReceiptsWeek = Receipt::where('id', $id)
         ->where(function ($query) use ($weekStart, $weekEnd) {
             $query->where(function ($q) use ($weekStart, $weekEnd) {
                 $q->whereNotNull('verified_by')
@@ -157,7 +157,7 @@ public function showDashboard()
         ->whereNotNull('store_name')
         ->get()
         ->map(function($user) use ($weekStart, $weekEnd) {
-            $total = Receipt::where('customer_id', $user->id)
+            $total = Receipt::where('id', $user->id)
                 ->whereBetween('created_at', [$weekStart, $weekEnd])
                 ->sum('total_amount');
             return [

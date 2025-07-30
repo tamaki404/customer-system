@@ -10,8 +10,12 @@ class Tickets extends Model
     use HasFactory;
 
     protected $primaryKey = 'ticketID'; 
-    public $incrementing = true;
+    public $incrementing = true; // ticketID is still int
     protected $keyType = 'int';
+
+    // If you want to reference users by ULID string:
+    // public $incrementing = false;
+    // protected $keyType = 'string';
 
     protected $fillable = [
         'title',

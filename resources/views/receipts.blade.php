@@ -41,7 +41,7 @@
             <form action="/submit-receipt" class="receipt-form" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-grid">
-                    <input type="hidden" name="customer_id" value="{{ auth()->user()->id }}">
+                    <input type="hidden" name="id" value="{{ auth()->user()->id }}">
                     <input type="hidden" name="status" value="Pending">
                     <input type="hidden" name="verified_by">
                     <input type="hidden" name="verified_at">
@@ -195,7 +195,7 @@
                         <button id="openModalBtn">Submit a Receipt</button>
                     </div>
                     @php
-                        $userReceipts = $receipts->where('customer_id', $user->id)->sortByDesc('created_at');
+                        $userReceipts = $receipts->where('id', $user->id)->sortByDesc('created_at');
                     @endphp
                     @if($userReceipts->isEmpty())
                         <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts for this month.</div>

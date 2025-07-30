@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
  
 
 class Receipt extends Model
+    // If you ever use Receipt::find($id), and $id is a string ULID, you may want to set these:
+    // public $incrementing = false;
+    // protected $keyType = 'string';
 {
     use HasFactory;
     protected $table = 'receipts';
     protected $fillable = [
-        'customer_id',
+        'id',
         'receipt_image',
         'purchase_date',
         'store_name',
@@ -27,7 +30,7 @@ class Receipt extends Model
     // Relationships
     public function customer()
     {
-        return $this->belongsTo(User::class, 'customer_id');
+    return $this->belongsTo(User::class, 'id', 'id');
     }
 
     public function verifier()

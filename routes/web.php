@@ -69,7 +69,7 @@ Route::post('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->nam
 Route::get('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');
 
 Route::get('/customers', action: [ViewController::class, 'showCustomers'])->name('customers');
-Route::get('/customer_view/{customer_id}', action: [ViewController::class, 'viewCustomer'])->name('customer.view');
+Route::get('/customer_view/{idstomer_id}', action: [ViewController::class, 'viewCustomer'])->name('customer.view');
 Route::get('/receipt_image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
 
 Route::get('/date-search', [ReceiptController::class, 'dateSearch'])->name('date.search');
@@ -81,8 +81,8 @@ Route::post('/receipts/reject/{receipt_id}', [ReceiptController::class, 'rejectR
 
 
 // Customer accept/suspend actions
-Route::post('/customer/accept/{customer_id}', [ViewController::class, 'acceptCustomer'])->name('customer.accept');
-Route::post('/customer/suspend/{customer_id}', [ViewController::class, 'suspendCustomer'])->name('customer.suspend');
+Route::post('/customeridccept/{id}', [ViewController::class, 'acceptCustomer'])->name('customer.accept');
+Route::post('/idstomer/suspend/{id}', [ViewController::class, 'suspendCustomer'])->name('customer.suspend');
 
 
 
