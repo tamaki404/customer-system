@@ -20,6 +20,8 @@
        
         <form method="POST" action="{{ route('password.update') }}">
             @csrf
+            <input type="hidden" name="token" value="{{ $token }}">
+            <input type="hidden" name="email" value="{{ old('email', request('email')) }}">
             <div class="emailInput">
                 <p>New password</p>
                 <input type="password" name="password" required placeholder=" ">
@@ -28,7 +30,6 @@
                 <p>Confirm password</p>
                 <input type="password" name="password_confirmation" required placeholder="">
             </div>
-            
             <button type="submit">Reset Password</button>
         </form>
 
