@@ -1,0 +1,93 @@
+body{
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    width: 100%;
+    height: 100%;
+    padding: 60px;
+    overflow: hidden;
+}
+
+.verifyFrame {
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    background-color: #f9f9f9;
+    padding: 60px;
+    gap: 10px;
+    width: 70%;
+    max-width: 1200px; 
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 15px;
+    overflow: hidden;
+    margin: auto; 
+    height: 90% ;
+    max-height: 1200px; 
+
+}
+
+h2{
+    color: #333;
+    font-size: 25px;
+    margin: 0;
+}
+p{
+    color: #666;
+    font-size: 15px;
+    margin:  0;
+}   
+
+.verifyFrame img{
+    height: 100px;
+    margin-bottom: 30px;
+}
+
+form{
+    background-color: transparent;
+    height: auto;
+    gap: 5px;
+    margin-top: 30px;
+}
+
+form .btn{
+    padding: 15px;
+    background-color: #ffde59;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: normal;
+    width: 300px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+form .btn:hover {
+    transition: background-color 0.3s ease;
+    background-color: #ffd700;
+}
+
+.logoutForm button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    background-color: transparent;
+    border: none;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.logoutForm button{
+    font-size: 15px;
+    font-weight: bold;
+    color: #f8912a94;
+    text-decoration: none;
+}
+
+.logoutForm button:hover{
+
+    color: #f8912a;
+}
