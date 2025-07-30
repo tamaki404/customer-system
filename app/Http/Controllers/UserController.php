@@ -162,7 +162,7 @@ public function addStaff(Request $request)
 {
     $validated = $request->validate([
         'username' => 'required|string|min:3|max:50|unique:users,username',
-        'password' => 'required|string|min:6|max:100',
+        'password' => 'required|string|min:8|max:100',
         'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         'name' => 'required|string|max:255',
         'email' => 'required|email|max:255|unique:users,email',
@@ -170,6 +170,7 @@ public function addStaff(Request $request)
         'acc_status' => 'required',
         'action_by' => 'string',
     ]);
+    
 
     // Handle image upload
     if ($request->hasFile('image')) {
@@ -255,3 +256,8 @@ public function checkUsername(Request $request)
 
 
 }
+
+
+
+
+

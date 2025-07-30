@@ -122,3 +122,4 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 
 //edit profile
 Route::post('/edit-profile', [UserController::class, 'updateProfile'])->middleware('auth');
+

@@ -40,20 +40,24 @@
                         <input type="text" name="name" placeholder="Name" required>
                     </div>
                     <div>
-                        <label>Email</label>
-                        <input type="email" name="email" placeholder="Email" value="" required>
+                        <label>Username</label>
+                        <input type="text" name="username" placeholder="Unique username" id="username" ...>
+                        <span id="username-error" class="error-message"></span>
                     </div>
                     <div>
-                        <label>Username</label>
-                        <input type="text" name="username" id="" placeholder="username" required maxlength="20">
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="New email" id="email" ...>
+                        <span id="email-error" class="error-message"></span>
                     </div>
                     <div>
                         <label>Password</label>
-                        <input type="text" name="password" id="" placeholder="password" required>
+                        <input type="text" name="password" placeholder="8 characters minimum" id="password" ...>
+                        <span id="password-error" class="error-message"></span>
                     </div>
                     <div>
                         <label>Image</label>
-                        <input type="file" name="image" accept="image/*" required>
+                        <input type="file" name="image" id="image" ...>
+                        <span id="image-error" class="error-message"></span>
                     </div>
 
 
@@ -63,15 +67,24 @@
                     <input type="text" name="acc_status"  value="Active" hidden>
             
                 </div>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
-                <button type="submit" class="submit-btn" id="submitBtn" style="color: #333; font-size: 15px;">Add Staff</button>
+
+                <button type="submit" class="submit-btn" id="submitBtn" style="color: #333; font-size: 15px; box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">Add Staff</button>
 
             </form>
         </div>
 
     @endif
 
-    
   </div>
 </div>
     
@@ -92,40 +105,49 @@
 
     <div class="titleCount"> <h2>Staffs List</h2> <span style=" width: auto; display: flex; flex-direction: row; gap: 5px;"><p style="font-weight: bold; font-size: 15px;">Total:</p>{{ count($users) }}</span></div>
 
-    <div class="userList">
-        @if(isset($users) && count($users) > 0)
-        <table style="width:100%; border-collapse:collapse;">
-            <thead>
-                <tr style="background:#f7f7fa;">
-                    <th style="padding:10px 8px;text-align:left;">ID</th>
-                    <th style="padding:10px 8px;text-align:left;">Image</th>
-                    <th style="padding:10px 8px;text-align:left;">Username</th>
-                    <th style="padding:10px 8px;text-align:left;">User type</th>
-                    <th style="padding:10px 8px;text-align:left;">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($users as $user)
-                <tr style="border-bottom:1px solid #eee; align-items: center;" accesskey="`{{ $user->id }}`" onclick="window.location='{{ url('/staff_view/' . $user->id) }}'">
-                    <td style="padding:10px 8px;">{{  $user->id }}</td>
-                    <td style="padding:10px 8px;">
-                        @if($user->image)
-                         <img src="{{ asset(path: 'images/' . $user->image) }}" alt="Customer Image" style="max-width:50px;max-height:50px;border-radius:6px;object-fit:cover;border:1px solid #ccc;">
-                        @else
-                            <span style="color:#aaa;">N/A</span>
-                        @endif
-                    </td>
-                    <td style="padding:10px 8px;">{{ $user->username }}</td>
-                    <td style="padding:10px 8px;">{{ $user->user_type }}</td>
-                    <td style="padding:10px 8px;">{{ $user->acc_status }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-         @else
-            <p>No staffs found.</p>
-        @endif
-    </div>
+<div class="userList">
+    @if(isset($users) && count($users) > 0)
+    <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
+        <thead>
+            <tr style="background:#f7f7fa;">
+                <th style="padding:10px 8px; text-align:left; width:80px;"></th>
+                <th style="padding:10px 8px; text-align:left; width:25%;">Name</th>
+                <th style="padding:10px 8px; text-align:left; width:25%;">Username</th>
+                <th style="padding:10px 8px; text-align:left; width:25%;">ID</th>
+                <th style="padding:10px 8px; text-align:left; width:calc(50% - 80px);">User type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($users as $user)
+            <tr style="border-bottom:1px solid #eee; align-items: center;" accesskey="`{{ $user->id }}`" onclick="window.location='{{ url('/staff_view/' . $user->id) }}'">
+                <td style="padding:10px 8px; width:80px;">
+                    @if($user->image)
+                        <img src="{{ asset('images/' . $user->image) }}" alt="User Image" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                    @else
+                        <span style="color:#aaa;">N/A</span>
+                    @endif
+                </td>
+                <td style="padding:10px 8px; width:25%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    {{ $user->name }}
+                </td>
+
+                <td style="padding:10px 8px; width:25%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    {{ $user->username }}
+                </td>
+                <td style="padding:10px 8px; width:25%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    {{ $user->id }}
+                </td>
+                <td style="padding:10px 8px; width:10%); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    {{ $user->user_type }}
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @else
+        <p>No staffs found.</p>
+    @endif
+</div>
 
 </div>
 
