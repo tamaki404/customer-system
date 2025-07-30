@@ -289,7 +289,7 @@ body {
     width: 100%;
     padding: 12px 0;
     background-color: #1976d2;
-    color: #fff;
+    color: #333;
     border: none;
     border-radius: 6px;
     font-size: 1.1rem;
@@ -301,6 +301,7 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 .date-filter-form {

@@ -145,3 +145,71 @@ body{
     margin: 15px;
     font-weight: bold;
 }
+
+.addStaffBtn{
+    font-size: 14px;
+    color: #333 !important;
+    font-weight: bold;
+    background-color: #ffde59;
+    padding: 10px;
+    width: 60px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.addStaffBtn:hover{
+    background-color: #ffd700;
+    transition: background-color 0.3s ease;
+}
+
+
+.receipt-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.form-grid > div {
+    flex: 1 1 45%;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-grid .full {
+    flex: 1 1 100%;
+    flex: 1 1 100%;
+}
+
+.receipt-form label {
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.receipt-form input,
+.receipt-form textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #cfd8dc;
+    border-radius: 6px;
+    font-size: 13px;
+    background: #f7f9fa;
+    transition: border 0.2s;
+    margin-bottom: 6px;
+}
+
+.receipt-form input:focus,
+.receipt-form textarea:focus {
+    border: 1.5px solid #1976d2;
+    outline: none;
+    background: #fff;
+}
+
+

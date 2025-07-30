@@ -164,6 +164,8 @@ public function addStaff(Request $request)
         'username' => 'required|string|min:3|max:50|unique:users,username',
         'password' => 'required|string|min:6|max:100',
         'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255|unique:users,email',
         'user_type' => 'required',
         'acc_status' => 'required',
         'action_by' => 'string',
@@ -186,6 +188,8 @@ public function addStaff(Request $request)
         'user_type' => $validated['user_type'],
         'acc_status' => $validated['acc_status'],
         'action_by' => $validated['action_by'],
+        'name' => $validated['name'],
+        'email' => $validated['email'],
 
     ]);
 

@@ -36,7 +36,7 @@
     <span class="close-btn">&times;</span>
      @if(auth()->user()->user_type === 'Customer')
         <div class="form-section">
-            <h3 class="form-title">Submit New Receipt</h3>
+            <h3 class="form-title" style="margin: 1px">Submit New Receipt</h3>
             <p>Please upload your receipt below. Ensure all information is accurate before submission.</p>
             <form action="/submit-receipt" class="receipt-form" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -91,13 +91,9 @@
                         <textarea name="notes" rows="3" placeholder="Optional notes"></textarea>
                     </div>
 
-                    {{-- <div>
-                        <label>Date of Entry</label>
-                        <input type="date" name="date" required>
-                    </div> --}}
                 </div>
 
-                <button type="submit" class="submit-btn" id="submitBtn">Submit Receipt</button>
+                <button type="submit" class="submit-btn" id="submitBtn" style="color: #333; font-size: 15px;">Submit Receipt</button>
             </form>
         </div>
     @endif

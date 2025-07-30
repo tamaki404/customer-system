@@ -28,20 +28,47 @@
   <div class="modal-content">
     <span class="close-btn">&times;</span>
      @if(auth()->user()->user_type === 'Admin')
-      
-        <form action="/add-staff" class="addStaff"  method="post" enctype="multipart/form-data">
-            @csrf
-            <input type="text" name="username" id="" placeholder="username">
-            <input type="password" name="password" id="" placeholder="password">
-            <img src="" name="image" alt="">
-            <input type="text" name="user_type"  value="Staff" hidden>
-            <input type="text" name="acc_status"  value="Active" hidden>
-            <input type="text" name="store_name" placeholder="Store Name" value="Rizal Poultry & Livestock Assoctiation .Inc" hidden>
-            <input type="file" name="image" accept="image/*" required>
-            <input type="text" name="action_by" value="{{ auth()->user()->username}}" hidden>
+        <div class="form-section">
+            <h3 class="form-title"  style="margin: 1px">Add New Staff Member</h3>
+            <p style="font-size: 16px;">Please ensure all information entered is accurate and complete.</p>
 
-             <button>Add Staff</button>
-        </form>
+            <form action="/add-staff"  class="receipt-form"  method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="form-grid">
+                    <div>
+                        <label>Name</label>
+                        <input type="text" name="name" placeholder="Name" required>
+                    </div>
+                    <div>
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="Email" value="" required>
+                    </div>
+                    <div>
+                        <label>Username</label>
+                        <input type="text" name="username" id="" placeholder="username" required maxlength="20">
+                    </div>
+                    <div>
+                        <label>Password</label>
+                        <input type="text" name="password" id="" placeholder="password" required>
+                    </div>
+                    <div>
+                        <label>Image</label>
+                        <input type="file" name="image" accept="image/*" required>
+                    </div>
+
+
+                    <input type="text" name="action_by" value="{{ auth()->user()->username}}" hidden>
+                    <input type="text" name="store_name" placeholder="Store Name" value="Sunny & Scramble" hidden>
+                    <input type="text" name="user_type"  value="Staff" hidden>
+                    <input type="text" name="acc_status"  value="Active" hidden>
+            
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn" style="color: #333; font-size: 15px;">Add Staff</button>
+
+            </form>
+        </div>
+
     @endif
 
     
@@ -50,26 +77,16 @@
     
 <div class="bodyFrame">
     <div class="titleFrame">
-        {{-- <h2>Staffs</h2> --}}
 
-
-        {{-- <form action="" method="GET" style="display:flex;align-items:center;gap:10px;">
-            <input type="text" name="search" placeholder="Search by ID, Name, or User Type" value="{{ request('search') }}" style="padding:8px 12px; border-radius:4px; border:1px solid #ccc; width:260px;">
-            <button type="submit" style="background:#1976d2;color:#fff;border:none;padding:8px 16px;border-radius:4px;font-weight:600;cursor:pointer;">Search</button>
-        </form> --}}
 
     <form method="GET" action="" class="date-search">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by ID, Name, or User Type">
                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
     </form>
-
-    
-
-    {{-- <div class="titleCount"> <h2>Staffs List</h2></div> --}}
  
 
         @if(auth()->user()->user_type === 'Admin')
-        <button id="openModalBtn">Add Staff</button>
+        <button id="openModalBtn" class="addStaffBtn">Add Staff</button>
         @endif
     </div>
 
@@ -85,7 +102,6 @@
                     <th style="padding:10px 8px;text-align:left;">Username</th>
                     <th style="padding:10px 8px;text-align:left;">User type</th>
                     <th style="padding:10px 8px;text-align:left;">Status</th>
-                    <th style="padding:10px 8px;text-align:left;">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -102,7 +118,6 @@
                     <td style="padding:10px 8px;">{{ $user->username }}</td>
                     <td style="padding:10px 8px;">{{ $user->user_type }}</td>
                     <td style="padding:10px 8px;">{{ $user->acc_status }}</td>
-                    <td><button style="background:#ffde59;color:#333;border:none;padding:6px 14px;border-radius:4px;font-weight:600;cursor:pointer;">Edit</button></td>
                 </tr>
                 @endforeach
             </tbody>

@@ -132,11 +132,15 @@
                 <div class="form-row">
                     <div class="form-group" >
                         <label>Name</label>
-                        <input type="text" name="username" value="{{ auth()->user()->name}}" disabled style="width: 300px;">
+                        <input type="text" name="username" value="{{ auth()->user()->name}}" disabled style="width: 150px;">
+                    </div>  
+                    <div class="form-group" >
+                        <label>Username</label>
+                        <input type="text" name="username" value="{{ auth()->user()->username }}" disabled style="width: 300px;">
                     </div>             
                     <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" name="username" value="{{ auth()->user()->username }} " disabled style="width: 150px;">
+                        <label>Email</label>
+                        <input type="text" name="email" value="{{ auth()->user()->email }}" disabled style="width: 300px;">
                     </div>
 
                 </div>
