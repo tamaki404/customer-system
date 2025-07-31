@@ -21,51 +21,60 @@
 
         <div class="mainBlock">
 
-                <div class="receiptBlock">
+                <div class="receiptBlock" style="overflow-x:auto;">
 
                     <table style="width:100%; border-collapse:collapse; ">
-                        <p class="receipt_num">Invoice {{ $receipt->invoice_number }}</p>
-
+                        <tr><th>Invoice#:</th><td>{{ $receipt->invoice_number }}</td></tr>
                         <tr><th>Store:</th><td style="font-size: 20px; font-weight: bold;">{{ $receipt->customer ? $receipt->customer->store_name : 'N/A' }}</td></tr>
-                        <tr><th>Customer:</th><td>{{ $receipt->customer ? $receipt->customer->name : 'N/A' }}</td></tr>
-                    @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
-                        <tr><th>Representative:</th><td>{{ $receipt->name }}</td></tr>
-                    @endif
+                        <tr><th>Representative:</th><td>{{ $receipt->customer ? $receipt->customer->name : 'N/A' }}</td></tr>
                         <tr><th>Amount:</th>  <td id="receiptAmount"  style="font-size: 18px; font-weight: bold; color: green;" data-amount="{{ $receipt->total_amount }}">
                         {{ $receipt->total_amount }}
                         </td></tr>
                         <tr><th>Purchase Date:</th><td>{{ $receipt->purchase_date }}</td></tr>
-                        <tr><th>Status:</th><td class="color: #333; font-size: 15px;">{{ $receipt->status }}</td></tr>
+                        <tr>
+                        <th>Status:</th>
+                                <td style="color:
+                                    @if($receipt->status === 'Verified') green
+                                    @elseif($receipt->status === 'Pending') #333
+                                    @elseif($receipt->status === 'Cancelled') orange
+                                    @elseif($receipt->status === 'Rejected') red
+                                    @else #333
+                                    @endif
+                                ;">{{ $receipt->status }}</td>r
+                        </tr>
 
                         
 
                     @if($receipt->verified_by !== NULL)
                         <tr><th>Action By:</th><td>{{ $receipt->verified_by ?? 'N/A' }}</td></tr>
-                        <tr><th></th>Action At:</th><td>{{ $receipt->verified_at ?? 'N/A' }}</td></tr>
+                        <tr><th>Action At:</th><td>    {{ $receipt->verified_at ? \Carbon\Carbon::parse($receipt->verified_at)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
                     @endif
                    
                     
                    </table>
 
-                    @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
 
-                        <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;margin-right:10px;">
+                    <div style="display: flex; flex-direction: column; width: 100%;">
+                    <p style="font-size: 16px; font-weight: bold; margin: 0; margin-top: 10px;">Notes:</p>
+                    <div class="notes-display">{{ $receipt->notes }}</div>
+
+                    @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
+                    <div class="actionBtn" >
+                        <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST">
                             @csrf
-                            <button type="submit" style="background:#1976d2;color:#fff;padding:10px 24px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Verify</button>
+                            <button type="submit" class="verifyButton">Verify</button>
                         </form>
-                        <form action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
+                        <form  action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
                             @csrf
-                            <button type="submit" style="background:#d32f2f;color:#fff;padding:10px 24px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Cancel</button>
+                            <button class="cancelAction" type="submit">Cancel</button>
                         </form>
                         <form action="{{ url('/receipts/reject/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
                             @csrf
-                            <button type="submit" style="background:#d32f2f;color:#fff;padding:10px 24px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Reject</button>
-                        </form>                        <a href="{{ url('/receipts') }}" style="display:inline-block;margin-top:20px;">&larr; Back to Receipts</a> 
+                            <button class="rejectAction" type="submit">Reject</button>
+                        </form>     
+                    </div>
                     @endif
 
-                    <div style="display: flex; flex-direction: column; width: 100%;">
-                    <p style="font-size: 16px; font-weight: bold;">Notes:</p>
-                    <div class="notes-display">{{ $receipt->notes }}</div>
                 </div>
 
 

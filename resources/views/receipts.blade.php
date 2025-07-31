@@ -126,75 +126,86 @@
             </div>
         @endif
 
+        <!-- Pagination Info -->
+        <div style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
+            Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }} ({{ $receipts->total() }} total receipts)
+        </div>
+
 
             @isset($receipts)
                @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
-                    @php
-                        // group receipts by year, month, and day
-                        $grouped = $receipts->sortByDesc('created_at')->groupBy(function($item) {
-                            return $item->created_at->format('Y-F');
-                        });
-                    @endphp
                     @if($receipts->isEmpty())
-                        <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts for this month.</div>
+                        <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts found.</div>
                     @else
-                        @foreach($grouped as $monthYear => $monthReceipts)
-                            @php
-                                $monthName = \Carbon\Carbon::parse($monthReceipts->first()->created_at)->format('F Y');
-                                $days = $monthReceipts->groupBy(function($item) {
-                                    return $item->created_at->format('F j, Y');
-                                });
-                            @endphp
-                            <h1 class="month-title" style="font-size: 1.3rem; font-weight: bold; text-align: center; color:#ffde59;">{{ $monthName }}</h1>
-                            @foreach($days as $day => $dayReceipts)
-                                <h2 class="day-title" style="margin:1.5rem 0 0.5rem 0; color:#333; font-size:1rem;  background-color: #f9f9f9; padding: 8px; align-items: center;">{{ $day }}</h2>
-                                <div class="table-wrapper">
-                                    <table class="receipt-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Receipt #</th>
-                                                <th>Customer</th>
-                                                <th>Amount</th>
-                                                <th>Purchase date</th>
-                                                <th>Status</th>
-                                                <th>Verified by</th>
-                                                <th>Image</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($dayReceipts as $receipt)
-                                                <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
-                                                    <td>{{ $receipt->receipt_number }}</td>
-                                                    <td>{{ $receipt->store_name }}</td>
-                                                    <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                                    <td>{{ $receipt->purchase_date}}</td>
-                                                    <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
-                                                    <td>{{ $receipt->verified_by }}</td>
-                                                    <td>
-                                                        @if($receipt->receipt_image)
-                                                            <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
-                                                        @else
-                                                            N/A
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                        <div class="table-wrapper">
+                            <table class="receipt-table">
+                                <thead>
+                                    <tr>
+                                        <th>Receipt #</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Purchase date</th>
+                                        <th>Status</th>
+                                        <th>Verified by</th>
+                                        <th>Image</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($receipts as $receipt)
+                                        <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
+                                            <td>{{ $receipt->receipt_number }}</td>
+                                            <td>{{ $receipt->store_name }}</td>
+                                            <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                            <td>{{ $receipt->purchase_date}}</td>
+                                            <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
+                                            <td>{{ $receipt->verified_by }}</td>
+                                            <td>
+                                                @if($receipt->receipt_image)
+                                                    <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination Controls -->
+                        <div class="pagination-wrapper">
+                            @if($receipts->hasPages())
+                                <div class="pagination-info">
+                                    Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }}
                                 </div>
-                            @endforeach
-                        @endforeach
+                                
+                                <div class="pagination-controls">
+                                    @if($receipts->onFirstPage())
+                                        <span>Previous</span>
+                                    @else
+                                        <a href="{{ $receipts->previousPageUrl() }}">
+                                            Previous
+                                        </a>
+                                    @endif
+                                    
+                                    @if($receipts->hasMorePages())
+                                        <a href="{{ $receipts->nextPageUrl() }}">
+                                            Next
+                                        </a>
+                                    @else
+                                        <span>Next</span>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
                     @endif
                 @elseif(auth()->user()->user_type === 'Customer')
                     <div class="title-wrapper">
                         <h2 class="title">Your Receipts</h2>  
                         <button id="openModalBtn">Submit a Receipt</button>
                     </div>
-                    @php
-                        $userReceipts = $receipts->where('id', $user->id)->sortByDesc('created_at');
-                    @endphp
-                    @if($userReceipts->isEmpty())
-                        <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts for this month.</div>
+                    @if($receipts->isEmpty())
+                        <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts found.</div>
                     @else
                         <div class="table-wrapper">
                             <table class="receipt-table">
@@ -209,7 +220,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($userReceipts as $receipt)
+                                    @foreach($receipts as $receipt)
                                         <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
                                             <td>{{ $receipt->receipt_number }}</td>
                                             <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
@@ -227,6 +238,33 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                        
+                        <!-- Pagination Controls for Customers -->
+                        <div class="pagination-wrapper">
+                            @if($receipts->hasPages())
+                                <div class="pagination-info">
+                                    Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }}
+                                </div>
+                                
+                                <div class="pagination-controls">
+                                    @if($receipts->onFirstPage())
+                                        <span>Previous</span>
+                                    @else
+                                        <a href="{{ $receipts->previousPageUrl() }}">
+                                            Previous
+                                        </a>
+                                    @endif
+                                    
+                                    @if($receipts->hasMorePages())
+                                        <a href="{{ $receipts->nextPageUrl() }}">
+                                            Next
+                                        </a>
+                                    @else
+                                        <span>Next</span>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     @endif
                 @endif

@@ -62,15 +62,45 @@ class ReceiptController extends Controller{
         return view('receipts_view', compact('receipt'));
     }
 
-    public function showUserReceipts()
+    public function showUserReceipts(Request $request)
     {
         $user = auth()->user();
-        if ($user->user_type === 'Staff' || $user->user_type === 'Admin') {
-            $receipts = Receipt::all();
-        } else {
-            $receipts = Receipt::where('id', $user->id)->get();
+        $query = Receipt::with('customer');
+        
+        // apply date range filter if provided
+        $from_date = $request->input('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $to_date = $request->input('to_date', now()->endOfMonth()->format('Y-m-d'));
+        
+        if ($from_date && $to_date) {
+            $query->whereBetween('created_at', [Carbon::parse($from_date)->startOfDay(), Carbon::parse($to_date)->endOfDay()]);
         }
-        return view('receipts', compact('receipts', 'user'));
+        
+        // apply search filter if provided
+        $search = $request->input('search', '');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('receipt_number', 'like', "%$search%")
+                  ->orWhere('store_name', 'like', "%$search%")
+                  ->orWhere('total_amount', 'like', "%$search%")
+                  ->orWhere('purchase_date', 'like', "%$search%")
+                  ->orWhere('status', 'like', "%$search%");
+            });
+        }
+        
+        if ($user->user_type === 'Staff' || $user->user_type === 'Admin') {
+            $receipts = $query->orderBy('created_at', 'desc')->paginate(50);
+        } else {
+            $receipts = $query->where('id', $user->id)->orderBy('created_at', 'desc')->paginate(50);
+        }
+        
+        // append query parameters to pagination links
+        $receipts->appends([
+            'from_date' => $from_date,
+            'to_date' => $to_date,
+            'search' => $search
+        ]);
+        
+        return view('receipts', compact('receipts', 'user', 'from_date', 'to_date', 'search'));
     }
 
 
@@ -139,10 +169,18 @@ class ReceiptController extends Controller{
         }
 
         if ($user->user_type === 'Staff' || $user->user_type === 'Admin') {
-            $receipts = $query->get();
+            $receipts = $query->orderBy('created_at', 'desc')->paginate(50);
         } else {
-            $receipts = $query->where('id', $user->id)->get();
+            $receipts = $query->where('id', $user->id)->orderBy('created_at', 'desc')->paginate(50);
         }
+        
+        // append query parameters to pagination links
+        $receipts->appends([
+            'from_date' => $from,
+            'to_date' => $to,
+            'search' => $search
+        ]);
+        
         return view('receipts', [
             'receipts' => $receipts,
             'user' => $user,

@@ -14,10 +14,10 @@
 
 .receiptFrame h2 {
     color: #333;
-    font-weight: bold;
-    font-size: 25px;
+    font-weight: 700;
+    font-size: 28px;
     margin: 0;
-
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .mainBlock {
@@ -33,28 +33,71 @@
 .receiptBlock {
     width: 78%;
     height: 100%;
-    background-color: #fefefe;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-    border-radius: 10px;
-    padding: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow-x: auto;
+
 }
 
-table tr,
-table td {
+.actionBtn{
+    display: flex;
+    flex-direction: row;
+}
+
+.receiptBlock::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ffde59, #ffde59, #ffde59);
+    border-radius: 16px 16px 0 0;
+}
+
+.receiptBlock table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+}
+
+.receiptBlock table tr {
     font-size: 15px;
     color: #333;
+    transition: all 0.3s ease;
 }
 
-table th {
+.receiptBlock table tr:hover {
+    background-color: rgba(25, 118, 210, 0.05);
+    transform: translateX(5px);
+}
+
+.receiptBlock table th {
     color: #6b6a6a;
-    font-weight: normal;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 8px;
+    border-bottom: 2px solid #e3f2fd;
+    text-align: left;
 }
 
-table td {
-    font-weight: bold;
+.receiptBlock table td {
+    font-weight: 600;
     font-size: 16px;
-    margin-left: auto;
-    text-align: right;
+    padding: 12px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+}
+
+.receiptBlock table tr:last-child td {
+    border-bottom: none;
 }
 
 .date {
@@ -85,20 +128,127 @@ table td {
 
 
 .notes-display {
-    width: 70%;
-    height: 200px;
-    background-color: #fff;
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    width: 100%;
+    min-height: 120px;
+    background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
     overflow-x: auto;
+    border: 1px solid #e0e0e0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #424242;
+    margin-top: 10px;
+
+}
+
+.cancelAction, .rejectAction, .verifyButton {
+    background:#e71a2b9e;
+    color:#fff;
+    padding:10px 24px;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+.rejectAction:hover{
+    background: #e71a2b;
+}
+.cancelAction{
+    background-color: #f0722473;
+
+}
+.cancelAction:hover{
+    background-color: #f07124;
+    
+}
+
+.verifyButton{
+    background:#ffde59;
+    color:#333;
+    width: 200px;
+}
+.verifyButton:hover {
+    background: #ffd54f;
+}
+
+
+.notes-display::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notes-display::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.notes-display::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.notes-display::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 .receipt_num {
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 24px;
+    color: #1976d2;
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border-radius: 12px;
+    border-left: 4px solid #1976d2;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.1);
 }
 
 
+
+/* Action Buttons Styling */
+.receiptBlock form {
+    margin: 15px 10px 15px 0;
+    display: inline-block;
+}
+
+.receiptBlock button[type="submit"] {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    letter-spacing: 0.5px;
+}
+
+
+
+
+
+
+/* Back link styling */
+.receiptBlock a[href*="/receipts"] {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    background: rgba(25, 118, 210, 0.1);
+}
+
+.receiptBlock a[href*="/receipts"]:hover {
+    background: rgba(25, 118, 210, 0.2);
+    transform: translateX(-5px);
+}
 
 .date-search {
     display: flex;
@@ -109,4 +259,49 @@ table td {
 
 .date-search input {
     border-radius: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .receiptFrame {
+        padding: 20px;
+    }
+    
+    .mainBlock {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .receiptBlock {
+        width: 100%;
+        padding: 20px;
+    }
+    
+    .imageBlock {
+        width: 100%;
+        height: auto;
+        min-height: 300px;
+    }
+    
+    .receiptBlock table th,
+    .receiptBlock table td {
+        padding: 8px 4px;
+        font-size: 14px;
+    }
+    
+    .receipt_num {
+        font-size: 20px;
+        padding: 12px;
+    }
+    
+    .receiptBlock button[type="submit"] {
+        padding: 10px 16px;
+        font-size: 12px;
+        margin: 5px;
+    }
+    
+    .receiptBlock form {
+        display: block;
+        margin: 10px 0;
+    }
 }

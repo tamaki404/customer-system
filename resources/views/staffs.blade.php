@@ -103,9 +103,17 @@
         @endif
     </div>
 
-    <div class="titleCount"> <h2>Staffs List</h2> <span style=" width: auto; display: flex; flex-direction: row; gap: 5px;"><p style="font-weight: bold; font-size: 15px;">Total:</p>{{ count($users) }}</span></div>
+    <div class="titleCount"> 
+        <h2>Staffs List</h2> 
 
-<div class="userList">
+    </div>
+    
+    <!-- Pagination Info -->
+    <div style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
+        Page {{ $users->currentPage() }} of {{ $users->lastPage() }} ({{ $users->total() }} total staff)
+    </div>
+
+<div class="userList" style="padding: 15px;">
     @if(isset($users) && count($users) > 0)
     <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
         <thead>
@@ -144,6 +152,31 @@
             @endforeach
         </tbody>
     </table>
+    
+    <!-- Pagination Controls -->
+    <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">
+        @if($users->hasPages())
+            <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
+                @if($users->onFirstPage())
+                    <span style="color: #ccc; cursor: not-allowed;">Previous</span>
+                @else
+                    <a href="{{ $users->previousPageUrl() }}" 
+                       style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">
+                        Previous
+                    </a>
+                @endif
+                
+                @if($users->hasMorePages())
+                    <a href="{{ $users->nextPageUrl() }}" 
+                       style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">
+                        Next
+                    </a>
+                @else
+                    <span style="color: #ccc; cursor: not-allowed;">Next</span>
+                @endif
+            </div>
+        @endif
+    </div>
     @else
         <div class="noStaff">No staffs found.</div>
     @endif

@@ -4,39 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{-- <style>
-        .customerFrame {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 30px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 12px #0001;
-        }
-        .customerFrame h2 {
-            color: #1976d2;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 24px;
-        }
-        .customerFrame p {
-            font-size: 1.1rem;
-            color: #333;
-            margin: 8px 0;
-        }
-        .customerFrame hr {
-            margin: 32px 0;
-            border: none;
-            border-top: 1.5px solid #eee;
-        }
-        .customerFrame h3 {
-            color: #ffde59;
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-      
-    </style> --}}
+  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -96,8 +64,15 @@
                             <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
                                 <td>{{ $receipt->receipt_number }}</td>
                                 <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                <td>{{ $receipt->created_at }}</td>
-                                <td>{{ $receipt->status }}</td>
+                                <td>{{ $receipt->created_at->format('F j, Y') }}</td>
+                                <td style="color:
+                                    @if($receipt->status === 'Verified') green
+                                    @elseif($receipt->status === 'Pending') #333
+                                    @elseif($receipt->status === 'Cancelled') orange
+                                    @elseif($receipt->status === 'Rejected') red
+                                    @else #333
+                                    @endif
+                                ;">{{ $receipt->status }}</td>
                             </tr>
                             @endforeach
                         </tbody>

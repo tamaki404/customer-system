@@ -32,8 +32,14 @@ class ViewController extends Controller
 
             });
         }
-        $users = $query->get();
-        return view('staffs', compact('users', 'user'));
+        $users = $query->paginate(10);
+        
+        // Append search parameter to pagination links
+        if ($search) {
+            $users->appends(['search' => $search]);
+        }
+        
+        return view('staffs', compact('users', 'user', 'search'));
     }
 
     public function showCustomers()
@@ -48,9 +54,15 @@ class ViewController extends Controller
                   ->orWhere('username', 'like', "%$search%");
             });
         }
-        $users = $query->get();
+        $users = $query->paginate(25);
         $verifiedCustomersCount = User::where('user_type', 'Customer')->where('acc_status', 'accepted')->count();
-        return view('customers', compact('users', 'verifiedCustomersCount'));
+        
+        // Append search parameter to pagination links
+        if ($search) {
+            $users->appends(['search' => $search]);
+        }
+        
+        return view('customers', compact('users', 'verifiedCustomersCount', 'search'));
     }
     public function viewCustomer($id)
     {
