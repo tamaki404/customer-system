@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/registration.css') }}">
 
     <title>Sign Up</title>
 </head>
@@ -13,58 +13,109 @@
 
 <form method="POST" action="/register-user" class="logForm" id="registerForm" enctype="multipart/form-data">
     @csrf
-    <h2>Create Account</h2>
-    {{-- <p>Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod</p>
-    <span><p>Already have an account?</p> <a href="/">Sign In</a></span>
+    <div class="companyDetails">
+        <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image">
+        <h2>Create Account</h2>
+        <p class="kindly-mess">Please fill out the form below to create your account</p>
+        <span>Already have an account? <a href="/login">Sign In</a></span>
+
+         
+
+        
+        {{-- company details --}}
+        <div class="form-cluster" style="margin-top: 40px;">
+            <div class="form-group">
+                <p>Company name</p>
+                <input type="text" name="store_name" id="store_name" placeholder="" required>
+                <small id="store-name-feedback" style="color:red;"></small>
+            </div>
+
+            <div class="form-group">
+                <p>Address</p>
+                <input type="text" name="address" placeholder="Barangay, City, Province" required>
+                <small id="address-feedback" style="color:red;"></small>
+            </div>
+        </div>
+
+        <div class="form-cluster">
+
+            <div class="form-group">
+                <p>Email Address</p>
+                <input type="email" name="email" placeholder="" required>
+                <small id="email-feedback" style="color:red;"></small>
+            </div>
+
+            <div class="form-group">
+                <p>Representative' Name</p>
+                <input type="text" name="name" placeholder="ex: Juan DelaCruz" required>
+                <small id="name-feedback" style="color:red;"></small>
+            </div>            
+        </div>
+
+        <div class="form-cluster">
 
 
-    {{-- company details --}}
-    <span>Company name</span>
-    <input type="text" name="store_name" id="store_name" placeholder="" required>
-    <small id="store-name-feedback" style="color:red;"></small>
-    <span>Address</span>
-    <input type="text" name="address" placeholder="Barangay, City, Province" required>
-    <span>Company image</span>
-    <input type="file" name="image" id="companyImage" accept="image/*" required>
-    <small id="company-image-feedback" style="color:red; display:block; min-height:1.2em;"></small>
-    <span>Representative' Name</span>
-    <input type="text" name="name" placeholder="ex: Juan DelaCruz" required>
-    <span>Email Address</span>
-    <input type="email" name="email" placeholder="" required>
-    <span>Mobile Number (optional)</span>
-    <input type="tel" name="mobile" 
-       placeholder="ex: 09123456789" 
-       pattern="^09\d{9}$" 
-       maxlength="11" 
-       minlength="11" 
-    >
-    <span>Telephone (optional)</span>
-    <input type="tel" name="telephone" 
-    
-       placeholder="ex: 02-1234567 or 045-1234567" 
-       pattern="^0\d{1,3}-\d{6,7}$"
-    >
+            <div class="form-group">
+                <p>Mobile Number (optional)</p>
+                <input type="tel" name="mobile" 
+                placeholder="ex: 09123456789" 
+                pattern="^09\d{9}$" 
+                maxlength="11" 
+                minlength="11" 
+                >
+                <small id="mobile-feedback" style="color:red;"></small>               
+            </div>
 
-    
-    {{-- security --}}
-    <span>Username</span>
-    <input type="text" name="username" id="username" placeholder="" maxlength="15" minlength="4" required>
-    <small id="username-feedback" style="color:red;"></small>
-<span>Password</span>
-<input type="password" name="password" id="password" placeholder="Password" required>
-<small id="password-feedback" style="color:red;"></small>
-<span>Confirm password</span>
-<input type="password" name="password_confirmation" id="confirmPassword" placeholder="Confirm Password" required>
-<small id="confirm-password-feedback" style="color:red;"></small>
-    {{-- <input type="password" name="password_confirmation" id="confirmPassword" required> --}}
-   
+            <div class="form-group">
+                <span>Telephone (optional)</span>
+                <input type="tel" name="telephone" placeholder="ex: 02-1234567 or 045-1234567" pattern="^0\d{1,3}-\d{6,7}$">
+            </div>
+        </div>
+
+        <div class="form-cluster">
+            <div class="form-group">
+                <p>Company image</p>
+                <input type="file" name="image" id="companyImage" accept="image/*" required>
+                <small id="company-image-feedback" style="color:red; display:block; min-height:1.2em;"></small>
+            </div>
+
+            <div class="form-group">
+                <p>Username</p>
+                <input type="text" name="username" id="username" placeholder="" maxlength="15" minlength="4" required>
+                <small id="username-feedback" style="color:red;"></small>
+            </div>
+
+        </div>
+
+        <div class="form-cluster">
+            <div class="form-group">
+                <p>Password</p>
+                <input type="password" name="password" id="password" placeholder="Password" required>
+                <small id="password-feedback" style="color:red;"></small>
+            </div>        
+            <div class="form-group">
+                <p>Confirm password</p>
+                <input type="password" name="password_confirmation" id="confirmPassword" placeholder="Confirm Password" required>
+                <small id="confirm-password-feedback" style="color:red;"></small>
+            </div> 
+
+        </div>
+
+
+        <button type="submit">Sign Up</button>
+
+
+       
+
+
+    </div>
+
 
     {{-- hidden inputs --}}
     <input type="text" name="user_type" value="Customer" hidden>    
     <input type="text" name="acc_status"  value="Pending" hidden>
     <input type="text" name="action_by" value="Customer" hidden>
 
-    <button type="submit">Sign Up</button>
     
 </form>
 @if ($errors->any())

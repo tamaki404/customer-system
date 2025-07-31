@@ -1,0 +1,142 @@
+
+body{
+
+    overflow: hidden;
+    padding: 60px;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 13px;
+    background-color: #ffde59;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} 
+
+ .logForm{
+    width: 50%;
+    height: 100%;
+    padding: 20px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    gap:10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    border-radius: 20px;
+ }
+
+ .companyDetails{
+    background-color: transparent;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    height: 100%;
+ }
+
+ .companyDetails img{
+    height: 100px;
+    margin: 20px;
+ }
+
+ .securityDiv{
+    background-color: rgb(235, 171, 182);
+    padding: 10px;
+    align-items: start;
+    justify-content: start;
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    height: 100%;
+ }
+
+ .form-cluster{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    justify-content: end;
+    align-items: center;
+
+ }
+
+ .form-group{
+    width: 100%;
+    height: auto;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin: 0;
+    gap: 5px;
+
+ }
+
+ .form-group p{
+    font-size: 15px;
+    color: #333;
+    font-weight: normal;
+    margin: 0;
+ }
+
+ .form-group input{
+    outline: none;
+    border-radius: 10px;
+    width: 80%;
+    padding: 15px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+ }
+
+
+ .kindly-mess{
+    font-size: 15px;
+    margin: 0;
+ }
+
+ .companyDetails h2{
+    margin: 0;
+    margin-bottom: 5px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #333;
+ }
+
+ .companyDetails button{
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    width: 250px;
+    margin-top: 20px;
+    border: none;
+    background-color: #ffde59;
+
+ }
+
+ .companyDetails button:hover{
+    background-color: #e8c94f;
+ }
+
+ .companyDetails span{
+    font-size: 15px;
+    color: #333;
+    margin: 10px;
+ }
+
+ span a{
+    font-weight: bold;
+    color: #fb933a;
+    text-decoration: none;
+ }
+ span a:hover{
+    color: #dd7f2d;
+ }
