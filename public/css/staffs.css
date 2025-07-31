@@ -224,6 +224,29 @@ body{
     font-size: 15px;
 }
 
+/* Status Badge Styles */
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+}
+
+.status-badge.active {
+    background: linear-gradient(135deg, #4caf50, #45a049);
+}
+
+.status-badge.pending {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+.status-badge.suspended {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
 /* Pagination Styles */
 .pagination-wrapper {
     margin-top: 2rem;

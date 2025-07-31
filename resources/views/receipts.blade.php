@@ -155,9 +155,19 @@
                                         <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
                                             <td>{{ $receipt->receipt_number }}</td>
                                             <td>{{ $receipt->store_name }}</td>
-                                            <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                            <td>{{ $receipt->purchase_date}}</td>
-                                            <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
+                                            <td style="color: green; font-weight: bold;">₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('F j, Y') }}</td>
+                                            {{-- <td><span class="status {{ strtolower($receipt->status) }}"
+                                                >{{ $receipt->status }}</span>
+                                            </td> --}}
+                                            <td style="color:
+                                                @if($receipt->status === 'Verified') green
+                                                @elseif($receipt->status === 'Pending') #333
+                                                @elseif($receipt->status === 'Cancelled') orange
+                                                @elseif($receipt->status === 'Rejected') red
+                                                @else #333
+                                                @endif
+                                            ;">{{ $receipt->status }}</td>
                                             <td>{{ $receipt->verified_by }}</td>
                                             <td>
                                                 @if($receipt->receipt_image)

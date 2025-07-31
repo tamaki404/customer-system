@@ -22,7 +22,6 @@
         <div class="mainBlock">
 
                 <div class="receiptBlock" style="overflow-x:auto;">
-
                     <table style="width:100%; border-collapse:collapse; ">
                         <tr><th>Invoice#:</th><td>{{ $receipt->invoice_number }}</td></tr>
                         <tr><th>Store:</th><td style="font-size: 20px; font-weight: bold;">{{ $receipt->customer ? $receipt->customer->store_name : 'N/A' }}</td></tr>
@@ -42,15 +41,11 @@
                                     @endif
                                 ;">{{ $receipt->status }}</td>r
                         </tr>
-
-                        
-
                     @if($receipt->verified_by !== NULL)
                         <tr><th>Action By:</th><td>{{ $receipt->verified_by ?? 'N/A' }}</td></tr>
                         <tr><th>Action At:</th><td>    {{ $receipt->verified_at ? \Carbon\Carbon::parse($receipt->verified_at)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
                     @endif
-                   
-                    
+
                    </table>
 
 

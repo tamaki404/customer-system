@@ -119,15 +119,16 @@
         <thead>
             <tr style="background:#f7f7fa;">
                 <th style="padding:10px 8px; text-align:left; width:80px;"></th>
-                <th style="padding:10px 8px; text-align:left; width:25%;">Name</th>
-                <th style="padding:10px 8px; text-align:left; width:25%;">Username</th>
-                <th style="padding:10px 8px; text-align:left; width:25%;">ID</th>
-                <th style="padding:10px 8px; text-align:left; width:calc(50% - 80px);">User type</th>
+                <th style="padding:10px 8px; text-align:left; width:20%;">Name</th>
+                <th style="padding:10px 8px; text-align:left; width:20%;">Username</th>
+                <th style="padding:10px 8px; text-align:left; width:15%;">ID</th>
+                <th style="padding:10px 8px; text-align:left; width:15%;">User type</th>
+                <th style="padding:10px 8px; text-align:left; width:15%;">Status</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($users as $user)
-            <tr style="border-bottom:1px solid #eee; align-items: center;" accesskey="`{{ $user->id }}`" onclick="window.location='{{ url('/staff_view/' . $user->id) }}'">
+            <tr style="border-bottom:1px solid #eee; align-items: center; cursor: pointer;" onclick="window.location='{{ url('/staff_view/' . $user->id) }}'">
                 <td style="padding:10px 8px; width:80px;">
                     @if($user->image)
                         <img src="{{ asset('images/' . $user->image) }}" alt="User Image" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
@@ -135,18 +136,23 @@
                         <span style="color:#aaa;">N/A</span>
                     @endif
                 </td>
-                <td style="padding:10px 8px; width:25%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 15px;">
                     {{ $user->name }}
                 </td>
 
-                <td style="padding:10px 8px; width:25%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 15px;">
                     {{ $user->username }}
                 </td>
-                <td style="padding:10px 8px; width:25%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 15px;">
                     {{ $user->id }}
                 </td>
-                <td style="padding:10px 8px; width:10%); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 15px;">
                     {{ $user->user_type }}
+                </td>
+                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 15px;">
+                    <span class="status-badge {{ $user->acc_status ?? 'active' }}" style="padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: white;">
+                        {{ $user->acc_status ?? 'Active' }}
+                    </span>
                 </td>
             </tr>
             @endforeach

@@ -5,6 +5,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Receipt;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 
 class ViewController extends Controller
@@ -71,6 +72,18 @@ class ViewController extends Controller
         $receipts = Receipt::where('id', $id)->orderBy('created_at', 'desc')->get();
         return view('customer_view', compact('customer', 'receipts'));
     }
+
+    public function viewStaff($id)
+    {
+        $staff = User::findOrFail($id);
+        
+        // Check if user has permission to view this staff
+        if (auth()->user()->user_type !== 'Admin' && auth()->user()->id !== $staff->id) {
+            abort(403, 'Unauthorized access');
+        }
+        
+        return view('staff_view', compact('staff'));
+    }
     public function dashboard()
     {
         $user = auth()->user();
@@ -97,6 +110,145 @@ class ViewController extends Controller
         $customer->acc_status = 'suspended';
         $customer->save();
         return redirect()->route('customer.view', $id)->with('success', 'Customer suspended successfully!');
+    }
+
+    // Staff Management Methods
+    public function updateStaffProfile(Request $request, $id)
+    {
+        $staff = User::findOrFail($id);
+        
+        // Check permissions
+        if (auth()->user()->user_type !== 'Admin' && auth()->user()->id !== $staff->id) {
+            abort(403, 'Unauthorized access');
+        }
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id,
+        ]);
+        
+        $staff->update([
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+        ]);
+        
+        return redirect()->route('staff.view', $id)->with('success', 'Profile updated successfully!');
+    }
+
+    public function changeStaffPassword(Request $request, $id)
+    {
+        $staff = User::findOrFail($id);
+        
+        // Check permissions
+        if (auth()->user()->user_type !== 'Admin' && auth()->user()->id !== $staff->id) {
+            abort(403, 'Unauthorized access');
+        }
+        
+        // If admin is changing someone else's password, don't require current password
+        if (auth()->user()->user_type === 'Admin' && auth()->user()->id !== $staff->id) {
+            $request->validate([
+                'new_password' => 'required|string|min:8|confirmed',
+            ]);
+        } else {
+            // For self-password change, require current password
+            $request->validate([
+                'current_password' => 'required',
+                'new_password' => 'required|string|min:8|confirmed',
+            ]);
+            
+            // Verify current password
+            if (!Hash::check($request->current_password, $staff->password)) {
+                return back()->withErrors(['current_password' => 'Current password is incorrect']);
+            }
+        }
+        
+        $staff->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+        
+        return redirect()->route('staff.view', $id)->with('success', 'Password changed successfully!');
+    }
+
+    public function uploadStaffImage(Request $request, $id)
+    {
+        $staff = User::findOrFail($id);
+        
+        // Check permissions
+        if (auth()->user()->user_type !== 'Admin' && auth()->user()->id !== $staff->id) {
+            abort(403, 'Unauthorized access');
+        }
+        
+        $request->validate([
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+        
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->file('image')->extension();
+            $request->file('image')->move(public_path('images'), $imageName);
+            
+            $staff->update(['image' => $imageName]);
+        }
+        
+        return redirect()->route('staff.view', $id)->with('success', 'Image uploaded successfully!');
+    }
+
+    public function updateStaffStatus(Request $request, $id)
+    {
+        $staff = User::findOrFail($id);
+        
+        // Only admins can update staff status
+        if (auth()->user()->user_type !== 'Admin') {
+            abort(403, 'Unauthorized access');
+        }
+        
+        $request->validate([
+            'acc_status' => 'required|in:active,pending,suspended',
+        ]);
+        
+        $staff->update(['acc_status' => $request->acc_status]);
+        
+        $statusMessages = [
+            'active' => 'Staff account activated successfully!',
+            'pending' => 'Staff account set to pending status!',
+            'suspended' => 'Staff account suspended successfully!'
+        ];
+        
+        return redirect()->route('staff.view', $id)->with('success', $statusMessages[$request->acc_status]);
+    }
+
+    public function deactivateStaff($id)
+    {
+        $staff = User::findOrFail($id);
+        
+        // Only admins can deactivate staff
+        if (auth()->user()->user_type !== 'Admin') {
+            abort(403, 'Unauthorized access');
+        }
+        
+        $staff->update(['acc_status' => 'suspended']);
+        
+        return redirect()->route('staff.view', $id)->with('success', 'Staff account deactivated successfully!');
+    }
+
+    public function deleteStaff($id)
+    {
+        $staff = User::findOrFail($id);
+        
+        // Only admins can delete staff
+        if (auth()->user()->user_type !== 'Admin') {
+            abort(403, 'Unauthorized access');
+        }
+        
+        // Prevent admin from deleting themselves
+        if (auth()->user()->id === $staff->id) {
+            return back()->withErrors(['error' => 'You cannot delete your own account']);
+        }
+        
+        $staff->delete();
+        
+        return redirect()->route('staffs')->with('success', 'Staff account deleted successfully!');
     }
 
 

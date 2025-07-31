@@ -1,0 +1,435 @@
+body {
+    background-color: #f5f7fa;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main Frame - matches your consistent design pattern */
+.staffFrame {
+    display: flex;
+    flex-direction: column;
+    align-content: start;
+    justify-content: start;
+    background-color: #f9f9f9;
+    padding: 60px;
+    gap: 10px;
+    width: 97%;
+    height: 97%;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 15px;
+}
+
+/* Title Frame - matches staffs.css pattern */
+.titleFrame {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: transparent;
+    margin-bottom: 20px;
+}
+
+.titleFrame h2 {
+    color: #333;
+    font-size: 25px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.info-item span{
+    font-size: 15px;
+    color: #333;
+}
+
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #ffde59;
+    color: #333;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    transition: background-color 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #ffd700;
+    color: #333;
+    text-decoration: none;
+}
+
+/* Staff Details Section */
+.staffDetails {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+/* Image Section */
+.imageSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    min-width: 200px;
+}
+
+.staff-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ffde59;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.no-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #ffde59;
+    color: #999;
+    font-size: 14px;
+}
+
+.no-image i {
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
+.upload-btn {
+    padding: 10px 20px;
+    background-color: #ffde59;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    transition: background-color 0.3s ease;
+}
+
+.upload-btn:hover {
+    background-color: #ffd700;
+}
+
+/* Details Section */
+.detailsSection {
+    flex: 1;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: #6b6a6a;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+
+/* Status and Role Badges */
+.status-badge, .role-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.active {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+}
+
+.status-badge.pending {
+    background-color: #fff3e0;
+    color: #333;
+}
+
+.status-badge.suspended {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.role-badge.admin {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.role-badge.staff {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+/* Actions Section */
+.actionsSection {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+.actionsSection h3 {
+    color: #333;
+    font-size: 20px;
+    margin: 0 0 20px 0;
+    font-weight: bold;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.edit-btn {
+    background-color: #ffde59;
+    color: #333;
+}
+
+.edit-btn:hover {
+    background-color: #ffd700;
+}
+
+.password-btn {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.password-btn:hover {
+    background-color: #bbdefb;
+}
+
+.status-btn {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.status-btn:hover {
+    background-color: #e1bee7;
+}
+
+.deactivate-btn {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.deactivate-btn:hover {
+    background-color: #ffe0b2;
+}
+
+.delete-btn {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.delete-btn:hover {
+    background-color: #ffcdd2;
+}
+
+/* Alerts */
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.alert.success {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.alert.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.alert.error ul {
+    margin: 5px 0 0 0;
+    padding-left: 20px;
+}
+
+/* Modal Styles - matches your existing modal patterns */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #999;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.modal-content h3 {
+    color: #333;
+    margin: 0 0 20px 0;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #ffde59;
+    box-shadow: 0 0 0 3px rgba(255, 222, 89, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 25px;
+}
+
+.save-btn, .cancel-btn, .status-btn, .deactivate-btn, .delete-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.save-btn {
+    background-color: #ffde59;
+    color: #333;
+}
+
+.save-btn:hover {
+    background-color: #ffd700;
+}
+
+.cancel-btn {
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.cancel-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .staffFrame {
+        padding: 20px;
+    }
+    
+    .staffDetails {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 20px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+} 

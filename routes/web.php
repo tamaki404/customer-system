@@ -70,6 +70,15 @@ Route::get('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name
 
 Route::get('/customers', action: [ViewController::class, 'showCustomers'])->name('customers');
 Route::get('/customer_view/{idstomer_id}', action: [ViewController::class, 'viewCustomer'])->name('customer.view');
+Route::get('/staff_view/{staff_id}', action: [ViewController::class, 'viewStaff'])->name('staff.view');
+
+// Staff Management Routes
+Route::post('/staff/update-profile/{id}', [ViewController::class, 'updateStaffProfile'])->name('staff.update.profile');
+Route::post('/staff/change-password/{id}', [ViewController::class, 'changeStaffPassword'])->name('staff.change.password');
+Route::post('/staff/upload-image/{id}', [ViewController::class, 'uploadStaffImage'])->name('staff.upload.image');
+Route::post('/staff/update-status/{id}', [ViewController::class, 'updateStaffStatus'])->name('staff.update.status');
+Route::post('/staff/deactivate/{id}', [ViewController::class, 'deactivateStaff'])->name('staff.deactivate');
+Route::delete('/staff/delete/{id}', [ViewController::class, 'deleteStaff'])->name('staff.delete');
 Route::get('/receipt_image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
 
 Route::get('/date-search', [ReceiptController::class, 'dateSearch'])->name('date.search');
