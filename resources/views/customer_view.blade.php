@@ -14,16 +14,17 @@
 <body>
     <div class="customerFrame">
 
-        {{-- <div>
-            <form action="{{ url('/customer/accept/' . $customer->id) }}" method="POST" style="display:inline-block;margin-right:10px;">
-                @csrf
-                <button type="submit" style="background:#1976d2;color:#fff;padding:8px 22px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Accept</button>
-            </form>
-            <form action="{{ url('/customer/suspend/' . $customer->id) }}" method="POST" style="display:inline-block;">
-                @csrf
-                <button type="submit" style="background:#d32f2f;color:#fff;padding:8px 22px;border:none;border-radius:6px;font-weight:600;cursor:pointer;">Suspend</button>
-            </form>
-        </div> --}}
+        @if(session('success'))
+            <div class="alert alert-success" style="background: #d4edda; color: #155724; ; position: absolute; z-index: 100; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+                {{ session('error') }}
+            </div>
+        @endif
         
         <h2>Customer Details</h2>
 
@@ -36,17 +37,82 @@
                 <p class="customer-id">cID: {{ $customer->id }}</p>
                 <p class="store-name">{{ $customer->store_name}}</p>
                 <span class="username"><p class="handle">Handled by</p><p>{{ $customer->name }}</p></span>
-                {{-- <p><strong>Account Status:</strong> {{ $customer->acc_status}}</p> --}}
+                
+
+                <div class="statusButton">
+                    <!-- Account Status Display -->
+                    <div class="status-section" style="margin: 15px 0;">
+                        <span class="status-badge" style="
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            width: auto;
+                            @if($customer->acc_status === 'Active')
+                                background: #d4edda;
+                                color: #155724;
+                                border: 1px solid #c3e6cb;
+                            @elseif($customer->acc_status === 'accepted')
+                                background: #d1ecf1;
+                                color: #0c5460;
+                                border: 1px solid #bee5eb;
+                            @elseif($customer->acc_status === 'suspended')
+                                background: #f8d7da;
+                                color: #721c24;
+                                border: 1px solid #f5c6cb;
+                            @else
+                                background: #fff3cd;
+                                color: #856404;
+                                border: 1px solid #ffeaa7;
+                            @endif
+                        ">
+                            {{ $customer->acc_status }}
+                        </span>
+                    </div>
+
+                <!-- Action Buttons -->
+                    @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
+                        <div class="action-buttons" style="margin: 20px 0;">
+                            @if($customer->acc_status !== 'Active')
+                                <form action="{{ url('/customer/activate/' . $customer->id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
+                                    @csrf
+                                    <button type="submit" class="activate-btn" onmouseover="this.style.background='#218838'" onmouseout="this.style.background='#28a745'">
+                                        Activate Account
+                                    </button>
+                                </form>
+                            @endif
+
+                            @if($customer->acc_status === 'Active')
+                                <form action="{{ url('/customer/suspend/' . $customer->id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
+                                    @csrf
+                                    <button type="submit" class="suspend-btn">
+                                         Suspend Account
+                                    </button>
+                                </form>
+                            @endif
+
+                            @if($customer->acc_status === 'suspended')
+                                <form action="{{ url('/customer/activate/' . $customer->id) }}" method="POST" style="display: inline-block;">
+                                    @csrf
+                                    <button type="submit" class="reactivate-btn">
+                                        Reactivate Account
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                @endif
+                </div>
+
+
                 <p style="font-size: 14px;">Joined on {{ $customer->created_at -> format('F Y')}}</p>
             </div>
 
-
         </div>
-
 
         <div class="receiptsCorner">
             <hr style="margin:32px 0;">
-            {{-- <p class="receiptTitle">Receipts sent</p> --}}
             <div style="overflow-x:auto;">
             
             @if(isset($receipts) && count($receipts) > 0)
@@ -84,13 +150,21 @@
 
         </div>
 
-
-
-
-
-
-
     </div>
+
+    <script>
+        // Auto-hide success/error messages after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.5s ease';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 500);
+            });
+        }, 5000);
+    </script>
 </body>
 </html>
 

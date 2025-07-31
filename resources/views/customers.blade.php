@@ -46,6 +46,7 @@
                     <th style="padding:10px 8px;text-align:left;">Image</th>
                     <th style="padding:10px 8px;text-align:left;">Store Name</th>
                     <th style="padding:10px 8px;text-align:left;">Account Status</th>
+                    <th style="padding:10px 8px;text-align:left;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -60,7 +61,66 @@
                         @endif
                     </td>
                     <td style="padding:10px 8px;">{{ $user->store_name ?? 'N/A' }}</td>
-                    <td style="padding:10px 8px;">{{ $user->acc_status ?? 'N/A' }}</td>
+                    <td style="padding:10px 8px;">
+                        <span class="status-badge" style="
+                            padding: 4px 8px;
+                            border-radius: 12px;
+                            font-size: 11px;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            @if($user->acc_status === 'Active')
+                                background: #d4edda;
+                                color: #155724;
+                                border: 1px solid #c3e6cb;
+                            @elseif($user->acc_status === 'accepted')
+                                background: #d1ecf1;
+                                color: #0c5460;
+                                border: 1px solid #bee5eb;
+                            @elseif($user->acc_status === 'suspended')
+                                background: #f8d7da;
+                                color: #721c24;
+                                border: 1px solid #f5c6cb;
+                            @else
+                                background: #fff3cd;
+                                color: #856404;
+                                border: 1px solid #ffeaa7;
+                            @endif
+                        ">
+                            @if($user->acc_status === 'Active')
+                                {{ $user->acc_status }}
+                            @elseif($user->acc_status === 'accepted')
+                                 {{ $user->acc_status }}
+                            @elseif($user->acc_status === 'suspended')
+                                {{ $user->acc_status }}
+                            @else
+                                {{ $user->acc_status ?? 'Pending' }}
+                            @endif
+                        </span>
+                    </td>
+                    <td style="padding:10px 8px;">
+                        @if($user->acc_status !== 'Active')
+                            <form action="{{ url('/customer/activate/' . $user->id) }}" method="POST" style="display: inline-block;">
+                                @csrf
+                                <button type="submit" class="quick-activate-btn" style="
+                                    background: #28a745;
+                                    color: white;
+                                    padding: 6px 12px;
+                                    border: none;
+                                    border-radius: 4px;
+                                    font-size: 11px;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                " onmouseover="this.style.background='#218838'" onmouseout="this.style.background='#28a745'" onclick="event.stopPropagation();">
+                                    Activate
+                                </button>
+                            </form>
+                        @else
+                            <span style="color: #28a745; font-size: 11px; font-weight: 600;"></span>
+                        @endif
+                    </td>
                 </tr>
                 @endforeach
             </tbody>

@@ -110,7 +110,7 @@
                     <i class="fas fa-key"></i> Change Password
                 </button>
                 
-                                 @if(auth()->user()->user_type === 'Admin' && auth()->user()->id !== $staff->id)
+             @if(auth()->user()->user_type === 'Admin' && auth()->user()->id !== $staff->id)
                  <!-- Update Status -->
                  <button class="action-btn status-btn" onclick="openStatusModal()">
                      <i class="fas fa-user-edit"></i> Update Status

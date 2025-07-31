@@ -25,7 +25,7 @@ class CheckUserStatus
         // Check if user account is active
         if ($user->acc_status !== 'Active' && $user->acc_status !== 'active') {
             auth()->logout();
-            return redirect()->route('login')->with('error', 'Your account is not active. Please contact administrator.');
+            return redirect()->route('login')->with('error', 'Your account is not active. Please wait for confirmation.');
         }
 
         // Check if email is verified (optional - you can remove this if not needed)

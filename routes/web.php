@@ -121,6 +121,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         
         // Customer accept/suspend actions
         Route::post('/customer/accept/{id}', [ViewController::class, 'acceptCustomer'])->name('customer.accept');
+        Route::post('/customer/activate/{id}', [ViewController::class, 'activateCustomer'])->name('customer.activate');
         Route::post('/customer/suspend/{id}', [ViewController::class, 'suspendCustomer'])->name('customer.suspend');
     });
 });

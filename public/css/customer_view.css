@@ -63,6 +63,46 @@ body {
     background-color: transparent;
 }
 
+.statusButton{
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+}
+
+.activate-btn, .suspend-btn, .reactivate-btn{
+    background: #28a74691;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+   cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    font-size: 15px !important;
+}
+
+.activate-btn:hover, .suspend-btn:hover{
+    background: #218838;
+}
+
+.suspend-btn{
+    background: #dc35468c;
+}
+
+.suspend-btn:hover{
+    background: #dc3545;
+}
+
+.reactivate-btn{
+    background: #17a2b8;
+}
+
+.reactivate-btn:hover{
+    background: #138496;
+}
+
 .details .store-name{
     font-size: 40px;
     font-weight: bold;

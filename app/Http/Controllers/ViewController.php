@@ -104,6 +104,14 @@ class ViewController extends Controller
         return redirect()->route('customer.view', $id)->with('success', 'Customer accepted successfully!');
     }
 
+    public function activateCustomer($id)
+    {
+        $customer = User::findOrFail($id);
+        $customer->acc_status = 'Active';
+        $customer->save();
+        return redirect()->route('customer.view', $id)->with('success', 'Customer activated successfully! They can now access the system.');
+    }
+
     public function suspendCustomer($id)
     {
         $customer = User::findOrFail($id);
