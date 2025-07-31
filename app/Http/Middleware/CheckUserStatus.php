@@ -22,15 +22,15 @@ class CheckUserStatus
 
         $user = auth()->user();
 
-        // Check if user account is active
-        if ($user->acc_status !== 'Active' && $user->acc_status !== 'active') {
-            auth()->logout();
-            return redirect()->route('login')->with('error', 'Your account is not active. Please wait for confirmation.');
-        }
-
-        // Check if email is verified (optional - you can remove this if not needed)
+        // Check if email is verified first
         if (!$user->hasVerifiedEmail()) {
             return redirect()->route('verification.notice')->with('error', 'Please verify your email address.');
+        }
+
+        // Check if user account is active (only after email verification)
+        if ($user->acc_status !== 'Active' && $user->acc_status !== 'active') {
+            auth()->logout();
+            return redirect()->route('login')->with('error', 'Your account is not active. Please wait for admin confirmation.');
         }
 
         return $next($request);

@@ -30,6 +30,10 @@ Route::get('/success-signup', function () {
     return view('verified');
 });
 
+Route::get('/verify-email-pending', function () {
+    return view('auth.verify-email-pending');
+})->name('verification.pending');
+
 // Authentication routes
 Route::post('/login-user', [UserController::class, 'login']);
 Route::post('/logout-user', [UserController::class, 'logout'])->middleware('auth');

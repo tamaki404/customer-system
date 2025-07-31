@@ -62,15 +62,12 @@ class UserController extends Controller
             'email_verified_at' => null, 
         ]);
 
-        $token = bin2hex(random_bytes(32));
-        EmailVerificationToken::createToken($validated['email']);
+        $tokenRecord = EmailVerificationToken::createToken($validated['email']);
+        $token = $tokenRecord->token;
 
-        Auth::login($user);
-
-        
         Mail::to($user->email)->send(new EmailVerification($user, $token));
 
-        return redirect('/email/verify')->with('success', 'Registration successful! Please check your email to verify your account.');
+        return redirect('/login')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
     }
 
 
@@ -85,11 +82,13 @@ class UserController extends Controller
         $user = User::where('email', $email)->first();
         if ($user) {
             $user->update([
-                'email_verified_at' => now(),
-                'acc_status' => 'Active' 
+                'email_verified_at' => now()
             ]);
             
-            return redirect('/login')->with('success', 'Email verified successfully! You can now login.');
+            // Clear any pending verification session data
+            session()->forget(['pending_verification_user_id', 'pending_verification_email']);
+            
+            return redirect('/login')->with('success', 'Email verified successfully! Please wait for admin confirmation before you can login.');
         }
 
         return redirect('/login')->with('error', 'User not found.');
@@ -108,8 +107,8 @@ class UserController extends Controller
         }
 
         // Generate new token and send email
-        $token = bin2hex(random_bytes(32));
-        EmailVerificationToken::createToken($user->email);
+        $tokenRecord = EmailVerificationToken::createToken($user->email);
+        $token = $tokenRecord->token;
         Mail::to($user->email)->send(new EmailVerification($user, $token));
 
         return back()->with('success', 'Verification email resent!');
@@ -135,6 +134,21 @@ public function login(Request $request)
     if (!Hash::check($incomingFields['password'], $user->password)) {
         return back()->withErrors([
             'loginError' => "Incorrect password"
+        ])->withInput();
+    }
+
+    // Check if email is verified first
+    if (!$user->hasVerifiedEmail()) {
+        // Store user info in session for verification page
+        session(['pending_verification_user_id' => $user->id]);
+        session(['pending_verification_email' => $user->email]);
+        return redirect('/verify-email-pending')->with('error', 'Please verify your email address before logging in.');
+    }
+
+    // Check if account is active (only after email verification)
+    if ($user->acc_status !== 'Active' && $user->acc_status !== 'active') {
+        return back()->withErrors([
+            'loginError' => "Your account is not active. Please wait for admin confirmation."
         ])->withInput();
     }
 

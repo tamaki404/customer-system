@@ -92,3 +92,63 @@ form .btn:hover {
     color: #f8912a;
 }
 
+.loginFrame {
+    margin-top: 20px;
+}
+
+.loginButton {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #f8912a;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.loginButton:hover {
+    background-color: #e67e22;
+    color: white;
+}
+
+.infoFrame {
+    margin-top: 20px;
+    text-align: center;
+    max-width: 400px;
+}
+
+.infoText {
+    color: #666;
+    font-size: 13px;
+    font-style: italic;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.alert {
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+

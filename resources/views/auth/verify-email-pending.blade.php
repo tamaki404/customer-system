@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ asset('css/verify-email.css') }}">
     <title>Verify Your Email</title>
-
 </head>
 <body>
-
-
     <div class="verifyFrame">
         <img src="{{ asset(path: 'assets/sunnyLogo1.png') }}" alt="Logo" class="logo">
         <h2>Verify your email</h2> 
@@ -21,23 +18,32 @@
             </div>
         @endif
 
+        @if (session('error'))
+            <div class="alert alert-error">
+                {{ session('error') }}
+            </div>
+        @endif
+
         @if (session('info'))
             <div class="alert alert-info">
                 {{ session('info') }}
             </div>
         @endif
 
-
-
-
-        <form method="POST" action="{{ route('verification.send') }}" id="resendForm">
+        <form method="POST" action="{{ route('verification.resend') }}" id="resendForm">
             @csrf
+            <input type="hidden" name="email" value="{{ session('pending_verification_email') }}">
             <button type="submit" class="btn" id="resendBtn">
                 Resend Verification Email
             </button>
         </form>
 
-        <script>
+        <div class="loginFrame">
+            <a href="/login" class="loginButton">Back to Login</a>
+        </div>
+    </div>
+
+    <script>
         // disable resend button for 5 minutes after click (persisted in localStorage)
         const RESEND_KEY = 'verifyEmailResendTimestamp';
         const btn = document.getElementById('resendBtn');
@@ -69,20 +75,6 @@
         });
 
         updateResendBtn();
-        </script>
-
-        <div class="logoutFrame">
-            <form action="/logout-user" method="post" class="logoutForm">
-                @csrf
-                <button class="logoutButton">Logout</button>
-            </form>
-        </div>
-        
-        <div class="infoFrame">
-            <p class="infoText">After verifying your email, you'll need to wait for admin confirmation before you can access the system.</p>
-        </div>
-    </div>
-
-
+    </script>
 </body>
-</html>
+</html> 

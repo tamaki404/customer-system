@@ -21,7 +21,7 @@ class EmailVerificationToken extends Model
         
         return self::create([
             'email' => $email,
-            'token' => hash('sha256', $token), // Hash token for security
+            'token' => $token, // Store the original token
             'expires_at' => Carbon::now()->addHours(24), // 24-hour expiry
         ]);
     }
@@ -29,7 +29,7 @@ class EmailVerificationToken extends Model
     public static function validateToken($email, $token)
     {
         $record = self::where('email', $email)
-                     ->where('token', hash('sha256', $token))
+                     ->where('token', $token) // Compare with original token
                      ->where('expires_at', '>', Carbon::now())
                      ->first();
         
