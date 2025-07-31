@@ -116,14 +116,65 @@ class UserController extends Controller
 
 
 
+// public function login(Request $request)
+// {
+//     $incomingFields = $request->validate([
+//         'username' => ['required'],
+//         'password' => ['required'],
+//     ]);
+
+//     $user = User::where('username', $incomingFields['username'])->first();
+//     $user = User::where('username', $incomingFields['username'])
+//         ->orWhere('email', $incomingFields['username'])
+//         ->first();
+
+//     if (!$user) {
+//         return back()->withErrors([
+//             'loginError' => "User not found"
+//         ])->withInput();
+//     }
+
+//     if (!Hash::check($incomingFields['password'], $user->password)) {
+//         return back()->withErrors([
+//             'loginError' => "Incorrect password"
+//         ])->withInput();
+//     }
+
+//     // Check if email is verified first
+//     if (!$user->hasVerifiedEmail()) {
+//         // Store user info in session for verification page
+//         session(['pending_verification_user_id' => $user->id]);
+//         session(['pending_verification_email' => $user->email]);
+//         return redirect('/verify-email-pending')->with('error', 'Please verify your email address before logging in.');
+//     }
+
+//     // Check if account is active (only after email verification)
+//     if ($user->acc_status !== 'Active' && $user->acc_status !== 'active') {
+//         return back()->withErrors([
+//             'loginError' => "Your account is not active. Please wait for admin confirmation."
+//         ])->withInput();
+//     }
+
+//     auth()->login($user);
+//     $request->session()->regenerate();
+
+//     return redirect('/dashboard');
+// }
+
+
 public function login(Request $request)
 {
     $incomingFields = $request->validate([
-        'username' => ['required'],
+        'username' => ['required'], // Can be username or email
         'password' => ['required'],
     ]);
 
-    $user = User::where('username', $incomingFields['username'])->first();
+    $loginValue = $incomingFields['username'];
+
+    // Find user by username or email
+    $user = User::where('username', $loginValue)
+        ->orWhere('email', $loginValue)
+        ->first();
 
     if (!$user) {
         return back()->withErrors([
@@ -137,16 +188,15 @@ public function login(Request $request)
         ])->withInput();
     }
 
-    // Check if email is verified first
     if (!$user->hasVerifiedEmail()) {
-        // Store user info in session for verification page
-        session(['pending_verification_user_id' => $user->id]);
-        session(['pending_verification_email' => $user->email]);
+        session([
+            'pending_verification_user_id' => $user->id,
+            'pending_verification_email' => $user->email
+        ]);
         return redirect('/verify-email-pending')->with('error', 'Please verify your email address before logging in.');
     }
 
-    // Check if account is active (only after email verification)
-    if ($user->acc_status !== 'Active' && $user->acc_status !== 'active') {
+    if (strtolower($user->acc_status) !== 'active') {
         return back()->withErrors([
             'loginError' => "Your account is not active. Please wait for admin confirmation."
         ])->withInput();
@@ -157,6 +207,7 @@ public function login(Request $request)
 
     return redirect('/dashboard');
 }
+
 
 public function logout()
 {

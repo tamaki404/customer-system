@@ -73,8 +73,44 @@
 
                     <div>
                         <label>Total Amount</label>
-                        <input type="number" name="total_amount" placeholder="₱" required>
+                        <div style="position: relative;">
+                            <span style="
+                                position: absolute;
+                                top: 50%;
+                                left: 10px;
+                                transform: translateY(-50%);
+                                font-weight: bold;
+                                color: #444;
+                            ">₱</span>
+                            <input 
+                                type="text" 
+                                name="total_amount" 
+                                id="total_amount"
+                                placeholder="0.00"
+                                required
+                                style="padding-left: 25px;"
+                            >
+                        </div>
                     </div>
+
+                    <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const input = document.getElementById('total_amount');
+
+                        input.addEventListener('input', () => {
+                            let rawValue = input.value.replace(/[^0-9.]/g, '');
+                            const parts = rawValue.split('.');
+                            
+                            let formatted = Number(parts[0]).toLocaleString('en-US');
+                            
+                            if (parts.length > 1) {
+                                formatted += '.' + parts[1].slice(0, 2);
+                            }
+
+                            input.value = formatted;
+                        });
+                    });
+                    </script>
 
                     <div>
                         <label>Payment Method</label>

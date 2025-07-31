@@ -19,6 +19,10 @@
             <img src="{{ asset('images/' . auth()->user()->image ?? 'default-avatar.png') }}" class="avatar" alt="Avatar">
             <div class="profile-info">
                 <h2 class="profile-store">{{ auth()->user()->store_name }}</h2>
+                @if (auth()->user()->user_type === 'Staff')
+                <h2 class="profile-store">{{ auth()->user()->name }}</h2>
+                @endif
+
                 <p class="profile-role">{{ ucfirst(auth()->user()->user_type) }}</p>
             </div>
         </div>

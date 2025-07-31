@@ -36,11 +36,11 @@
                 </div>
                 <div class="nameFrame">
                     @if(auth()->user()->user_type === 'Admin')
-                    <p class="userName">{{ auth()->user()->store_name }}</p>
+                    <p class="userName">{{ auth()->user()->name }}</p>
                     @elseif(auth()->user()->user_type === 'Customer')
                     <p class="userName">{{ auth()->user()->store_name }}</p>
                     @elseif(auth()->user()->user_type === 'Staff')
-                    <p class="userName">{{ auth()->user()->username }}</p>
+                    <p class="userName">{{ auth()->user()->name }}</p>
                     @endif
                     <p class="userTitle">{{ auth()->user()->user_type }}</p> 
                 </div>
@@ -127,6 +127,21 @@
                 <div class="nav-indicator"></div>
             </a>
             @endif
+
+            <!-- Ordering -->
+            <a class="nav-item" data-tooltip="Ordering">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <p>Ordering</p>
+                <div class="nav-indicator"></div>
+            </a>
+
+            <!-- Reports -->
+            <a class="nav-item" data-tooltip="Reports">
+                <span class="material-symbols-outlined">bar_chart</span>
+                <p>Reports</p>
+                <div class="nav-indicator"></div>
+            </a>
+
         </div>
 
         <div class="sidebar-footer">
