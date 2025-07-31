@@ -136,20 +136,20 @@
                         <span style="color:#aaa;">N/A</span>
                     @endif
                 </td>
-                <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 15px;">
+                <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     {{ $user->name }}
                 </td>
 
-                <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 15px;">
+                <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     {{ $user->username }}
                 </td>
-                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 15px;">
+                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     {{ $user->id }}
                 </td>
-                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 15px;">
+                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     {{ $user->user_type }}
                 </td>
-                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 15px;">
+                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     <span class="status-badge {{ $user->acc_status ?? 'active' }}" style="padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: white;">
                         {{ $user->acc_status ?? 'Active' }}
                     </span>

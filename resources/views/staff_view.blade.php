@@ -16,45 +16,12 @@
     <script src="{{ asset('js/fadein.js') }}"></script>
     
     <div class="staffFrame">
-        <div class="titleFrame">
+        <div class="header">
             <h2>Staff Details</h2>
             <a href="{{ url('/staffs') }}" class="back-btn">
                 <i class="fas fa-arrow-left"></i> Back to Staff List
             </a>
         </div>
-                @if(auth()->user()->user_type === 'Admin' || auth()->user()->id === $staff->id)
-        <div class="actionsSection">
-            <h3>Account Management</h3>
-            
-            <div class="action-buttons">
-                <!-- Edit Profile Modal Trigger -->
-                <button class="action-btn edit-btn" onclick="openEditModal()">
-                    <i class="fas fa-edit"></i> Edit Profile Info
-                </button>
-                
-                <!-- Change Password Modal Trigger -->
-                <button class="action-btn password-btn" onclick="openPasswordModal()">
-                    <i class="fas fa-key"></i> Change Password
-                </button>
-                
-                @if(auth()->user()->user_type === 'Admin' && auth()->user()->id !== $staff->id)
-                <!-- Update Status -->
-                <button class="action-btn status-btn" onclick="openStatusModal()">
-                    <i class="fas fa-user-edit"></i> Update Status
-                </button>
-                
-                <!-- Deactivate/Delete Account -->
-                <button class="action-btn deactivate-btn" onclick="openDeactivateModal()">
-                    <i class="fas fa-user-slash"></i> Deactivate Account
-                </button>
-                
-                <button class="action-btn delete-btn" onclick="openDeleteModal()">
-                    <i class="fas fa-trash"></i> Delete Account
-                </button>
-                @endif
-            </div>
-        </div>
-        @endif
 
         <div class="staffDetails">
             <div class="imageSection">
@@ -128,7 +95,39 @@
             </div>
         </div>
 
-
+        @if(auth()->user()->user_type === 'Admin' || auth()->user()->id === $staff->id)
+        <div class="actionsSection">
+            <h3>Account Management</h3>
+            
+            <div class="action-buttons">
+                <!-- Edit Profile Modal Trigger -->
+                <button class="action-btn edit-btn" onclick="openEditModal()">
+                    <i class="fas fa-edit"></i> Edit Profile Info
+                </button>
+                
+                <!-- Change Password Modal Trigger -->
+                <button class="action-btn password-btn" onclick="openPasswordModal()">
+                    <i class="fas fa-key"></i> Change Password
+                </button>
+                
+                                 @if(auth()->user()->user_type === 'Admin' && auth()->user()->id !== $staff->id)
+                 <!-- Update Status -->
+                 <button class="action-btn status-btn" onclick="openStatusModal()">
+                     <i class="fas fa-user-edit"></i> Update Status
+                 </button>
+                 
+                 <!-- Deactivate/Delete Account -->
+                 <button class="action-btn deactivate-btn" onclick="openDeactivateModal()">
+                     <i class="fas fa-user-slash"></i> Deactivate Account
+                 </button>
+                 
+                 <button class="action-btn delete-btn" onclick="openDeleteModal()">
+                     <i class="fas fa-trash"></i> Delete Account
+                 </button>
+                 @endif
+            </div>
+        </div>
+        @endif
 
         @if(session('success'))
             <div class="alert success">
@@ -174,80 +173,80 @@
         </div>
     </div>
 
-    <!-- Change Password Modal -->
-    <div id="passwordModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closePasswordModal()">&times;</span>
-            <h3>Change Password</h3>
-            <form action="{{ url('/staff/change-password/' . $staff->id) }}" method="POST">
-                @csrf
-                @if(auth()->user()->user_type !== 'Admin' || auth()->user()->id === $staff->id)
-                <div class="form-group">
-                    <label>Current Password:</label>
-                    <input type="password" name="current_password" required>
-                </div>
-                @endif
-                <div class="form-group">
-                    <label>New Password:</label>
-                    <input type="password" name="new_password" required>
-                </div>
-                <div class="form-group">
-                    <label>Confirm New Password:</label>
-                    <input type="password" name="new_password_confirmation" required>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="save-btn">Change Password</button>
-                    <button type="button" class="cancel-btn" onclick="closePasswordModal()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
+         <!-- Change Password Modal -->
+     <div id="passwordModal" class="modal">
+         <div class="modal-content">
+             <span class="close" onclick="closePasswordModal()">&times;</span>
+             <h3>Change Password</h3>
+             <form action="{{ url('/staff/change-password/' . $staff->id) }}" method="POST">
+                 @csrf
+                 @if(auth()->user()->user_type !== 'Admin' || auth()->user()->id === $staff->id)
+                 <div class="form-group">
+                     <label>Current Password:</label>
+                     <input type="password" name="current_password" required>
+                 </div>
+                 @endif
+                 <div class="form-group">
+                     <label>New Password:</label>
+                     <input type="password" name="new_password" required>
+                 </div>
+                 <div class="form-group">
+                     <label>Confirm New Password:</label>
+                     <input type="password" name="new_password_confirmation" required>
+                 </div>
+                 <div class="form-actions">
+                     <button type="submit" class="save-btn">Change Password</button>
+                     <button type="button" class="cancel-btn" onclick="closePasswordModal()">Cancel</button>
+                 </div>
+             </form>
+         </div>
+     </div>
 
-    <!-- Update Status Modal -->
-    <div id="statusModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeStatusModal()">&times;</span>
-            <h3>Update Staff Status</h3>
-            <form action="{{ url('/staff/update-status/' . $staff->id) }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <label>Current Status:</label>
-                    <span class="status-badge {{ $staff->acc_status ?? 'active' }}" style="display: inline-block; margin-left: 10px;">
-                        {{ $staff->acc_status ?? 'Active' }}
-                    </span>
-                </div>
-                <div class="form-group">
-                    <label>New Status:</label>
-                    <select name="acc_status" required>
-                        <option value="">Select Status</option>
-                        <option value="active" {{ ($staff->acc_status ?? 'active') === 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="pending" {{ ($staff->acc_status ?? 'active') === 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="suspended" {{ ($staff->acc_status ?? 'active') === 'suspended' ? 'selected' : '' }}>Suspended</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="status-btn">Update Status</button>
-                    <button type="button" class="cancel-btn" onclick="closeStatusModal()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
+         <!-- Update Status Modal -->
+     <div id="statusModal" class="modal">
+         <div class="modal-content">
+             <span class="close" onclick="closeStatusModal()">&times;</span>
+             <h3>Update Staff Status</h3>
+             <form action="{{ url('/staff/update-status/' . $staff->id) }}" method="POST">
+                 @csrf
+                 <div class="form-group">
+                     <label>Current Status:</label>
+                     <span class="status-badge {{ $staff->acc_status ?? 'active' }}" style="display: inline-block; margin-left: 10px;">
+                         {{ $staff->acc_status ?? 'Active' }}
+                     </span>
+                 </div>
+                 <div class="form-group">
+                     <label>New Status:</label>
+                     <select name="acc_status" required>
+                         <option value="">Select Status</option>
+                         <option value="active" {{ ($staff->acc_status ?? 'active') === 'active' ? 'selected' : '' }}>Active</option>
+                         <option value="pending" {{ ($staff->acc_status ?? 'active') === 'pending' ? 'selected' : '' }}>Pending</option>
+                         <option value="suspended" {{ ($staff->acc_status ?? 'active') === 'suspended' ? 'selected' : '' }}>Suspended</option>
+                     </select>
+                 </div>
+                 <div class="form-actions">
+                     <button type="submit" class="status-btn">Update Status</button>
+                     <button type="button" class="cancel-btn" onclick="closeStatusModal()">Cancel</button>
+                 </div>
+             </form>
+         </div>
+     </div>
 
-    <!-- Deactivate Account Modal -->
-    <div id="deactivateModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeDeactivateModal()">&times;</span>
-            <h3>Deactivate Account</h3>
-            <p>Are you sure you want to deactivate this staff account? They will not be able to log in until reactivated.</p>
-            <form action="{{ url('/staff/deactivate/' . $staff->id) }}" method="POST">
-                @csrf
-                <div class="form-actions">
-                    <button type="submit" class="deactivate-btn">Deactivate</button>
-                    <button type="button" class="cancel-btn" onclick="closeDeactivateModal()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
+     <!-- Deactivate Account Modal -->
+     <div id="deactivateModal" class="modal">
+         <div class="modal-content">
+             <span class="close" onclick="closeDeactivateModal()">&times;</span>
+             <h3>Deactivate Account</h3>
+             <p>Are you sure you want to deactivate this staff account? They will not be able to log in until reactivated.</p>
+             <form action="{{ url('/staff/deactivate/' . $staff->id) }}" method="POST">
+                 @csrf
+                 <div class="form-actions">
+                     <button type="submit" class="deactivate-btn">Deactivate</button>
+                     <button type="button" class="cancel-btn" onclick="closeDeactivateModal()">Cancel</button>
+                 </div>
+             </form>
+         </div>
+     </div>
 
     <!-- Delete Account Modal -->
     <div id="deleteModal" class="modal">
@@ -298,21 +297,21 @@
             document.getElementById('passwordModal').style.display = 'none';
         }
 
-        function openStatusModal() {
-            document.getElementById('statusModal').style.display = 'block';
-        }
-
-        function closeStatusModal() {
-            document.getElementById('statusModal').style.display = 'none';
-        }
-
-        function openDeactivateModal() {
-            document.getElementById('deactivateModal').style.display = 'block';
-        }
-
-        function closeDeactivateModal() {
-            document.getElementById('deactivateModal').style.display = 'none';
-        }
+                 function openStatusModal() {
+             document.getElementById('statusModal').style.display = 'block';
+         }
+ 
+         function closeStatusModal() {
+             document.getElementById('statusModal').style.display = 'none';
+         }
+ 
+         function openDeactivateModal() {
+             document.getElementById('deactivateModal').style.display = 'block';
+         }
+ 
+         function closeDeactivateModal() {
+             document.getElementById('deactivateModal').style.display = 'none';
+         }
 
         function openDeleteModal() {
             document.getElementById('deleteModal').style.display = 'block';

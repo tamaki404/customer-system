@@ -50,17 +50,17 @@
             </thead>
             <tbody>
                 @foreach($users as $i => $user)
-                <tr style="border-bottom:1px solid #eee; align-items: center; font-size: 15px;" onclick="window.location='{{ url('/customer_view/' . $user->id) }}'">
-                    <td style="padding:10px 8px;; font-size: 15px;">{{  $user->id }}</td>
-                    <td style="padding:10px 8px;; font-size: 15px;">
+                <tr style="border-bottom:1px solid #eee; align-items: center;" onclick="window.location='{{ url('/customer_view/' . $user->id) }}'">
+                    <td style="padding:10px 8px;">{{  $user->id }}</td>
+                    <td style="padding:10px 8px;">
                         @if($user->image)
                             <img src="{{ asset('images/' . $user->image) }}" alt="User Image" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
                         @else
                             <span style="color:#aaa;">N/A</span>
                         @endif
                     </td>
-                    <td style="padding:10px 8px;; font-size: 15px;">{{ $user->store_name ?? 'N/A' }}</td>
-                    <td style="padding:10px 8px;; font-size: 15px;">{{ $user->acc_status ?? 'N/A' }}</td>
+                    <td style="padding:10px 8px;">{{ $user->store_name ?? 'N/A' }}</td>
+                    <td style="padding:10px 8px;">{{ $user->acc_status ?? 'N/A' }}</td>
                 </tr>
                 @endforeach
             </tbody>
