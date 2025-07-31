@@ -34,7 +34,7 @@
     </div>
     
     <!-- Pagination Info -->
-    <div style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
+    <div style="margin-bottom: 1rem; font-size: 15px; color: #666;">
         Page {{ $users->currentPage() }} of {{ $users->lastPage() }} ({{ $users->total() }} total customers)
     </div>
     <div class="customerList" style="padding: 15px;">
@@ -52,7 +52,7 @@
             <tbody>
                 @foreach($users as $i => $user)
                 <tr style="border-bottom:1px solid #eee; align-items: center;" onclick="window.location='{{ url('/customer_view/' . $user->id) }}'">
-                    <td style="padding:10px 8px;">{{  $user->id }}</td>
+                    <td style="padding:10px 8px; font-size: 14px;">{{  $user->id }}</td>
                     <td style="padding:10px 8px;">
                         @if($user->image)
                             <img src="{{ asset('images/' . $user->image) }}" alt="User Image" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
@@ -60,14 +60,13 @@
                             <span style="color:#aaa;">N/A</span>
                         @endif
                     </td>
-                    <td style="padding:10px 8px;">{{ $user->store_name ?? 'N/A' }}</td>
+                    <td style="padding:10px 8px; font-size: 14px;">{{ $user->store_name ?? 'N/A' }}</td>
                     <td style="padding:10px 8px;">
                         <span class="status-badge" style="
                             padding: 4px 8px;
                             border-radius: 12px;
-                            font-size: 11px;
-                            font-weight: 600;
-                            text-transform: uppercase;
+                            font-weight: bold;
+                             font-size: 14px;
                             letter-spacing: 0.5px;
                             @if($user->acc_status === 'Active')
                                 background: #d4edda;
@@ -108,17 +107,17 @@
                                     padding: 6px 12px;
                                     border: none;
                                     border-radius: 4px;
-                                    font-size: 11px;
-                                    font-weight: 600;
+                                    font-size: 14px;
+                                    font-weight: bold;
                                     cursor: pointer;
                                     transition: all 0.3s ease;
-                                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
                                 " onmouseover="this.style.background='#218838'" onmouseout="this.style.background='#28a745'" onclick="event.stopPropagation();">
                                     Activate
                                 </button>
                             </form>
                         @else
-                            <span style="color: #28a745; font-size: 11px; font-weight: 600;"></span>
+                            <span style="color: #28a745; font-size: 14px; font-weight: bold;"></span>
                         @endif
                     </td>
                 </tr>

@@ -87,8 +87,8 @@
                     </div>
 
                     <div class="full">
-                        <label>Additional Notes</label>
-                        <textarea name="notes" rows="3" placeholder="Optional notes"></textarea>
+                        <label>Orders</label>
+                        <textarea name="notes" rows="3" placeholder="You can list your orders here"></textarea>
                     </div>
 
                 </div>

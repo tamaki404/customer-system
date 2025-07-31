@@ -150,6 +150,8 @@
                     {{ $user->user_type }}
                 </td>
                 <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+
+
                     <span class="status-badge {{ $user->acc_status ?? 'active' }}" style="padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: white;">
                         {{ $user->acc_status ?? 'Active' }}
                     </span>

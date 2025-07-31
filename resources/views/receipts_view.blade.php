@@ -26,10 +26,11 @@
                         <tr><th>Invoice#:</th><td>{{ $receipt->invoice_number }}</td></tr>
                         <tr><th>Store:</th><td style="font-size: 20px; font-weight: bold;">{{ $receipt->customer ? $receipt->customer->store_name : 'N/A' }}</td></tr>
                         <tr><th>Representative:</th><td>{{ $receipt->customer ? $receipt->customer->name : 'N/A' }}</td></tr>
-                        <tr><th>Amount:</th>  <td id="receiptAmount"  style="font-size: 18px; font-weight: bold; color: green;" data-amount="{{ $receipt->total_amount }}">
-                        {{ $receipt->total_amount }}
+                        <tr><th>Amount:</th>  <td style="color: green">₱{{ number_format($receipt->total_amount, 2) }}</td></tr>
                         </td></tr>
-                        <tr><th>Purchase Date:</th><td>{{ $receipt->purchase_date }}</td></tr>
+                                                                    
+
+                        <tr><th>Purchase Date:</th><td>{{ $receipt->purchase_date ? \Carbon\Carbon::parse($receipt->purchase_date)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
                         <tr>
                         <th>Status:</th>
                                 <td style="color:
@@ -39,26 +40,28 @@
                                     @elseif($receipt->status === 'Rejected') red
                                     @else #333
                                     @endif
-                                ;">{{ $receipt->status }}</td>r
+                                ;">{{ $receipt->status }}</td>
                         </tr>
-                    @if($receipt->verified_by !== NULL)
-                        <tr><th>Action By:</th><td>{{ $receipt->verified_by ?? 'N/A' }}</td></tr>
-                        <tr><th>Action At:</th><td>    {{ $receipt->verified_at ? \Carbon\Carbon::parse($receipt->verified_at)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
-                    @endif
+                            @if($receipt->verified_by !== NULL)
+                                <tr><th>Action By:</th><td>{{ $receipt->verified_by ?? 'N/A' }}</td></tr>
+                                <tr><th>Action At:</th><td>    {{ $receipt->verified_at ? \Carbon\Carbon::parse($receipt->verified_at)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
+                            @endif
 
                    </table>
 
 
                     <div style="display: flex; flex-direction: column; width: 100%;">
-                    <p style="font-size: 16px; font-weight: bold; margin: 0; margin-top: 10px;">Notes:</p>
+                    <p style="font-size: 16px; font-weight: bold; margin: 0; margin-top: 10px;">Orders' note</p>
                     <div class="notes-display">{{ $receipt->notes }}</div>
 
                     @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
                     <div class="actionBtn" >
+                        @if($receipt->status !== 'Verified')
                         <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST">
                             @csrf
                             <button type="submit" class="verifyButton">Verify</button>
                         </form>
+                        @endif
                         <form  action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             <button class="cancelAction" type="submit">Cancel</button>

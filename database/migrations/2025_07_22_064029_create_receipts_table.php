@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('purchase_date');
             $table->string('store_name');
             $table->decimal('total_amount', 10, 2); 
-            $table->string('invoice_number');
+            $table->string('invoice_number')->nullable();
             $table->text('notes')->nullable();
             $table->string('status')->default('Pending');
             $table->string('verified_by')->nullable();

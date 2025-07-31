@@ -112,7 +112,7 @@ class ReceiptController extends Controller{
             'purchase_date' => 'required|date',
             'store_name' => 'required|string|max:255',
             'total_amount' => 'required|numeric',
-            'invoice_number' => 'required|string|max:255',
+            'invoice_number' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'status' => 'required|string',
             'receipt_number' => 'required|string',
