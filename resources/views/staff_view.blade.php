@@ -17,12 +17,45 @@
     
     <div class="staffFrame">
         <div class="header">
-            <h2>Staff Details</h2>
+            <h2 >Staff Details</h2>
             <a href="{{ url('/staffs') }}" class="back-btn">
                 <i class="fas fa-arrow-left"></i> Back to Staff List
             </a>
         </div>
 
+        
+        @if(auth()->user()->user_type === 'Admin' || auth()->user()->id === $staff->id)
+        <div class="actionsSection">
+            
+            <div class="action-buttons">
+                <!-- Edit Profile Modal Trigger -->
+                <button class="action-btn edit-btn" onclick="openEditModal()">
+                    <i class="fas fa-edit"></i> Edit Profile Info
+                </button>
+                
+                <!-- Change Password Modal Trigger -->
+                <button class="action-btn password-btn" onclick="openPasswordModal()">
+                    <i class="fas fa-key"></i> Change Password
+                </button>
+                
+             @if(auth()->user()->user_type === 'Admin' && auth()->user()->id !== $staff->id)
+                 <!-- Update Status -->
+                 <button class="action-btn status-btn" onclick="openStatusModal()">
+                     <i class="fas fa-user-edit"></i> Update Status
+                 </button>
+                 
+                 <!-- Deactivate/Delete Account -->
+                 <button class="action-btn deactivate-btn" onclick="openDeactivateModal()">
+                     <i class="fas fa-user-slash"></i> Deactivate Account
+                 </button>
+                 
+                 <button class="action-btn delete-btn" onclick="openDeleteModal()">
+                     <i class="fas fa-trash"></i> Delete Account
+                 </button>
+                 @endif
+            </div>
+        </div>
+        @endif
         <div class="staffDetails">
             <div class="imageSection">
                 @if($staff->image)
@@ -41,7 +74,7 @@
                     <button type="button" class="upload-btn" onclick="document.getElementById('image').click()">
                         <i class="fas fa-camera"></i> Change Image
                     </button>
-                    <button type="submit" class="save-btn" style="display: none;">Save Image</button>
+                    <button type="submit" class="save-btn" style="display: none;">Use this Image</button>
                 </form>
                 @endif
             </div>
@@ -95,48 +128,21 @@
             </div>
         </div>
 
-        @if(auth()->user()->user_type === 'Admin' || auth()->user()->id === $staff->id)
-        <div class="actionsSection">
-            <h3>Account Management</h3>
-            
-            <div class="action-buttons">
-                <!-- Edit Profile Modal Trigger -->
-                <button class="action-btn edit-btn" onclick="openEditModal()">
-                    <i class="fas fa-edit"></i> Edit Profile Info
-                </button>
-                
-                <!-- Change Password Modal Trigger -->
-                <button class="action-btn password-btn" onclick="openPasswordModal()">
-                    <i class="fas fa-key"></i> Change Password
-                </button>
-                
-             @if(auth()->user()->user_type === 'Admin' && auth()->user()->id !== $staff->id)
-                 <!-- Update Status -->
-                 <button class="action-btn status-btn" onclick="openStatusModal()">
-                     <i class="fas fa-user-edit"></i> Update Status
-                 </button>
-                 
-                 <!-- Deactivate/Delete Account -->
-                 <button class="action-btn deactivate-btn" onclick="openDeactivateModal()">
-                     <i class="fas fa-user-slash"></i> Deactivate Account
-                 </button>
-                 
-                 <button class="action-btn delete-btn" onclick="openDeleteModal()">
-                     <i class="fas fa-trash"></i> Delete Account
-                 </button>
-                 @endif
-            </div>
-        </div>
-        @endif
 
         @if(session('success'))
-            <div class="alert success">
+            <div class="alert alert-success" style="background: #d4edda; color: #155724; position: absolute; z-index: 100; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
                 {{ session('success') }}
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+                {{ session('error') }}
+            </div>
+        @endif
+
         @if($errors->any())
-            <div class="alert error">
+            <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
                 <ul>
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -184,6 +190,12 @@
                  <div class="form-group">
                      <label>Current Password:</label>
                      <input type="password" name="current_password" required>
+                 </div>
+                 @else
+                 <div class="form-group">
+                     <p style="color: #666; font-style: italic; margin-bottom: 15px;">
+                         <i class="fas fa-info-circle"></i> As an admin, you can change this staff member's password without requiring their current password.
+                     </p>
                  </div>
                  @endif
                  <div class="form-group">
@@ -330,6 +342,18 @@
                 }
             });
         }
+
+        // Auto-hide success/error messages after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.5s ease';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 500);
+            });
+        }, 5000);
     </script>
 </body>
 </html>
