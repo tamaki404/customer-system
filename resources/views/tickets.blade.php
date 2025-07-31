@@ -40,7 +40,7 @@
                 @endif
             
             @endforeach
-        @elseif(auth()->user()->user_type === 'staff')
+        @elseif(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
             @foreach ($tickets as $ticket)
                 <a href="{{ route('specTicket', $ticket->ticketID) }}" style="border: 1px solid black">
                     <span style="width: 100%; display: flex; flex-direction: row;"><h3>{{ $ticket->title }}</h3> - <p>{{ $ticket->status }}</p> </span>

@@ -65,7 +65,7 @@ class ReceiptController extends Controller{
     public function showUserReceipts()
     {
         $user = auth()->user();
-        if ($user->user_type === 'Staff') {
+        if ($user->user_type === 'Staff' || $user->user_type === 'Admin') {
             $receipts = Receipt::all();
         } else {
             $receipts = Receipt::where('id', $user->id)->get();
@@ -138,7 +138,7 @@ class ReceiptController extends Controller{
             });
         }
 
-        if ($user->user_type === 'Staff') {
+        if ($user->user_type === 'Staff' || $user->user_type === 'Admin') {
             $receipts = $query->get();
         } else {
             $receipts = $query->where('id', $user->id)->get();

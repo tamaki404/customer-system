@@ -28,14 +28,14 @@
 
                         <tr><th>Store:</th><td style="font-size: 20px; font-weight: bold;">{{ $receipt->customer ? $receipt->customer->store_name : 'N/A' }}</td></tr>
                         <tr><th>Customer:</th><td>{{ $receipt->customer ? $receipt->customer->name : 'N/A' }}</td></tr>
-                    @if(auth()->user()->user_type === 'Staff' && auth()->user()->user_type === 'Admin')
+                    @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
                         <tr><th>Representative:</th><td>{{ $receipt->name }}</td></tr>
                     @endif
-                        <tr><th>Amount:</th>  <td id="receiptAmount" style="font-size: 18px; font-weight: bold; color: green;" data-amount="{{ $receipt->total_amount }}">
+                        <tr><th>Amount:</th>  <td id="receiptAmount"  style="font-size: 18px; font-weight: bold; color: green;" data-amount="{{ $receipt->total_amount }}">
                         {{ $receipt->total_amount }}
                         </td></tr>
                         <tr><th>Purchase Date:</th><td>{{ $receipt->purchase_date }}</td></tr>
-                        <tr><th>Status:</th><td>{{ $receipt->status }}</td></tr>
+                        <tr><th>Status:</th><td class="color: #333; font-size: 15px;">{{ $receipt->status }}</td></tr>
 
                         
 
@@ -47,7 +47,7 @@
                     
                    </table>
 
-                    @if(auth()->user()->user_type === 'Staff' && auth()->user()->user_type === 'Admin')
+                    @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
 
                         <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;margin-right:10px;">
                             @csrf
@@ -64,7 +64,7 @@
                     @endif
 
                     <div style="display: flex; flex-direction: column; width: 100%;">
-                    <p style="font-size: 18px; font-weight: bold;">Notes:</p>
+                    <p style="font-size: 16px; font-weight: bold;">Notes:</p>
                     <div class="notes-display">{{ $receipt->notes }}</div>
                 </div>
 
@@ -99,32 +99,22 @@
     </div>
 
 
-{{-- <script>
-function formatPeso(amount) {
-    const absAmount = Math.abs(amount);
-    let formatted;
-
-    if (absAmount >= 1_000_000_000) {
-        formatted = '₱' + (amount / 1_000_000_000).toFixed(2) + 'B';
-    } else if (absAmount >= 1_000_000) {
-        formatted = '₱' + (amount / 1_000_000).toFixed(2) + 'M';
-    } else if (absAmount >= 1_000) {
-        formatted = '₱' + (amount / 1_000).toFixed(2) + 'K';
-    } else {
-        formatted = '₱' + Number(amount).toFixed(2);
-    }
-
-    return formatted;
+<script>
+function formatPeso(value) {
+    value = Number(value);
+    if (value >= 1_000_000_000) return `₱${(value / 1_000_000_000).toFixed(1)}B`;
+    if (value >= 1_000_000)     return `₱${(value / 1_000_000).toFixed(1)}M`;
+    if (value >= 1_000)         return `₱${(value / 1_000).toFixed(1)}K`;
+    return `₱${value.toLocaleString()}`;
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const el = document.getElementById('receiptAmount');
-    if (el) {
-        const amount = parseFloat(el.dataset.amount);
-        el.innerText = formatPeso(amount);
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    const amountEl = document.getElementById('receiptAmount');
+    const rawAmount = amountEl.dataset.amount;
+    amountEl.textContent = formatPeso(rawAmount);
 });
-</script> --}}
+</script>
+
 
 </body>
 </html>

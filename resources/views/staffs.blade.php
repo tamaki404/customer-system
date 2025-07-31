@@ -93,8 +93,8 @@
 
 
     <form method="GET" action="" class="date-search">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by ID, Name, or User Type">
-                <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+        <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by ID, Name, or User Type">
+        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
     </form>
  
 
@@ -145,7 +145,7 @@
         </tbody>
     </table>
     @else
-        <p>No staffs found.</p>
+        <div class="noStaff">No staffs found.</div>
     @endif
 </div>
 

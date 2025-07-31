@@ -26,7 +26,10 @@ class ViewController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('id', 'like', "%$search%")
                   ->orWhere('username', 'like', "%$search%")
-                  ->orWhere('user_type', 'like', "%$search%");
+                  ->orWhere('user_type', 'like', value: "%$search%")
+                  ->orWhere('email', 'like', value: "%$search%")
+                  ->orWhere('name', 'like', "%$search%");
+
             });
         }
         $users = $query->get();
