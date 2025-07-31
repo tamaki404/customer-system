@@ -9,14 +9,16 @@
     <title>Access Denied</title>
     <style>
         .error-container {
-            display: flex;
             flex-direction: column;
-            align-items: center;
+            align-content: center;
             justify-content: center;
-            height: 100vh;
-            text-align: center;
-            background: linear-gradient(135deg, #ffde59 0%, #ffd54f 100%);
-            color: #333;
+            background-color: #fff;
+            padding: 60px;
+            gap: 10px;
+            width: 97%;
+            height: 97%;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+            border-radius: 15px;
         }
         
         .error-code {
@@ -24,19 +26,24 @@
             font-weight: bold;
             margin: 0;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            flex-direction: row
         }
         
         .error-message {
-            font-size: 24px;
+            font-size: 35px;
+            font-weight: bold
             margin: 20px 0;
             font-weight: 600;
+            text-align: center
         }
         
         .error-description {
             font-size: 16px;
             margin: 10px 0 30px 0;
-            max-width: 500px;
-            line-height: 1.5;
+            width: 50%;
+            text-align: center;
+            align-self: center;;
+            justify-self: center
         }
         
         .back-button {
@@ -51,6 +58,8 @@
             text-decoration: none;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            align-self: center;;
+            justify-self: center
         }
         
         .back-button:hover {
@@ -64,20 +73,37 @@
             margin-bottom: 20px;
             opacity: 0.8;
         }
+        span {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+
+        span h2{
+            font-size: 100px;
+        }
+
+        span h1{
+            font-size: 120px;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            flex-direction: row;
+        }
     </style>
 </head>
 <body>
     <div class="error-container">
-        <div class="icon">🚫</div>
-        <h1 class="error-code">403</h1>
+        <span><h2>🚫</h2><h1>403</h1></span>
         <h2 class="error-message">Access Denied</h2>
         <p class="error-description">
             Sorry, you don't have permission to access this page. 
             Please contact your administrator if you believe this is an error.
         </p>
-        <a href="{{ route('dashboard') }}" class="back-button">
+        {{-- <a href="{{ route('dashboard') }}" class="back-button">
             Back to Dashboard
-        </a>
+        </a> --}}
     </div>
 </body>
 </html>

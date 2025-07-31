@@ -78,13 +78,35 @@
 
                     <div>
                         <label>Payment Method</label>
-                        <input type="text" name="payment_method" placeholder="Cash / GCash / Card" required>
+                        <input type="text" name="payment_method" id="payment_method" placeholder="Cash / GCash / Card" required>
                     </div>
 
-                    <div>
+                    <div id="invoice_section">
                         <label>Invoice Number</label>
-                        <input type="number" name="invoice_number" required>
+                        <input type="number" name="invoice_number" id="invoice_number" disabled>
                     </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const paymentInput = document.getElementById('payment_method');
+                            const invoiceInput = document.getElementById('invoice_number');
+
+                            function toggleInvoiceField() {
+                                const method = paymentInput.value.trim().toLowerCase();
+                                if (method === 'gcash' || method === 'card') {
+                                    invoiceInput.disabled = false;
+                                } else {
+                                    invoiceInput.disabled = true;
+                                }
+                            }
+
+                            toggleInvoiceField(); 
+                            paymentInput.addEventListener('input', toggleInvoiceField);
+                        });
+                    </script>
+
+
+
 
                     <div class="full">
                         <label>Orders</label>
