@@ -29,37 +29,30 @@
 
             <form action="/add-product"  class="receipt-form"  method="post" enctype="multipart/form-data">
                 @csrf
-                <div class="form-grid">
-                    <div>
+                <div class="form-grid" s>
+                    <div >
                         <label>Name</label>
-                        <input type="text" name="name" placeholder="Name" required>
+                        <input type="text" name="name" placeholder="Name" maxlength="100" required>
                     </div>
                     <div>
                         <label>Description</label>
-                        <input type="text" name="description" placeholder="Product Description" id="description" required>
+                        <input type="text" name="description" placeholder="Product Description" id="description" maxlength="255" required>
                         <span id="description-error" class="error-message"></span>
                     </div>
-                    <div>
-                        <label>Image</label>
-                        <input type="file" name="image" id="image" ...>
-                        <span id="image-error" class="error-message"></span>
-                    </div>
+
                     <div>
                         <label>Quantity</label>
-                        <input type="number" name="quantity" id="quantity" required>
+                        <input type="number" name="quantity" id="quantity" min="0" required>
                         <span id="quantity-error" class="error-message"></span>
                     </div>
                     <div>
                         <label>Price</label>
-                        <input type="number" name="price" placeholder="Price in Rs." id="price" required>
+                        <input type="number" name="price" placeholder="Price in Rs." id="price" min="0" required>
                         <span id="price-error" class="error-message"></span>
                     </div>
 
 
-                    <input type="text" name="action_by" value="{{ auth()->user()->username}}" hidden>
-                    <input type="text" name="store_name" placeholder="Store Name" value="Sunny & Scramble" hidden>
-                    <input type="text" name="user_type"  value="Staff" hidden>
-                    <input type="text" name="acc_status"  value="Active" hidden>
+
             
                 </div>
                 @if ($errors->any())
@@ -89,7 +82,7 @@
     <div class="titleFrame">
 
         <form method="GET" action="" class="date-search">
-            <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name or Product ID">
+            <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID & Status">
             <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
         </form>
 
@@ -109,7 +102,6 @@
             <thead>
                 <tr style="background:#f7f7fa;">
                     <th style="padding:10px 8px; text-align:left;">Name</th>
-                    <th style="padding:10px 8px; text-align:left;">Description</th>
                     <th style="padding:10px 8px; text-align:left;">Quantity</th>
                     <th style="padding:10px 8px; text-align:left;">Price</th>
                     <th style="padding:10px 8px; text-align:left;">Status</th>
@@ -117,12 +109,19 @@
             </thead>
             <tbody>
                 @foreach ($products as $product)
-                <tr style="border-bottom:1px solid #eee; align-items: center;">
-                    <td>{{ $product->name }}</td>
-                    <td>{{ $product->description }}</td>
-                    <td>{{ $product->quantity }}</td>
-                    <td>₱{{ number_format($product->price, 2) }}</td>
-                    <td>{{ $product->acc_status ?? 'Active' }}</td>
+                <tr style="border-bottom:1px solid #eee; align-items: center; cursor:pointer;" onclick="window.location='{{ url('/product/' . $product->id) }}'">
+                <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        {{ $product->name }}
+                    </td>
+                    <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        {{ $product->quantity }}x
+                    </td>
+                    <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        ₱{{ number_format($product->price, 2) }}
+                    </td>
+                    <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        {{ $product->acc_status ?? 'Active' }}
+                    </td>
                 </tr>
                 @endforeach
             </tbody>

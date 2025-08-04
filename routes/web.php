@@ -1,5 +1,6 @@
 
 
+
 <?php
 
 use App\Http\Controllers\TicketController;
@@ -141,6 +142,10 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/reports', [ViewController::class, 'reports'])->name('reports');
 
     Route::get('/product-image/{id}', [App\Http\Controllers\ProductController::class, 'showImage'])->name('product.image');
-
+    // Product detail view
+    Route::get('/product/{id}', function($id) {
+        $product = \App\Models\Product::findOrFail($id);
+        return view('product_view', compact('product'));
+    })->middleware(['auth', 'check.status']);
 
 });

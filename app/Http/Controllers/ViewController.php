@@ -393,10 +393,7 @@ public function ordering()
         $query->where(function($q) use ($search) {
             $q->where('name', 'like', "%$search%")
               ->orWhere('id', 'like', "%$search%")
-              ->orWhere('description', 'like', "%$search%")
-              ->orWhere('store_name', 'like', "%$search%")
-              ->orWhere('acc_status', 'like', "%$search%")
-              ->orWhere('user_type', 'like', "%$search%")
+              ->orWhere('status', 'like', "%$search%")
               ;
         });
     }
