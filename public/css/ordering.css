@@ -1,0 +1,161 @@
+ .startBody {
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-content: start;
+    justify-content: start;
+    background-color: #f9f9f9;
+    padding: 60px;
+    gap: 10px;
+    width: 97%;
+    height: 97%;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 15px;
+
+    
+}
+
+
+.titleCount{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.titleCount h2 {
+    color: #333;
+    font-size: 25px;
+    margin: 15px;
+    font-weight: bold;
+}
+
+.titleFrame{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: white;
+    justify-content: space-between;
+}
+
+.titleFrame h2{
+    font-size: 25px;
+    font-weight: 600;
+    color: #ffde59;
+}
+
+.titleFrame button{
+    width: 150px;
+    height: 40px;
+    background-color: #ffde59;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.addStaffBtn{
+    font-size: 14px;
+    color: #333 !important;
+    font-weight: bold;
+    background-color: #ffde59;
+    padding: 10px;
+    width: 60px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+.addStaffBtn:hover{
+    background-color: #ffd700;
+    transition: background-color 0.3s ease;
+}
+
+
+.date-search {
+    align-items: center;
+    flex-direction: row;
+    display: flex;
+    gap: 5px;
+
+}
+.date-search input {
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: none;
+    width: 300px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+
+.date-search .search-btn {
+    padding: 10px;
+    background-color: #ffde59;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 70px;
+    height: 41px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+.date-search button:hover {
+    transition: background-color 0.3s ease;
+    background-color: #ffd700;
+}
+
+
+
+.receipt-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.form-grid > div {
+    flex: 1 1 45%;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-grid .full {
+    flex: 1 1 100%;
+    flex: 1 1 100%;
+}
+
+.receipt-form label {
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.receipt-form input,
+.receipt-form textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #cfd8dc;
+    border-radius: 6px;
+    font-size: 13px;
+    background: #f7f9fa;
+    transition: border 0.2s;
+    margin-bottom: 6px;
+}
+
+.receipt-form input:focus,
+.receipt-form textarea:focus {
+    border: 1.5px solid #1976d2;
+    outline: none;
+    background: #fff;
+}

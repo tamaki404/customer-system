@@ -129,14 +129,14 @@
             @endif
 
             <!-- Ordering -->
-            <a class="nav-item" data-tooltip="Ordering">
+            <a class="nav-item{{ $currentRoute == 'ordering' ? ' active' : '' }}" href="{{ route('ordering') }}" data-tooltip="Ordering">
                 <span class="material-symbols-outlined">shopping_cart</span>
                 <p>Ordering</p>
                 <div class="nav-indicator"></div>
             </a>
 
             <!-- Reports -->
-            <a class="nav-item" data-tooltip="Reports">
+            <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('reports') }}" data-tooltip="Reports">
                 <span class="material-symbols-outlined">bar_chart</span>
                 <p>Reports</p>
                 <div class="nav-indicator"></div>

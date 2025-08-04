@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Receipt;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-
+use App\Models\Product;
 
 class ViewController extends Controller
 {
@@ -42,6 +42,9 @@ class ViewController extends Controller
         
         return view('staffs', compact('users', 'user', 'search'));
     }
+
+
+
 
     public function showCustomers()
     {
@@ -380,6 +383,37 @@ public function showDashboard()
 }
 
 
+
+public function ordering()
+{
+    $user = auth()->user();
+    $search = request('search');
+    $query = Product::query();
+    if ($search) {
+        $query->where(function($q) use ($search) {
+            $q->where('name', 'like', "%$search%")
+              ->orWhere('id', 'like', "%$search%")
+              ->orWhere('description', 'like', "%$search%")
+              ->orWhere('store_name', 'like', "%$search%")
+              ->orWhere('acc_status', 'like', "%$search%")
+              ->orWhere('user_type', 'like', "%$search%")
+              ;
+        });
+    }
+    $products = $query->orderByDesc('created_at')->paginate(15);
+    if ($search) {
+        $products->appends(['search' => $search]);
+    }
+    return view('ordering', compact('user', 'products', 'search'));
+}
+
+public function reports()
+{
+    $user = auth()->user();
+    return view('reports', compact('user'));        
+
+
+}
 
 
 }

@@ -302,7 +302,6 @@ body .mainFrame{
     overflow: hidden;
     justify-content: center;
     align-items: center;
-
     margin-bottom: 10px;
     gap: 5px;
 }
@@ -325,9 +324,6 @@ body .mainFrame{
     transition: transform 0.3s ease;
 }
 
-.ownFrame:hover img {
-    transform: scale(1.05);
-}
 
 .logoutFrame{
     height: 50px;

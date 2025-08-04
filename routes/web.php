@@ -12,6 +12,7 @@ use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\ProductController;
 
 // Public routes (no authentication required)
 Route::get('/login', function () {
@@ -47,6 +48,8 @@ Route::get('/email/verify', [EmailVerificationController::class, 'show'])
     ->middleware('auth')
     ->name('verification.notice');
 
+    
+
 Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
     ->middleware(['auth', 'signed'])
     ->name('verification.verify');
@@ -65,6 +68,10 @@ Route::get('password/forgot', [ForgotPasswordController::class, 'showLinkRequest
 Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+
+// Product add route (Admin only, but form already checks user_type)
+Route::post('/add-product', [ProductController::class, 'store'])->middleware(['auth', 'check.status']);
 
 // Protected routes (require authentication and active status)
 Route::middleware(['auth', 'check.status'])->group(function () {
@@ -128,5 +135,12 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/customer/activate/{id}', [ViewController::class, 'activateCustomer'])->name('customer.activate');
         Route::post('/customer/suspend/{id}', [ViewController::class, 'suspendCustomer'])->name('customer.suspend');
     });
-});
 
+
+    Route::get('/ordering', [ViewController::class, 'ordering'])->name('ordering');
+    Route::get('/reports', [ViewController::class, 'reports'])->name('reports');
+
+    Route::get('/product-image/{id}', [App\Http\Controllers\ProductController::class, 'showImage'])->name('product.image');
+
+
+});

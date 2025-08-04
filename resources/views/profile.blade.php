@@ -18,7 +18,7 @@
         <div class="profile-header">
             <img src="{{ asset('images/' . auth()->user()->image ?? 'default-avatar.png') }}" class="avatar" alt="Avatar">
             <div class="profile-info">
-                <h2 class="profile-store">{{ auth()->user()->store_name }}</h2>
+                <h2 class="profile-store" style="color: #333">{{ auth()->user()->store_name }}</h2>
                 @if (auth()->user()->user_type === 'Staff')
                 <h2 class="profile-store">{{ auth()->user()->name }}</h2>
                 @endif
@@ -26,7 +26,7 @@
                 <p class="profile-role">{{ ucfirst(auth()->user()->user_type) }}</p>
             </div>
         </div>
-<script src="{{ asset('js/fadein.js') }}"></script>
+        <script src="{{ asset('js/fadein.js') }}"></script>
         <div class="profile-body">
             @if(auth()->user()->user_type === 'Customer')
             <p class="info-help">Your company’s information is required to ensure accurate identification and processing of transactions.</p>

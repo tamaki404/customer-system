@@ -214,7 +214,7 @@
                                             <td>{{ $receipt->receipt_number }}</td>
                                             <td>{{ $receipt->store_name }}</td>
                                             <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('F j') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('F j, Y') }}</td>
                                             {{-- <td><span class="status {{ strtolower($receipt->status) }}"
                                                 >{{ $receipt->status }}</span>
                                             </td> --}}
