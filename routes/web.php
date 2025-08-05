@@ -16,6 +16,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ProductController;
 use App\Models\Product;
+use App\Http\Controllers\OrderController;
 
 // Public routes (no authentication required)
 Route::get('/login', function () {
@@ -155,5 +156,4 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     })->middleware(['auth', 'check.status'])->name('product_view.view');
 
 Route::middleware(['auth', 'check.status'])->post('/checkout', [\App\Http\Controllers\OrderController::class, 'checkout'])->name('order.checkout');
-
-});
+Route::post('/checkout', [OrderController::class, 'checkout']);});

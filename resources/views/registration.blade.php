@@ -56,12 +56,13 @@
 
 
             <div class="form-group">
-                <p>Mobile Number (optional)</p>
+                <p>Mobile Number</p>
                 <input type="tel" name="mobile" 
                 placeholder="ex: 09123456789" 
                 pattern="^09\d{9}$" 
                 maxlength="11" 
                 minlength="11" 
+                required
                 >
                 <small id="mobile-feedback" style="color:red;"></small>               
             </div>

@@ -45,7 +45,7 @@
                     </div>
                     <div>
                         <label>Price</label>
-                        <input type="number" name="price" placeholder="Price in Rs." id="price" min="0" required>
+                        <input type="number" name="price" placeholder="Price." id="price" min="0" required>
                         <span id="price-error" class="error-message"></span>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
   </div>
 </div>
 
-<!-- Cart Modal (MOVED OUTSIDE THE LOOP) -->
+<!-- Cart Modal -->
 <div id="cartModal" class="modal" style="display:none;">
     <div class="cart-content">
         <div class="header-cart">
@@ -77,12 +77,13 @@
         </div>
         
         <div id="cartItemsContainer" class="cart-container">
-            <p style="color:#888; margin-top: 300px;">No products in cart.</p>
+            <p style="color:#888; margin-top: 200px;">No products in cart.</p>
         </div>
         <hr>
         <span class="total-container"><p style="color: #333">Total</p><p id="cartTotal"></p></span>
         <button id="checkoutBtn">Checkout</button>
         <div id="checkoutMessage" style="margin-top:1rem; color:green; display:none;"></div>
+        <div id="stockWarning" style="margin-top:1rem; color:orange; display:none;"></div>
     </div>
 </div>
 
@@ -110,7 +111,7 @@
             <thead>
                 <tr style="background:#f7f7fa;">
                     <th style="padding:10px 8px; text-align:left;">Name</th>
-                    <th style="padding:10px 8px; text-align:left;">Quantity</th>
+                    <th style="padding:10px 8px; text-align:left;">Stock</th>
                     <th style="padding:10px 8px; text-align:left;">Price</th>
                     <th style="padding:10px 8px; text-align:left;">Status</th>
                 </tr>
@@ -122,19 +123,39 @@
                         {{ $product->name }}
                     </td>
                     <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                        {{ $product->quantity }}x
+                        <span style="color: {{ $product->quantity <= 5 ? '#ff6b6b' : ($product->quantity <= 10 ? '#ffa500' : '#4caf50') }}">
+                            {{ $product->quantity }}x
+                        </span>
+                        @if($product->quantity <= 5)
+                            <small style="color: #ff6b6b; display: block;">Low stock!</small>
+                        @endif
                     </td>
                     <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                         ₱{{ number_format($product->price, 2) }}
                     </td>
                     <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                        {{ $product->status ?? 'Available' }}
+                        @if($product->quantity == 0)
+                            <span style="color: #ff6b6b;">Out of Stock</span>
+                        @else
+                            {{ $product->status ?? 'Available' }}
+                        @endif
                     </td>
                     <td style="padding:10px 8px; width:10%; text-align:center;">
                         @if(auth()->user()->user_type === 'Customer')
-                            <button class="add-to-cart-btn" data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}" data-product-price="{{ $product->price }}" style="background: #4caf50; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer;">
-                                <i class="fa fa-plus"></i>
-                            </button>
+                            @if($product->quantity > 0)
+                                <button class="add-to-cart-btn" 
+                                        data-product-id="{{ $product->id }}" 
+                                        data-product-name="{{ $product->name }}" 
+                                        data-product-price="{{ $product->price }}"
+                                        data-product-stock="{{ $product->quantity }}"
+                                        style="background: #4caf50; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer;">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            @else
+                                <button disabled style="background: #ccc; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: not-allowed;">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            @endif
                         @endif
                     </td>
                 </tr>
@@ -164,23 +185,47 @@
     </div>
 </div>
 
-<!-- JAVASCRIPT MOVED OUTSIDE THE LOOP AND CLEANED -->
+<!-- JavaScript with Stock Validation -->
 <script>
 // Prevent multiple script executions
 if (window.cartInitialized) {
     console.log('Cart already initialized, exiting');
 } else {
     window.cartInitialized = true;
-    console.log('Initializing cart system');
+    console.log('Initializing cart system with stock validation');
 
     // Cart keys
     window.CART_KEY = 'customer_cart';
     window.CART_EXPIRY_KEY = 'customer_cart_expiry';
 
-    // Cart logic functions
+    // Store product stock data for validation
+    window.productStock = {};
+    
+    // Initialize product stock data from the page
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            const productId = btn.getAttribute('data-product-id');
+            const stock = parseInt(btn.getAttribute('data-product-stock'));
+            if (productId && stock !== null) {
+                window.productStock[productId] = stock;
+            }
+        });
+    });
+
+    // Cart logic functions with stock validation
     async function checkoutCart() {
         const cart = getCart();
         if (!cart.length) return;
+        
+        // Validate cart against current stock before checkout
+        const stockIssues = validateCartStock(cart);
+        if (stockIssues.length > 0) {
+            document.getElementById('stockWarning').innerHTML = 
+                'Stock issues found:<br>' + stockIssues.join('<br>');
+            document.getElementById('stockWarning').style.display = 'block';
+            return;
+        }
+        
         const total = calculateTotal();
         try {
             const response = await fetch('/checkout', {
@@ -198,14 +243,30 @@ if (window.cartInitialized) {
                 renderCart();
                 document.getElementById('checkoutMessage').innerText = 'Order placed successfully!';
                 document.getElementById('checkoutMessage').style.display = 'block';
+                document.getElementById('stockWarning').style.display = 'none';
             } else {
-                document.getElementById('checkoutMessage').innerText = 'Order failed. Please try again.';
+                document.getElementById('checkoutMessage').innerText = data.message || 'Order failed. Please try again.';
                 document.getElementById('checkoutMessage').style.display = 'block';
             }
         } catch (e) {
             document.getElementById('checkoutMessage').innerText = 'Order failed. Please try again.';
             document.getElementById('checkoutMessage').style.display = 'block';
         }
+    }
+
+    function validateCartStock(cart) {
+        const issues = [];
+        cart.forEach(item => {
+            const availableStock = window.productStock[item.id];
+            if (availableStock === undefined) {
+                issues.push(`${item.name}: Stock information unavailable`);
+            } else if (item.qty > availableStock) {
+                issues.push(`${item.name}: Only ${availableStock} available (you have ${item.qty} in cart)`);
+            } else if (availableStock === 0) {
+                issues.push(`${item.name}: Out of stock`);
+            }
+        });
+        return issues;
     }
 
     function getCart() {
@@ -226,29 +287,50 @@ if (window.cartInitialized) {
 
     function addToCart(product) {
         console.log('addToCart called for:', product.name);
+        
+        const availableStock = parseInt(product.stock);
         let cart = getCart();
         const idx = cart.findIndex(item => item.id === product.id);
+        
+        let currentQtyInCart = 0;
         if (idx > -1) {
-            cart[idx].qty = (cart[idx].qty || 1) + 1;
+            currentQtyInCart = cart[idx].qty || 0;
+        }
+        
+        // Check if adding one more would exceed stock
+        if (currentQtyInCart + 1 > availableStock) {
+            showStockMessage(`Cannot add more ${product.name}. Only ${availableStock} available.`);
+            return false;
+        }
+        
+        if (idx > -1) {
+            cart[idx].qty = currentQtyInCart + 1;
             console.log('Updated quantity to:', cart[idx].qty);
         } else {
             cart.push({...product, qty: 1});
             console.log('Added new item to cart');
         }
         setCart(cart);
+        return true;
     }
 
     function updateQuantity(productId, newQuantity) {
         let cart = getCart();
         const idx = cart.findIndex(item => item.id === productId);
         if (idx > -1) {
+            const availableStock = window.productStock[productId];
+            
             if (newQuantity <= 0) {
                 cart.splice(idx, 1);
+            } else if (newQuantity > availableStock) {
+                showStockMessage(`Cannot set quantity to ${newQuantity}. Only ${availableStock} available.`);
+                return;
             } else {
                 cart[idx].qty = newQuantity;
             }
             setCart(cart);
             renderCart();
+            hideStockMessage();
         }
     }
 
@@ -257,6 +339,7 @@ if (window.cartInitialized) {
         cart = cart.filter(item => item.id !== productId);
         setCart(cart);
         renderCart();
+        hideStockMessage();
     }
 
     function calculateTotal() {
@@ -266,11 +349,31 @@ if (window.cartInitialized) {
         }, 0);
     }
 
+    function showStockMessage(message) {
+        const warningEl = document.getElementById('stockWarning');
+        if (warningEl) {
+            warningEl.innerText = message;
+            warningEl.style.display = 'block';
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                hideStockMessage();
+            }, 3000);
+        }
+    }
+
+    function hideStockMessage() {
+        const warningEl = document.getElementById('stockWarning');
+        if (warningEl) {
+            warningEl.style.display = 'none';
+        }
+    }
+
     function renderCart() {
         const cart = getCart();
         const container = document.getElementById('cartItemsContainer');
         const checkoutBtn = document.getElementById('checkoutBtn');
         const totalContainer = document.getElementById('cartTotal');
+        
         if (!cart.length) {
             container.innerHTML = '<p style="color:#888; font-size:15px; margin-top:200px;">No products in cart.</p>';
             if (checkoutBtn) checkoutBtn.style.display = 'none';
@@ -281,16 +384,23 @@ if (window.cartInitialized) {
         let html = '<div>';
         cart.forEach(item => {
             const itemTotal = parseFloat(item.price) * item.qty;
+            const availableStock = window.productStock[item.id] || 0;
+            const isOverStock = item.qty > availableStock;
+            
             html += `
-                <div class="cart-item">
+                <div class="cart-item" style="${isOverStock ? 'background-color: #ffe6e6; border: 1px solid #ff9999;' : ''}">
                     <div class="cart-item-info">
-                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-name">
+                            ${item.name}
+                            ${isOverStock ? '<span style="color: #ff6b6b; font-size: 12px;">(Exceeds stock!)</span>' : ''}
+                        </div>
                         <div class="cart-item-price">₱${parseFloat(item.price).toLocaleString(undefined, {minimumFractionDigits:2})} each</div>
+                        <div style="font-size: 12px; color: #666;">${availableStock} pcs. only</div>
                     </div>
                     <div class="quantity-controls">
                         <button class="quantity-btn" onclick="updateQuantity('${item.id}', ${item.qty - 1})" ${item.qty <= 1 ? 'disabled' : ''}>−</button>
-                        <span class="quantity-display">${item.qty}</span>
-                        <button class="quantity-btn" onclick="updateQuantity('${item.id}', ${item.qty + 1})">+</button>
+                        <span class="quantity-display" style="${isOverStock ? 'color: #ff6b6b; font-weight: bold;' : ''}">${item.qty}</span>
+                        <button class="quantity-btn" onclick="updateQuantity('${item.id}', ${item.qty + 1})" ${item.qty >= availableStock ? 'disabled style="background-color: #ccc; cursor: not-allowed;"' : ''}>+</button>
                     </div>
                     <div style="text-align: right;">
                         <div style="font-weight: bold; margin-bottom: 4px;">₱${itemTotal.toLocaleString(undefined, {minimumFractionDigits:2})}</div>
@@ -328,11 +438,14 @@ if (window.cartInitialized) {
                     id: this.getAttribute('data-product-id'),
                     name: this.getAttribute('data-product-name'),
                     price: this.getAttribute('data-product-price'),
+                    stock: this.getAttribute('data-product-stock'),
                 };
                 
-                addToCart(product);
-                renderCart();
-                document.getElementById('cartModal').style.display = 'block';
+                const success = addToCart(product);
+                if (success) {
+                    renderCart();
+                    document.getElementById('cartModal').style.display = 'block';
+                }
             });
         });
         
@@ -350,6 +463,7 @@ if (window.cartInitialized) {
         if (closeCartBtn) {
             closeCartBtn.onclick = function() {
                 document.getElementById('cartModal').style.display = 'none';
+                hideStockMessage();
             };
         }
         
@@ -358,6 +472,7 @@ if (window.cartInitialized) {
             const modal = document.getElementById('cartModal');
             if (event.target === modal) {
                 modal.style.display = 'none';
+                hideStockMessage();
             }
         };
         
