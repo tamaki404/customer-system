@@ -199,8 +199,8 @@ table tr:hover {
     height: 90%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: start;
+    align-items: start;
 }
 
 .cart-content .header-cart{
@@ -239,6 +239,10 @@ span .expire{
     height: 60%;
     overflow-x: auto;
     border-radius: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
 
 }
 
@@ -253,7 +257,7 @@ span .expire{
 
 .cart-item-name{
     font-size: 15px;
-    width: 250px;
+    width: 200px;
     font-weight: bold;
     color: #333;
      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;
@@ -336,4 +340,13 @@ span .expire{
 
     margin: auto;
 
+}
+
+#checkoutBtn:hover{
+    background-color: #fbc02d;
+}
+
+.quantity-controls{
+    padding: 10px;
+    width: auto;
 }
