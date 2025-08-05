@@ -157,3 +157,18 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 
 Route::middleware(['auth', 'check.status'])->post('/checkout', [\App\Http\Controllers\OrderController::class, 'checkout'])->name('order.checkout');
 Route::post('/checkout', [OrderController::class, 'checkout']);});
+
+    // Checkout route (for customers)
+    Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+    
+    // Customer routes
+    Route::get('/my-orders', [OrderController::class, 'myOrders'])->name('orders.my-orders');
+    
+    // Admin/Staff routes
+    Route::middleware(['auth', 'check.user.type:Admin,Staff'])->group(function () {
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::put('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+    });
+    
+    // Order details (accessible by order owner or admin/staff)
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');

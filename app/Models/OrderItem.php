@@ -9,17 +9,16 @@ class OrderItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'order_id',
-        'product_id',
-        'quantity',
-        'price',
-    ];
 
-    public function order()
-    {
-        return $this->belongsTo(Order::class);
-    }
+        protected $fillable = [
+            'order_id',
+            'product_id',
+            'quantity',
+            'unit_price',
+            'total_price',
+        ];
+
+    // Removed order() relationship since there is no orders table
 
     public function product()
     {

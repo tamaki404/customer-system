@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 
@@ -23,9 +24,8 @@ public function checkout(Request $request)
         return response()->json(['success' => false, 'message' => 'Cart is empty.'], 400);
     }
 
-    // Validate stock
     foreach ($items as $item) {
-        $product = \App\Models\Product::find($item['id']);
+        $product = Product::find($item['id']);
         if (!$product || $product->quantity < $item['qty']) {
             return response()->json([
                 'success' => false,
@@ -34,30 +34,23 @@ public function checkout(Request $request)
         }
     }
 
-    // Create order (or receipt, depending on your models)
-    $order = new \App\Models\Order();
-    $order->user_id = $user->id;
-    $order->total = $total;
-    $order->save();
+    // Optionally, generate a unique order_id for this batch
+    $order_id = time() . $user->id;
 
-    // Attach products and update stock
     foreach ($items as $item) {
-        $product = \App\Models\Product::find($item['id']);
+        $product = Product::find($item['id']);
         $product->quantity -= $item['qty'];
         $product->save();
 
-        // You may want to create an order item/receipt row here
-        // Example:
-        // \App\Models\OrderItem::create([
-        //     'order_id' => $order->id,
-        //     'product_id' => $product->id,
-        //     'quantity' => $item['qty'],
-        //     'price' => $item['price'],
-        // ]);
+        OrderItem::create([
+            'order_id'    => $order_id,
+            'product_id'  => $product->id,
+            'quantity'    => $item['qty'],
+            'unit_price'  => $product->price,
+            'total_price' => $product->price * $item['qty'],
+        ]);
     }
 
     return response()->json(['success' => true, 'message' => 'Order placed successfully!']);
 }
-
-    
 }
