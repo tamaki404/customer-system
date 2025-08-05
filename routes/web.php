@@ -1,6 +1,7 @@
 
 
 
+
 <?php
 
 use App\Http\Controllers\TicketController;
@@ -153,5 +154,6 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         return view('product_view', compact('product'));
     })->middleware(['auth', 'check.status'])->name('product_view.view');
 
+Route::middleware(['auth', 'check.status'])->post('/checkout', [\App\Http\Controllers\OrderController::class, 'checkout'])->name('order.checkout');
 
 });

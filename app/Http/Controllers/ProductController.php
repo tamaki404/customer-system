@@ -47,7 +47,7 @@ class ProductController extends Controller
     public function listProduct($product_id)
     {
         $product = Product::findOrFail($product_id);
-        $product->status = 'Listed';
+        $product->status = 'Available';
         $product->save();
         return redirect()->route('product_view.view', $product_id)->with('success', 'Product listed successfully!');
     }

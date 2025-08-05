@@ -101,7 +101,15 @@
 
         </div>
 
-
+            @if ($errors->any())
+                <div style="color: red; margin-bottom: 10px;">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         <button type="submit">Sign Up</button>
 
 
@@ -118,15 +126,7 @@
 
     
 </form>
-@if ($errors->any())
-    <div style="color: red; margin-bottom: 10px;">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+
 
 <script src="{{asset('js/register.js')}}"></script>
 

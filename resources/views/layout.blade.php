@@ -71,11 +71,7 @@
                 <div class="nav-indicator"></div>
             </a>
 
-            <a class="nav-item{{ $currentRoute == 'staffs' ? ' active' : '' }}" href="{{ route('staffs') }}" data-tooltip="Staff Management">
-                <span class="material-symbols-outlined">group</span>
-                <p>Staffs</p>
-                <div class="nav-indicator"></div>
-            </a>
+
             
             <a class="nav-item{{ $currentRoute == 'customers' ? ' active' : '' }}" href="{{ route('customers') }}" data-tooltip="Customer Management">
                 <span class="material-symbols-outlined">groups</span>
