@@ -5,6 +5,7 @@ use App\Models\Receipt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\Product;
 
 
 class ReceiptController extends Controller{
@@ -37,6 +38,7 @@ class ReceiptController extends Controller{
         $receipt->save();
         return redirect()->route('receipts.view', $receipt_id)->with('success', 'Receipt rejected successfully!');
     }
+
 
 
 

@@ -104,6 +104,9 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/receipts/verify/{receipt_id}', [ReceiptController::class, 'verifyReceipt'])->name('receipts.verify');
         Route::post('/receipts/cancel/{receipt_id}', [ReceiptController::class, 'cancelReceipt'])->name('receipts.cancel');
         Route::post('/receipts/reject/{receipt_id}', [ReceiptController::class, 'rejectReceipt'])->name('receipts.reject');
+        Route::post('/product/unlist/{product_id}', [ProductController::class, 'unlistProduct'])->name('products.unlist');
+        Route::post('/product/list/{product_id}', [ProductController::class, 'listProduct'])->name('products.list');
+
     });
     
     // Tickets management
@@ -147,6 +150,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/product/{id}', function($id) {
         $product = Product::findOrFail($id);
         return view('product_view', compact('product'));
-    })->middleware(['auth', 'check.status']);
+    })->middleware(['auth', 'check.status'])->name('product_view.view');
+
 
 });

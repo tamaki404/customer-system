@@ -1,0 +1,141 @@
+.productDetailFrame {
+    display: flex;
+    flex-direction: column;
+    align-content: start;
+    justify-content: start;
+    background-color: #fff;
+    padding: 60px;
+    gap: 10px;
+    width: 97%;
+    height: 97%;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 15px;
+}
+
+.productDetailFrame h2 {
+    color: #333;
+    font-weight: 700;
+    font-size: 28px;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+
+.mainBlock {
+    width: 70%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    gap: 10px;
+    /* background-color: pink;
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.05);
+    border-radius: 16px; */
+    padding: 30px;
+    /* border: 1px solid rgba(255, 255, 255, 0.2); */
+    position: relative;
+    overflow-x: auto;
+    /* border-top: #ffde59 4px solid; */
+}
+
+
+.backLink{
+    font-size: 15px;
+}
+
+.backLink a{
+    color: #ff9800;
+    text-decoration: none;
+
+}
+.backLink a:hover{
+    color: #e08906;
+    text-decoration: none;
+
+}
+
+table tr{
+    margin: 0;
+}
+
+.product-name{
+    font-weight: bold;
+    font-size: 25px;
+    color: #333;
+    margin: 0;
+}
+.product-description{
+    font-size: 18px;
+    color: #333;
+    margin: 0;
+}
+
+span{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.quantity-span, .status-span{
+    font-size: 15px;
+    color: #6b6a6a;
+    padding: 10px;
+    height: auto;
+}
+span p{
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.product-info{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+        width: 100%;
+    max-width: 1000px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    border-radius: 16px;
+    padding: 30px;
+}
+
+.modify-block{
+    width: 100%;
+    max-width: 1000px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    border-radius: 16px;
+    padding: 30px;
+    display: flex;
+    flex-direction: row;
+    gap: 13px;
+}
+
+.modify-block button{
+    color: white;
+        padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    font-weight: normal;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    gap: 8px;
+    letter-spacing: 0.5px;
+    font-size: 14px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.edit-btn:hover{
+    background-color: #ff9800;
+    transform: translateY(-2px);
+}
+.unlist-btn:hover{
+    background-color: #e08906;
+    transform: translateY(-2px);
+}
+.delete-btn:hover{
+    background-color: rgba(255, 0, 0, 0.664);
+    transform: translateY(-2px);
+}

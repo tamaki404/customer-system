@@ -34,4 +34,21 @@ class ProductController extends Controller
         }
         return response($product->image)->header('Content-Type', $product->image_mime);
     }
+
+    
+    public function unlistProduct($product_id)
+    {
+        $product = Product::findOrFail($product_id);
+        $product->status = 'Unlisted';
+        $product->save();
+        return redirect()->route('product_view.view', $product_id)->with('success', 'Product unlisted successfully!');
+    }
+
+    public function listProduct($product_id)
+    {
+        $product = Product::findOrFail($product_id);
+        $product->status = 'Listed';
+        $product->save();
+        return redirect()->route('product_view.view', $product_id)->with('success', 'Product listed successfully!');
+    }
 }
