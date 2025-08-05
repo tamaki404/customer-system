@@ -51,4 +51,18 @@ class ProductController extends Controller
         $product->save();
         return redirect()->route('product_view.view', $product_id)->with('success', 'Product listed successfully!');
     }
+
+
+    public function deleteProduct($product_id)
+    {
+        $product = Product::findOrFail($product_id);
+
+        if (auth()->user()->user_type !== 'Admin') {
+            abort(403, 'Unauthorized access');
+        }
+        $product->delete();
+
+        return redirect()->route('ordering')->with('success', 'Product deleted successfully!');
+    }
+
 }

@@ -139,3 +139,25 @@ span p{
     background-color: rgba(255, 0, 0, 0.664);
     transform: translateY(-2px);
 }
+
+#deleteProductForm #delete{
+background:#e53935; color:#fff; padding:0.5rem 1.5rem; border:none; border-radius:4px;
+}
+
+#deleteProductForm #delete:hover{
+    background-color:rgb(190, 6, 6);
+}
+
+#deleteProductForm #delete:hover{
+    background-color: #9b9898;
+}
+
+.formBlock span{
+    color: #333;
+
+
+}
+
+.formBlock span:hover{
+    color: black;
+}

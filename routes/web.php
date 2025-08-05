@@ -106,6 +106,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/receipts/reject/{receipt_id}', [ReceiptController::class, 'rejectReceipt'])->name('receipts.reject');
         Route::post('/product/unlist/{product_id}', [ProductController::class, 'unlistProduct'])->name('products.unlist');
         Route::post('/product/list/{product_id}', [ProductController::class, 'listProduct'])->name('products.list');
+        Route::delete('/product/delete/{product_id}', [ProductController::class, 'deleteProduct'])->name('products.delete');
 
     });
     

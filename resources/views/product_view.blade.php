@@ -28,8 +28,7 @@
             <span class="status-span">Status:<p>{{ $product->status ?? 'Available' }}</p></span>
         </div>
         <div class="modify-block">
-
-            <button class="edit-btn" style="width: 170px; background: linear-gradient(135deg, #4caf50, #45a049);"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+            <button class="edit-btn" style="width: 190px; background: linear-gradient(135deg, #4caf50, #45a049);"><i class="fa-regular fa-square-plus"></i> Add stocks</button>
            @if ($product->status === 'Listed')
                 <form action="{{ url('/product/unlist/' . $product->id) }}" method="POST">
                     @csrf
@@ -42,7 +41,44 @@
                 </form>
             @endif
 
-            <button class="delete-btn" style="width: 120px; background-color: rgba(255, 0, 0, 0.664);"><i class="fa-solid fa-trash-can"></i> Delete</button>
+            <!-- Delete Button triggers modal -->
+            @if (auth()->user()->user_type != 'Admin')
+                 <button class="delete-btn" id="openDeleteModalBtn" style="width: auto; background-color: rgba(255, 0, 0, 0.281);" disabled><i class="fa-regular fa-circle-xmark"></i> Can't delete</button>
+            @else
+                 <button class="delete-btn" id="openDeleteModalBtn" style="width: 120px; background-color: rgba(255, 0, 0, 0.664);"><i class="fa-solid fa-trash-can"></i> Delete</button>
+            @endif
+            <!-- Delete Modal -->
+            <div id="deleteModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
+                <div class="formBlock" style="background:#fff; padding:2rem; border-top: #e53935 4px solid; border-radius:8px; min-width:320px; max-width:90vw; position:relative; text-align:center;">
+                    <span id="closeDeleteModalBtn" style="position:absolute; top:10px; right:20px; font-size:2rem; cursor:pointer;">&times;</span>
+
+                    <h2 style="font-size: 25px; font-weight: bold; margin: 5px 0;">Confirm Delete</h2>
+                    <p>Are you sure you want to delete this product? This action cannot be undone.</p>
+                    <form id="deleteProductForm" action="{{ url('/product/delete/' . $product->id) }}" method="POST" style="margin-top:1.5rem;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" id="delete" style="">Yes, Delete</button>
+                        <button type="button" id="cancelDeleteBtn" style="margin-left:1rem; background:#aaa; color:#fff; padding:0.5rem 1.5rem; border:none; border-radius:4px;">Cancel</button>
+                    </form>
+                </div>
+            </div>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const openBtn = document.getElementById('openDeleteModalBtn');
+                const modal = document.getElementById('deleteModal');
+                const closeBtn = document.getElementById('closeDeleteModalBtn');
+                const cancelBtn = document.getElementById('cancelDeleteBtn');
+                if (openBtn && modal && closeBtn && cancelBtn) {
+                    openBtn.onclick = () => { modal.style.display = 'flex'; };
+                    closeBtn.onclick = () => { modal.style.display = 'none'; };
+                    cancelBtn.onclick = () => { modal.style.display = 'none'; };
+                    window.onclick = function(event) {
+                        if (event.target === modal) { modal.style.display = 'none'; }
+                    };
+                }
+            });
+            </script>
         </div>
     </div>
 
