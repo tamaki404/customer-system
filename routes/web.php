@@ -14,6 +14,7 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ProductController;
+use App\Models\Product;
 
 // Public routes (no authentication required)
 Route::get('/login', function () {
@@ -59,7 +60,7 @@ Route::get('/verify-email/{token}', [UserController::class, 'verifyEmail'])->nam
 Route::post('/resend-verification', [UserController::class, 'resendVerification'])->name('verification.resend')->middleware('throttle:3,1');
 
 // Laravel's built-in resend verification route
-Route::post('/email/verification-notification', function (Illuminate\Http\Request $request) {
+Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
@@ -141,10 +142,10 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/ordering', [ViewController::class, 'ordering'])->name('ordering');
     Route::get('/reports', [ViewController::class, 'reports'])->name('reports');
 
-    Route::get('/product-image/{id}', [App\Http\Controllers\ProductController::class, 'showImage'])->name('product.image');
+    Route::get('/product-image/{id}', [ProductController::class, 'showImage'])->name('product.image');
     // Product detail view
     Route::get('/product/{id}', function($id) {
-        $product = \App\Models\Product::findOrFail($id);
+        $product = Product::findOrFail($id);
         return view('product_view', compact('product'));
     })->middleware(['auth', 'check.status']);
 

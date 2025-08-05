@@ -69,17 +69,17 @@ body .mainFrame{
     border-right: 2px solid #cbc9c9;
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); */
     position: relative;
     overflow: hidden;
 }
 
 
 
-.sideAccess.collapsed {
+/* .sideAccess.collapsed {
     transform: translateX(-100%);
     opacity: 0;
-}
+} */
 
 /* Sidebar Header */
 .sidebar-header {

@@ -46,6 +46,19 @@
                     <input type="hidden" name="verified_by">
                     <input type="hidden" name="verified_at">
 
+                    <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const form = document.querySelector('.receipt-form');
+                        const totalAmountInput = document.getElementById('total_amount');
+                        if (form && totalAmountInput) {
+                            form.addEventListener('submit', function(e) {
+                                // Remove all commas before submitting
+                                totalAmountInput.value = totalAmountInput.value.replace(/,/g, '');
+                            });
+                        }
+                    });
+                    </script>
+
                     <div style="display: none">
                         <label>Store Name</label>
                         <input type="text" name="store_name" value="{{ auth()->user()->store_name }}" placeholder="Store name" hidden>
