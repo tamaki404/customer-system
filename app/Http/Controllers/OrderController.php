@@ -134,19 +134,30 @@ class OrderController extends Controller
     }
 
 
-public function viewOrder($id)
-{
-    $orders = Orders::where('order_id', $id)->with('product')->get();
+    public function viewOrder($id)
+    {
+        $orders = Orders::where('order_id', $id)->with('product')->get();
 
-    if ($orders->isEmpty()) {
-        return redirect()->back()->with('error', 'Order not found.');
+        if ($orders->isEmpty()) {
+            return redirect()->back()->with('error', 'Order not found.');
+        }
+
+        $total = $orders->sum('total_price');
+        $user = auth()->user();
+
+        return view('view-order', compact('orders', 'total', 'user'));
     }
 
-    $total = $orders->sum('total_price');
-    $user = auth()->user();
+    
+    public function cancelOrder($order_id)
+    {
+        Orders::where('order_id', $order_id)->update([
+            'status' => 'Cancelled'
+        ]);
 
-    return view('view-order', compact('orders', 'total', 'user'));
-}
+        return redirect()->route('orders.view', $order_id)
+            ->with('success', 'Order cancelled successfully!');
+    }
 
 
 

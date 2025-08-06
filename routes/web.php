@@ -159,6 +159,12 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     // Route::middleware(['auth', 'check.status'])->post('/checkout', [OrderController::class, 'checkout'])->name('order.checkout');
     Route::post('/checkout', [OrderController::class, 'checkout']);
 
+
+            
+    
+    Route::post('/order/cancel/{order_id}', action: [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+
+
 });
 
 

@@ -21,9 +21,12 @@
             <span>
                 <h2 style="margin: 0">{{ $orders->first()->order_id }}</h2>       
                  @if (  ucfirst($orders->first()->status) === 'Pending')
-                    <button class="cancel-order">Cancel order</button>
+                    <form  action="{{ url('/order/cancel/' . $orders->first()->order_id) }}" method="POST" style="display:inline-block;">
+                        @csrf
+                        <button class="cancel-order" type="submit">Cancel</button>
+                    </form>
                 @endif
-                
+
             </span>
 
             <div class="titleCount"> 
