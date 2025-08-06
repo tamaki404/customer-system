@@ -20,7 +20,7 @@
         <div class="titleFrame">
 
             <form method="GET" action="" class="date-search">
-                <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by ID, Name, or User Type">
+                <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Order ID, Date, or Status">
                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>    
 

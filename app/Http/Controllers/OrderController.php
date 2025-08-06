@@ -134,21 +134,21 @@ class OrderController extends Controller
     }
 
 
-    public function viewOrder($id)
-    {
-        $order = Orders::where('order_id', $id)->with('product')->first();
+public function viewOrder($id)
+{
+    $orders = Orders::where('order_id', $id)->with('product')->get();
 
-        if (!$order) {
-            return redirect()->back()->with('error', 'Order not found.');
-        }
-
-        // Get all items for the order
-        $items = Orders::getOrderItems($id);
-        $total = Orders::getOrderTotal($id);
-
-        return view('view-order', compact('order', 'items', 'total'));
+    if ($orders->isEmpty()) {
+        return redirect()->back()->with('error', 'Order not found.');
     }
 
-    
+    $total = $orders->sum('total_price');
+    $user = auth()->user();
+
+    return view('view-order', compact('orders', 'total', 'user'));
+}
+
+
+
 
 }
