@@ -17,7 +17,7 @@
 <body>
     <script src="{{ asset('js/fadein.js') }}"></script>
     <div class="receiptFrame">
-        <span style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;"><h2>Receipt #{{ $receipt->invoice_number }}</h2> <p>{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p></span>
+        <span style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;"><h2>Receipt #{{ $receipt->receipt_number }}</h2> <p>{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p></span>
 
         <div class="mainBlock">
 

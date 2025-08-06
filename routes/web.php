@@ -166,4 +166,6 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/my-orders', [OrderController::class, 'myOrders'])->name('orders.my-orders');
     
     Route::get('orders', [ViewController::class, 'allOrders'])->name('all-orders');   
-    Route::get('spec-orders/{id}', [ViewController::class, 'specOrders'])->name('spec-orders');
+    Route::get('spec-orders/{id}', [OrderController::class, 'specOrders'])->name('spec-orders');
+
+    Route::get('/view-order/{id}', [OrderController::class, 'viewOrder'])->name('orders.view');

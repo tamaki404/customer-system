@@ -36,6 +36,7 @@ class Orders extends Model
         // If product_id is string (ULID/UUID):
         return $this->belongsTo(Product::class, 'product_id', 'id');
         
+        
         // If product_id is numeric, keep as is:
         // return $this->belongsTo(Product::class, 'product_id');
     }

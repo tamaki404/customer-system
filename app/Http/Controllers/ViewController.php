@@ -19,15 +19,7 @@ class ViewController extends Controller{
     //     return view('orders', compact('orders'));
     // }
 
-public function specOrders($id){
-    $user = auth()->user();
 
-    $orders = Orders::where('customer_id', $id)
-        ->orderByDesc('created_at')
-        ->get();
-
-    return view('orders', compact('orders', 'user'));
-}
 
 
 // public function yourOrders($id)

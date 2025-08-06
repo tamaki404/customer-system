@@ -99,4 +99,46 @@ class OrderController extends Controller
             ], 500);
         }
     }
+    public function specOrders($id){
+        $user = auth()->user();
+        
+
+        // Get all orders first
+        $allOrders = Orders::where('customer_id', $id)
+            ->orderByDesc('created_at')
+            ->get();
+        
+        // Group by order_id and transform
+        $orders = $allOrders->groupBy('order_id')->map(function ($orderItems) {
+            $firstItem = $orderItems->first();
+            return (object) [
+                'order_id' => $firstItem->order_id,
+                'customer_id' => $firstItem->customer_id,
+                'status' => $firstItem->status,
+                'created_at' => $firstItem->created_at,
+                'total_amount' => $orderItems->sum('total_price'),
+                'item_count' => $orderItems->count(),
+                'total_quantity' => $orderItems->sum('quantity'),
+                'items' => $orderItems // Optional: keep individual items if needed
+            ];
+        })->sortByDesc('created_at')->values();
+        
+        return view('orders', compact('orders', 'user'));
+    }
+
+    public function viewOrder($id)
+    {
+        $order = Orders::where('order_id', $id)->with('product')->first();
+
+        if (!$order) {
+            return redirect()->back()->with('error', 'Order not found.');
+        }
+
+        // Get all items for the order
+        $items = Orders::getOrderItems($id);
+        $total = Orders::getOrderTotal($id);
+
+        return view('view-order', compact('order', 'items', 'total'));
+    }
+
 }
