@@ -99,16 +99,23 @@ class OrderController extends Controller
             ], 500);
         }
     }
-    public function specOrders($id){
+    public function specOrders($id)
+    {
         $user = auth()->user();
-        
+        $search = request('search');
 
-        // Get all orders first
-        $allOrders = Orders::where('customer_id', $id)
+        $allOrders = Orders::with('product')
+            ->where('customer_id', $id)
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('order_id', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%")
+                    ->orWhere('created_at', 'like', "%$search%");
+                });
+            })
             ->orderByDesc('created_at')
             ->get();
-        
-        // Group by order_id and transform
+
         $orders = $allOrders->groupBy('order_id')->map(function ($orderItems) {
             $firstItem = $orderItems->first();
             return (object) [
@@ -119,12 +126,13 @@ class OrderController extends Controller
                 'total_amount' => $orderItems->sum('total_price'),
                 'item_count' => $orderItems->count(),
                 'total_quantity' => $orderItems->sum('quantity'),
-                'items' => $orderItems // Optional: keep individual items if needed
+                'items' => $orderItems
             ];
         })->sortByDesc('created_at')->values();
-        
-        return view('orders', compact('orders', 'user'));
+
+        return view('orders', compact('orders', 'user', 'search'));
     }
+
 
     public function viewOrder($id)
     {
@@ -140,5 +148,7 @@ class OrderController extends Controller
 
         return view('view-order', compact('order', 'items', 'total'));
     }
+
+    
 
 }

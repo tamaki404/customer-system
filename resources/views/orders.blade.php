@@ -36,6 +36,8 @@
         </div>    
         
         <div class="order-list">
+            @if(isset($orders) && $orders->count() > 0)
+
             @forelse($orders as $order)
                 <div class="order-summary">
                     {{-- <h3>Order #{{ $order->order_id }}</h3> --}}
@@ -74,12 +76,15 @@
                     <p><em>Click to load individual item details...</em></p>
                 </div>
                 </div>
-        @empty
-            <div class="text-center" style="padding: 50px;">
-                <h4>No orders found</h4>
-                <p>You haven't placed any orders yet.</p>
-            </div>
-        @endforelse
+            @empty
+                <div class="text-center" style="padding: 50px;">
+                    <h4>No orders found</h4>
+                    <p>You haven't placed any orders yet.</p>
+                </div>
+            @endforelse
+        @else
+        <div class="noStaff">No orders found.</div>
+       @endif
     </div>
 
 </body>

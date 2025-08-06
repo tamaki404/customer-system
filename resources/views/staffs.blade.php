@@ -114,7 +114,7 @@
     </div>
 
 <div class="userList" style="padding: 15px;">
-    @if(isset($users) && count($users) > 0)
+    @if(isset($users) && count(value: $users) > 0)
     <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
         <thead>
             <tr style="background:#f7f7fa;">
