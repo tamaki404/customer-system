@@ -80,6 +80,13 @@
                 <div class="nav-indicator"></div>
             </a>
 
+            
+            <a class="nav-item{{ $currentRoute == 'staffs' ? ' active' : '' }}" href="{{ route('staffs') }}" data-tooltip="Staff Management">
+               <span class="material-symbols-outlined">supervisor_account</span>
+                <p>Staffs</p>
+                <div class="nav-indicator"></div>
+            </a>
+
             @elseif(auth()->user()->user_type === 'Staff')
             <a class="nav-item{{ $currentRoute == 'dashboard' ? ' active' : '' }}" href="{{ route('dashboard') }}" data-tooltip="Dashboard">
                 <span class="material-symbols-outlined">dashboard</span>
@@ -139,11 +146,6 @@
                 <div class="nav-indicator"></div>
             </a>
 
-            <a class="nav-item{{ $currentRoute == 'staffs' ? ' active' : '' }}" href="{{ route('staffs') }}" data-tooltip="Staff Management">
-               <span class="material-symbols-outlined">supervisor_account</span>
-                <p>Staffs</p>
-                <div class="nav-indicator"></div>
-            </a>
 
         </div>
 

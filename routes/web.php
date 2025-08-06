@@ -156,19 +156,14 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         return view('product_view', compact('product'));
     })->middleware(['auth', 'check.status'])->name('product_view.view');
 
-    Route::middleware(['auth', 'check.status'])->post('/checkout', [OrderController::class, 'checkout'])->name('order.checkout');
-    Route::post('/checkout', [OrderController::class, 'checkout']);});
+    // Route::middleware(['auth', 'check.status'])->post('/checkout', [OrderController::class, 'checkout'])->name('order.checkout');
+    Route::post('/checkout', [OrderController::class, 'checkout']);
 
-    // Checkout route (for customers)
-    Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
-    
+});
+
+
     // Customer routes
     Route::get('/my-orders', [OrderController::class, 'myOrders'])->name('orders.my-orders');
     
-    // Admin/Staff routes
-
-    
-    // Route::get('/orders/{id}', [ViewController::class, 'yourOrders'])->name('your-orders');
-
     Route::get('orders', [ViewController::class, 'allOrders'])->name('all-orders');   
-     Route::get('spec-orders/{id}', [ViewController::class, 'specOrders'])->name('spec-orders');
+    Route::get('spec-orders/{id}', [ViewController::class, 'specOrders'])->name('spec-orders');
