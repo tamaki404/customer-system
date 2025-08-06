@@ -88,6 +88,7 @@
 </div>
 
 <div class="startBody">
+
     <div class="titleFrame">
         <form method="GET" action="" class="date-search">
             <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID & Status">
@@ -105,7 +106,10 @@
         <h2>Products List</h2>
     </div>
 
-    <div class="productList" style="padding: 15px;">
+<button onclick="window.location='{{ route('all-orders') }}'">Orders</button>
+<button onclick="window.location='{{ route('spec-orders', ['id' => auth()->user()->id]) }}'">My Orders</button>
+
+<div class="productList" style="padding: 15px;">
         @if(isset($products) && count($products) > 0)
         <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
             <thead>
@@ -183,7 +187,10 @@
             <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No products found.</div>
         @endif
     </div>
+
 </div>
+
+
 
 <!-- JavaScript with Stock Validation -->
 <script>

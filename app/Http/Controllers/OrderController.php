@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\OrderItem;
+use App\Models\Orders;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
@@ -42,8 +42,9 @@ public function checkout(Request $request)
         $product->quantity -= $item['qty'];
         $product->save();
 
-        OrderItem::create([
+        Orders::create([
             'order_id'    => $order_id,
+            'customer_id' => $user->id,
             'product_id'  => $product->id,
             'quantity'    => $item['qty'],
             'unit_price'  => $product->price,

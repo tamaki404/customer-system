@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ProductController;
 use App\Models\Product;
 use App\Http\Controllers\OrderController;
+use App\Models\Order;
 
 // Public routes (no authentication required)
 Route::get('/login', function () {
@@ -155,8 +156,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         return view('product_view', compact('product'));
     })->middleware(['auth', 'check.status'])->name('product_view.view');
 
-Route::middleware(['auth', 'check.status'])->post('/checkout', [\App\Http\Controllers\OrderController::class, 'checkout'])->name('order.checkout');
-Route::post('/checkout', [OrderController::class, 'checkout']);});
+    Route::middleware(['auth', 'check.status'])->post('/checkout', [OrderController::class, 'checkout'])->name('order.checkout');
+    Route::post('/checkout', [OrderController::class, 'checkout']);});
 
     // Checkout route (for customers)
     Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
@@ -165,10 +166,9 @@ Route::post('/checkout', [OrderController::class, 'checkout']);});
     Route::get('/my-orders', [OrderController::class, 'myOrders'])->name('orders.my-orders');
     
     // Admin/Staff routes
-    Route::middleware(['auth', 'check.user.type:Admin,Staff'])->group(function () {
-        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-        Route::put('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
-    });
+
     
-    // Order details (accessible by order owner or admin/staff)
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    // Route::get('/orders/{id}', [ViewController::class, 'yourOrders'])->name('your-orders');
+
+    Route::get('orders', [ViewController::class, 'allOrders'])->name('all-orders');   
+     Route::get('spec-orders/{id}', [ViewController::class, 'specOrders'])->name('spec-orders');

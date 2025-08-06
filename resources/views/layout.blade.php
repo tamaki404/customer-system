@@ -21,6 +21,7 @@
 <body>
 
 @auth
+
 <div class="mainFrame">
     <!-- Mobile Toggle Button -->
     <div class="mobile-toggle" onclick="toggleSidebar()">
@@ -138,6 +139,12 @@
                 <div class="nav-indicator"></div>
             </a>
 
+            <a class="nav-item{{ $currentRoute == 'staffs' ? ' active' : '' }}" href="{{ route('staffs') }}" data-tooltip="Staff Management">
+               <span class="material-symbols-outlined">supervisor_account</span>
+                <p>Staffs</p>
+                <div class="nav-indicator"></div>
+            </a>
+
         </div>
 
         <div class="sidebar-footer">
@@ -170,76 +177,76 @@
 </div>
 
 @else
-<!-- Redirect to login if not authenticated -->
-<script>
-    window.location.href = '{{ route("login") }}';
-</script>
+    <!-- Redirect to login if not authenticated -->
+    <script>
+        window.location.href = '{{ route("login") }}';
+    </script>
 @endauth
 
 <script>
-// Sidebar toggle functionality
-function toggleSidebar() {
-    const sidebar = document.getElementById('sideAccess');
-    const mainContent = document.getElementById('showScreen');
-    const toggleBtn = document.querySelector('.mobile-toggle');
-    
-    sidebar.classList.toggle('collapsed');
-    mainContent.classList.toggle('expanded');
-    toggleBtn.classList.toggle('active');
-}
-
-// User profile toggle
-function toggleUserProfile() {
-    const userProfile = document.querySelector('.userProfile');
-    const toggleIcon = document.querySelector('.toggle-icon');
-    
-    userProfile.classList.toggle('expanded');
-    toggleIcon.style.transform = userProfile.classList.contains('expanded') ? 'rotate(180deg)' : 'rotate(0deg)';
-}
-
-// Add hover effects for navigation items
-document.addEventListener('DOMContentLoaded', function() {
-    const navItems = document.querySelectorAll('.nav-item');
-    
-    navItems.forEach(item => {
-        item.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateX(10px)';
-        });
+    // Sidebar toggle functionality
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sideAccess');
+        const mainContent = document.getElementById('showScreen');
+        const toggleBtn = document.querySelector('.mobile-toggle');
         
-        item.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateX(0)';
-        });
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('expanded');
+        toggleBtn.classList.toggle('active');
+    }
+
+    // User profile toggle
+    function toggleUserProfile() {
+        const userProfile = document.querySelector('.userProfile');
+        const toggleIcon = document.querySelector('.toggle-icon');
         
-        // Add click animation
-        item.addEventListener('click', function() {
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = 'scale(1)';
-            }, 150);
-        });
-    });
-    
-    // Auto-hide sidebar on mobile after navigation
-    if (window.innerWidth <= 768) {
-        const navLinks = document.querySelectorAll('.nav-item');
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
+        userProfile.classList.toggle('expanded');
+        toggleIcon.style.transform = userProfile.classList.contains('expanded') ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+
+    // Add hover effects for navigation items
+    document.addEventListener('DOMContentLoaded', function() {
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        navItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(10px)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+            
+            // Add click animation
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
                 setTimeout(() => {
-                    document.getElementById('sideAccess').classList.add('collapsed');
-                    document.getElementById('showScreen').classList.add('expanded');
-                }, 300);
+                    this.style.transform = 'scale(1)';
+                }, 150);
             });
         });
-    }
-});
+        
+        // Auto-hide sidebar on mobile after navigation
+        if (window.innerWidth <= 768) {
+            const navLinks = document.querySelectorAll('.nav-item');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    setTimeout(() => {
+                        document.getElementById('sideAccess').classList.add('collapsed');
+                        document.getElementById('showScreen').classList.add('expanded');
+                    }, 300);
+                });
+            });
+        }
+    });
 
-// Handle window resize
-window.addEventListener('resize', function() {
-    if (window.innerWidth > 768) {
-        document.getElementById('sideAccess').classList.remove('collapsed');
-        document.getElementById('showScreen').classList.remove('expanded');
-    }
-});
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            document.getElementById('sideAccess').classList.remove('collapsed');
+            document.getElementById('showScreen').classList.remove('expanded');
+        }
+    });
 </script>
 
 </body>

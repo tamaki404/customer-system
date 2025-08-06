@@ -7,9 +7,37 @@ use App\Models\Receipt;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Product;
+use App\Models\Orders;
 
-class ViewController extends Controller
-{
+
+
+class ViewController extends Controller{
+
+
+    // public function allOrders(){
+    //     $orders = Orders::orderByDesc('created_at')->get();
+    //     return view('orders', compact('orders'));
+    // }
+
+public function specOrders($id){
+    $user = auth()->user();
+
+    $orders = Orders::where('customer_id', $id)
+        ->orderByDesc('created_at')
+        ->get();
+
+    return view('orders', compact('orders', 'user'));
+}
+
+
+// public function yourOrders($id)
+// {
+//     $user = auth()->user();  
+//     $customer = User::findOrFail($id);
+
+//     $orders = Orders::where('order_id', $id)->orderByDesc('created_at')->get();
+//     return view('orders', compact('orders', 'user'));
+// }
     public function profile()
     {
         $user = auth()->user();
@@ -42,9 +70,6 @@ class ViewController extends Controller
         
         return view('staffs', compact('users', 'user', 'search'));
     }
-
-
-
 
     public function showCustomers()
     {
@@ -80,7 +105,6 @@ class ViewController extends Controller
     {
         $staff = User::findOrFail($id);
         
-        // Check if user has permission to view this staff
         if (auth()->user()->user_type !== 'Admin' && auth()->user()->id !== $staff->id) {
             abort(403, 'Unauthorized access');
         }
@@ -263,154 +287,166 @@ class ViewController extends Controller
     }
 
 
-public function showDashboard()
-{
+        public function showDashboard()
+        {
 
-    $user = auth()->user();
-    $id = $user->id;
-
-
-    // Recent Activities: Receipts verified today
-    $weekStart = Carbon::now()->startOfWeek();
-    $weekEnd = Carbon::now()->endOfWeek();
-    $today = Carbon::today();
-    $verifiedReceiptsToday = Receipt::where(function ($query) use ($today) {
-        $query->whereNotNull('verified_by')
-              ->whereDate('verified_at', $today);
-    })
-    ->orWhereIn('status', ['Cancelled', 'Rejected'])
-    ->orderByDesc('verified_at')
-    ->limit(5)
-    ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at', 'status']);
+            $user = auth()->user();
+            $id = $user->id;
 
 
-    $oneWeekAgo = Carbon::now()->subWeek();
-
-    $pendingWeekCount = Receipt::where('status', 'Verified')
-        ->where('created_at', '>=', $oneWeekAgo)
-        ->count();
-
-    $pendingDayCount = Receipt::where('status', 'Pending')->count();
-    $activeUsers = User::where('last_seen_at', '>=', now()->subMinutes(15))->count();
-    $pendingJoins = User::where('acc_status', 'pending')->count();
-    $monthlyTotal = Receipt::whereMonth('created_at', now()->month)
-        ->whereYear('created_at', now()->year)
-        ->sum('total_amount');
-    $totalReceipts = Receipt::where('created_at', '>=', now()->subDays(7))->count();
-
-    $userPendingReceipts = Receipt::where('status', 'Pending') 
-        ->where('id', $id)
-        ->whereBetween('created_at', [$weekStart, $weekEnd])
-        ->get();
-
-    $userApprovedReceipts = Receipt::where('status', 'Verified')
-        ->where('id', $id)
-        ->where('created_at', '>=', $oneWeekAgo)
-        ->get();
-
-    $userVerifiedReceiptsWeek = Receipt::whereNotNull('verified_by')
-        ->whereNotNull('verified_at')
-        ->whereBetween('verified_at', [$weekStart, $weekEnd])
-        ->where('id', $id)
-        ->orderByDesc('verified_at')
-        ->limit(5)
-        ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at']);
-
-    $userVerifiedReceiptsWeek = Receipt::where('id', $id)
-        ->where(function ($query) use ($weekStart, $weekEnd) {
-            $query->where(function ($q) use ($weekStart, $weekEnd) {
-                $q->whereNotNull('verified_by')
-                ->whereBetween('verified_at', [$weekStart, $weekEnd]);
+            // Recent Activities: Receipts verified today
+            $weekStart = Carbon::now()->startOfWeek();
+            $weekEnd = Carbon::now()->endOfWeek();
+            $today = Carbon::today();
+            $verifiedReceiptsToday = Receipt::where(function ($query) use ($today) {
+                $query->whereNotNull('verified_by')
+                    ->whereDate('verified_at', $today);
             })
-            ->orWhereIn('status', ['Cancelled', 'Rejected']);
-        })
-        ->orderByDesc('verified_at')
-        ->limit(10)
-        ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at', 'status']);
+            ->orWhereIn('status', ['Cancelled', 'Rejected'])
+            ->orderByDesc('verified_at')
+            ->limit(5)
+            ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at', 'status']);
 
 
-  // Top Stores: get all customers, sum their total_amount from receipts IN THIS WEEK
+            $oneWeekAgo = Carbon::now()->subWeek();
 
-    $topStores = User::where('user_type', 'Customer')
-        ->whereNotNull('store_name')
-        ->get()
-        ->map(function($user) use ($weekStart, $weekEnd) {
-            $total = Receipt::where('id', $user->id)
-                ->whereBetween('created_at', [$weekStart, $weekEnd])
+            $pendingWeekCount = Receipt::where('status', 'Verified')
+                ->where('created_at', '>=', $oneWeekAgo)
+                ->count();
+
+            $pendingDayCount = Receipt::where('status', 'Pending')->count();
+            $activeUsers = User::where('last_seen_at', '>=', now()->subMinutes(15))->count();
+            $pendingJoins = User::where('acc_status', 'pending')->count();
+            $monthlyTotal = Receipt::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
                 ->sum('total_amount');
-            return [
-                'name' => $user->store_name,
-                'sales' => (float) $total,
-            ];
-        })
-        ->sortByDesc('sales')
-        ->take(5)
-        ->values();
+            $totalReceipts = Receipt::where('created_at', '>=', now()->subDays(7))->count();
 
-      $hour = now()->format('H');
+            $userPendingReceipts = Receipt::where('status', 'Pending') 
+                ->where('id', $id)
+                ->whereBetween('created_at', [$weekStart, $weekEnd])
+                ->get();
 
-    if ($hour >= 5 && $hour < 12) {
-        $greeting = 'Good morning';
-    } elseif ($hour >= 12 && $hour < 17) {
-        $greeting = 'Good afternoon';
-    } elseif ($hour >= 17 && $hour < 21) {
-        $greeting = 'Good evening';
-    } else {
-        $greeting = 'Good night';
-    }
+            $userApprovedReceipts = Receipt::where('status', 'Verified')
+                ->where('id', $id)
+                ->where('created_at', '>=', $oneWeekAgo)
+                ->get();
 
+            $userVerifiedReceiptsWeek = Receipt::whereNotNull('verified_by')
+                ->whereNotNull('verified_at')
+                ->whereBetween('verified_at', [$weekStart, $weekEnd])
+                ->where('id', $id)
+                ->orderByDesc('verified_at')
+                ->limit(5)
+                ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at']);
 
-       
-
-   return view('dashboard', compact(
-    'pendingWeekCount',
-    'pendingDayCount',
-    'activeUsers',
-    'pendingJoins',
-    'monthlyTotal',
-    'totalReceipts',
-    'topStores',
-    'verifiedReceiptsToday',
-    'greeting',
-    'userApprovedReceipts',
-    'userVerifiedReceiptsWeek',
-    'userPendingReceipts',
-    'userVerifiedReceiptsWeek'
+            $userVerifiedReceiptsWeek = Receipt::where('id', $id)
+                ->where(function ($query) use ($weekStart, $weekEnd) {
+                    $query->where(function ($q) use ($weekStart, $weekEnd) {
+                        $q->whereNotNull('verified_by')
+                        ->whereBetween('verified_at', [$weekStart, $weekEnd]);
+                    })
+                    ->orWhereIn('status', ['Cancelled', 'Rejected']);
+                })
+                ->orderByDesc('verified_at')
+                ->limit(10)
+                ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at', 'status']);
 
 
-));
+        // Top Stores: get all customers, sum their total_amount from receipts IN THIS WEEK
 
-}
+            $topStores = User::where('user_type', 'Customer')
+                ->whereNotNull('store_name')
+                ->get()
+                ->map(function($user) use ($weekStart, $weekEnd) {
+                    $total = Receipt::where('id', $user->id)
+                        ->whereBetween('created_at', [$weekStart, $weekEnd])
+                        ->sum('total_amount');
+                    return [
+                        'name' => $user->store_name,
+                        'sales' => (float) $total,
+                    ];
+                })
+                ->sortByDesc('sales')
+                ->take(5)
+                ->values();
+
+            $hour = now()->format('H');
+
+            if ($hour >= 5 && $hour < 12) {
+                $greeting = 'Good morning';
+            } elseif ($hour >= 12 && $hour < 17) {
+                $greeting = 'Good afternoon';
+            } elseif ($hour >= 17 && $hour < 21) {
+                $greeting = 'Good evening';
+            } else {
+                $greeting = 'Good night';
+            }
+
+
+            
+
+        return view('dashboard', compact(
+            'pendingWeekCount',
+            'pendingDayCount',
+            'activeUsers',
+            'pendingJoins',
+            'monthlyTotal',
+            'totalReceipts',
+            'topStores',
+            'verifiedReceiptsToday',
+            'greeting',
+            'userApprovedReceipts',
+            'userVerifiedReceiptsWeek',
+            'userPendingReceipts',
+            'userVerifiedReceiptsWeek'
+
+
+        ));
+
+        }
 
 
 
-public function ordering()
-{
-    $user = auth()->user();
-    $search = request('search');
-    $query = Product::query();
-    if ($search) {
-        $query->where(function($q) use ($search) {
-            $q->where('name', 'like', "%$search%")
-              ->orWhere('id', 'like', "%$search%")
-              ->orWhere('status', 'like', "%$search%")
-              ;
-        });
-    }
-    $products = $query->orderByDesc('created_at')->paginate(15);
-    if ($search) {
-        $products->appends(['search' => $search]);
-    }
-    return view('ordering', compact('user', 'products', 'search'));
-}
+        public function ordering()
+        {
+            $user = auth()->user();
+            $search = request('search');
+            $query = Product::query();
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                    ->orWhere('id', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%")
+                    ;
+                });
+            }
+            $products = $query->orderByDesc('created_at')->paginate(15);
+            if ($search) {
+                $products->appends(['search' => $search]);
+            }
+            return view('ordering', compact('user', 'products', 'search'));
+        }
 
-public function reports()
-{
-    $user = auth()->user();
-    return view('reports', compact('user'));        
+        public function reports()
+        {
+            $user = auth()->user();
+            return view('reports', compact('user'));        
 
 
-}
+        }
+
+        public function ordersDetails($order_id)
+        {
+            $user = auth()->user();
+            $order = Receipt::findOrFail($order_id);
+            if ($order->order_id !== $user->id && $user->user_type !== 'Admin' && $user->user_type !== 'Staff') {
+                abort(403, 'Unauthorized access');
+            }
+            return view('order_details', compact('order', 'user'));
+        }
+    // List all orders for the current user
+        
 
 
 }

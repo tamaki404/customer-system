@@ -5,17 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrderItem extends Model
+class Orders extends Model
 {
     use HasFactory;
 
-
+       protected $table = 'orders';
         protected $fillable = [
             'order_id',
             'product_id',
             'quantity',
             'unit_price',
             'total_price',
+            'customer_id',
         ];
 
     // Removed order() relationship since there is no orders table
