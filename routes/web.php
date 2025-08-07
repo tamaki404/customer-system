@@ -5,6 +5,7 @@
 <?php
 
 use App\Http\Controllers\TicketController;
+use App\Models\Orders;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\DB;
@@ -111,6 +112,10 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/product/list/{product_id}', [ProductController::class, 'listProduct'])->name('products.list');
         Route::delete('/product/delete/{product_id}', [ProductController::class, 'deleteProduct'])->name('products.delete');
 
+        Route::post('/order/accept/{order_id}', [OrderController::class, 'acceptOrder'])->name('orders.accept');
+        Route::post('/order/mark-done/{order_id}', [OrderController::class, 'markOrderDone'])->name('orders.mark.done');
+        Route::post('/order/reject/{order_id}', [OrderController::class, 'rejectOrder'])->name('orders.reject');
+
     });
     
     // Tickets management
@@ -146,32 +151,28 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     });
 
 
-    Route::get('/ordering', [ViewController::class, 'ordering'])->name('ordering');
     Route::get('/reports', [ViewController::class, 'reports'])->name('reports');
 
+
+
+    // Orders
+    Route::get('/store', [OrderController::class, 'store'])->name('store');
+    Route::get('/customer_orders', [OrderController::class, 'customerOrders'])->name('customer_orders');
+    Route::get('/view-order/{id}', [OrderController::class, 'viewOrder'])->name('orders.view');
+    Route::get('/orders', [OrderController::class, 'orders'])->name('orders');
+    Route::post('/order/cancel/{order_id}', action: [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+    Route::post('/checkout', action: [OrderController::class, 'checkout']);
     Route::get('/product-image/{id}', [ProductController::class, 'showImage'])->name('product.image');
-    // Product detail view
     Route::get('/product/{id}', function($id) {
         $product = Product::findOrFail($id);
         return view('product_view', compact('product'));
     })->middleware(['auth', 'check.status'])->name('product_view.view');
-
-    // Route::middleware(['auth', 'check.status'])->post('/checkout', [OrderController::class, 'checkout'])->name('order.checkout');
-    Route::post('/checkout', [OrderController::class, 'checkout']);
-
-
-            
+    Route::get('/order/view/{id}', [OrderController::class, 'orderView'])->name('order.view');
+     
     
-    Route::post('/order/cancel/{order_id}', action: [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+
 
 
 });
 
 
-    // Customer routes
-    Route::get('/my-orders', [OrderController::class, 'myOrders'])->name('orders.my-orders');
-    
-    Route::get('orders', [ViewController::class, 'allOrders'])->name('all-orders');   
-    Route::get('spec-orders/{id}', [OrderController::class, 'specOrders'])->name('spec-orders');
-
-    Route::get('/view-order/{id}', [OrderController::class, 'viewOrder'])->name('orders.view');

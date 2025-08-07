@@ -17,7 +17,7 @@
 <body>
 
     <div class="viewFrame">
-             <a href="{{ route('spec-orders', ['id' => $orders->first()->customer_id]) }}"><- My orders</a>
+             <a href="{{ route('customer_orders', ['id' => $orders->first()->customer_id]) }}"><- My orders</a>
             <span>
                 <h2 style="margin: 0">{{ $orders->first()->order_id }}</h2>       
                  @if (  ucfirst($orders->first()->status) === 'Pending')

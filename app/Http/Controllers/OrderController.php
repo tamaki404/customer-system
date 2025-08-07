@@ -99,13 +99,13 @@ class OrderController extends Controller
             ], 500);
         }
     }
-    public function specOrders($id)
+    public function customerOrders()
     {
         $user = auth()->user();
         $search = request('search');
 
         $allOrders = Orders::with('product')
-            ->where('customer_id', $id)
+            ->where('customer_id', $user->id)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('order_id', 'like', "%$search%")
@@ -130,7 +130,7 @@ class OrderController extends Controller
             ];
         })->sortByDesc('created_at')->values();
 
-        return view('orders', compact('orders', 'user', 'search'));
+        return view('customer_orders', compact('orders', 'user', 'search'));
     }
 
 
@@ -159,7 +159,121 @@ class OrderController extends Controller
             ->with('success', 'Order cancelled successfully!');
     }
 
+        public function store()
+        {
+            $user = auth()->user();
+            $search = request('search');
+            $query = Product::query();
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                    ->orWhere('id', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%")
+                    ;
+                });
+            }
+            $products = $query->orderByDesc('created_at')->paginate(15);
+            if ($search) {
+                $products->appends(['search' => $search]);
+            }
+            return view('store', compact('user', 'products', 'search'));
+        }    
 
+    
+    public function orders()
+    {
+        $user = auth()->user();
+        $search = request('search');
+
+        $allOrders = Orders::with(['product', 'user'])
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('order_id', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%")
+                    ->orWhere('created_at', 'like', "%$search%");
+                })
+                ->orWhereHas('user', function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                    ->orWhere('store_name', 'like', "%$search%");
+                });
+            })
+            ->orderByDesc('created_at')
+            ->get();
+
+        $orders = $allOrders->groupBy('order_id')->map(function ($orderItems) {
+            $firstItem = $orderItems->first();
+            return (object) [
+                'order_id' => $firstItem->order_id,
+                'customer_id' => $firstItem->customer_id,
+                'status' => $firstItem->status,
+                'created_at' => $firstItem->created_at,
+                'total_amount' => $orderItems->sum('total_price'),
+                'item_count' => $orderItems->count(),
+                'total_quantity' => $orderItems->sum('quantity'),
+                'user' => $firstItem->user,
+                'items' => $orderItems
+            ];
+        })->sortByDesc('created_at')->values();
+
+        return view('orders', compact('orders', 'user', 'search'));
+    }
+
+    public function orderView($id)
+    {
+        $orderItems = Orders::with(['product', 'user'])
+            ->where('order_id', $id)
+            ->get();
+
+        if ($orderItems->isEmpty()) {
+            return redirect()->back()->with('error', 'Order not found.');
+        }
+
+        $user = auth()->user();
+
+        return view('order_view', compact('orderItems', 'user'));
+    }
+
+public function acceptOrder($order_id)
+{
+    $user = auth()->user();
+
+    Orders::where('order_id', $order_id)->update([
+        'status' => 'Processing',
+        'action_at' => now(),
+        'action_by' => $user->name,
+    ]);
+
+    return redirect()->route('order.view', $order_id)
+        ->with('success', 'Order accepted successfully!');
+}
+
+public function markOrderDone($order_id)
+{
+    $user = auth()->user();
+
+    Orders::where('order_id', $order_id)->update([
+        'status' => 'Completed',
+        'action_at' => now(),
+        'action_by' => $user->name,
+    ]);
+
+    return redirect()->route('order.view', $order_id)
+        ->with('success', 'Order marked as done successfully!');
+}
+
+public function rejectOrder($order_id)
+{
+    $user = auth()->user();
+
+    Orders::where('order_id', $order_id)->update([
+        'status' => 'Rejected',
+        'action_at' => now(),
+        'action_by' => $user->name,
+    ]);
+
+    return redirect()->route('order.view', $order_id)
+        ->with('success', 'Order cancelled successfully!');
+}
 
 
 }

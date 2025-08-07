@@ -19,6 +19,8 @@ class Orders extends Model
         'total_price',
         'customer_id',
         'status',
+        'action_at',
+        'action_by',
     ];
 
     protected $casts = [
@@ -40,6 +42,12 @@ class Orders extends Model
         // If product_id is numeric, keep as is:
         // return $this->belongsTo(Product::class, 'product_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'customer_id');
+    }
+
 
     /**
      * Get the customer associated with the order.

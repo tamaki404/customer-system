@@ -14,33 +14,48 @@
 </head>
 <body>
 <div class="productDetailFrame">
-    <span style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;"><h2>Product </h2> <p>{{ $product->created_at -> format ('F j, Y, g: i A') }}</p></span>
+    <span style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;"><h2>Product </h2> <p style="font-size: 15px">{{ $product->created_at -> format ('F j, Y, g: i A') }}</p></span>
     <div class="backLink">
-        <a href="{{ url('/ordering') }}">&larr; Back to Products List</a>
+        <a href="{{ url('/store') }}">&larr; Back to Store</a>
     </div>
     <div class="mainBlock">
         <div class="product-info" style="gap: 10px; display: flex; flex-direction: column; width: 100%;">
             <span><h1 class="product-name">{{ $product->name }}</h1> <h2 style="color: green; font-size: 25px;">₱{{ number_format($product->price, 2) }}</h2></span>
             <p class="product-description">{{ $product->description }}</p>
             <hr>
+
             <span class="quantity-span">Quantity:<p>{{ $product->quantity }}</p></span>
             <hr>
-            <span class="status-span">Status:<p>{{ $product->status ?? 'Available' }}</p></span>
+            <span class="status-span">Status:
+                @if ($product->quantity == 0)
+                    <span style="color: red">Add stocks!</span>
+                @elseif ($product->quantity < 5)
+                    <span style="color: red">Low on stocks!</span>
+                @else
+                    <span style="color: green">{{ $product->status ?? 'Available' }}</span>
+                @endif
+            </span>
+
         </div>
 
         @if (auth()->user()->user_type != 'Customer')
             <div class="modify-block">
                 <button class="edit-btn" style="width: 190px; background: linear-gradient(135deg, #4caf50, #45a049);"><i class="fa-regular fa-square-plus"></i> Add stocks</button>
-            @if ($product->status === 'Listed')
+               @if ($product->status === 'Listed')
                     <form action="{{ url('/product/unlist/' . $product->id) }}" method="POST">
                         @csrf
                         <button class="unlist-btn" type="submit" style="width: 120px; background-color: rgba(128, 128, 128, 0.665);"><i class="fa-solid fa-minus"></i> Unlist</button>
                     </form>
-                @else
+                @elseif($product->status === 'Unlisted')
                     <form action="{{ url('/product/list/' . $product->id) }}" method="POST">
                         @csrf
                         <button class="unlist-btn" type="submit" style="width: 120px; background-color: rgba(128, 128, 128, 0.665);"><i class="fa-solid fa-plus"></i> List</button>
                     </form>
+                @else
+                    <form action="{{ url('/product/unlist/' . $product->id) }}" method="POST">
+                        @csrf
+                        <button class="unlist-btn" type="submit" style="width: 120px; background-color: rgba(128, 128, 128, 0.665);"><i class="fa-solid fa-minus"></i> Unlist</button>
+                    </form>                
                 @endif
 
                 <!-- Delete Button triggers modal -->

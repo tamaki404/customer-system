@@ -60,12 +60,12 @@
                 <div class="nav-indicator"></div>
             </a>
             
-            <a class="nav-item{{ $currentRoute == 'profile' ? ' active' : '' }}" href="{{ route('profile') }}" data-tooltip="Profile">
+            {{-- <a class="nav-item{{ $currentRoute == 'profile' ? ' active' : '' }}" href="{{ route('profile') }}" data-tooltip="Profile">
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
                 <div class="nav-indicator"></div>
             </a>
-            
+             --}}
             <a class="nav-item{{ $currentRoute == 'receipts' ? ' active' : '' }}" href="{{ route('receipts') }}" data-tooltip="Receipts">
                 <span class="material-symbols-outlined">receipt</span>
                 <p>Receipts</p>
@@ -87,6 +87,20 @@
                 <div class="nav-indicator"></div>
             </a>
 
+            <a class="nav-item{{ $currentRoute == 'store' ? ' active' : '' }}" href="{{ route('store') }}" data-tooltip="Store">
+                <span class="material-symbols-outlined">store</span>
+                <p>Products</p>
+                <div class="nav-indicator"></div>
+            </a>
+
+            <a class="nav-item{{ $currentRoute == 'orders' ? ' active' : '' }}" href="{{ route('orders') }}" data-tooltip="Orders">
+                <span class="material-symbols-outlined">shopping_bag</span>
+                <p>Orders</p>
+                <div class="nav-indicator"></div>
+            </a>
+
+
+
             @elseif(auth()->user()->user_type === 'Staff')
             <a class="nav-item{{ $currentRoute == 'dashboard' ? ' active' : '' }}" href="{{ route('dashboard') }}" data-tooltip="Dashboard">
                 <span class="material-symbols-outlined">dashboard</span>
@@ -106,6 +120,12 @@
                 <div class="nav-indicator"></div>
             </a>
 
+            <a class="nav-item{{ $currentRoute == 'orders' ? ' active' : '' }}" href="{{ route('orders') }}" data-tooltip="Orders">
+                <span class="material-symbols-outlined">receipt</span>
+                <p>Orders</p>
+                <div class="nav-indicator"></div>
+            </a>
+
             <a class="nav-item{{ $currentRoute == 'customers' ? ' active' : '' }}" href="{{ route('customers') }}" data-tooltip="Customer Management">
                 <span class="material-symbols-outlined">groups</span>
                 <p>Customers</p>
@@ -113,6 +133,8 @@
             </a>
 
             @else
+
+            <!-- For Customers -->
             <a class="nav-item{{ $currentRoute == 'dashboard' ? ' active' : '' }}" href="{{ route('dashboard') }}" data-tooltip="Dashboard">
                 <span class="material-symbols-outlined">dashboard</span>
                 <p>Dashboard</p>
@@ -130,21 +152,36 @@
                 <p>Receipts</p>
                 <div class="nav-indicator"></div>
             </a>
-            @endif
 
-            <!-- Ordering -->
-            <a class="nav-item{{ $currentRoute == 'ordering' ? ' active' : '' }}" href="{{ route('ordering') }}" data-tooltip="Ordering">
-                <span class="material-symbols-outlined">shopping_cart</span>
-                <p>Ordering</p>
+            <a class="nav-item{{ $currentRoute == 'store' ? ' active' : '' }}" href="{{ route('store') }}" data-tooltip="Store">
+                <span class="material-symbols-outlined">storefront</span>
+                <p>Store</p>
                 <div class="nav-indicator"></div>
             </a>
 
-            <!-- Reports -->
+
+
+            @endif
+
+           @if (auth()->user()->user_type === 'Customer')
+                <a class="nav-item{{ $currentRoute == 'customer_orders' ? ' active' : '' }}" href="{{ route('customer_orders') }}" data-tooltip="My orders">
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                    <p>My orders</p>
+                    <div class="nav-indicator"></div>
+                </a>
+           @endif
+
+
             <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('reports') }}" data-tooltip="Reports">
                 <span class="material-symbols-outlined">bar_chart</span>
                 <p>Reports</p>
                 <div class="nav-indicator"></div>
             </a>
+
+            
+{{-- <button onclick="window.location='{{ route('all-orders') }}'">Orders</button>
+<button onclick="window.location='{{ route('spec-orders', ['id' => auth()->user()->id]) }}'">My Orders</button> --}}
+
 
 
         </div>

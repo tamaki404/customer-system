@@ -400,25 +400,7 @@ class ViewController extends Controller{
 
 
 
-        public function ordering()
-        {
-            $user = auth()->user();
-            $search = request('search');
-            $query = Product::query();
-            if ($search) {
-                $query->where(function($q) use ($search) {
-                    $q->where('name', 'like', "%$search%")
-                    ->orWhere('id', 'like', "%$search%")
-                    ->orWhere('status', 'like', "%$search%")
-                    ;
-                });
-            }
-            $products = $query->orderByDesc('created_at')->paginate(15);
-            if ($search) {
-                $products->appends(['search' => $search]);
-            }
-            return view('ordering', compact('user', 'products', 'search'));
-        }
+
 
         public function reports()
         {
@@ -437,7 +419,6 @@ class ViewController extends Controller{
             }
             return view('order_details', compact('order', 'user'));
         }
-    // List all orders for the current user
         
 
 

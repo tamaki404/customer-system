@@ -160,6 +160,10 @@
     background: #fff;
 }
 
+.status-span span{
+    font-size: 15px;
+}
+
 
 table tr {
     cursor: pointer;

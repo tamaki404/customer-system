@@ -19,9 +19,11 @@ return new class extends Migration
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);
             $table->decimal('total_price', 10, 2);
-            $table->string('status')->default('pending');
+            $table->string('status')->default('Pending');
             $table->timestamps();
-            
+            $table->timestamp('action_at')->nullable();
+            $table->string('action_by')->nullable();
+
             // Add indexes for better performance (no foreign keys)
             $table->index('order_id');
             $table->index('customer_id');

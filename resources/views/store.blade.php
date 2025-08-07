@@ -7,12 +7,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="{{ asset('css/ordering.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/store.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/open-modal.css') }}">
-    <title>Ordering</title>
+    <title>Store</title>
 </head>
 <body>
 <script src="{{ asset('js/fadein.js') }}"></script>
@@ -105,90 +105,90 @@
     <div class="titleCount">
         <h2>Products List</h2>
     </div>
+    {{-- 
+    <button onclick="window.location='{{ route('all-orders') }}'">Orders</button>
+    <button onclick="window.location='{{ route('spec-orders', ['id' => auth()->user()->id]) }}'">My Orders</button> --}}
 
-<button onclick="window.location='{{ route('all-orders') }}'">Orders</button>
-<button onclick="window.location='{{ route('spec-orders', ['id' => auth()->user()->id]) }}'">My Orders</button>
-
-<div class="productList" style="padding: 15px;">
-        @if(isset($products) && count($products) > 0)
-        <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
-            <thead>
-                <tr style="background:#f7f7fa;">
-                    <th style="padding:10px 8px; text-align:left;">Name</th>
-                    <th style="padding:10px 8px; text-align:left;">Stock</th>
-                    <th style="padding:10px 8px; text-align:left;">Price</th>
-                    <th style="padding:10px 8px; text-align:left;">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($products as $product)
-                <tr style="border-bottom:1px solid #eee; align-items: center;" onclick="window.location='{{ url('/product/' . $product->id) }}'">
-                    <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;" onclick="window.location='{{ url('/product/' . $product->id) }}'">
-                        {{ $product->name }}
-                    </td>
-                    <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                        <span style="color: {{ $product->quantity <= 5 ? '#ff6b6b' : ($product->quantity <= 10 ? '#ffa500' : '#4caf50') }}">
-                            {{ $product->quantity }}x
-                        </span>
-                        @if($product->quantity <= 5)
-                            <small style="color: #ff6b6b; display: block;">Low stock!</small>
-                        @endif
-                    </td>
-                    <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                        ₱{{ number_format($product->price, 2) }}
-                    </td>
-                    <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                        @if($product->quantity == 0)
-                            <span style="color: #ff6b6b;">Out of Stock</span>
-                        @else
-                            {{ $product->status ?? 'Available' }}
-                        @endif
-                    </td>
-                    <td style="padding:10px 8px; width:10%; text-align:center;">
-                        @if(auth()->user()->user_type === 'Customer')
-                            @if($product->quantity > 0)
-                                <button class="add-to-cart-btn" 
-                                        data-product-id="{{ $product->id }}" 
-                                        data-product-name="{{ $product->name }}" 
-                                        data-product-price="{{ $product->price }}"
-                                        data-product-stock="{{ $product->quantity }}"
-                                        style="background: #4caf50; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer;">
-                                    <i class="fa fa-plus"></i>
-                                </button>
-                            @else
-                                <button disabled style="background: #ccc; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: not-allowed;">
-                                    <i class="fa fa-times"></i>
-                                </button>
+    <div class="productList" style="padding: 15px;">
+            @if(isset($products) && count($products) > 0)
+            <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
+                <thead>
+                    <tr style="background:#f7f7fa;">
+                        <th style="padding:10px 8px; text-align:left;">Name</th>
+                        <th style="padding:10px 8px; text-align:left;">Stock</th>
+                        <th style="padding:10px 8px; text-align:left;">Price</th>
+                        <th style="padding:10px 8px; text-align:left;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($products as $product)
+                    <tr style="border-bottom:1px solid #eee; align-items: center;" onclick="window.location='{{ url('/product/' . $product->id) }}'">
+                        <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;" onclick="window.location='{{ url('/product/' . $product->id) }}'">
+                            {{ $product->name }}
+                        </td>
+                        <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            <span style="color: {{ $product->quantity <= 5 ? '#ff6b6b' : ($product->quantity <= 10 ? '#ffa500' : '#4caf50') }}">
+                                {{ $product->quantity }}x
+                            </span>
+                       
+                        </td>
+                        <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            ₱{{ number_format($product->price, 2) }}
+                        </td>
+                        <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            <span class="status-span">
+                                @if ($product->quantity == 0)
+                                    <span style="color: red">Add stocks!</span>
+                                @elseif ($product->quantity < 5)
+                                    <span style="color: red">Low on stocks!</span>
+                                @else
+                                    <span style="color: green">{{ $product->status ?? 'Available' }}</span>
+                                @endif
+                            </span>
+                        </td>
+                        <td style="padding:10px 8px; width:10%; text-align:center;">
+                            @if(auth()->user()->user_type === 'Customer')
+                                @if($product->quantity > 0)
+                                    <button class="add-to-cart-btn" 
+                                            data-product-id="{{ $product->id }}" 
+                                            data-product-name="{{ $product->name }}" 
+                                            data-product-price="{{ $product->price }}"
+                                            data-product-stock="{{ $product->quantity }}"
+                                            style="background: #4caf50; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer;">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                @else
+                                    <button disabled style="background: #ccc; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: not-allowed;">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                @endif
                             @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">
+                @if($products->hasPages())
+                    <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
+                        @if($products->onFirstPage())
+                            <span style="color: #ccc; cursor: not-allowed;">Previous</span>
+                        @else
+                            <a href="{{ $products->previousPageUrl() }}" style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">Previous</a>
                         @endif
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">
-            @if($products->hasPages())
-                <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
-                    @if($products->onFirstPage())
-                        <span style="color: #ccc; cursor: not-allowed;">Previous</span>
-                    @else
-                        <a href="{{ $products->previousPageUrl() }}" style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">Previous</a>
-                    @endif
-                    <span>Page {{ $products->currentPage() }} of {{ $products->lastPage() }}</span>
-                    @if($products->hasMorePages())
-                        <a href="{{ $products->nextPageUrl() }}" style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">Next</a>
-                    @else
-                        <span style="color: #ccc; cursor: not-allowed;">Next</span>
-                    @endif
-                </div>
+                        <span>Page {{ $products->currentPage() }} of {{ $products->lastPage() }}</span>
+                        @if($products->hasMorePages())
+                            <a href="{{ $products->nextPageUrl() }}" style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">Next</a>
+                        @else
+                            <span style="color: #ccc; cursor: not-allowed;">Next</span>
+                        @endif
+                    </div>
+                @endif
+            </div>
+            @else
+                <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No products found.</div>
             @endif
-        </div>
-        @else
-            <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No products found.</div>
-        @endif
     </div>
-
-</div>
 
 
 
