@@ -48,8 +48,25 @@
 
                         </span>
                         <span>
-                            <p>{{ ucfirst($order->status)}}</p>
+                              @php
+                            $status = $order->status;
+
+                            $statusClasses = [
+                                'Pending' => 'status-pending',
+                                'Processing' => 'status-processing',
+                                'Cancelled' => 'status-cancelled',
+                                'Rejected' => 'status-rejected',
+                                'Done' => 'status-done',
+                                'Completed' => 'status-completed',
+                            ];
+                            @endphp
+
+                            <p class="{{ $statusClasses[ucfirst($order->status)] ?? 'status-default' }}">
+                                {{ ucfirst($order->status) }}
+                            </p>
+
                             <p style="font-weight: bold; color: green; font-size: 19px;">₱{{ number_format($order->total_amount, 2) }}</p>
+
                         </span>
 
                         {{-- <button class="view-btn">View order</button> --}}

@@ -14,7 +14,7 @@
 </head>
 <body>
 <div class="productDetailFrame">
-    <span style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;"><h2>Product </h2> <p style="font-size: 15px">{{ $product->created_at -> format ('F j, Y, g: i A') }}</p></span>
+    <span style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;"><h2>Product </h2> <p style="font-size: 15px; font-weight: normal">Added on <strong>{{ $product->created_at -> format ('F j, Y') }}</strong></p></span>
     <div class="backLink">
         <a href="{{ url('/store') }}">&larr; Back to Store</a>
     </div>

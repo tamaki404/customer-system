@@ -1,74 +1,133 @@
 
- @extends('layout')
+
+
+@extends('layout')
 
 @section('content')
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="{{ asset('css/view-order.css') }}">
-    <title>View Order</title>
+    <link rel="stylesheet" href="{{ asset('css/order_view.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Order View</title>
 </head>
 <body>
+     
+    <div class="ordersFrame">
+        <a href="{{ route('customer_orders') }}"><- Orders list</a>
+        <span class="customer-details">
+            <p style="font-size: 19px; font-weight: bold;">Order#: {{ $orders->first()->order_id }}</p>
+         @php
+            $status = $orders->first()->status;
 
-    <div class="viewFrame">
-             <a href="{{ route('customer_orders', ['id' => $orders->first()->customer_id]) }}"><- My orders</a>
-            <span>
-                <h2 style="margin: 0">{{ $orders->first()->order_id }}</h2>       
-                 @if (  ucfirst($orders->first()->status) === 'Pending')
-                    <form  action="{{ url('/order/cancel/' . $orders->first()->order_id) }}" method="POST" style="display:inline-block;">
-                        @csrf
-                        <button class="cancel-order" type="submit">Cancel</button>
-                    </form>
+            $statusClasses = [
+                'Pending' => 'status-pending',
+                'Processing' => 'status-processing',
+                'Cancelled' => 'status-cancelled',
+                'Rejected' => 'status-rejected',
+                'Done' => 'status-done',
+                'Completed' => 'status-completed',
+            ];
+        @endphp
+
+        <p class="{{ $statusClasses[$status] ?? 'status-default' }}">
+            {{ $status }}
+        </p>
+
+        </span>
+        <p class="order-date">{{ $orders->first()->created_at->format('F j, Y') }} at {{ $orders->first()->created_at->format('g:i a ') }}</p>
+
+        <div class="orders-container">
+            <div class="order-list">
+                 @foreach($orders as $item)
+                 
+                  <div class="order-item">
+                        <p style="width:70%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; font-weight: bold;">{{ $item->product->name }}</p>
+                        <p>x{{ $item->quantity }}</p>
+                        <p>₱ {{ $item->total_price }}</p>
+                  </div>
+
+                @endforeach
+            </div>
+                @if ($orders->first()->status != 'Pending')
+                   <span class="status-action">
+                    <p style="font-weight: bold">{{$orders->first()->status}}</p>
+                    <p>by</p>                           
+                    <p style="font-weight: bold">{{$orders->first()->action_by}}</p>
+                    <p>-</p>
+                    <p>{{ $orders->first()->action_at}}</p>
+                </span>             
+                @endif
+            <div class="order-summary">
+
+                @if(auth()->user()->user_type === 'Admin')
+                    <span>
+                        @if ($orders->first()->status === 'Processing')
+                        
+                            <form class="status-action" action="{{ url('/order/mark-done/' .$orders->first()->order_id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                <button type="submit" class="markAsDone" style="width: 150px;">Mark as done</button>
+                                <input type="hidden" name="action_by" value="{{ auth()->user()->name }}">
+                            </form>
+                            <form class="status-action"  action="{{ url('/order/reject/' .$orders->first()->order_id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                <button type="submit" class="reject" style="width: 100px;">Cancel</button>
+                                <input type="hidden" name="action_by" value="{{ auth()->user()->name }}">
+
+                            </form>                    
+
+                        @elseif ($orders->first()->status === 'Completed')
+                            
+
+                        @elseif ($orders->first()->status === 'Cancelled')
+                        
+                        @elseif ($orders->first()->status === 'Pending')
+                            <form class="status-action"   action="{{ url('/order/accept/' .$orders->first()->order_id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                <button type="submit" class="process" style="width: 100px;">Process</button>
+                                <input type="hidden" name="action_by" value="{{ auth()->user()->name }}">
+
+                        </form> 
+                            <form class="status-action"  action="{{ url('/order/reject/' .$orders->first()->order_id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                <button type="submit" class="reject" style="width: 100px;">Cancel</button>
+                                <input type="hidden" name="action_by" value="{{ auth()->user()->name }}">
+
+                            </form>                  
+                        
+
+                        @endif
+
+
+
+                    </span>    
                 @endif
 
-            </span>
 
-            <div class="titleCount"> 
-                <span>
-                    <h2 style="margin:0; font-size: 25px; color: #333;">Order details</h2>
-                    <p style="margin: 0;">{{ $orders->first()->created_at->format('F j, Y g:i A') }}</p>
-                </span>
 
-                <span>
-             
-                    <p style=" margin-left: auto; font-weight: bold; color: orange;">{{ ucfirst($orders->first()->status) }}</p>
-                </span>
+                <p><strong>{{ $orders->sum('quantity') }} </strong> item(s)</p>
+                <p class="price"> ₱ {{ $orders->sum('total_price') }}</p>
 
             </div>
 
-            <div class="order-block">
-
-                
-
-                <div class="orders">
-
-                    @foreach($orders as $order)
-                        <div class="product-item">
-                            <p style="padding:10px 8px; width:50%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $order->product->name ?? 'Unknown Product' }}</p>
-                            <p>x{{ $order->quantity }}</p>
-                            <p>₱{{ number_format($order->unit_price, 2) }}</p>
-                            <p><strong>₱{{ number_format($order->total_price, 2) }}</strong></p>
-                        </div>
-                    @endforeach
-                    
-                </div>
-
-                <span>
-                    <p style="font-size: 18px">Total</p>
-                    <p style="font-weight: bold; color: green; font-size: 30px;">₱{{ number_format($total, 2) }}</p>
-                </span>
-            </div>
+        </div>
+        
 
     </div>
 
+
+
+
+    
+    
+
 </body>
 </html>
+
+
 
 
 @endsection
