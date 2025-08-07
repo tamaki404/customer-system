@@ -402,13 +402,7 @@ class ViewController extends Controller{
 
 
 
-        public function reports()
-        {
-            $user = auth()->user();
-            return view('reports', compact('user'));        
 
-
-        }
 
         public function ordersDetails($order_id)
         {

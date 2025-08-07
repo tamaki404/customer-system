@@ -62,25 +62,27 @@
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value">$45,678</div>
+                    <div class="stat-value">₱{{ number_format($totalSales, 2) }}</div>
                     <div class="stat-label">Total Revenue</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">1,234</div>
+                    <div class="stat-value">{{$completedOrdersCount}}</div>
                     <div class="stat-label">Orders Completed</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">$37.02</div>
+                    <div class="stat-value">₱{{ number_format($averageOrderValue, 2) }}</div>
                     <div class="stat-label">Average Order Value</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">89.5%</div>
+                    <div class="stat-value">{{ $paymentSuccessRate }}%</div>
                     <div class="stat-label">Payment Success Rate</div>
+
+
                 </div>
             </div>
 
             <div class="chart-container">
-                <div class="chart-placeholder">Revenue Trend Chart (Chart.js Integration)</div>
+                
             </div>
         </div>
 

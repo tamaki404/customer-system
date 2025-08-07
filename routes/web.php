@@ -4,6 +4,7 @@
 
 <?php
 
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\TicketController;
 use App\Models\Orders;
 use Illuminate\Support\Facades\Route;
@@ -152,7 +153,6 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     });
 
 
-    Route::get('/reports', [ViewController::class, 'reports'])->name('reports');
 
 
 
@@ -170,7 +170,11 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     })->middleware(['auth', 'check.status'])->name('product_view.view');
     Route::get('/order/view/{id}', [OrderController::class, 'orderView'])->name('order.view');
      
-    
+
+
+    // Reports
+    Route::get('/reports', [ReportsController::class, 'reports'])->name('reports');
+
 
 
 
