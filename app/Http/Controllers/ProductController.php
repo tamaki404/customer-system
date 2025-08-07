@@ -44,6 +44,22 @@ class ProductController extends Controller
         return redirect()->route('product_view.view', $product_id)->with('success', 'Product unlisted successfully!');
     }
 
+    public function addStock($product_id)
+    {
+        $validated = request()->validate([
+            'addedStock' => 'required|integer|min:1|max:999'
+        ]);
+
+        $product = Product::findOrFail($product_id);
+        $product->quantity += $validated['addedStock'];
+        $product->save();
+
+        return redirect()->route('product_view.view', $product_id)
+            ->with('success', 'Stock added successfully!');
+    }
+
+
+
     public function listProduct($product_id)
     {
         $product = Product::findOrFail($product_id);

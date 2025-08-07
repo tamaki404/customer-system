@@ -40,7 +40,11 @@
 
         @if (auth()->user()->user_type != 'Customer')
             <div class="modify-block">
-                <button class="edit-btn" style="width: 190px; background: linear-gradient(135deg, #4caf50, #45a049);"><i class="fa-regular fa-square-plus"></i> Add stocks</button>
+                {{-- <form action="{{ url('/product/add-stocks/' . $product->id) }}" method="POST">
+                    @csrf
+                </form> --}}
+                <button class="edit-btn" id="openStockModal" style="width: 190px; background: linear-gradient(135deg, #4caf50, #45a049);"><i class="fa-regular fa-square-plus"></i> Add stocks</button>
+
                @if ($product->status === 'Listed')
                     <form action="{{ url('/product/unlist/' . $product->id) }}" method="POST">
                         @csrf
@@ -80,18 +84,47 @@
                     </div>
                 </div>
 
+                <!-- Stock Modal -->
+                <div id="stockModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
+                    <div class="formBlock" style="background:#fff; padding:2rem; border-top: green 4px solid; border-radius:8px; min-width:320px; max-width:90vw; position:relative; text-align:center;">
+                        <span id="closeStockModal" style="position:absolute; top:10px; right:20px; font-size:2rem; cursor:pointer;">&times;</span>
+
+                        <h2 style="font-size: 25px; font-weight: bold; margin: 5px 0;">Add Stocks</h2>
+                        <p>You can add stocks here to keep the product available</p>
+                        <form id="addStockForm" class="addStockForm" action="{{ route('products.addStock', $product->id) }}" method="POST" style="margin-top:1.5rem;">
+                            @csrf
+                            <input type="int" name="addedStock" maxlength="3" required>
+                            <button type="submit" class="add-stock-btn" style="">Add stock</button>
+                        </form>
+                    </div>
+                </div>
+
                 <script>
                 document.addEventListener('DOMContentLoaded', function() {
+
+                    const openStock = document.getElementById('openStockModal');
+                    const stockModal = document.getElementById('stockModal');
+                    const closeStock = document.getElementById('closeStockModal');
+                    const cancelStock = document.getElementById('cancelStockModal');
+
                     const openBtn = document.getElementById('openDeleteModalBtn');
                     const modal = document.getElementById('deleteModal');
                     const closeBtn = document.getElementById('closeDeleteModalBtn');
                     const cancelBtn = document.getElementById('cancelDeleteBtn');
-                    if (openBtn && modal && closeBtn && cancelBtn) {
+
+                    if (openBtn && modal && closeBtn && cancelBtn && openStock) {
+
+                        openStock.onclick = () => { stockModal.style.display = 'flex'; };
+                        closeStock.onclick = () => { stockModal.style.display = 'none'; };
+                        cancelStock.onclick = () => { stockModal.style.display = 'none'; };
+
                         openBtn.onclick = () => { modal.style.display = 'flex'; };
                         closeBtn.onclick = () => { modal.style.display = 'none'; };
                         cancelBtn.onclick = () => { modal.style.display = 'none'; };
+
                         window.onclick = function(event) {
                             if (event.target === modal) { modal.style.display = 'none'; }
+                            if (event.target === stockModal) { stockModal.style.display = 'none'; }
                         };
                     }
                 });
