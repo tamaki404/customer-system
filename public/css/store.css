@@ -170,8 +170,9 @@ table tr {
     font-size: 16px;
 }
 table tr:hover {
-    background: #ffde59;
-    box-shadow: 0 2px 8px #0001;
+    background-color: #f0f0f0;
+    transition: all 0.3s ease;
+        box-shadow: 0 2px 8px #0001;
     font-weight: bold;
 }
 
@@ -183,7 +184,9 @@ table tr:hover {
     border-radius: 10px;
 }
 
-
+tbody td{
+    text-align: center;
+}
 
 
 /* Cart */

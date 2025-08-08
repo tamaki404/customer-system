@@ -71,7 +71,7 @@
 
                     <div>
                         <label>Receipt Number</label>
-                        <input type="number" name="receipt_number" required>
+                        <input type="text" name="receipt_number" required>
                     </div>
 
                     <div>
@@ -132,7 +132,7 @@
 
                     <div id="invoice_section">
                         <label>Invoice Number</label>
-                        <input type="number" name="invoice_number" id="invoice_number" disabled>
+                        <input type="text" name="invoice_number" id="invoice_number" disabled>
                     </div>
 
                     <script>

@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Http\Controllers\Controller;
 use App\Models\Orders;
 use Carbon\Carbon;
@@ -10,14 +9,12 @@ use App\Models\User;
 use function PHPUnit\Framework\assertContainsOnlyInstancesOf;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
-
+use App\Http\Controllers\CustomersExport;
+use App\Http\Controllers\Excel;
 
 class ReportsController extends Controller
 {
 
-/**
- * Get customer analytics data with date range filtering
- */
 private function getCustomerAnalytics($startDate, $endDate)
 {
     // Customer analytics with date filtering
@@ -50,9 +47,6 @@ private function getCustomerAnalytics($startDate, $endDate)
     ];
 }
 
-/**
- * Get order management analytics with date range filtering
- */
 private function getOrderAnalytics($startDate, $endDate)
 {
     // Order status counts with date filtering
@@ -99,9 +93,6 @@ private function getOrderAnalytics($startDate, $endDate)
     ];
 }
 
-/**
- * Get product performance analytics with date range filtering
- */
 private function getProductAnalytics($startDate, $endDate)
 {
     // Best selling products with date filtering
@@ -148,9 +139,6 @@ private function getProductAnalytics($startDate, $endDate)
     ];
 }
 
-/**
- * Get sales and revenue analytics with date range filtering
- */
 private function getSalesAnalytics($startDate, $endDate)
 {
     // Apply date filtering to sales queries
@@ -196,9 +184,6 @@ private function getSalesAnalytics($startDate, $endDate)
     ];
 }
 
-/**
- * Parse date range from request
- */
 private function parseDateRange(Request $request)
 {
     $dateRange = $request->get('date_range', 'last_30_days');
@@ -328,45 +313,31 @@ public function reports(Request $request)
     ));
 }
 
-// You can also update your exportCustomers method to use the same functions:
 public function exportCustomers(Request $request) 
-{
-    $type = $request->get('type', 'excel');
-    
-    // Use the same date parsing logic
-    $dateInfo = $this->parseDateRange($request);
-    $startDate = $dateInfo['startDate'];
-    $endDate = $dateInfo['endDate'];
-    
-    // Get customer data using the same method
-    $customerAnalytics = $this->getCustomerAnalytics($startDate, $endDate);
-    $customers = $customerAnalytics['customers'];
-       
-    if ($type === 'excel') {
-        // Use Laravel Excel to export
-        return Excel::download(new \App\Exports\OrdersExport($customers, $startDate, $endDate), 'sales_report_' . date('Y-m-d') . '.xlsx');
-    } elseif ($type === 'pdf') {
-        // Use DomPDF to export
-        $pdf = \PDF::loadView('reports.costumers', [
-            'customers' => $customers,
-            'startDate' => $startDate,
-            'endDate' => $endDate
-        ]);
-        return $pdf->download('customers_list_' . date('Y-m-d') . '.pdf');
+    {
+        $type = $request->get('type', 'excel');
+        
+        $dateInfo = $this->parseDateRange($request);
+        $startDate = $dateInfo['startDate'];
+        $endDate = $dateInfo['endDate'];
+        
+        $customerAnalytics = $this->getCustomerAnalytics($startDate, $endDate);
+        $customers = $customerAnalytics['customers'];
+           
+        if ($type === 'excel') {
+            return Excel::download(
+                new CustomersExport($customers, $startDate, $endDate), 
+                'customers_report_' . $startDate->format('Y-m-d') . '_to_' . $endDate->format('Y-m-d') . '.xlsx'
+            );
+        } elseif ($type === 'pdf') {
+            $pdf = \PDF::loadView('reports.customers', [
+                'customers' => $customers,
+                'startDate' => $startDate,
+                'endDate' => $endDate
+            ]);
+            return $pdf->download('customers_list_' . date('Y-m-d') . '.pdf');
+        }
     }
-}
-
-
-
-
-
-
-
-
-
-
-
-
     
     // public function reports(Request $request)
     // {
