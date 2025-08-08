@@ -19,32 +19,33 @@
     </div>
     <div class="report-container">
         <nav class="tab-navigation">
-            <button class="tab-button active" onclick="switchTab('sales')">Sales & Revenue</button>
-            <button class="tab-button" onclick="switchTab('customers')">Customer Analytics</button>
-            <button class="tab-button" onclick="switchTab('orders')">Order Management</button>
-            <button class="tab-button" onclick="switchTab('products')">Product Performance</button>
+            <button class="tab-button {{ !request('active_tab') || request('active_tab') == 'sales' ? 'active' : '' }}" onclick="switchTab('sales')">Sales & Revenue</button>
+            <button class="tab-button {{ request('active_tab') == 'customers' ? 'active' : '' }}" onclick="switchTab('customers')">Customer Analytics</button>
+            <button class="tab-button {{ request('active_tab') == 'orders' ? 'active' : '' }}" onclick="switchTab('orders')">Order Management</button>
+            <button class="tab-button {{ request('active_tab') == 'products' ? 'active' : '' }}" onclick="switchTab('products')">Product Performance</button>
         </nav>
 
         {{-- Sales & Revenue Tab --}}
-        <div id="sales" class="tab-content active">
+        <div id="sales" class="tab-content {{ !request('active_tab') || request('active_tab') == 'sales' ? 'active' : '' }}">
             <h2>Sales & Revenue Reports</h2>
             
-            <form method="GET" action="{{ route('reports') }}" id="filterForm">
+            <form method="GET" action="{{ route('reports') }}" id="salesFilterForm">
+                <input type="hidden" name="active_tab" value="sales">
                 <div class="filters-row">
                     <div class="filter-group">
                         <label>Date Range</label>
-                        <select name="date_range" id="dateRange" onchange="toggleCustomFields()">
+                        <select name="date_range" id="salesDateRange" onchange="toggleCustomFields('sales')">
                             <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                             <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
                             <option value="last_3_months" {{ request('date_range') == 'last_3_months' ? 'selected' : '' }}>Last 3 months</option>
                             <option value="custom" {{ request('date_range') == 'custom' ? 'selected' : '' }}>Custom Range</option>
                         </select>
                     </div>
-                    <div class="filter-group" id="fromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                    <div class="filter-group" id="salesFromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
                         <label>From Date</label>
                         <input type="date" name="from_date" value="{{ request('from_date', $startDate->format('Y-m-d')) }}">
                     </div>
-                    <div class="filter-group" id="toDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                    <div class="filter-group" id="salesToDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
                         <label>To Date</label>
                         <input type="date" name="to_date" value="{{ request('to_date', $endDate->format('Y-m-d')) }}">
                     </div>
@@ -131,26 +132,28 @@
                 </script>
             </div>
         </div>
+
         {{-- Customer Analytics tab --}}
-        <div id="customers" class="tab-content active">
+        <div id="customers" class="tab-content {{ request('active_tab') == 'customers' ? 'active' : '' }}">
             <h2>Customer Analytics</h2>
             
-            <form method="GET" action="{{ route('reports') }}" id="filterForm">
+            <form method="GET" action="{{ route('reports') }}" id="customersFilterForm">
+                <input type="hidden" name="active_tab" value="customers">
                 <div class="filters-row">
                     <div class="filter-group">
                         <label>Date Range</label>
-                        <select name="date_range" id="dateRange" onchange="toggleCustomFields()">
+                        <select name="date_range" id="customersDateRange" onchange="toggleCustomFields('customers')">
                             <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                             <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
                             <option value="last_3_months" {{ request('date_range') == 'last_3_months' ? 'selected' : '' }}>Last 3 months</option>
                             <option value="custom" {{ request('date_range') == 'custom' ? 'selected' : '' }}>Custom Range</option>
                         </select>
                     </div>
-                    <div class="filter-group" id="fromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                    <div class="filter-group" id="customersFromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
                         <label>From Date</label>
                         <input type="date" name="from_date" value="{{ request('from_date', $startDate->format('Y-m-d')) }}">
                     </div>
-                    <div class="filter-group" id="toDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                    <div class="filter-group" id="customersToDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
                         <label>To Date</label>
                         <input type="date" name="to_date" value="{{ request('to_date', $endDate->format('Y-m-d')) }}">
                     </div>
@@ -173,20 +176,56 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value">{{ $totalUsers }}</div>
-                    <div class="stat-label">Total Customers</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            Customers (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            Customers (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            Customers (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            Customers (Custom Range)
+                        @else
+                            Total Customers
+                        @endif
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">{{ $newThisMonth }}</div>
-                    <div class="stat-label">New this month</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            New (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            New (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            New (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            New (Custom Range)
+                        @else
+                            New Customers
+                        @endif
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">{{$pendingUsers}}</div>
-                    <div class="stat-label">Accepted users</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            Pending (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            Pending (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            Pending (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            Pending (Custom Range)
+                        @else
+                            Pending Users
+                        @endif
+                    </div>
                 </div>
               
             </div>
 
-            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Revenue Trend Chart</p>
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Customer List</p>
 
             <div class="chart-container" style="overflow-x: auto;">
               <div class="data-table">
@@ -216,34 +255,33 @@
                                     <td>{{ $customer->acc_status }}</td>
                                 </tr>
                             @endforeach
-
-
                     </tbody>
                 </table>
             </div>
-
             </div>
         </div>
+
         {{-- Order management tab --}}
-        <div id="orders" class="tab-content active">
+        <div id="orders" class="tab-content {{ request('active_tab') == 'orders' ? 'active' : '' }}">
             <h2>Order Management Reports</h2>
             
-            <form method="GET" action="{{ route('reports') }}" id="filterForm">
+            <form method="GET" action="{{ route('reports') }}" id="ordersFilterForm">
+                <input type="hidden" name="active_tab" value="orders">
                 <div class="filters-row">
                     <div class="filter-group">
                         <label>Date Range</label>
-                        <select name="date_range" id="dateRange" onchange="toggleCustomFields()">
+                        <select name="date_range" id="ordersDateRange" onchange="toggleCustomFields('orders')">
                             <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                             <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
                             <option value="last_3_months" {{ request('date_range') == 'last_3_months' ? 'selected' : '' }}>Last 3 months</option>
                             <option value="custom" {{ request('date_range') == 'custom' ? 'selected' : '' }}>Custom Range</option>
                         </select>
                     </div>
-                    <div class="filter-group" id="fromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                    <div class="filter-group" id="ordersFromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
                         <label>From Date</label>
                         <input type="date" name="from_date" value="{{ request('from_date', $startDate->format('Y-m-d')) }}">
                     </div>
-                    <div class="filter-group" id="toDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                    <div class="filter-group" id="ordersToDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
                         <label>To Date</label>
                         <input type="date" name="to_date" value="{{ request('to_date', $endDate->format('Y-m-d')) }}">
                     </div>
@@ -266,35 +304,105 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value">{{ $OrdersordersCount }}</div>
-                    <div class="stat-label">Total Orders</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            Orders (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            Orders (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            Orders (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            Orders (Custom Range)
+                        @else
+                            Total Orders
+                        @endif
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">{{ $OrderscompletedOrders }}</div>
-                    <div class="stat-label">Completed</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            Completed (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            Completed (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            Completed (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            Completed (Custom Range)
+                        @else
+                            Completed Orders
+                        @endif
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">{{$OrdersprocessingOrders}}</div>
-                    <div class="stat-label">Processing</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            Processing (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            Processing (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            Processing (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            Processing (Custom Range)
+                        @else
+                            Processing Orders
+                        @endif
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">{{$OrderspendingOrders}}</div>
-                    <div class="stat-label">Pending</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            Pending (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            Pending (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            Pending (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            Pending (Custom Range)
+                        @else
+                            Pending Orders
+                        @endif
+                    </div>
                 </div>
                  <div class="stat-card">
                     <div class="stat-value">{{$OrderscancelledOrders}}</div>
-                    <div class="stat-label">Cancelled</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            Cancelled (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            Cancelled (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            Cancelled (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            Cancelled (Custom Range)
+                        @else
+                            Cancelled Orders
+                        @endif
+                    </div>
                 </div>     
                 <div class="stat-card">
                     <div class="stat-value">{{$OrdersrejectedOrders}}</div>
-                    <div class="stat-label">Rejected</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            Rejected (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            Rejected (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            Rejected (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            Rejected (Custom Range)
+                        @else
+                            Rejected Orders
+                        @endif
+                    </div>
                 </div>          
             </div>
 
             <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Most Active Stores</p>
 
             <div class="chart-container" style="overflow-x: auto;">
-
-
               <div class="data-table">
                 <table class="table">
                     <thead>
@@ -310,38 +418,35 @@
                             <td>{{ $store->customer->store_name ?? 'Unknown' }}</td>
                             <td>{{ $store->total_orders }}</td>
                             <td>₱{{ $store->total_revenue }}</td>
-
                         </tr>
                     @endforeach
-
-
                     </tbody>
                 </table>
             </div>
-
-
             </div>
         </div>
+
         {{-- Product performance --}}
-        <div id="products" class="tab-content active">
+        <div id="products" class="tab-content {{ request('active_tab') == 'products' ? 'active' : '' }}">
             <h2>Product Performance Reports</h2>
             
-            <form method="GET" action="{{ route('reports') }}" id="filterForm">
+            <form method="GET" action="{{ route('reports') }}" id="productsFilterForm">
+                <input type="hidden" name="active_tab" value="products">
                 <div class="filters-row">
                     <div class="filter-group">
                         <label>Date Range</label>
-                        <select name="date_range" id="dateRange" onchange="toggleCustomFields()">
+                        <select name="date_range" id="productsDateRange" onchange="toggleCustomFields('products')">
                             <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                             <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
                             <option value="last_3_months" {{ request('date_range') == 'last_3_months' ? 'selected' : '' }}>Last 3 months</option>
                             <option value="custom" {{ request('date_range') == 'custom' ? 'selected' : '' }}>Custom Range</option>
                         </select>
                     </div>
-                    <div class="filter-group" id="fromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                    <div class="filter-group" id="productsFromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
                         <label>From Date</label>
                         <input type="date" name="from_date" value="{{ request('from_date', $startDate->format('Y-m-d')) }}">
                     </div>
-                    <div class="filter-group" id="toDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                    <div class="filter-group" id="productsToDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
                         <label>To Date</label>
                         <input type="date" name="to_date" value="{{ request('to_date', $endDate->format('Y-m-d')) }}">
                     </div>
@@ -368,7 +473,19 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">{{ $bestSellers }}</div>
-                    <div class="stat-label">Best Sellers</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            Best Sellers (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            Best Sellers (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            Best Sellers (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            Best Sellers (Custom Range)
+                        @else
+                            Best Sellers
+                        @endif
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">{{$lowStock}}</div>
@@ -383,8 +500,6 @@
             <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Best Selling Products</p>
 
             <div class="chart-container" style="overflow-x: auto;">
-
-
               <div class="data-table">
                 <table class="table">
                     <thead>
@@ -402,28 +517,11 @@
                             <td>₱{{ number_format($product->total_revenue, 2) }}</td>
                         </tr>
                     @endforeach
-
-
                     </tbody>
                 </table>
             </div>
-
-
             </div>
         </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
     </div>
 </div>
 
@@ -443,10 +541,10 @@
         event.target.classList.add('active');
     }
 
-    function toggleCustomFields() {
-        const dateRange = document.getElementById('dateRange').value;
-        const fromDateGroup = document.getElementById('fromDateGroup');
-        const toDateGroup = document.getElementById('toDateGroup');
+    function toggleCustomFields(tabName) {
+        const dateRange = document.getElementById(tabName + 'DateRange').value;
+        const fromDateGroup = document.getElementById(tabName + 'FromDateGroup');
+        const toDateGroup = document.getElementById(tabName + 'ToDateGroup');
         
         if (dateRange === 'custom') {
             fromDateGroup.style.display = 'block';
@@ -457,10 +555,28 @@
         }
     }
 
-    // Auto-submit form when predefined date range is selected
-    document.getElementById('dateRange').addEventListener('change', function() {
+    // Auto-submit form when predefined date range is selected for each tab
+    document.getElementById('salesDateRange').addEventListener('change', function() {
         if (this.value !== 'custom') {
-            document.getElementById('filterForm').submit();
+            document.getElementById('salesFilterForm').submit();
+        }
+    });
+
+    document.getElementById('customersDateRange').addEventListener('change', function() {
+        if (this.value !== 'custom') {
+            document.getElementById('customersFilterForm').submit();
+        }
+    });
+
+    document.getElementById('ordersDateRange').addEventListener('change', function() {
+        if (this.value !== 'custom') {
+            document.getElementById('ordersFilterForm').submit();
+        }
+    });
+
+    document.getElementById('productsDateRange').addEventListener('change', function() {
+        if (this.value !== 'custom') {
+            document.getElementById('productsFilterForm').submit();
         }
     });
 </script>
