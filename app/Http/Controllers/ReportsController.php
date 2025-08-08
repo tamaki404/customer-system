@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\Orders;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Exports\OrdersExport;
-use Maatwebsite\Excel\Facades\Excel;
-use PDF;
+use App\Models\User;
+use function PHPUnit\Framework\assertContainsOnlyInstancesOf;
+use App\Models\Products;
+use Illuminate\Support\Facades\DB;
+
 
 class ReportsController extends Controller
 {
@@ -17,8 +18,56 @@ class ReportsController extends Controller
     public function reports(Request $request)
     {
         $user = auth()->user();
+
+        $startDate = Carbon::now()->subDays(7);
+        $endDate = Carbon::now();
+
+
+         $weekStart = Carbon::now()->startOfWeek();
+        $weekEnd = Carbon::now()->endOfWeek();
+
+        // customer analytics
+        $totalUsers = User::where('acc_status', 'Active')
+            ->where('user_type', 'Customer')
+            ->count();
+
+        $newThisMonth = User::where('acc_status', 'Active')
+            ->where('user_type', 'Customer')
+            ->whereBetween('created_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth()
+            ])
+            ->count();
+        $pendingUsers = User::where('acc_status', 'Pending')->count();
+        $customers = User::where('user_type', 'Customer')->get();
+
+        //order management
+        $completedOrders = Orders::where('status', 'Completed')->count();
+        $processingOrders = Orders::where('status', 'Processing')->count();
+        $pendingOrders = Orders::where('status', 'Pending')->count();
+        $cancelledOrders = Orders::where('status', 'Cancelled')->count();
+        $rejectedOrders = Orders::where('status', 'Rejected')->count();
+        $ordersCount = Orders::All()->count();
+
+        $bestSellingProducts = Orders::select(
+                'products.id as product_id',
+                'products.name as product_name',
+                DB::raw('SUM(orders.quantity) as total_quantity'),
+                DB::raw('SUM(orders.quantity * orders.unit_price) as total_revenue')
+            )
+            ->join('products', 'orders.product_id', '=', 'products.id')
+            ->where('orders.status', 'Completed')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->groupBy('products.id', 'products.name')
+            ->orderByDesc('total_quantity')
+            ->get();
+
+     
+
+
+
+
         
-        // Get date filters from request or set defaults
         $dateRange = $request->get('date_range', 'last_30_days');
         $fromDate = $request->get('from_date');
         $toDate = $request->get('to_date');
@@ -63,7 +112,7 @@ class ReportsController extends Controller
             : 0;
         
         $successfulPayments = $ordersQuery->where('status', 'Completed')->count();
-        
+
         $totalPaymentAttempts = $ordersQuery->whereIn('status', [
             'Completed', 'Rejected', 'Pending', 'Processing'
         ])->count();
@@ -78,6 +127,8 @@ class ReportsController extends Controller
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('month')
             ->pluck('total', 'month');
+
+
         
         return view('reports', compact(
             'user',
@@ -92,61 +143,131 @@ class ReportsController extends Controller
             'fromDate',
             'toDate',
             'startDate',
-            'endDate'
+            'endDate',
+            'totalUsers',
+            'newThisMonth',
+            'pendingUsers',
+            'customers',
+            'completedOrders',
+            'processingOrders',
+            'pendingOrders',
+            'cancelledOrders',
+            'rejectedOrders',
+            'ordersCount',
+            'bestSellingProducts'
+
         ));
     }
 
     public function exportReports(Request $request) {
-        $type = $request->get('type', 'excel');
-        // Get the same filtered data
-        $dateRange = $request->get('date_range', 'last_30_days');
-        $fromDate = $request->get('from_date');
-        $toDate = $request->get('to_date');
+            $type = $request->get('type', 'excel');
+            $dateRange = $request->get('date_range', 'last_30_days');
+            $fromDate = $request->get('from_date');
+            $toDate = $request->get('to_date');
 
-        // Determine date range (same logic as reports method)
-        switch ($dateRange) {
-            case 'last_7_days':
-                $startDate = Carbon::now()->subDays(7);
-                $endDate = Carbon::now();
-                break;
-            case 'last_30_days':
-                $startDate = Carbon::now()->subDays(30);
-                $endDate = Carbon::now();
-                break;
-            case 'last_3_months':
-                $startDate = Carbon::now()->subMonths(3);
-                $endDate = Carbon::now();
-                break;
-            case 'custom':
-                if ($fromDate && $toDate) {
-                    $startDate = Carbon::parse($fromDate);
-                    $endDate = Carbon::parse($toDate);
-                } else {
+            switch ($dateRange) {
+                case 'last_7_days':
+                    $startDate = Carbon::now()->subDays(7);
+                    $endDate = Carbon::now();
+                    break;
+                case 'last_30_days':
                     $startDate = Carbon::now()->subDays(30);
                     $endDate = Carbon::now();
-                }
-                break;
-            default:
-                $startDate = Carbon::now()->subDays(30);
-                $endDate = Carbon::now();
+                    break;
+                case 'last_3_months':
+                    $startDate = Carbon::now()->subMonths(3);
+                    $endDate = Carbon::now();
+                    break;
+                case 'custom':
+                    if ($fromDate && $toDate) {
+                        $startDate = Carbon::parse($fromDate);
+                        $endDate = Carbon::parse($toDate);
+                    } else {
+                        $startDate = Carbon::now()->subDays(30);
+                        $endDate = Carbon::now();
+                    }
+                    break;
+                default:
+                    $startDate = Carbon::now()->subDays(30);
+                    $endDate = Carbon::now();
+            }
+
+            $orders = Orders::whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'Completed')
+            ->get()
+            ->groupBy('order_id');
+
+
+            if ($type === 'excel') {
+                // Use Laravel Excel to export
+                return Excel::download(new \App\Exports\OrdersExport($orders, $startDate, $endDate), 'sales_report_' . date('Y-m-d') . '.xlsx');
+            } elseif ($type === 'pdf') {
+                // Use DomPDF to export
+                $pdf = \PDF::loadView('reports.pdf', [
+                    'orders' => $orders,
+                    'startDate' => $startDate,
+                    'endDate' => $endDate
+                ]);
+                return $pdf->download('sales_report_' . date('Y-m-d') . '.pdf');
+            }
         }
 
-        // Get filtered orders data
-        $orders = Orders::whereBetween('created_at', [$startDate, $endDate])
-                       ->where('status', 'Completed')
-                       ->get();
+    public function exportCustomers(Request $request) {
+            $type = $request->get('type', 'excel');
+            // Get the same filtered data
+            $dateRange = $request->get('date_range', 'last_30_days');
+            $fromDate = $request->get('from_date');
+            $toDate = $request->get('to_date');
 
-        if ($type === 'excel') {
-            // Use Laravel Excel to export
-            return Excel::download(new \App\Exports\OrdersExport($orders, $startDate, $endDate), 'sales_report_' . date('Y-m-d') . '.xlsx');
-        } elseif ($type === 'pdf') {
-            // Use DomPDF to export
-            $pdf = \PDF::loadView('reports.pdf', [
-                'orders' => $orders,
-                'startDate' => $startDate,
-                'endDate' => $endDate
-            ]);
-            return $pdf->download('sales_report_' . date('Y-m-d') . '.pdf');
+            // Determine date range (same logic as reports method)
+            switch ($dateRange) {
+                case 'last_7_days':
+                    $startDate = Carbon::now()->subDays(7);
+                    $endDate = Carbon::now();
+                    break;
+                case 'last_30_days':
+                    $startDate = Carbon::now()->subDays(30);
+                    $endDate = Carbon::now();
+                    break;
+                case 'last_3_months':
+                    $startDate = Carbon::now()->subMonths(3);
+                    $endDate = Carbon::now();
+                    break;
+                case 'custom':
+                    if ($fromDate && $toDate) {
+                        $startDate = Carbon::parse($fromDate);
+                        $endDate = Carbon::parse($toDate);
+                    } else {
+                        $startDate = Carbon::now()->subDays(30);
+                        $endDate = Carbon::now();
+                    }
+                    break;
+                default:
+                    $startDate = Carbon::now()->subDays(30);
+                    $endDate = Carbon::now();
+            }
+
+            $customers = User::whereBetween('created_at', [$startDate, $endDate])
+            ->where('user_type', 'Customer')
+            ->get();
+
+
+            if ($type === 'excel') {
+                // Use Laravel Excel to export
+                return Excel::download(new \App\Exports\OrdersExport($customers, $startDate, $endDate), 'sales_report_' . date('Y-m-d') . '.xlsx');
+            } elseif ($type === 'pdf') {
+                // Use DomPDF to export
+                $pdf = \PDF::loadView('customers.pdf', [
+                    'customers' => $customers,
+                    'startDate' => $startDate,
+                    'endDate' => $endDate
+                ]);
+                return $pdf->download('customers_list' . date('Y-m-d') . '.pdf');
+            }
         }
-    }
+
+    
+
+
+
 }
