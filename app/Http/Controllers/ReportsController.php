@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Http\Controllers\Controller;
 use App\Models\Orders;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Exports\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class ReportsController extends Controller
 {
@@ -94,12 +98,11 @@ class ReportsController extends Controller
 
     public function exportReports(Request $request) {
         $type = $request->get('type', 'excel');
-        
         // Get the same filtered data
         $dateRange = $request->get('date_range', 'last_30_days');
         $fromDate = $request->get('from_date');
         $toDate = $request->get('to_date');
-        
+
         // Determine date range (same logic as reports method)
         switch ($dateRange) {
             case 'last_7_days':
@@ -127,21 +130,23 @@ class ReportsController extends Controller
                 $startDate = Carbon::now()->subDays(30);
                 $endDate = Carbon::now();
         }
-        
+
         // Get filtered orders data
         $orders = Orders::whereBetween('created_at', [$startDate, $endDate])
                        ->where('status', 'Completed')
                        ->get();
-        
+
         if ($type === 'excel') {
-            // For Excel export, you'd use Laravel Excel package
-            // return Excel::download(new OrdersExport($orders), 'sales_report_' . date('Y-m-d') . '.xlsx');
-            return response()->json(['message' => 'Excel export would be implemented here', 'data' => $orders]);
+            // Use Laravel Excel to export
+            return Excel::download(new \App\Exports\OrdersExport($orders, $startDate, $endDate), 'sales_report_' . date('Y-m-d') . '.xlsx');
         } elseif ($type === 'pdf') {
-            // For PDF export, you'd use DomPDF or similar
-            // $pdf = PDF::loadView('reports.pdf', compact('orders', 'startDate', 'endDate'));
-            // return $pdf->download('sales_report_' . date('Y-m-d') . '.pdf');
-            return response()->json(['message' => 'PDF export would be implemented here', 'data' => $orders]);
+            // Use DomPDF to export
+            $pdf = \PDF::loadView('reports.pdf', [
+                'orders' => $orders,
+                'startDate' => $startDate,
+                'endDate' => $endDate
+            ]);
+            return $pdf->download('sales_report_' . date('Y-m-d') . '.pdf');
         }
     }
 }
