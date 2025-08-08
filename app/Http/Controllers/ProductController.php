@@ -17,12 +17,13 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'status' => 'nullable|string|max:255',
         ]);
-
+        $validated['status'] = $validated['status'] ?? 'Available';
 
         Product::create($validated);
 
         return redirect()->back()->with('success', 'Product added successfully!');
     }
+
     /**
      * Display product image stored in database
      */

@@ -48,6 +48,19 @@ class ReportsController extends Controller
         $cancelledOrders = Orders::where('status', 'Cancelled')->count();
         $rejectedOrders = Orders::where('status', 'Rejected')->count();
         $ordersCount = Orders::All()->count();
+        $topStores = Orders::select(
+                'customer_id',
+                DB::raw('COUNT(*) as total_orders'),
+                DB::raw('SUM(total_price) as total_revenue')
+            )
+                ->where('status', 'Completed')
+                ->groupBy('customer_id')
+                ->orderByDesc('total_orders') 
+                ->with(['customer' => function($query) {
+                $query->select('id', 'store_name');
+            }])
+                ->take(10)
+            ->get();
 
         //product performance
         $completedOrders = Product::where('status', 'Completed')->count();
@@ -72,40 +85,24 @@ class ReportsController extends Controller
             ->get();
 
         
-            $productsCount = Product::count();
+        $productsCount = Product::count();
 
-            // Best sellers → products ordered the most
             $bestSellers = Product::select('products.id', 'products.name', DB::raw('SUM(orders.quantity) as total_sold'))
                 ->join('orders', 'orders.product_id', '=', 'products.id')
                 ->where('orders.status', 'Completed')
                 ->groupBy('products.id', 'products.name')
                 ->orderByDesc('total_sold')
-                ->take(5) // limit to top 5 best sellers
+                ->take(5) 
                 ->get()->count();
 
-            // Low stock (e.g., less than or equal to 10 units)
             $lowStock = Product::where('quantity', '<=', 10)
                 ->where('quantity', '>', 0)
                 ->count();
 
-            // Out of stock
             $outOfStock = Product::where('quantity', 0)->count();
 
-        //Most active stores
 
-$topStores = Orders::select(
-        'customer_id',
-        DB::raw('COUNT(*) as total_orders'),
-        DB::raw('SUM(total_price) as total_revenue')
-    )
-    ->where('status', 'Completed')
-    ->groupBy('customer_id')
-    ->orderByDesc('total_orders') // Could also order by total_revenue
-    ->with(['customer' => function($query) {
-        $query->select('id', 'store_name');
-    }])
-    ->take(10)
-    ->get();
+
 
 
         
@@ -304,7 +301,7 @@ $topStores = Orders::select(
                 return Excel::download(new \App\Exports\OrdersExport($customers, $startDate, $endDate), 'sales_report_' . date('Y-m-d') . '.xlsx');
             } elseif ($type === 'pdf') {
                 // Use DomPDF to export
-                $pdf = \PDF::loadView('customers.pdf', [
+                $pdf = \PDF::loadView('reports.costumers', [
                     'customers' => $customers,
                     'startDate' => $startDate,
                     'endDate' => $endDate
@@ -312,6 +309,47 @@ $topStores = Orders::select(
                 return $pdf->download('customers_list' . date('Y-m-d') . '.pdf');
             }
         }
+
+    public function exportProducts(Request $request)
+    {
+        $fromDate = $request->get('from_date');
+        $toDate = $request->get('to_date');
+
+        $startDate = $fromDate ? Carbon::parse($fromDate) : Carbon::now()->subDays(30);
+        $endDate = $toDate ? Carbon::parse($toDate) : Carbon::now();
+
+        $products = Product::select(
+                'products.id as product_id',
+                'products.name as product_name',
+                'products.status as product_status',
+                'products.quantity as current_stock', 
+                'products.price as unit_price',
+                DB::raw('COALESCE(SUM(orders.quantity), 0) as total_quantity'),
+                DB::raw('COALESCE(SUM(orders.quantity * orders.unit_price), 0) as total_revenue')
+            )
+            ->leftJoin('orders', function($join) use ($startDate, $endDate) {
+                $join->on('orders.product_id', '=', 'products.id')
+                    ->whereBetween('orders.created_at', [$startDate, $endDate])
+                    ->where('orders.status', 'Completed');
+            })
+            ->groupBy(
+                'products.id',
+                'products.name',
+                'products.status',
+                'products.price',
+                'products.quantity' 
+            )
+            ->orderByDesc('total_quantity') 
+            ->get();
+
+        $pdf = \PDF::loadView('reports.product_performance_pdf', [
+            'products' => $products,
+            'startDate' => $startDate,
+            'endDate' => $endDate
+        ]);
+
+        return $pdf->download('product_performance_' . date('Y-m-d') . '.pdf');
+    }
 
     
 

@@ -176,8 +176,9 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/reports', [ReportsController::class, 'reports'])->name('reports');
     Route::get('/reports/dateFilter', [ReportsController::class, 'dateFilter'])->name('dateFilter');
     Route::get('/reports/export', [ReportsController::class, 'exportReports'])->name('reports.export');
-    Route::get('/reports/customers', [ReportsController::class, 'exportCustomers'])->name('reports.customers');
+    Route::get('/reports/customers', action: [ReportsController::class, 'exportCustomers'])->name('reports.customers');
     Route::get('/reports/customer-analytics', [ReportsController::class, 'customerAnalytics'])->name('customer.analytics');
+    Route::get('/reports/products', [ReportsController::class, 'exportProducts'])->name('reports.products');
 
 
 

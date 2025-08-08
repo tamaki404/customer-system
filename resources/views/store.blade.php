@@ -140,9 +140,15 @@
                                 @if ($product->quantity == 0)
                                     <span style="color: red">Add stocks!</span>
                                 @elseif ($product->quantity < 5)
-                                    <span style="color: red">Low on stocks!</span>
+                                    <span style="color: orange">Low on stocks!</span>
+                                
                                 @else
-                                    <span style="color: green">{{ $product->status ?? 'Available' }}</span>
+                                    @if($product->status == "Unlisted")
+                                        <span style="color: grey">{{ $product->status}}</span>
+                                    @elseif($product->status == "Available")
+                                        <span style="color: green">{{ $product->status}}</span>
+                                    @endif
+
                                 @endif
                             </span>
                         </td>
