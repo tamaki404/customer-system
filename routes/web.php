@@ -174,7 +174,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 
     // Reports
     Route::get('/reports', [ReportsController::class, 'reports'])->name('reports');
-
+    Route::get('/reports/dateFilter', [ReportsController::class, 'dateFilter'])->name('dateFilter');
+    Route::get('/reports/export', [ReportsController::class, 'exportReports'])->name('reports.export');
 
 
 
