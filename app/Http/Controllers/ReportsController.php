@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\User;
 use function PHPUnit\Framework\assertContainsOnlyInstancesOf;
-use App\Models\Products;
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
 
@@ -49,6 +49,15 @@ class ReportsController extends Controller
         $rejectedOrders = Orders::where('status', 'Rejected')->count();
         $ordersCount = Orders::All()->count();
 
+        //product performance
+        $completedOrders = Product::where('status', 'Completed')->count();
+        $processingOrders = Product::where('status', 'Processing')->count();
+        $pendingOrders = Product::where('status', 'Pending')->count();
+        $cancelledOrders = Product::where('status', 'Cancelled')->count();
+        $rejectedOrders = Product::where('status', 'Rejected')->count();
+        $ordersCount = Product::All()->count();
+
+
         $bestSellingProducts = Orders::select(
                 'products.id as product_id',
                 'products.name as product_name',
@@ -62,9 +71,41 @@ class ReportsController extends Controller
             ->orderByDesc('total_quantity')
             ->get();
 
-     
+        
+            $productsCount = Product::count();
 
+            // Best sellers → products ordered the most
+            $bestSellers = Product::select('products.id', 'products.name', DB::raw('SUM(orders.quantity) as total_sold'))
+                ->join('orders', 'orders.product_id', '=', 'products.id')
+                ->where('orders.status', 'Completed')
+                ->groupBy('products.id', 'products.name')
+                ->orderByDesc('total_sold')
+                ->take(5) // limit to top 5 best sellers
+                ->get()->count();
 
+            // Low stock (e.g., less than or equal to 10 units)
+            $lowStock = Product::where('quantity', '<=', 10)
+                ->where('quantity', '>', 0)
+                ->count();
+
+            // Out of stock
+            $outOfStock = Product::where('quantity', 0)->count();
+
+        //Most active stores
+
+$topStores = Orders::select(
+        'customer_id',
+        DB::raw('COUNT(*) as total_orders'),
+        DB::raw('SUM(total_price) as total_revenue')
+    )
+    ->where('status', 'Completed')
+    ->groupBy('customer_id')
+    ->orderByDesc('total_orders') // Could also order by total_revenue
+    ->with(['customer' => function($query) {
+        $query->select('id', 'store_name');
+    }])
+    ->take(10)
+    ->get();
 
 
         
@@ -129,6 +170,7 @@ class ReportsController extends Controller
             ->pluck('total', 'month');
 
 
+
         
         return view('reports', compact(
             'user',
@@ -154,7 +196,12 @@ class ReportsController extends Controller
             'cancelledOrders',
             'rejectedOrders',
             'ordersCount',
-            'bestSellingProducts'
+            'bestSellingProducts',
+            'productsCount' ,
+            'bestSellers',   
+            'lowStock' ,   
+            'outOfStock'   ,
+            'topStores'
 
         ));
     }

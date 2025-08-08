@@ -22,9 +22,7 @@
             <button class="tab-button active" onclick="switchTab('sales')">Sales & Revenue</button>
             <button class="tab-button" onclick="switchTab('customers')">Customer Analytics</button>
             <button class="tab-button" onclick="switchTab('orders')">Order Management</button>
-            <button class="tab-button" onclick="switchTab('support')">Support Tickets</button>
             <button class="tab-button" onclick="switchTab('products')">Product Performance</button>
-            <button class="tab-button" onclick="switchTab('audit')">Audit & Security</button>
         </nav>
 
         {{-- Sales & Revenue Tab --}}
@@ -226,7 +224,7 @@
 
             </div>
         </div>
-        {{-- order management tab --}}
+        {{-- Order management tab --}}
         <div id="orders" class="tab-content active">
             <h2>Order Management Reports</h2>
             
@@ -292,6 +290,96 @@
                 </div>          
             </div>
 
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Most Active Stores</p>
+
+            <div class="chart-container" style="overflow-x: auto;">
+
+
+              <div class="data-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                        <th>Store Name</th>
+                        <th>Total Orders</th>
+                        <th>Total Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                   @foreach($topStores as $store)
+                        <tr>
+                            <td>{{ $store->customer->store_name ?? 'Unknown' }}</td>
+                            <td>{{ $store->total_orders }}</td>
+                            <td>₱{{ $store->total_revenue }}</td>
+
+                        </tr>
+                    @endforeach
+
+
+                    </tbody>
+                </table>
+            </div>
+
+
+            </div>
+        </div>
+        {{-- Product performance --}}
+        <div id="products" class="tab-content active">
+            <h2>Product Performance Reports</h2>
+            
+            <form method="GET" action="{{ route('reports') }}" id="filterForm">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label>Date Range</label>
+                        <select name="date_range" id="dateRange" onchange="toggleCustomFields()">
+                            <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
+                            <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
+                            <option value="last_3_months" {{ request('date_range') == 'last_3_months' ? 'selected' : '' }}>Last 3 months</option>
+                            <option value="custom" {{ request('date_range') == 'custom' ? 'selected' : '' }}>Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" id="fromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                        <label>From Date</label>
+                        <input type="date" name="from_date" value="{{ request('from_date', $startDate->format('Y-m-d')) }}">
+                    </div>
+                    <div class="filter-group" id="toDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                        <label>To Date</label>
+                        <input type="date" name="to_date" value="{{ request('to_date', $endDate->format('Y-m-d')) }}">
+                    </div>
+                    
+                    <button type="submit" class="apply-filter">Apply Filters</button>
+                </div>
+            </form>
+
+            <div class="report-actions">
+                <a href="{{ route('reports.export', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
+                <a href="{{ route('reports.customers', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
+            </div>
+
+            <!-- Display current date range -->
+            <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 14px;">
+                <strong>Current Period:</strong> 
+                {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{{ $productsCount }}</div>
+                    <div class="stat-label">Total Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ $bestSellers }}</div>
+                    <div class="stat-label">Best Sellers</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{$lowStock}}</div>
+                    <div class="stat-label">Low Stock Alert</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{$outOfStock}}</div>
+                    <div class="stat-label">Out Of Stock</div>
+                </div>        
+            </div>
+
             <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Best Selling Products</p>
 
             <div class="chart-container" style="overflow-x: auto;">
@@ -323,7 +411,6 @@
 
             </div>
         </div>
-
 
 
 
