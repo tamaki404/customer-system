@@ -357,8 +357,67 @@ class ReportsController extends Controller
 
         return $pdf->download('product_performance_' . date('Y-m-d') . '.pdf');
     }
+public function exportOrders(Request $request)
+{
+    $startDate = $request->from_date ? Carbon::parse($request->from_date) : Carbon::now()->subDays(30);
+    $endDate = $request->to_date ? Carbon::parse($request->to_date) : Carbon::now();
 
-    
+    $statusOrder = ['Completed', 'Pending', 'Processing', 'Cancelled', 'Rejected'];
+
+    $orders = Orders::select(
+            'orders.order_id',
+            'users.store_name',
+            'orders.status',
+            DB::raw('SUM(orders.quantity) as total_quantity'),
+            DB::raw('SUM(orders.total_price) as total_price'),
+            DB::raw('MAX(orders.updated_at) as action_at') 
+        )
+        ->join('users', 'users.id', '=', 'orders.customer_id')
+        ->whereBetween('orders.created_at', [$startDate, $endDate])
+        ->groupBy('orders.order_id', 'users.store_name', 'orders.status')
+        ->orderByRaw("
+            FIELD(orders.status, 'Completed', 'Pending', 'Processing', 'Cancelled', 'Rejected')
+        ")
+        ->orderBy('orders.order_id', 'desc')
+        ->get();
+
+$ordersCount = Orders::distinct('order_id')->count('order_id');
+
+$completedOrders = Orders::where('status', 'Completed')
+    ->distinct('order_id')
+    ->count('order_id');
+
+$processingOrders = Orders::where('status', 'Processing')
+    ->distinct('order_id')
+    ->count('order_id');
+
+$pendingOrders = Orders::where('status', 'Pending')
+    ->distinct('order_id')
+    ->count('order_id');
+
+$cancelledOrders = Orders::where('status', 'Cancelled')
+    ->distinct('order_id')
+    ->count('order_id');
+
+$rejectedOrders = Orders::where('status', 'Rejected')
+    ->distinct('order_id')
+    ->count('order_id');
+
+
+    $pdf = \PDF::loadView('reports.orders_pdf', [
+        'startDate' => $startDate,
+        'endDate' => $endDate,
+        'ordersCount' => $ordersCount,
+        'completedOrders' => $completedOrders,
+        'processingOrders' => $processingOrders,
+        'pendingOrders' => $pendingOrders,
+        'cancelledOrders' => $cancelledOrders,
+        'rejectedOrders' => $rejectedOrders,
+        'orders' => $orders
+    ]);
+
+    return $pdf->download('orders_report_' . now()->format('Y-m-d') . '.pdf');
+}
 
 
 

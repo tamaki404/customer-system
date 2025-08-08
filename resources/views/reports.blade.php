@@ -254,7 +254,7 @@
 
             <div class="report-actions">
                 <a href="{{ route('reports.export', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
-                <a href="{{ route('reports.customers', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
+                <a href="{{ route('reports.orders', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
             <!-- Display current date range -->
