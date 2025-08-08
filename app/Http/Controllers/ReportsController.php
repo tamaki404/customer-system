@@ -42,12 +42,19 @@ class ReportsController extends Controller
         $customers = User::where('user_type', 'Customer')->get();
 
         //order management
-        $completedOrders = Orders::where('status', 'Completed')->count();
-        $processingOrders = Orders::where('status', 'Processing')->count();
-        $pendingOrders = Orders::where('status', 'Pending')->count();
-        $cancelledOrders = Orders::where('status', 'Cancelled')->count();
-        $rejectedOrders = Orders::where('status', 'Rejected')->count();
-        $ordersCount = Orders::All()->count();
+        $orderStatusCounts = Orders::select('status', DB::raw('COUNT(DISTINCT order_id) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        $OrderscompletedOrders = $orderStatusCounts['Completed'] ?? 0;
+        $OrdersprocessingOrders = $orderStatusCounts['Processing'] ?? 0;
+        $OrderspendingOrders    = $orderStatusCounts['Pending'] ?? 0;
+        $OrderscancelledOrders  = $orderStatusCounts['Cancelled'] ?? 0;
+        $OrdersrejectedOrders   = $orderStatusCounts['Rejected'] ?? 0;
+
+        $OrdersordersCount = Orders::distinct('order_id')->count('order_id');
+
+        
         $topStores = Orders::select(
                 'customer_id',
                 DB::raw('COUNT(*) as total_orders'),
@@ -187,12 +194,12 @@ class ReportsController extends Controller
             'newThisMonth',
             'pendingUsers',
             'customers',
-            'completedOrders',
-            'processingOrders',
-            'pendingOrders',
-            'cancelledOrders',
-            'rejectedOrders',
-            'ordersCount',
+            'OrderscompletedOrders',
+            'OrdersprocessingOrders',
+            'OrderspendingOrders',
+            'OrderscancelledOrders',
+            'OrdersrejectedOrders',
+            'OrdersordersCount',
             'bestSellingProducts',
             'productsCount' ,
             'bestSellers',   

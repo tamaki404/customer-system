@@ -265,27 +265,27 @@
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value">{{ $ordersCount }}</div>
+                    <div class="stat-value">{{ $OrdersordersCount }}</div>
                     <div class="stat-label">Total Orders</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ $completedOrders }}</div>
+                    <div class="stat-value">{{ $OrderscompletedOrders }}</div>
                     <div class="stat-label">Completed</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{$processingOrders}}</div>
+                    <div class="stat-value">{{$OrdersprocessingOrders}}</div>
                     <div class="stat-label">Processing</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{$pendingOrders}}</div>
+                    <div class="stat-value">{{$OrderspendingOrders}}</div>
                     <div class="stat-label">Pending</div>
                 </div>
                  <div class="stat-card">
-                    <div class="stat-value">{{$cancelledOrders}}</div>
+                    <div class="stat-value">{{$OrderscancelledOrders}}</div>
                     <div class="stat-label">Cancelled</div>
                 </div>     
                 <div class="stat-card">
-                    <div class="stat-value">{{$rejectedOrders}}</div>
+                    <div class="stat-value">{{$OrdersrejectedOrders}}</div>
                     <div class="stat-label">Rejected</div>
                 </div>          
             </div>
