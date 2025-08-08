@@ -72,6 +72,9 @@ class OrderController extends Controller
                         'quantity'    => $item['qty'],
                         'unit_price'  => $product->price,
                         'total_price' => $product->price * $item['qty'],
+                        'status'      => 'Pending',  
+
+                        
                     ]);
                 }
 

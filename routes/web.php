@@ -179,7 +179,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/reports/customers', action: [ReportsController::class, 'exportCustomers'])->name('reports.customers');
     Route::get('/reports/customer-analytics', [ReportsController::class, 'customerAnalytics'])->name('customer.analytics');
     Route::get('/reports/products', [ReportsController::class, 'exportProducts'])->name('reports.products');
-    Route::get('/reports/orders', [ReportsController::class, 'exportOrders'])->name('reports.orders');
+    Route::get('/reports/orders', action: [ReportsController::class, 'exportOrders'])->name('reports.orders');
 
 
 

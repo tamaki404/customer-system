@@ -155,16 +155,34 @@ class ReportsController extends Controller
         $averageOrderValue = $completedOrdersCount > 0 
             ? $totalSales / $completedOrdersCount 
             : 0;
+
+        
         
         $successfulPayments = $ordersQuery->where('status', 'Completed')->count();
+
 
         $totalPaymentAttempts = $ordersQuery->whereIn('status', [
             'Completed', 'Rejected', 'Pending', 'Processing'
         ])->count();
-        
+
+
+
+
+        //payment success rate
+        $successfulPayments = Orders::whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'Completed')
+            ->distinct('order_id')
+            ->count('order_id');
+
+        $totalPaymentAttempts = Orders::whereBetween('created_at', [$startDate, $endDate])
+            ->whereIn('status', ['Completed', 'Rejected', 'Pending', 'Processing'])
+            ->distinct('order_id')
+            ->count('order_id');
+
         $paymentSuccessRate = $totalPaymentAttempts > 0
             ? round(($successfulPayments / $totalPaymentAttempts) * 100, 2)
             : 0;
+        
         
         // Monthly sales data with date filtering
         $monthlySales = Orders::selectRaw('MONTH(created_at) as month, SUM(total_price) as total')
@@ -210,58 +228,88 @@ class ReportsController extends Controller
         ));
     }
 
-    public function exportReports(Request $request) {
-            $type = $request->get('type', 'excel');
-            $dateRange = $request->get('date_range', 'last_30_days');
-            $fromDate = $request->get('from_date');
-            $toDate = $request->get('to_date');
+public function exportReports(Request $request) {
+    $type = $request->get('type', 'excel');
+    $dateRange = $request->get('date_range', 'last_30_days');
+    $fromDate = $request->get('from_date');
+    $toDate = $request->get('to_date');
 
-            switch ($dateRange) {
-                case 'last_7_days':
-                    $startDate = Carbon::now()->subDays(7);
-                    $endDate = Carbon::now();
-                    break;
-                case 'last_30_days':
-                    $startDate = Carbon::now()->subDays(30);
-                    $endDate = Carbon::now();
-                    break;
-                case 'last_3_months':
-                    $startDate = Carbon::now()->subMonths(3);
-                    $endDate = Carbon::now();
-                    break;
-                case 'custom':
-                    if ($fromDate && $toDate) {
-                        $startDate = Carbon::parse($fromDate);
-                        $endDate = Carbon::parse($toDate);
-                    } else {
-                        $startDate = Carbon::now()->subDays(30);
-                        $endDate = Carbon::now();
-                    }
-                    break;
-                default:
-                    $startDate = Carbon::now()->subDays(30);
-                    $endDate = Carbon::now();
+    // Date range setup
+    switch ($dateRange) {
+        case 'last_7_days':
+            $startDate = Carbon::now()->subDays(7);
+            $endDate = Carbon::now();
+            break;
+        case 'last_30_days':
+            $startDate = Carbon::now()->subDays(30);
+            $endDate = Carbon::now();
+            break;
+        case 'last_3_months':
+            $startDate = Carbon::now()->subMonths(3);
+            $endDate = Carbon::now();
+            break;
+        case 'custom':
+            if ($fromDate && $toDate) {
+                $startDate = Carbon::parse($fromDate);
+                $endDate = Carbon::parse($toDate);
+            } else {
+                $startDate = Carbon::now()->subDays(30);
+                $endDate = Carbon::now();
             }
+            break;
+        default:
+            $startDate = Carbon::now()->subDays(30);
+            $endDate = Carbon::now();
+    }
 
-            $orders = Orders::whereBetween('created_at', [$startDate, $endDate])
-            ->where('status', 'Completed')
-            ->get()
-            ->groupBy('order_id');
+    // Orders query grouped by order_id and ordered
+    $orders = Orders::whereBetween('created_at', [$startDate, $endDate])
+        ->orderBy('order_id')
+        ->get()
+        ->groupBy('order_id');
 
+    // Summary KPIs
+    $totalOrders = $orders->count();
+    $completedOrders = $orders->filter(fn($o) => $o->first()->status === 'Completed')->count();
+    $totalSales = $orders->flatMap->all()->where('status', 'Completed')->sum('total_price');
+    $averageOrderValue = $completedOrders > 0 ? $totalSales / $completedOrders : 0;
 
-            if ($type === 'excel') {
-                // Use Laravel Excel to export
-                return Excel::download(new \App\Exports\OrdersExport($orders, $startDate, $endDate), 'sales_report_' . date('Y-m-d') . '.xlsx');
-            } elseif ($type === 'pdf') {
-                // Use DomPDF to export
-                $pdf = \PDF::loadView('reports.pdf', [
-                    'orders' => $orders,
-                    'startDate' => $startDate,
-                    'endDate' => $endDate
-                ]);
-                return $pdf->download('sales_report_' . date('Y-m-d') . '.pdf');
-            }
-        }
+    $totalPaymentAttempts = $orders->count();
+    $successfulPayments = $completedOrders;
+    $paymentSuccessRate = $totalPaymentAttempts > 0
+        ? round(($successfulPayments / $totalPaymentAttempts) * 100, 2)
+        : 0;
+
+    // Sales by status (count + revenue)
+    $statuses = ['Completed', 'Processing', 'Pending', 'Cancelled', 'Rejected'];
+    $salesByStatus = [];
+    foreach ($statuses as $status) {
+        $filtered = $orders->filter(fn($o) => $o->first()->status === $status);
+        $salesByStatus[$status] = [
+            'count' => $filtered->count(),
+            'revenue' => $filtered->flatMap->all()->sum('total_price')
+        ];
+    }
+
+    if ($type === 'excel') {
+        return Excel::download(
+            new \App\Exports\OrdersExport($orders, $startDate, $endDate),
+            'sales_report_' . date('Y-m-d') . '.xlsx'
+        );
+    } elseif ($type === 'pdf') {
+        $pdf = \PDF::loadView('reports.pdf', [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'totalOrders' => $totalOrders,
+            'completedOrders' => $completedOrders,
+            'totalSales' => $totalSales,
+            'averageOrderValue' => $averageOrderValue,
+            'paymentSuccessRate' => $paymentSuccessRate,
+            'salesByStatus' => $salesByStatus
+        ]);
+        return $pdf->download('sales_report_' . date('Y-m-d') . '.pdf');
+    }
+}
 
     public function exportCustomers(Request $request) {
             $type = $request->get('type', 'excel');
@@ -357,67 +405,67 @@ class ReportsController extends Controller
 
         return $pdf->download('product_performance_' . date('Y-m-d') . '.pdf');
     }
-public function exportOrders(Request $request)
-{
-    $startDate = $request->from_date ? Carbon::parse($request->from_date) : Carbon::now()->subDays(30);
-    $endDate = $request->to_date ? Carbon::parse($request->to_date) : Carbon::now();
+    public function exportOrders(Request $request)
+    {
+        $startDate = $request->from_date ? Carbon::parse($request->from_date) : Carbon::now()->subDays(30);
+        $endDate = $request->to_date ? Carbon::parse($request->to_date) : Carbon::now();
 
-    $statusOrder = ['Completed', 'Pending', 'Processing', 'Cancelled', 'Rejected'];
+        $statusOrder = ['Completed', 'Pending', 'Processing', 'Cancelled', 'Rejected'];
 
-    $orders = Orders::select(
-            'orders.order_id',
-            'users.store_name',
-            'orders.status',
-            DB::raw('SUM(orders.quantity) as total_quantity'),
-            DB::raw('SUM(orders.total_price) as total_price'),
-            DB::raw('MAX(orders.updated_at) as action_at') 
-        )
-        ->join('users', 'users.id', '=', 'orders.customer_id')
-        ->whereBetween('orders.created_at', [$startDate, $endDate])
-        ->groupBy('orders.order_id', 'users.store_name', 'orders.status')
-        ->orderByRaw("
-            FIELD(orders.status, 'Completed', 'Pending', 'Processing', 'Cancelled', 'Rejected')
-        ")
-        ->orderBy('orders.order_id', 'desc')
-        ->get();
+        $orders = Orders::select(
+                'orders.order_id',
+                'users.store_name',
+                'orders.status',
+                DB::raw('SUM(orders.quantity) as total_quantity'),
+                DB::raw('SUM(orders.total_price) as total_price'),
+                DB::raw('MAX(orders.updated_at) as action_at') 
+            )
+            ->join('users', 'users.id', '=', 'orders.customer_id')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->groupBy('orders.order_id', 'users.store_name', 'orders.status')
+            ->orderByRaw("
+                FIELD(orders.status, 'Completed', 'Pending', 'Processing', 'Cancelled', 'Rejected')
+            ")
+            ->orderBy('orders.order_id', 'desc')
+            ->get();
 
-$ordersCount = Orders::distinct('order_id')->count('order_id');
+        $ordersCount = Orders::distinct('order_id')->count('order_id');
 
-$completedOrders = Orders::where('status', 'Completed')
-    ->distinct('order_id')
-    ->count('order_id');
+        $completedOrders = Orders::where('status', 'Completed')
+            ->distinct('order_id')
+            ->count('order_id');
 
-$processingOrders = Orders::where('status', 'Processing')
-    ->distinct('order_id')
-    ->count('order_id');
+        $processingOrders = Orders::where('status', 'Processing')
+            ->distinct('order_id')
+            ->count('order_id');
 
-$pendingOrders = Orders::where('status', 'Pending')
-    ->distinct('order_id')
-    ->count('order_id');
+        $pendingOrders = Orders::where('status', 'Pending')
+            ->distinct('order_id')
+            ->count('order_id');
 
-$cancelledOrders = Orders::where('status', 'Cancelled')
-    ->distinct('order_id')
-    ->count('order_id');
+        $cancelledOrders = Orders::where('status', 'Cancelled')
+            ->distinct('order_id')
+            ->count('order_id');
 
-$rejectedOrders = Orders::where('status', 'Rejected')
-    ->distinct('order_id')
-    ->count('order_id');
+        $rejectedOrders = Orders::where('status', 'Rejected')
+            ->distinct('order_id')
+            ->count('order_id');
 
 
-    $pdf = \PDF::loadView('reports.orders_pdf', [
-        'startDate' => $startDate,
-        'endDate' => $endDate,
-        'ordersCount' => $ordersCount,
-        'completedOrders' => $completedOrders,
-        'processingOrders' => $processingOrders,
-        'pendingOrders' => $pendingOrders,
-        'cancelledOrders' => $cancelledOrders,
-        'rejectedOrders' => $rejectedOrders,
-        'orders' => $orders
-    ]);
+            $pdf = \PDF::loadView('reports.orders_pdf', [
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'ordersCount' => $ordersCount,
+                'completedOrders' => $completedOrders,
+                'processingOrders' => $processingOrders,
+                'pendingOrders' => $pendingOrders,
+                'cancelledOrders' => $cancelledOrders,
+                'rejectedOrders' => $rejectedOrders,
+                'orders' => $orders
+            ]);
 
-    return $pdf->download('orders_report_' . now()->format('Y-m-d') . '.pdf');
-}
+            return $pdf->download('orders_report_' . now()->format('Y-m-d') . '.pdf');
+        }
 
 
 
