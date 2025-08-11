@@ -13,7 +13,6 @@ class Receipt extends Model
     use HasFactory;
     protected $table = 'receipts';
     protected $fillable = [
-        'id',
         'receipt_image',
         'receipt_image_mime',
         'purchase_date',
@@ -21,9 +20,6 @@ class Receipt extends Model
         'total_amount',
         'invoice_number',
         'notes',
-        'status',
-        'verified_by',
-        'verified_at',
         'receipt_number',
     ];
 

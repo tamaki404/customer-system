@@ -147,6 +147,10 @@ class OrderController extends Controller
 
         $total = $orders->sum('total_price');
         $user = auth()->user();
+        $ownerId = optional($orders->first())->customer_id;
+        if (!in_array($user->user_type, ['Admin', 'Staff']) && $ownerId !== $user->id) {
+            abort(403, 'Unauthorized access');
+        }
 
         return view('view-order', compact('orders', 'total', 'user'));
     }
@@ -154,6 +158,12 @@ class OrderController extends Controller
     
     public function cancelOrder($order_id)
     {
+        $user = auth()->user();
+        $ownerId = Orders::where('order_id', $order_id)->value('customer_id');
+        if (!in_array($user->user_type, ['Admin', 'Staff']) && $ownerId !== $user->id) {
+            abort(403, 'Unauthorized action');
+        }
+
         Orders::where('order_id', $order_id)->update([
             'status' => 'Cancelled'
         ]);

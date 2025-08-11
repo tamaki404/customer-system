@@ -63,6 +63,10 @@ class ReceiptController extends Controller{
     public function viewReceipt($receipt_id)
     {
         $receipt = Receipt::with('customer')->findOrFail($receipt_id);
+        $user = auth()->user();
+        if (!in_array($user->user_type, ['Admin', 'Staff']) && $receipt->id !== $user->id) {
+            abort(403, 'Unauthorized access');
+        }
         return view('receipts_view', compact('receipt'));
     }
 
@@ -118,9 +122,7 @@ class ReceiptController extends Controller{
             'total_amount' => 'required|numeric',
             'invoice_number' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
-            'status' => 'required|string',
             'receipt_number' => 'required|string',
-            'id' => 'nullable|string',
         ]);
 
         if ($request->hasFile('receipt_image')) {
@@ -130,9 +132,10 @@ class ReceiptController extends Controller{
             $validated['receipt_image_mime'] = $mimeType;
         }
 
-        if (Auth::check()) {
-            $validated['id'] = Auth::id();
-        }
+        // Server-side enforced fields
+        $validated['id'] = Auth::id();
+        $validated['status'] = 'Pending';
+        unset($validated['verified_by'], $validated['verified_at']);
 
         Receipt::create($validated);
 

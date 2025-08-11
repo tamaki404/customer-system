@@ -64,12 +64,12 @@
                 <div class="nav-indicator"></div>
             </a>
             
-            {{-- <a class="nav-item{{ $currentRoute == 'profile' ? ' active' : '' }}" href="{{ route('profile') }}" data-tooltip="Profile">
+            <a class="nav-item{{ $currentRoute == 'profile' ? ' active' : '' }}" href="{{ route('profile') }}" data-tooltip="Profile">
                 <span class="material-symbols-outlined">person</span>
                 <p>Profile</p>
                 <div class="nav-indicator"></div>
             </a>
-             --}}
+            
             <a class="nav-item{{ $currentRoute == 'receipts' ? ' active' : '' }}" href="{{ route('receipts') }}" data-tooltip="Receipts">
                 <span class="material-symbols-outlined">receipt</span>
                 <p>Receipts</p>
@@ -191,10 +191,12 @@
         </div>
 
         <div class="sidebar-footer">
+           @if (auth()->user()->user_type === 'Customer')
             <div class="deskFrame">
                 <p class="inquiry">INQUIRIES</p>
                 <p>For any inquiries, please contact us at rplai_riza@gmail.com or call us at 09123456789</p>
             </div>
+           @endif
             
             <div class="logoutFrame">
                 <form action="/logout-user" method="post">

@@ -15,7 +15,7 @@
 <div class="startBody">
     <div class="reportsHeader">
         <h2>📊 Reports Dashboard</h2>
-        <p>Generate and download comprehensive reports for your customer system</p>
+        <p>Generate and download comprehensive reports</p>
     </div>
     <div class="report-container">
         <nav class="tab-navigation">

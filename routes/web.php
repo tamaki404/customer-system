@@ -100,7 +100,6 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/receipt_image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
     
     Route::post('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');
-    Route::get('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');
     
     Route::get('/date-search', [ReceiptController::class, 'dateSearch'])->name('date.search');
     
