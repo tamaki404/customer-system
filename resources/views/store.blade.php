@@ -48,6 +48,10 @@
                         <input type="number" name="price" placeholder="Price." id="price" min="0" required>
                         <span id="price-error" class="error-message"></span>
                     </div>
+                    <div class="full">
+                        <label>Product Image</label>
+                        <input type="file" name="image" accept="image/*">
+                    </div>
                 </div>
                 @if ($errors->any())
                     <div class="alert alert-danger">
@@ -103,145 +107,82 @@
     </div>
 
     <div class="titleCount">
-        <h2>Products List</h2>
+        <h2>Products</h2>
     </div>
 
 
     <div class="productList" style="padding: 15px;">
-
-            @if(isset($products) && count($products) > 0)
-
-                    <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
-                        <thead>
-                            <tr style="background:#f7f7fa; ">
-                                <th style="padding:10px 8px; text-align:center;">Name</th>
-                                <th style="padding:10px 8px; text-align:center;">Stock</th>
-                                <th style="padding:10px 8px; text-align:center;">Price</th>
-                                <th style="padding:10px 8px; text-align:center;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $available = $products->filter(fn($p) => $p->status === 'Available' && $p->quantity > 10);
-                                $lowStock = $products->filter(fn($p) => $p->status === 'Available' && $p->quantity > 0 && $p->quantity <= 10);
-                                $noStock = $products->filter(fn($p) => $p->status === 'Available' && $p->quantity == 0);
-                            @endphp
-
-                            {{-- Available --}}
-                            @foreach ($available as $product)
-                                <tr style="padding: 10px; height: 60px;" onclick="window.location='{{ url('/product/' . $product->id) }}'">
-                                    <td>{{ $product->name }}</td>
-                                    <td style="color:#4caf50;">{{ $product->quantity }}x</td>
-                                    <td>₱{{ number_format($product->price, 2) }}</td>
-                                    <td><span style="color:green">{{ $product->status }}</span></td>
-                                    <td style="padding:10px 8px; width:10%; text-align:center;">
-                                        @if(auth()->user()->user_type === 'Customer')
-                                                                
-                                            @if($product->quantity > 0)
-                                                <button class="add-to-cart-btn" 
-                                                    data-product-id="{{ $product->id }}" 
-                                                    data-product-name="{{ $product->name }}" 
-                                                    data-product-price="{{ $product->price }}"
-                                                    data-product-stock="{{ $product->quantity }}"
-                                                    style="background: #4caf50; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer;">
-                                                    <i class="fa fa-plus"></i>
-                                                </button>
-                                            @else
-                                                <button disabled style="background: #ccc; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: not-allowed;">
-                                                    <i class="fa fa-times"></i>
-                                                </button>
-                                            @endif
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-
-                            {{-- Low stock --}}
-                            @foreach ($lowStock as $product)
-                                <tr onclick="window.location='{{ url('/product/' . $product->id) }}'">
-                                    <td>{{ $product->name }}</td>
-                                    <td style="color:#ffa500;">{{ $product->quantity }}x</td>
-                                    <td>₱{{ number_format($product->price, 2) }}</td>
-                                    <td><span style="color:orange">Almost Out</span></td>
-                                    <td style="padding:10px 8px; width:10%; text-align:center;">
-                                        @if(auth()->user()->user_type === 'Customer')
-                                                                
-                                            @if($product->quantity > 0)
-                                                <button class="add-to-cart-btn" 
-                                                    data-product-id="{{ $product->id }}" 
-                                                    data-product-name="{{ $product->name }}" 
-                                                    data-product-price="{{ $product->price }}"
-                                                    data-product-stock="{{ $product->quantity }}"
-                                                    style="background: #4caf50; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer;">
-                                                    <i class="fa fa-plus"></i>
-                                                </button>
-                                            @else
-                                                <button disabled style="background: #ccc; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: not-allowed;">
-                                                    <i class="fa fa-times"></i>
-                                                </button>
-                                            @endif
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-
-                            {{-- No stock --}}
-                            @foreach ($noStock as $product)
-                                <tr onclick="window.location='{{ url('/product/' . $product->id) }}'">
-                                    <td>{{ $product->name }}</td>
-                                    <td style="color:#ff6b6b;">0x</td>
-                                    <td>₱{{ number_format($product->price, 2) }}</td>
-                                    <td>
-                                        @if(auth()->user()->user_type !== 'Customer')
-                                            <span style="color:red">Add stocks!</span>
-                                        @else
-                                            <span style="color:red">No Stocks</span>
-                                        @endif
-                                    </td>
-                                    <td style="padding:10px 8px; width:10%; text-align:center;">
-                                        @if(auth()->user()->user_type === 'Customer')
-                                                                
-                                            @if($product->quantity > 0)
-                                                <button class="add-to-cart-btn" 
-                                                    data-product-id="{{ $product->id }}" 
-                                                    data-product-name="{{ $product->name }}" 
-                                                    data-product-price="{{ $product->price }}"
-                                                    data-product-stock="{{ $product->quantity }}"
-                                                    style="background: #4caf50; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer;">
-                                                    <i class="fa fa-plus"></i>
-                                                </button>
-                                            @else
-                                                <button disabled style="background: #ccc; color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: not-allowed;">
-                                                    <i class="fa fa-times"></i>
-                                                </button>
-                                            @endif
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                             
-                        </tbody>
-                    </table>
-                    <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">
-                        @if($products->hasPages())
-                            <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
-                                @if($products->onFirstPage())
-                                    <span style="color: #ccc; cursor: not-allowed;">Previous</span>
+        @if(isset($products) && count($products) > 0)
+            <div class="product-grid">
+                @foreach ($products as $product)
+                    @php
+                        $dataUri = (!empty($product->image) && !empty($product->image_mime)) ? ('data:' . $product->image_mime . ';base64,' . $product->image) : null;
+                        $isOut = $product->quantity == 0;
+                        $isLow = !$isOut && $product->quantity <= 10;
+                    @endphp
+                    <div class="product-card" onclick="window.location='{{ url('/product/' . $product->id) }}'">
+                        <div class="product-thumb">
+                            @if($dataUri)
+                                <img src="{{ $dataUri }}" alt="{{ $product->name }}">
+                            @else
+                                <div class="thumb-placeholder">No Image</div>
+                            @endif
+                            @if($isOut)
+                                <span class="badge badge-out">Out of stock</span>
+                            @elseif($isLow)
+                                <span class="badge badge-low">Low stock</span>
+                            @else
+                                <span class="badge badge-available">Available</span>
+                            @endif
+                        </div>
+                        <div class="product-body">
+                            <div class="product-name" title="{{ $product->name }}">{{ $product->name }}</div>
+                            <div class="product-price">₱{{ number_format($product->price, 2) }}</div>
+                            <div class="product-meta">
+                                <span class="stock">{{ $product->quantity }}x</span>
+                            </div>
+                        </div>
+                        @if(auth()->user()->user_type === 'Customer')
+                            <div class="product-actions" onclick="event.stopPropagation();">
+                                @if($product->quantity > 0)
+                                    <button class="add-to-cart-btn"
+                                        data-product-id="{{ $product->id }}"
+                                        data-product-name="{{ $product->name }}"
+                                        data-product-price="{{ $product->price }}"
+                                        data-product-stock="{{ $product->quantity }}">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
                                 @else
-                                    <a href="{{ $products->previousPageUrl() }}" style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">Previous</a>
-                                @endif
-                                <span>Page {{ $products->currentPage() }} of {{ $products->lastPage() }}</span>
-                                @if($products->hasMorePages())
-                                    <a href="{{ $products->nextPageUrl() }}" style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">Next</a>
-                                @else
-                                    <span style="color: #ccc; cursor: not-allowed;">Next</span>
+                                    <button class="add-to-cart-btn" disabled>
+                                        <i class="fa fa-times"></i>
+                                    </button>
                                 @endif
                             </div>
                         @endif
                     </div>
-            @else
-                <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No products found.</div>
-            @endif
+                @endforeach
+            </div>
+
+            <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">
+                @if($products->hasPages())
+                    <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
+                        @if($products->onFirstPage())
+                            <span style="color: #ccc; cursor: not-allowed;">Previous</span>
+                        @else
+                            <a href="{{ $products->previousPageUrl() }}" style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">Previous</a>
+                        @endif
+                        <span>Page {{ $products->currentPage() }} of {{ $products->lastPage() }}</span>
+                        @if($products->hasMorePages())
+                            <a href="{{ $products->nextPageUrl() }}" style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">Next</a>
+                        @else
+                            <span style="color: #ccc; cursor: not-allowed;">Next</span>
+                        @endif
+                    </div>
+                @endif
+            </div>
+        @else
+            <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No products found.</div>
+        @endif
     </div>
 
 </div>

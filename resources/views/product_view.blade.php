@@ -19,23 +19,36 @@
         <a href="{{ url('/store') }}">&larr; Back to Store</a>
     </div>
     <div class="mainBlock">
-        <div class="product-info" style="gap: 10px; display: flex; flex-direction: column; width: 100%;">
-            <span><h1 class="product-name">{{ $product->name }}</h1> <h2 style="color: green; font-size: 25px;">₱{{ number_format($product->price, 2) }}</h2></span>
+        <div class="product-media">
+            @php
+                $hasImg = !empty($product->image) && !empty($product->image_mime);
+                $dataUri = $hasImg ? ('data:' . $product->image_mime . ';base64,' . $product->image) : null;
+            @endphp
+            @if($hasImg)
+                <img src="{{ $dataUri }}" alt="{{ $product->name }}" class="product-hero">
+            @else
+                <div class="product-hero placeholder">No Image</div>
+            @endif
+        </div>
+
+        <div class="product-info" style="gap: 14px; display: flex; flex-direction: column; width: 100%;">
+            <div style="display:flex; justify-content: space-between; align-items: baseline; gap: 12px;">
+                <h1 class="product-name" style="margin:0;">{{ $product->name }}</h1>
+                <h2 style="color: #2e7d32; font-size: 28px; margin:0;">₱{{ number_format($product->price, 2) }}</h2>
+            </div>
             <p class="product-description">{{ $product->description }}</p>
-            <hr>
-
-            <span class="quantity-span">Quantity:<p>{{ $product->quantity }}</p></span>
-            <hr>
-            <span class="status-span">Status:
-                @if ($product->quantity == 0)
-                    <span style="color: red">Add stocks!</span>
-                @elseif ($product->quantity < 5)
-                    <span style="color: red">Low on stocks!</span>
-                @else
-                    <span style="color: green">{{ $product->status ?? 'Available' }}</span>
-                @endif
-            </span>
-
+            <div style="display:flex; gap: 12px; align-items:center;">
+                <span class="quantity-span" style="background:#f8f9fa; border-radius: 8px;">Quantity: <p>{{ $product->quantity }}</p></span>
+                <span class="status-span" style="background:#f8f9fa; border-radius: 8px;">Status:
+                    @if ($product->quantity == 0)
+                        <span style="color: #b71c1c">Out of stock</span>
+                    @elseif ($product->quantity <= 10)
+                        <span style="color: #ef6c00">Low on stocks</span>
+                    @else
+                        <span style="color: #2e7d32">{{ $product->status ?? 'Available' }}</span>
+                    @endif
+                </span>
+            </div>
         </div>
 
         @if (auth()->user()->user_type != 'Customer')

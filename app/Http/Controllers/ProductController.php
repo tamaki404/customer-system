@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ImageHandler;
 
 class ProductController extends Controller
 {
+    use ImageHandler;
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -16,8 +18,15 @@ class ProductController extends Controller
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'status' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
         $validated['status'] = $validated['status'] ?? 'Available';
+
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            [$base64, $mime] = $this->convertImageToBase64($request->file('image'));
+            $validated['image'] = $base64;
+            $validated['image_mime'] = $mime;
+        }
 
         Product::create($validated);
 
