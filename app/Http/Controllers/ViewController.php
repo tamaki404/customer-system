@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Product;
 use App\Models\Orders;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -89,8 +90,23 @@ class ViewController extends Controller{
     {
         $customer = User::findOrFail($id);
 
-        $receipts = Receipt::where('id', $id)->orderBy('created_at', 'desc')->get();
-        return view('customer_view', compact('customer', 'receipts'));
+        $receipts = Receipt::where('id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $orders = Orders::select(
+                'orders.order_id',
+                'orders.status',
+                DB::raw('SUM(orders.quantity) as total_quantity'),
+                DB::raw('SUM(orders.total_price) as total_price'),
+                DB::raw('MAX(orders.updated_at) as action_at')
+            )
+            ->where('orders.customer_id', $id)
+            ->groupBy('orders.order_id', 'orders.status')
+            ->orderBy('action_at', 'desc')
+            ->get();
+
+        return view('customer_view', compact('customer', 'receipts', 'orders'));
     }
 
     public function viewStaff($id)

@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('css/customer_view.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/reporting.css') }}">
     <title>Document</title>
 </head>
 <body>
@@ -116,10 +117,42 @@
         </div>
 
         <div class="receiptsCorner">
-            <hr style="margin:32px 0;">
-            <div style="overflow-x:auto;">
-            
-            @if(isset($receipts) && count($receipts) > 0)
+            <nav class="tab-navigation">
+                <button class="tab-button active" onclick="switchTab('ordersTab')">Orders History</button>
+                <button class="tab-button" onclick="switchTab('receiptsTab')">Receipts History</button>
+            </nav>
+
+            <div class="tab-content active" id="ordersTab" style="overflow-x:auto;">
+                @if(isset($orders) && count($orders) > 0)
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Status</th>
+                                <th>Total Qty</th>
+                                <th>Total Price</th>
+                                <th>Last Update</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($orders as $order)
+                                <tr onclick="window.location='{{ url('/view-order/' . $order->order_id) }}'">
+                                    <td>{{ $order->order_id }}</td>
+                                    <td>{{ $order->status }}</td>
+                                    <td>x{{ $order->total_quantity }}</td>
+                                    <td>₱{{ number_format($order->total_price, 2) }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($order->action_at)->format('M d, Y H:i') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div class="no-receipts">No orders found for this customer.</div>
+                @endif
+            </div>
+
+            <div class="tab-content" id="receiptsTab" style="overflow-x:auto;">
+                @if(isset($receipts) && count($receipts) > 0)
                     <table>
                         <thead>
                             <tr>
@@ -131,27 +164,26 @@
                         </thead>
                         <tbody>
                             @foreach($receipts as $receipt)
-                            <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
-                                <td>{{ $receipt->receipt_number }}</td>
-                                <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                <td>{{ $receipt->created_at->format('F j, Y') }}</td>
-                                <td style="color:
-                                    @if($receipt->status === 'Verified') green
-                                    @elseif($receipt->status === 'Pending') #333
-                                    @elseif($receipt->status === 'Cancelled') orange
-                                    @elseif($receipt->status === 'Rejected') red
-                                    @else #333
-                                    @endif
-                                ;">{{ $receipt->status }}</td>
-                            </tr>
+                                <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
+                                    <td>{{ $receipt->receipt_number }}</td>
+                                    <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                    <td>{{ $receipt->created_at->format('F j, Y') }}</td>
+                                    <td style="color:
+                                        @if($receipt->status === 'Verified') green
+                                        @elseif($receipt->status === 'Pending') #333
+                                        @elseif($receipt->status === 'Cancelled') orange
+                                        @elseif($receipt->status === 'Rejected') red
+                                        @else #333
+                                        @endif
+                                    ;">{{ $receipt->status }}</td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    @else
-                        <div class="no-receipts">No receipts found for this customer.</div>
-                    @endif
+                @else
+                    <div class="no-receipts">No receipts found for this customer.</div>
+                @endif
             </div>
-
         </div>
 
     </div>
@@ -168,6 +200,21 @@
                 }, 500);
             });
         }, 5000);
+
+        // Match reports tabs behavior/design
+        function switchTab(tabId) {
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
     </script>
 </body>
 </html>
