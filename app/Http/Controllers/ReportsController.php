@@ -8,9 +8,14 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use function PHPUnit\Framework\assertContainsOnlyInstancesOf;
 use App\Models\Product;
+use App\Models\Receipt;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\CustomersExport;
-use App\Http\Controllers\Excel;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CustomersExport;
+use App\Exports\OrdersExport as SalesOrdersExport;
+use App\Exports\OrdersSummaryExport;
+use App\Exports\ProductsExport;
+use App\Exports\ReceiptsExport;
 
 class ReportsController extends Controller
 {
@@ -218,7 +223,6 @@ private function parseDateRange(Request $request)
             $startDate = Carbon::now()->subDays(30);
             $endDate = Carbon::now();
     }
-
     return [
         'startDate' => $startDate,
         'endDate' => $endDate,
@@ -227,6 +231,37 @@ private function parseDateRange(Request $request)
         'toDate' => $toDate
     ];
 }
+
+    private function getReceiptAnalytics($startDate, $endDate)
+    {
+        // Receipt status counts within date range
+        $receiptStatusCounts = Receipt::select('status', DB::raw('COUNT(*) as count'))
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        $ReceiptsverifiedCount  = $receiptStatusCounts['Verified'] ?? 0;
+        $ReceiptspendingCount   = $receiptStatusCounts['Pending'] ?? 0;
+        $ReceiptscancelledCount = $receiptStatusCounts['Cancelled'] ?? 0;
+        $ReceiptsrejectedCount  = $receiptStatusCounts['Rejected'] ?? 0;
+
+        // Total receipts in range
+        $Receiptscount = Receipt::whereBetween('created_at', [$startDate, $endDate])->count();
+
+        // Monetary KPIs
+        $ReceiptsverifiedAmount = Receipt::where('status', 'Verified')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total_amount');
+
+        return [
+            'Receiptscount' => $Receiptscount,
+            'ReceiptsverifiedCount' => $ReceiptsverifiedCount,
+            'ReceiptspendingCount' => $ReceiptspendingCount,
+            'ReceiptscancelledCount' => $ReceiptscancelledCount,
+            'ReceiptsrejectedCount' => $ReceiptsrejectedCount,
+            'ReceiptsverifiedAmount' => $ReceiptsverifiedAmount,
+        ];
+    }
 
 public function reports(Request $request)
 {
@@ -248,6 +283,7 @@ public function reports(Request $request)
     $orderAnalytics = $this->getOrderAnalytics($startDate, $endDate);
     $productAnalytics = $this->getProductAnalytics($startDate, $endDate);
     $salesAnalytics = $this->getSalesAnalytics($startDate, $endDate);
+        $receiptAnalytics = $this->getReceiptAnalytics($startDate, $endDate);
 
     // Extract customer analytics
     $totalUsers = $customerAnalytics['totalUsers'];
@@ -280,6 +316,14 @@ public function reports(Request $request)
     $paymentSuccessRate = $salesAnalytics['paymentSuccessRate'];
     $monthlySales = $salesAnalytics['monthlySales'];
 
+        // Extract receipt analytics
+        $Receiptscount = $receiptAnalytics['Receiptscount'];
+        $ReceiptsverifiedCount = $receiptAnalytics['ReceiptsverifiedCount'];
+        $ReceiptspendingCount = $receiptAnalytics['ReceiptspendingCount'];
+        $ReceiptscancelledCount = $receiptAnalytics['ReceiptscancelledCount'];
+        $ReceiptsrejectedCount = $receiptAnalytics['ReceiptsrejectedCount'];
+        $ReceiptsverifiedAmount = $receiptAnalytics['ReceiptsverifiedAmount'];
+
     return view('reports', compact(
         'user',
         'successfulPayments',
@@ -310,7 +354,15 @@ public function reports(Request $request)
         'lowStock',   
         'outOfStock',
         'topStores'
-    ));
+            ,
+            // Receipts
+            'Receiptscount',
+            'ReceiptsverifiedCount',
+            'ReceiptspendingCount',
+            'ReceiptscancelledCount',
+            'ReceiptsrejectedCount',
+            'ReceiptsverifiedAmount'
+        ));
 }
 
 public function exportCustomers(Request $request) 
@@ -586,11 +638,10 @@ public function exportReports(Request $request) {
             $endDate = Carbon::now();
     }
 
-    // Orders query grouped by order_id and ordered
+    // Orders (flat list) for Excel export view
     $orders = Orders::whereBetween('created_at', [$startDate, $endDate])
         ->orderBy('order_id')
-        ->get()
-        ->groupBy('order_id');
+        ->get();
 
     // Summary KPIs
     $totalOrders = $orders->count();
@@ -617,7 +668,7 @@ public function exportReports(Request $request) {
 
     if ($type === 'excel') {
         return Excel::download(
-            new \App\Exports\OrdersExport($orders, $startDate, $endDate),
+            new SalesOrdersExport($orders, $startDate, $endDate),
             'sales_report_' . date('Y-m-d') . '.xlsx'
         );
     } elseif ($type === 'pdf') {
@@ -721,6 +772,13 @@ public function exportReports(Request $request) {
             ->orderByDesc('total_quantity') 
             ->get();
 
+        if ($request->get('type', 'pdf') === 'excel') {
+            return Excel::download(
+                new ProductsExport($products, $startDate, $endDate),
+                'product_performance_' . date('Y-m-d') . '.xlsx'
+            );
+        }
+
         $pdf = \PDF::loadView('reports.product_performance_pdf', [
             'products' => $products,
             'startDate' => $startDate,
@@ -728,6 +786,42 @@ public function exportReports(Request $request) {
         ]);
 
         return $pdf->download('product_performance_' . date('Y-m-d') . '.pdf');
+    }
+
+    public function exportReceipts(Request $request)
+    {
+        $type = $request->get('type', 'excel');
+        $dateInfo = $this->parseDateRange($request);
+        $startDate = $dateInfo['startDate'];
+        $endDate = $dateInfo['endDate'];
+
+        $receipts = Receipt::select(
+                'receipt_id',
+                'receipt_number',
+                'store_name',
+                'total_amount',
+                'purchase_date',
+                'status',
+                'verified_by',
+                'created_at'
+            )
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        if ($type === 'excel') {
+            return Excel::download(
+                new ReceiptsExport($receipts, $startDate, $endDate),
+                'receipts_report_' . $startDate->format('Y-m-d') . '_to_' . $endDate->format('Y-m-d') . '.xlsx'
+            );
+        }
+
+        $pdf = \PDF::loadView('reports.receipts_pdf', [
+            'receipts' => $receipts,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ]);
+        return $pdf->download('receipts_report_' . now()->format('Y-m-d') . '.pdf');
     }
     public function exportOrders(Request $request)
     {
@@ -775,6 +869,13 @@ public function exportReports(Request $request) {
             ->distinct('order_id')
             ->count('order_id');
 
+
+            if ($request->get('type', 'pdf') === 'excel') {
+                return Excel::download(
+                    new OrdersSummaryExport($orders, $startDate, $endDate),
+                    'orders_report_' . now()->format('Y-m-d') . '.xlsx'
+                );
+            }
 
             $pdf = \PDF::loadView('reports.orders_pdf', [
                 'startDate' => $startDate,

@@ -23,6 +23,7 @@
             <button class="tab-button {{ request('active_tab') == 'customers' ? 'active' : '' }}" onclick="switchTab('customers')">Customer Analytics</button>
             <button class="tab-button {{ request('active_tab') == 'orders' ? 'active' : '' }}" onclick="switchTab('orders')">Order Management</button>
             <button class="tab-button {{ request('active_tab') == 'products' ? 'active' : '' }}" onclick="switchTab('products')">Product Performance</button>
+            <button class="tab-button {{ request('active_tab') == 'receipts' ? 'active' : '' }}" onclick="switchTab('receipts')">Receipts</button>
         </nav>
 
         {{-- Sales & Revenue Tab --}}
@@ -163,7 +164,7 @@
             </form>
 
             <div class="report-actions">
-                <a href="{{ route('reports.export', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
+                <a href="{{ route('reports.customers', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
                 <a href="{{ route('reports.customers', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
@@ -291,7 +292,7 @@
             </form>
 
             <div class="report-actions">
-                <a href="{{ route('reports.export', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
+                <a href="{{ route('reports.orders', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
                 <a href="{{ route('reports.orders', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
@@ -456,7 +457,7 @@
             </form>
 
             <div class="report-actions">
-                <a href="{{ route('reports.export', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
+                <a href="{{ route('reports.products', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
                 <a href="{{ route('reports.products', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
@@ -522,6 +523,86 @@
             </div>
             </div>
         </div>
+
+        {{-- Receipts tab --}}
+        <div id="receipts" class="tab-content {{ request('active_tab') == 'receipts' ? 'active' : '' }}">
+            <h2>Receipts</h2>
+
+            <form method="GET" action="{{ route('reports') }}" id="receiptsFilterForm">
+                <input type="hidden" name="active_tab" value="receipts">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label>Date Range</label>
+                        <select name="date_range" id="receiptsDateRange" onchange="toggleCustomFields('receipts')">
+                            <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
+                            <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
+                            <option value="last_3_months" {{ request('date_range') == 'last_3_months' ? 'selected' : '' }}>Last 3 months</option>
+                            <option value="custom" {{ request('date_range') == 'custom' ? 'selected' : '' }}>Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" id="receiptsFromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                        <label>From Date</label>
+                        <input type="date" name="from_date" value="{{ request('from_date', $startDate->format('Y-m-d')) }}">
+                    </div>
+                    <div class="filter-group" id="receiptsToDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
+                        <label>To Date</label>
+                        <input type="date" name="to_date" value="{{ request('to_date', $endDate->format('Y-m-d')) }}">
+                    </div>
+
+                    <button type="submit" class="apply-filter">Apply Filters</button>
+                </div>
+            </form>
+
+            <div class="report-actions">
+                <a href="{{ route('date.search', request()->only(['from_date','to_date'])) }}" class="btn">🔎 View Receipts List</a>
+                <a href="{{ route('reports.receipts', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
+                <a href="{{ route('reports.receipts', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
+            </div>
+
+            <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 14px;">
+                <strong>Current Period:</strong>
+                {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{{ $Receiptscount }}</div>
+                    <div class="stat-label">
+                        @if(request('date_range') == 'last_7_days')
+                            Receipts (Last 7 Days)
+                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
+                            Receipts (Last 30 Days)
+                        @elseif(request('date_range') == 'last_3_months')
+                            Receipts (Last 3 Months)
+                        @elseif(request('date_range') == 'custom')
+                            Receipts (Custom Range)
+                        @else
+                            Total Receipts
+                        @endif
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ $ReceiptspendingCount }}</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ $ReceiptsverifiedCount }}</div>
+                    <div class="stat-label">Verified</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ $ReceiptscancelledCount }}</div>
+                    <div class="stat-label">Cancelled</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ $ReceiptsrejectedCount }}</div>
+                    <div class="stat-label">Rejected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">₱{{ number_format($ReceiptsverifiedAmount, 2) }}</div>
+                    <div class="stat-label">Verified Amount</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -577,6 +658,14 @@
     document.getElementById('productsDateRange').addEventListener('change', function() {
         if (this.value !== 'custom') {
             document.getElementById('productsFilterForm').submit();
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('receiptsDateRange').addEventListener('change', function() {
+        if (this.value !== 'custom') {
+            document.getElementById('receiptsFilterForm').submit();
         }
     });
 </script>

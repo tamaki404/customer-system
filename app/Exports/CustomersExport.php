@@ -5,20 +5,22 @@ namespace App\Exports;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 
-class OrdersExport implements FromView
+class CustomersExport implements FromView
 {
     public function __construct(
-        protected $orders,
+        protected $customers,
         protected $startDate,
         protected $endDate
     ) {}
 
     public function view(): View
     {
-        return view('exports.orders', [
-            'orders' => $this->orders,
+        return view('exports.customers', [
+            'customers' => $this->customers,
             'startDate' => $this->startDate,
-            'endDate' => $this->endDate
+            'endDate' => $this->endDate,
         ]);
     }
 }
+
+
