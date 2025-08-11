@@ -59,7 +59,11 @@
         <div class="staffDetails">
             <div class="imageSection">
                 @if($staff->image)
-                    <img src="{{ asset('images/' . $staff->image) }}" alt="Staff Image" class="staff-image">
+                    @php
+                        $isBase64 = !empty($staff->image_mime);
+                        $imgSrc = $isBase64 ? ('data:' . $staff->image_mime . ';base64,' . $staff->image) : asset('images/' . $staff->image);
+                    @endphp
+                    <img src="{{ $imgSrc }}" alt="Staff Image" class="staff-image">
                 @else
                     <div class="no-image">
                         <i class="fas fa-user"></i>

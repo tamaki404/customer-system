@@ -37,7 +37,12 @@
         </span>
         <p class="order-date">{{ $orderItems->first()->created_at->format('F j, Y') }} at {{ $orderItems->first()->created_at->format('g:i a ') }}</p>
         <div class="customer">
-            <img  class="store-image" src="{{ asset('images/' . $orderItems->first()->user->image) }}" alt="">
+            @php
+                $user = $orderItems->first()->user;
+                $isBase64 = !empty($user->image_mime);
+                $imgSrc = $isBase64 ? ('data:' . $user->image_mime . ';base64,' . $user->image) : asset('images/' . $user->image);
+            @endphp
+            <img  class="store-image" src="{{ $imgSrc }}" alt="">
             <p class="customer-store">{{ $orderItems->first()->user->store_name }}</p>
 
             <button onclick="window.location='{{ route('customer.view', $orderItems->first()->user->id) }}'">Visit Store</button>

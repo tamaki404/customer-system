@@ -31,18 +31,18 @@ class UserController extends Controller
             'telephone' => 'nullable|regex:/^0\d{1,3}-\d{6,7}$/',
             'address' => 'required|string|max:255',
             'password' => 'required|string|min:8|max:100|confirmed',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
             'user_type' => 'required|string',
             'store_name' => 'required|string|max:255',
             'acc_status' => 'required|string|max:255',
             'action_by' => 'nullable|string|max:255',
         ]);
 
-        // Handle image upload
+        // Handle image upload to base64
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
-            $validated['image'] = $imageName;
+            $imageData = file_get_contents($request->file('image')->getRealPath());
+            $validated['image'] = base64_encode($imageData);
+            $validated['image_mime'] = $request->file('image')->getMimeType();
         }
 
         // Create user with unverified email
@@ -55,6 +55,7 @@ class UserController extends Controller
             'address' => $validated['address'],
             'password' => Hash::make($validated['password']),
             'image' => $validated['image'] ?? null,
+            'image_mime' => $validated['image_mime'] ?? null,
             'user_type' => $validated['user_type'],
             'store_name' => $validated['store_name'],
             'acc_status' => 'Pending', 
@@ -228,22 +229,25 @@ public function addStaff(Request $request)
     $validated = $request->validate([
         'username' => 'required|string|min:3|max:50|unique:users,username',
         'password' => 'required|string|min:8|max:100',
-        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         'name' => 'required|string|max:255',
         'email' => 'required|email|max:255|unique:users,email',
         'user_type' => 'required',
         'acc_status' => 'required',
         'action_by' => 'string',
+            'mobile' => 'nullable|string|max:15',
+            'store_name' => 'nullable|string|max:255',
     ]);
     
 
-    // Handle image upload
+    // Handle image upload to base64
     if ($request->hasFile('image')) {
-        $imageName = time() . '.' . $request->image->extension();
-        $request->image->move(public_path('images'), $imageName);
-        $validated['image'] = $imageName;
+        $imageData = file_get_contents($request->file('image')->getRealPath());
+        $validated['image'] = base64_encode($imageData);
+        $validated['image_mime'] = $request->file('image')->getMimeType();
     } else {
         $validated['image'] = null;
+        $validated['image_mime'] = null;
     }
 
     // Create the user
@@ -251,11 +255,14 @@ public function addStaff(Request $request)
         'username' => $validated['username'],
         'password' => Hash::make($validated['password']),
         'image' => $validated['image'],
+        'image_mime' => $validated['image_mime'] ?? null,
         'user_type' => $validated['user_type'],
         'acc_status' => $validated['acc_status'],
         'action_by' => $validated['action_by'],
         'name' => $validated['name'],
         'email' => $validated['email'],
+        'mobile' => $validated['mobile'] ?? 'n/a',
+        'store_name' => $validated['store_name'] ?? null,
 
     ]);
 

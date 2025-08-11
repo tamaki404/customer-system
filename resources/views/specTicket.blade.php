@@ -24,6 +24,10 @@
         <p>{{ $ticket->body }}</p>
         <p>Start Date: {{ $ticket->startDate }}</p>
         <p>End Date: {{ $ticket->endDate }}</p>
-        <img src="{{ asset('ticketsImg/' . $ticket->image) }}" alt="Ticket Image" style="max-width: 100%;">
+        @php
+            $isBase64 = !empty($ticket->image_mime);
+            $imgSrc = $isBase64 ? ('data:' . $ticket->image_mime . ';base64,' . $ticket->image) : asset('ticketsImg/' . $ticket->image);
+        @endphp
+        <img src="{{ $imgSrc }}" alt="Ticket Image" style="max-width: 100%;">
     </div>
 @endsection

@@ -21,6 +21,7 @@ class Tickets extends Model
         'title',
         'body',
         'image',
+        'image_mime',
         'startDate',
         'endDate',
         'id',

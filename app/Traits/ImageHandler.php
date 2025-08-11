@@ -27,7 +27,7 @@ trait ImageHandler
     {
         return $imageFile && $imageFile->isValid() && 
                in_array($imageFile->getMimeType(), ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']) &&
-               $imageFile->getSize() <= 2048 * 1024; // 2MB max
+               $imageFile->getSize() <= 5120 * 1024; // 5MB max
     }
 
     /**

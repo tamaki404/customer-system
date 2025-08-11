@@ -31,7 +31,11 @@
         <div class="customerDetails">
 
             <div class="image">
-                <img src="{{ asset('images/' . $customer->image) }}" alt="User Image" style="">
+                @php
+                    $isBase64 = !empty($customer->image_mime);
+                    $imgSrc = $isBase64 ? ('data:' . $customer->image_mime . ';base64,' . $customer->image) : asset('images/' . $customer->image);
+                @endphp
+                <img src="{{ $imgSrc }}" alt="User Image" style="">
             </div>
             <div class="details">
                 <p class="customer-id">cID: {{ $customer->id }}</p>

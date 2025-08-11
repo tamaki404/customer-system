@@ -208,14 +208,18 @@ class ViewController extends Controller{
         }
         
         $request->validate([
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
         
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->file('image')->extension();
-            $request->file('image')->move(public_path('images'), $imageName);
+            $imageData = file_get_contents($request->file('image')->getRealPath());
+            $base64 = base64_encode($imageData);
+            $mime = $request->file('image')->getMimeType();
             
-            $staff->update(['image' => $imageName]);
+            $staff->update([
+                'image' => $base64,
+                'image_mime' => $mime,
+            ]);
         }
         
         return redirect()->route('staff.view', $id)->with('success', 'Image uploaded successfully!');

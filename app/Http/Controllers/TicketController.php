@@ -16,7 +16,7 @@ public function submitTicket(Request $request)
     
         'title' => 'required|string|max:100',
         'body' => 'required|string|max:2000',
-        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         'startDate' => 'required|date|before_or_equal:endDate',
         'endDate' => 'required|date|after_or_equal:startDate',
         'id' => 'nullable|integer|exists:users,id', 
@@ -24,13 +24,14 @@ public function submitTicket(Request $request)
 
     ]);
 
-    // Handle image upload
+    // Handle image upload to base64
     if ($request->hasFile('image')) {
-        $imageName = time() . '.' . $request->image->extension();
-        $request->image->move(public_path('ticketsImg'), $imageName);
-        $validated['image'] = $imageName;
+        $imageData = file_get_contents($request->file('image')->getRealPath());
+        $validated['image'] = base64_encode($imageData);
+        $validated['image_mime'] = $request->file('image')->getMimeType();
     } else {
         $validated['image'] = null;
+        $validated['image_mime'] = null;
     }
 
     // Create the user
@@ -38,6 +39,7 @@ public function submitTicket(Request $request)
         'title' => $validated['title'],
         'body' => $validated['body'],
         'image' => $validated['image'],
+        'image_mime' => $validated['image_mime'],
         'startDate' => $validated['startDate'],
         'endDate' => $validated['endDate'],
         'id' => $validated['id'],

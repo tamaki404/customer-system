@@ -55,7 +55,11 @@
                     <td style="padding:10px 8px; font-size: 14px;">{{  $user->id }}</td>
                     <td style="padding:10px 8px;">
                         @if($user->image)
-                            <img src="{{ asset('images/' . $user->image) }}" alt="User Image" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                            @php
+                                $isBase64 = !empty($user->image_mime);
+                                $imgSrc = $isBase64 ? ('data:' . $user->image_mime . ';base64,' . $user->image) : asset('images/' . $user->image);
+                            @endphp
+                            <img src="{{ $imgSrc }}" alt="User Image" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
                         @else
                             <span style="color:#aaa;">N/A</span>
                         @endif

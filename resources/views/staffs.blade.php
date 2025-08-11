@@ -61,11 +61,13 @@
                     </div>
 
 
+
                     <input type="text" name="action_by" value="{{ auth()->user()->username}}" hidden>
                     <input type="text" name="store_name" placeholder="Store Name" value="Sunny & Scramble" hidden>
                     <input type="text" name="user_type"  value="Staff" hidden>
                     <input type="text" name="acc_status"  value="Active" hidden>
-            
+                    <input type="text" name="mobile"  value="n/a" hidden>
+
                 </div>
                 @if ($errors->any())
                     <div class="alert alert-danger">
@@ -131,7 +133,11 @@
             <tr style="border-bottom:1px solid #eee; align-items: center; cursor: pointer;" onclick="window.location='{{ url('/staff_view/' . $user->id) }}'">
                 <td style="padding:10px 8px; width:80px;">
                     @if($user->image)
-                        <img src="{{ asset('images/' . $user->image) }}" alt="User Image" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                        @php
+                            $isBase64 = !empty($user->image_mime);
+                            $imgSrc = $isBase64 ? ('data:' . $user->image_mime . ';base64,' . $user->image) : asset('images/' . $user->image);
+                        @endphp
+                        <img src="{{ $imgSrc }}" alt="User Image" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
                     @else
                         <span style="color:#aaa;">N/A</span>
                     @endif

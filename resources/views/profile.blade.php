@@ -16,7 +16,11 @@
     <div class="profile-wrapper">
     <div class="profile-card">
         <div class="profile-header">
-            <img src="{{ asset('images/' . auth()->user()->image ?? 'default-avatar.png') }}" class="avatar" alt="Avatar">
+            @php
+                $isBase64 = !empty(auth()->user()->image_mime);
+                $imgSrc = $isBase64 ? ('data:' . auth()->user()->image_mime . ';base64,' . auth()->user()->image) : asset('images/' . (auth()->user()->image ?? 'default-avatar.png'));
+            @endphp
+            <img src="{{ $imgSrc }}" class="avatar" alt="Avatar">
             <div class="profile-info">
                 <h2 class="profile-store" style="color: #333">{{ auth()->user()->store_name }}</h2>
                 @if (auth()->user()->user_type === 'Staff')

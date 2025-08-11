@@ -33,7 +33,11 @@
         <div class="sidebar-header">
             <button class="userProfile" onclick="toggleUserProfile()">
                 <div class="imgFrame"> 
-                    <img src="{{ asset('images/' . auth()->user()->image) }}" alt="Customer Image">
+                    @php
+                        $isBase64 = !empty(auth()->user()->image_mime);
+                        $imgSrc = $isBase64 ? ('data:' . auth()->user()->image_mime . ';base64,' . auth()->user()->image) : asset('images/' . auth()->user()->image);
+                    @endphp
+                    <img src="{{ $imgSrc }}" alt="Customer Image">
                 </div>
                 <div class="nameFrame">
                     @if(auth()->user()->user_type === 'Admin')
