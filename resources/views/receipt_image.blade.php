@@ -19,9 +19,13 @@
             <a href="{{ url()->previous() }}" class="returnBtn">&larr; Return</a>
 
     @if($receipt && $receipt->receipt_image)
-        <img src="{{ asset('images/' . $receipt->receipt_image) }}" alt="Receipt Image" style="max-width:100%;max-height:500px;display:block;margin:0 auto 24px;">
+        @php
+            $isBase64 = !empty($receipt->receipt_image_mime);
+            $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;
+        @endphp
+        <img src="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" alt="Receipt Image" style="max-width:100%;max-height:500px;display:block;margin:0 auto 24px;">
         <br>
-        <a href="{{ asset('images/' . $receipt->receipt_image) }}" download class="downloadBtn"><i class="fas fa-download"></i> Download Image</a>
+        <a href="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" download class="downloadBtn"><i class="fas fa-download"></i> Download Image</a>
     @else
         <p>Receipt image not found.</p>
     @endif

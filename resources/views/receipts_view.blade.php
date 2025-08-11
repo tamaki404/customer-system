@@ -82,14 +82,17 @@
                 <div class="imageBlock">
                         @if($receipt->receipt_image)
                         <p>Receipt Image</p>
-                        
-                            <a href="{{ url('/receipt_image/' . $receipt->receipt_id) }}" target="_blank">
-                                <img 
-                                    src="{{ asset('images/' . $receipt->receipt_image) }}" 
-                                    alt="Receipt Image" 
-                                    style="cursor: pointer;"
-                                >
-                            </a>
+                        @php
+                            $isBase64 = !empty($receipt->receipt_image_mime);
+                            $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;
+                        @endphp
+                        <a href="{{ url('/receipt_image/' . $receipt->receipt_id) }}" target="_blank">
+                            <img 
+                                src="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" 
+                                alt="Receipt Image" 
+                                style="cursor: pointer;"
+                            >
+                        </a>
                         @else
                             N/A
                         @endif

@@ -15,6 +15,7 @@ class Receipt extends Model
     protected $fillable = [
         'id',
         'receipt_image',
+        'receipt_image_mime',
         'purchase_date',
         'store_name',
         'total_amount',

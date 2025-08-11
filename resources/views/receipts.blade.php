@@ -242,7 +242,11 @@
                                             <td>{{ $receipt->verified_by }}</td>
                                             <td>
                                                 @if($receipt->receipt_image)
-                                                    <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
+                                                    @php
+                                                        $isBase64 = !empty($receipt->receipt_image_mime);
+                                                        $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;
+                                                    @endphp
+                                                    <img src="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
                                                 @else
                                                     N/A
                                                 @endif
@@ -310,7 +314,11 @@
                                             <td>{{ $receipt->verified_by }}</td>
                                             <td>
                                                 @if($receipt->receipt_image)
-                                                    <img src="{{ asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
+                                                    @php
+                                                        $isBase64 = !empty($receipt->receipt_image_mime);
+                                                        $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;
+                                                    @endphp
+                                                    <img src="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
                                                 @else
                                                     N/A
                                                 @endif

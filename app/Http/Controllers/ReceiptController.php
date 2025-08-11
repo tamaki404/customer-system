@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\Product;
+use App\Traits\ImageHandler;
 
 
 class ReceiptController extends Controller{
+    use ImageHandler;
     public function verifyReceipt($receipt_id)
     {
         $receipt = Receipt::findOrFail($receipt_id);
@@ -122,9 +124,10 @@ class ReceiptController extends Controller{
         ]);
 
         if ($request->hasFile('receipt_image')) {
-            $imageName = time() . '.' . $request->file('receipt_image')->extension();
-            $request->file('receipt_image')->move(public_path('images'), $imageName);
-            $validated['receipt_image'] = $imageName;
+            $imageFile = $request->file('receipt_image');
+            [$base64Image, $mimeType] = $this->convertImageToBase64($imageFile);
+            $validated['receipt_image'] = $base64Image;
+            $validated['receipt_image_mime'] = $mimeType;
         }
 
         if (Auth::check()) {
