@@ -122,7 +122,7 @@
                 <button class="tab-button" onclick="switchTab('receiptsTab')">Receipts History</button>
             </nav>
 
-            <div class="tab-content active" id="ordersTab" style="overflow-x:auto;">
+            <div class="tab-content active" id="ordersTab" style="overflow-x:auto; overflow-y: auto; overflow: hidden;">
                 @if(isset($orders) && count($orders) > 0)
                     <table>
                         <thead>

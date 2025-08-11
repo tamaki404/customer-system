@@ -77,7 +77,7 @@
                 }
             @endphp
 
-            <a class="activityCard" style="height: 50px;" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
+            <a class="activityCard" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
                 <span style="font-weight: bold">{{ $activity->verified_by ?? 'System' }} </span> 
                 <span>{{ $action }}</span> <span> #{{ $activity->receipt_number }}</span>
                 <span style="margin-left: auto; color: #333">
@@ -86,7 +86,7 @@
             </a>
         @endforeach
         @else
-            <div style="color:#888; align-items: center; justify-content: center; display: flex; height:100%;">
+            <div class="no-receipt" style="color:#888; align-items: center; justify-content: center; display: flex; height:100%; font-size: 15px;">
                 No recent receipt activity today.
             </div>
         @endif

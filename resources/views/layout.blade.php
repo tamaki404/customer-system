@@ -118,14 +118,14 @@
                 <div class="nav-indicator"></div>
             </a>
             
-            <a class="nav-item{{ $currentRoute == 'receipts' ? ' active' : '' }}" href="{{ route('receipts') }}" data-tooltip="Receipts">
-                <span class="material-symbols-outlined">receipt</span>
-                <p>Receipts</p>
+            <a class="nav-item{{ $currentRoute == 'store' ? ' active' : '' }}" href="{{ route('store') }}" data-tooltip="Store">
+                <span class="material-symbols-outlined">store</span>
+                <p>Products</p>
                 <div class="nav-indicator"></div>
             </a>
 
             <a class="nav-item{{ $currentRoute == 'orders' ? ' active' : '' }}" href="{{ route('orders') }}" data-tooltip="Orders">
-                <span class="material-symbols-outlined">receipt</span>
+                <span class="material-symbols-outlined">shopping_bag</span>
                 <p>Orders</p>
                 <div class="nav-indicator"></div>
             </a>
