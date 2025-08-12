@@ -16,23 +16,23 @@
     <div class="ordersFrame">
         <a href="{{ route('orders') }}"><- Orders list</a>
         <span class="customer-details">
-            <p style="font-size: 19px; font-weight: bold;">Order#: {{ $orderItems->first()->order_id }}</p>
-         @php
-            $status = $orderItems->first()->status;
+            <p class="order-num">Order#: {{ $orderItems->first()->order_id }}</p>
+            @php
+                $status = $orderItems->first()->status;
 
-            $statusClasses = [
-                'Pending' => 'status-pending',
-                'Processing' => 'status-processing',
-                'Cancelled' => 'status-cancelled',
-                'Rejected' => 'status-rejected',
-                'Done' => 'status-done',
-                'Completed' => 'status-completed',
-            ];
-        @endphp
+                $statusClasses = [
+                    'Pending' => 'status-pending',
+                    'Processing' => 'status-processing',
+                    'Cancelled' => 'status-cancelled',
+                    'Rejected' => 'status-rejected',
+                    'Done' => 'status-done',
+                    'Completed' => 'status-completed',
+                ];
+            @endphp
 
-        <p class="{{ $statusClasses[$status] ?? 'status-default' }}">
-            {{ $status }}
-        </p>
+            <p id="status" class="{{ $statusClasses[$status] ?? 'status-default' }}">
+                {{ $status }}
+            </p>
 
         </span>
         <p class="order-date">{{ $orderItems->first()->created_at->format('F j, Y') }} at {{ $orderItems->first()->created_at->format('g:i a ') }}</p>
@@ -54,22 +54,25 @@
                   <div class="order-item">
                         <p style="width:70%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; font-weight: bold;">{{ $item->product->name }}</p>
                         <p>x{{ $item->quantity }}</p>
-                        <p>₱ {{ $item->total_price }}</p>
+                        <p style="color: green"> ₱{{ $item->total_price }}</p>
                   </div>
 
                 @endforeach
             </div>
                 @if ($orderItems->first()->status != 'Pending')
                    <span class="status-action">
-                    <p style="font-weight: bold">{{$orderItems->first()->status}}</p>
-                    <p>by</p>                           
-                    <p style="font-weight: bold">{{$orderItems->first()->action_by}}</p>
-                    <p>-</p>
-                    <p>{{ $orderItems->first()->action_at}}</p>
-                </span>             
+                        <p style="font-weight: bold">{{$orderItems->first()->status}}</p>
+                        <p>by</p>                           
+                        <p style="font-weight: bold">{{$orderItems->first()->action_by}}</p>
+                        <p>-</p>
+                        <p></p>{{ \Carbon\Carbon::parse($orderItems->first()->action_at)->format('M d, Y g:i A') }}</p>
+                   </span>             
                 @endif
             <div class="order-summary">
-
+                <div class="quan-price">
+                    <p><strong>{{ $orderItems->sum('quantity') }} </strong> item(s)</p>
+                    <p class="price"> ₱ {{ $orderItems->sum('total_price') }}</p>
+                </div>
 
                 <span>
                     @if ($orderItems->first()->status === 'Processing')
@@ -113,8 +116,7 @@
                 </span>
 
 
-                <p><strong>{{ $orderItems->sum('quantity') }} </strong> item(s)</p>
-                <p class="price"> ₱ {{ $orderItems->sum('total_price') }}</p>
+
 
             </div>
 
