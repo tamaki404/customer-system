@@ -177,7 +177,7 @@
                     </div>
                     <div class="form-group">
                         <label>Company</label>
-                        <input type="text" name="company" value="{{ auth()->user()->store_name }}"  style=" width:400px;">
+                        <input type="text" style="company" name="company" value="{{ auth()->user()->store_name }}"  style=" width:400px;">
                     </div>
                     {{-- <div class="form-group">
                         <label>Address</label>

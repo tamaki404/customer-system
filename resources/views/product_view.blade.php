@@ -18,8 +18,8 @@
     <div class="backLink">
         <a href="{{ url('/store') }}">&larr; Back to Store</a>
     </div>
-    <div class="mainBlock">
-        <div class="product-media">
+    <div class="mainBlock" style="overflow: hidden">
+        <div class="product-media"  style="overflow: hidden">
             @php
                 $hasImg = !empty($product->image) && !empty($product->image_mime);
                 $dataUri = $hasImg ? ('data:' . $product->image_mime . ';base64,' . $product->image) : null;

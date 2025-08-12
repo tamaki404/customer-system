@@ -115,14 +115,13 @@
         Page {{ $users->currentPage() }} of {{ $users->lastPage() }} ({{ $users->total() }} total staff)
     </div>
 
-<div class="userList" style="padding: 15px;">
+<div class="userList">
     @if(isset($users) && count(value: $users) > 0)
     <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
         <thead>
             <tr style="background:#f7f7fa;">
                 <th style="padding:10px 8px; text-align:left; width:80px;"></th>
                 <th style="padding:10px 8px; text-align:left; width:20%;">Name</th>
-                <th style="padding:10px 8px; text-align:left; width:20%;">Username</th>
                 <th style="padding:10px 8px; text-align:left; width:15%;">ID</th>
                 <th style="padding:10px 8px; text-align:left; width:15%;">User type</th>
                 <th style="padding:10px 8px; text-align:left; width:15%;">Status</th>
@@ -146,9 +145,7 @@
                     {{ $user->name }}
                 </td>
 
-                <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                    {{ $user->username }}
-                </td>
+
                 <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                     {{ $user->id }}
                 </td>

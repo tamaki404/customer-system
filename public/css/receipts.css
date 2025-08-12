@@ -125,7 +125,7 @@ body {
     width: 100%;
     display: flex;
     justify-content: left;
-    height: 8%;
+    height: auto;
     padding: 10px;
     background-color: #fff;
     justify-content: space-between;
@@ -143,6 +143,7 @@ body {
     display: flex;
     align-items: center;
     margin-right: 50px;
+    width: 100%;
 }
 
 
@@ -156,6 +157,9 @@ body {
 .table-wrapper {
     overflow: hidden;
     height: auto;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 5px;
 }
 
 .receipt-table {
@@ -371,6 +375,29 @@ body {
     .receipt-table td {
         font-size: 0.85rem;
     }
+    .wrapper-title{
+        display: flex;
+        flex-direction: column;
+        height: auto;
+    }
+    .wrapper-title form{
+        height: auto;
+        width: 100%;
+    }
+    #from-to-date{
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+    }
+      #from-to-date input{
+        width: 140px;
+      }
+
+      #searchCon{
+        margin: 0;
+        width: 330px;
+        margin-bottom: 10px;
+      }
 }
 
 /* Pagination Styles */

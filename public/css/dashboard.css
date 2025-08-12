@@ -255,6 +255,12 @@
     .actCard h1 {
         font-size: clamp(20px, 3.5vw, 28px);
     }
+        .dashFrame{
+        flex-direction: column;
+        display: flex;
+        height: auto;
+        flex-wrap: wrap;
+    }
 }
 
 /* Tablets */
@@ -272,11 +278,13 @@
     .dashGreet h4 {
         font-size: 16px;
     }
-    
-    .dashFrame {
-        flex-wrap: wrap;
-        gap: 15px;
+
+
+        .dashFrame{
+        flex-direction: column;
+        display: flex;
         height: auto;
+        flex-wrap: wrap;
     }
     
     .dashFrame .actCard {
@@ -318,10 +326,17 @@
     .dashBody {
         padding: 20px;
         width: 100%;
-        height: auto;
-        min-height: 100vh;
-        border-radius: 0;
+        height: 90%;
+        min-height: 90vh;
+        border-radius: 20px;
         box-shadow: none;
+    }
+
+        .dashFrame{
+        flex-direction: column;
+        display: flex;
+        height: auto;
+        flex-wrap: wrap;
     }
     
     .dashGreet {
@@ -337,11 +352,7 @@
         font-size: 15px;
     }
     
-    .dashFrame {
-        flex-direction: column;
-        gap: 15px;
-        margin-bottom: 25px;
-    }
+
     
     .dashFrame .actCard {
         width: 100%;
@@ -423,6 +434,12 @@
     .dashBody {
         padding: 15px;
     }
+        .dashFrame{
+        flex-direction: column;
+        display: flex;
+        height: auto;
+        flex-wrap: wrap;
+    }
     
     .dashGreet h1 {
         font-size: 20px;
@@ -477,52 +494,7 @@
     }
 }
 
-/* Extra small devices */
-@media screen and (max-width: 360px) {
-    .dashBody {
-        padding: 10px;
-    }
-    
-    .dashGreet h1 {
-        font-size: 18px;
-    }
-    
-    .dashGreet h4 {
-        font-size: 13px;
-    }
-    
-    .actCard h1 {
-        font-size: 16px;
-    }
-    
-    .graphFrame {
-        min-height: 200px;
-    }
-}
 
-/* Landscape orientation adjustments */
-@media screen and (max-width: 768px) and (orientation: landscape) {
-    .dashBody {
-        padding: 15px;
-    }
-    
-    .dashFrame {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    
-    .dashFrame .actCard {
-        width: calc(50% - 7.5px);
-    }
-    
-    .graphFrame {
-        min-height: 250px;
-    }
-    
-    .activities {
-        max-height: 200px;
-    }
-}
 
 /* High DPI displays */
 @media screen and (-webkit-min-device-pixel-ratio: 2),

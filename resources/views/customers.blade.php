@@ -21,20 +21,20 @@
 
     <form method="GET" action="" class="date-search">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by ID, Store Name, Status, Username">
-                <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
     </form>
 
     
 
     <div class="titleCount"> 
         <h2>Customer List</h2> 
-        <span style=" width: auto; display: flex; flex-direction: row; gap: 5px;">
+        {{-- <span style=" width: auto; display: flex; flex-direction: row; gap: 5px;">
             <p style="font-weight: bold;">Verified Customers: </p>{{ $verifiedCustomersCount }}
-        </span>
+        </span> --}}
     </div>
     
     <!-- Pagination Info -->
-    <div style="margin-bottom: 1rem; font-size: 15px; color: #666;">
+    <div style="margin-bottom: 1rem; font-size: 15px; color: #666;" class="page-count">
         Page {{ $users->currentPage() }} of {{ $users->lastPage() }} ({{ $users->total() }} total customers)
     </div>
     <div class="customerList" style="padding: 15px;">

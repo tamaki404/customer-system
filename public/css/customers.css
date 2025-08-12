@@ -119,3 +119,86 @@
     border-radius: 4px;
     font-weight: 500;
 }
+
+.customersFrame {
+    padding: 20px;
+}
+
+.customerList table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.customerList {
+    overflow-x: auto;
+}
+
+
+
+
+
+
+
+.titleCount {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .customersFrame {
+        padding: 15px;
+    }
+
+    .customersFrame h2 {
+        font-size: 20px;
+    }
+
+    .customerList table th,
+    .customerList table td {
+        font-size: 12px;
+        padding: 8px 5px;
+    }
+
+        .date-search {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .date-search input{
+        width: 80%;
+    }
+     .date-search button{
+        width: 20%;
+    } 
+}
+
+@media (max-width: 500px) {
+
+    .date-search {
+        flex-direction: row;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .date-search input{
+        width: 80%;
+    }
+     .date-search button{
+        width: 20%;
+    } 
+
+    .customersFrame {
+        padding: 10px;
+    }
+    .page-count{
+        font-size: 14px !important; 
+        margin: 5px;
+    }
+    h2{
+        margin: 0;
+    }
+    .titleCount{
+        margin: 0;
+        height: auto;
+    }
+}

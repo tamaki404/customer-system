@@ -325,14 +325,19 @@ class ViewController extends Controller{
             $pendingWeekCount = Receipt::where('status', 'Verified')
                 ->where('created_at', '>=', $oneWeekAgo)
                 ->count();
+            $pendingOrders = Orders::where('status', 'Pending')
+                ->count();                
 
             $pendingDayCount = Receipt::where('status', 'Pending')->count();
             $activeUsers = User::where('last_seen_at', '>=', now()->subMinutes(15))->count();
-            $pendingJoins = User::where('acc_status', 'pending')->count();
+            $pendingJoins = User::where('acc_status', 'pending')
+                ->where('user_type', 'Customer')
+                ->count();
             $monthlyTotal = Receipt::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->sum('total_amount');
             $totalReceipts = Receipt::where('created_at', '>=', now()->subDays(7))->count();
+
 
             $userPendingReceipts = Receipt::where('status', 'Pending') 
                 ->where('id', $id)
@@ -411,7 +416,8 @@ class ViewController extends Controller{
             'userApprovedReceipts',
             'userVerifiedReceiptsWeek',
             'userPendingReceipts',
-            'userVerifiedReceiptsWeek'
+            'userVerifiedReceiptsWeek',
+            'pendingOrders'
 
 
         ));

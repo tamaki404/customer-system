@@ -24,7 +24,7 @@
         </div>
 
         <div class="titleCount">
-            <h2>Orders List</h2>
+            <h2 style="margin: 5px; width: 100%">Orders List</h2>
         </div>
 
 

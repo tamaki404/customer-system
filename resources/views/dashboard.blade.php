@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <title>Dashboard</title>
 </head>
 <body>
@@ -25,27 +27,20 @@
         <a class="actCard" href="{{ route('receipts') }}" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid rgb(216, 215, 215);">
             <p class="cardTit">Pending Receipts</p>
             <h1 id="pendingDayCount">{{$pendingDayCount}}</h1>
-            <p class="dayP">On this day</p>
+            <p class="dayP">Past 7 days</p>
         </a>
-        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
-            <p class="cardTit">Accomplished Receipts</p>
-            <h1 id="pendingWeekCount">{{$pendingWeekCount}}</h1>
-            <p class="dayP"> Past 7 Days</p>
+        <a class="actCard" href="{{ route('orders') }}" style="border:1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Pending Orders</p>
+            <h1 id="pendingWeekCount">{{$pendingOrders}}</h1>
+            <p class="dayP"> All Count</p>
         </a>        
-        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
-            <p class="cardTit">Weekly Receipt Count</p>
-            <h1 id="totalReceipts">{{$totalReceipts}}</h1>
-            <p class="dayP"> Past 7 Days</p>
+
+        <a class="actCard" href="{{ route('customers') }}" style="border:1px solid rgb(216, 215, 215); border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
+            <p class="cardTit">Under Review</p>
+            <h1 id="totalReceipts" style="color: orange">{{$pendingJoins}}</h1>
+            <p class="dayP"> See Users</p>
         </a>
-        {{-- <a class="actCard" href="{{ route('receipts') }}" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border: 1px solid rgb(216, 215, 215);">
-            <p class="cardTit">Received amount</p>
-            <h1 id="monthlyTotal" style="color:green">{{ $monthlyTotal }}</h1>
-            <p class="dayP">On this day </p>
-        </a>     --}}
-        <a class="actCard" href="{{ route('customers') }}" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border: 1px solid rgb(216, 215, 215);">
-            <p class="cardTit">Pending Joins</p>
-            <h1 id="pendingJoins" style="color:green">{{ $pendingJoins }}</h1>
-        </a>
+
     </div>
 
      <div class="graphFrame">
@@ -97,7 +92,7 @@
        <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
         <h4>Here's your dashboard overview.</h4>
     </div>
-    <div class="dashFrame" >
+    <div class="dashFrame">
         <a class="actCard" href="{{ route('receipts') }}" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid rgb(216, 215, 215);">
             <p class="cardTit">Pending Receipts</p>
             <h1 id="pendingDayCount">{{$pendingDayCount}}</h1>
@@ -108,11 +103,13 @@
             <h1 id="pendingWeekCount">{{$pendingWeekCount}}</h1>
             <p class="dayP"> Past 7 Days</p>
         </a>        
-        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215); border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
-            <p class="cardTit">Weekly Receipt Count</p>
-            <h1 id="totalReceipts">{{$totalReceipts}}</h1>
+        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Pending Orders</p>
+            <h1 id="pendingWeekCount">{{$pendingOrders}}</h1>
             <p class="dayP"> Past 7 Days</p>
-        </a>
+        </a>        
+
+        
 
     </div>
 
@@ -167,11 +164,12 @@
            <h1 id="pendingDayCount">{{ $userPendingReceipts->count() }}</h1>
             <p class="dayP">On this week</p>
         </a>
-        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
-            <p class="cardTit">Approved Receipts</p>
-         <h1 id="pendingWeekCount">{{ $userApprovedReceipts->count() }}</h1>
-              <p class="dayP"> On this week</p>
+        <a class="actCard" href="{{ route('receipts') }}" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Pending Orders</p>
+            <h1 id="pendingDayCount">{{ $userPendingOrders->count() }}</h1>
+            <p class="dayP">On this week</p>
         </a>        
+    
     </div>
 
 

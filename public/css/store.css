@@ -411,3 +411,96 @@ span .expire{
     padding: 10px;
     width: auto;
 }
+
+@media (max-width: 768px) {
+    .customersFrame {
+        padding: 15px;
+    }
+
+    .customersFrame h2 {
+        font-size: 14px;
+    }
+
+    .customerList table th,
+    .customerList table td {
+        font-size: 11px;
+        padding: 8px 5px;
+    }
+
+        .date-search {
+        flex-direction: row;
+        align-items: stretch;
+    }
+
+    .date-search input{
+        width: 80%;
+    }
+    .addStaffBtn{
+        width: 20%;
+    } 
+}
+
+@media (max-width: 500px) {
+    .startBody{
+        gap: 0;
+        justify-content: flex-start;
+        align-items: start;
+    }
+    .titleFrame{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        height: auto;
+        justify-content: end;
+
+    }
+    .titleCount{
+        font-size: 16px;
+        margin:0px;
+        height: auto;
+    }
+        .customersFrame h2 {
+        font-size: 14px;
+    }
+
+     table th,
+   table td {
+        font-size: 11px;
+        padding: 8px 5px;
+    }
+    .titleCount h2{
+        margin-top: 10px;
+        height: auto;
+    }
+    .addStaffBtn{
+        margin-left: auto;
+        width: 100px;
+    }
+    .date-search {
+        flex-direction: row;
+        align-items: stretch;
+    }
+    
+
+    .date-search input{
+        width: 80%;
+    }
+     .date-search button{
+        width: 20%;
+    } 
+
+    .customersFrame {
+        padding: 10px;
+    }
+    .page-count{
+        font-size: 14px !important; 
+        margin: 5px;
+    }
+    h2{
+        margin: 0;
+    }
+    .titleCount{
+        margin: 0;
+        height: auto;
+    }
+}

@@ -181,8 +181,7 @@
                 <input type="text" style="    width: 390px; border: none;" name="search" class="search-bar" placeholder="Search receipt #, customer, amount, or date" value="{{ request('search') }}">
                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>
-            {{-- <h2 class="title">Receipts</h2> --}}
-            <form action="/date-search" class="date-search" method="GET">
+            <form action="/date-search" class="date-search" id="from-to-date" method="GET">
                 <span>From</span>
                 <input type="date" name="from_date" class="input-date" value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
                 <span >To</span>
@@ -208,7 +207,7 @@
                     @if($receipts->isEmpty())
                         <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts found.</div>
                     @else
-                        <div class="table-wrapper">
+                        <div class="table-wrapper" style="overflow: scroll">
                             <table class="receipt-table">
                                 <thead>
                                     <tr>
