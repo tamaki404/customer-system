@@ -4,7 +4,7 @@
     align-content: start;
     justify-content: start;
     background-color: #fff;
-    padding: 60px;
+    padding: 10px;
     gap: 10px;
     width: 97%;
     height: 97%;
@@ -112,6 +112,7 @@ span p{
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
     border-radius: 16px;
     padding: 30px;
+
 }
 .main-block{
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
@@ -122,31 +123,7 @@ span p{
   display: block;}
 .product-hero.placeholder { display:flex; align-items:center; justify-content:center; background:#f1f3f5; color:#9aa0a6; }
 
-@media (max-width: 900px) {
-  .mainBlock { grid-template-columns: 1fr; }
-  .product-hero { height: 260px; width: 200px }
-  .product-media {width: 200px; overflow: hidden;}
-   
 
-}
-
-@media (max-width: 520px) {
-  .productDetailFrame { padding: 20px; }
-  .product-hero { height: 220px; }
-  .product-info { width: 100px; }
-  .product-name { font-size: 20px; }
-    .product-media {width: 90%; overflow: hidden;}
-    .modify-block{
-    width: 70         %;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: row;
-    gap: 13px;
-}
-
-
-}
 
 .modify-block{
     max-width: 1000px;
@@ -203,7 +180,82 @@ background:#e53935; color:#fff; padding:0.5rem 1.5rem; border:none; border-radiu
 
 
 }
+.name-price{
+    display:flex; justify-content: space-between; align-items: baseline; gap: 12px;
+}
 
 .formBlock span:hover{
     color: black;
+}
+
+.product-price{
+    color: #2e7d32; 
+    font-size: 28px;
+     margin:0;
+}
+
+
+@media screen and (max-width: 768px) {
+    .mainBlock{
+        height: 90%;
+        overflow-x: auto;
+        display: flex;
+        flex-direction: column;
+
+    }
+    .product-media{
+        width: 100%;
+        overflow: hidden;
+        height: 400px;
+        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;   
+    }
+    .product-info{
+        width: 100%;
+        overflow: hidden;
+        height: 450px;
+        box-shadow: none;
+        overflow-x: auto;
+        padding: 5px;
+    }
+    .product-info div h1{
+        font-size: 18px;
+    }
+    .product-price{
+        font-size: 19px;
+        font: bold;
+        color: #2e7d32;
+    }
+    .product-description{
+        font-size: 14px;
+
+    }
+    .quan-status{
+        display: flex;
+
+    }
+    .quantity-span{
+        font-size: 14px;
+        width: auto;
+        margin: 2px;
+    }
+    .quantity-span p{
+        font-size: 14px;
+        margin: 0;
+    }
+    .modify-block{
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .modify-block form button{
+        font-size: 13px;
+    }
+    .mody-block button{
+        font-size: 13px;
+
+    }
+    .edit-btn{
+                font-size: 13px;
+
+    }
 }

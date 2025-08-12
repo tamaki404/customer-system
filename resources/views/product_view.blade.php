@@ -14,12 +14,12 @@
 </head>
 <body>
 <div class="productDetailFrame">
-    <span style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;"><h2>Product </h2> <p style="font-size: 15px; font-weight: normal">Added on <strong>{{ $product->created_at -> format ('F j, Y') }}</strong></p></span>
+    <span style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;"><h2>Product </h2> </span>
     <div class="backLink">
         <a href="{{ url('/store') }}">&larr; Back to Store</a>
     </div>
-    <div class="mainBlock" style="overflow: hidden">
-        <div class="product-media"  style="overflow: hidden">
+    <div class="mainBlock">
+        <div class="product-media">
             @php
                 $hasImg = !empty($product->image) && !empty($product->image_mime);
                 $dataUri = $hasImg ? ('data:' . $product->image_mime . ';base64,' . $product->image) : null;
@@ -31,15 +31,14 @@
             @endif
         </div>
 
-        <div class="product-info" style="gap: 14px; display: flex; flex-direction: column; width: 100%;">
-            <div style="display:flex; justify-content: space-between; align-items: baseline; gap: 12px;">
+        <div class="product-info">
+            <div style="name-price">
                 <h1 class="product-name" style="margin:0;">{{ $product->name }}</h1>
-                <h2 style="color: #2e7d32; font-size: 28px; margin:0;">₱{{ number_format($product->price, 2) }}</h2>
+                <h2 class="product-price" style="color: #2e7d32; font-weight: bold;">₱{{ number_format($product->price, 2) }}</h2>
             </div>
-            <p class="product-description">{{ $product->description }}</p>
-            <div style="display:flex; gap: 12px; align-items:center;">
-                <span class="quantity-span" style="background:#f8f9fa; border-radius: 8px;">Quantity: <p>{{ $product->quantity }}</p></span>
-                <span class="status-span" style="background:#f8f9fa; border-radius: 8px;">Status:
+             <div class="quan-status" style="display:flex; gap: 12px; align-items:center;">
+                <span class="quantity-span" style="background:#f8f9fa; border-radius: 8px;">Stocks: <p>{{ $product->quantity }}</p></span>
+                <span class="status-span" style="background:#f8f9fa; border-radius: 8px;">
                     @if ($product->quantity == 0)
                         <span style="color: #b71c1c">Out of stock</span>
                     @elseif ($product->quantity <= 10)
@@ -49,6 +48,8 @@
                     @endif
                 </span>
             </div>
+            <p class="product-description">{{ $product->description }}</p>
+           
         </div>
 
         @if (auth()->user()->user_type != 'Customer')
