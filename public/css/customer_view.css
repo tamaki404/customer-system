@@ -13,7 +13,7 @@ body {
     align-content: start;
     justify-content: start;
     background-color: #f9f9f9;
-    padding: 60px;
+    padding: 10px;
     gap: 10px;
     width: 97%;
     height: 97%;
@@ -80,7 +80,7 @@ body {
    cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    font-size: 15px !important;
+    font-size: 15px;
 }
 
 .activate-btn:hover, .suspend-btn:hover{
@@ -184,3 +184,74 @@ span .handle{
             border-radius: 8px;
 
         }
+
+
+    /* Mobile-friendly customer details */
+    @media (max-width: 768px) {
+        .customerFrame .customerDetails {
+            width: 100%;
+            height: auto;
+            padding: 20px;
+        }
+        .customerDetails{
+            flex-direction: row;
+        }
+        .customerDetails .image{
+            overflow: hidden;
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+
+
+        }
+        .details{
+            flex-direction: column;
+            flex-wrap: wrap;
+            width: 65%;
+        }
+        .details .store-name{
+            font-size: 18px;
+            margin: 0;
+        }
+        .username{
+            flex-direction: row;
+            margin: 0;
+            flex-wrap: wrap;
+        }
+        .username p{
+            font-size: 14px;
+        }
+        .statusButton{
+            flex-direction: column;
+            margin: 0;
+        }
+        .status-section{
+            margin: 0;
+        }
+        .status-section .status-badge{
+            width: auto;
+            font-size: 14px;
+            margin: 0;
+        }
+        .action-buttons{
+            margin: 0;
+        }
+
+        .action-buttons form button{
+            font-size: 12px !important;
+        }
+
+        .details .joined-p{
+            font-size: 9px;
+            margin: 0;
+            color: #888;
+        }
+
+
+    .tab-content table th,
+    .tab-content table td {
+        font-size: 12px;
+        padding: 8px 5px;
+    }
+
+    }

@@ -10,6 +10,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('css/customer_view.css') }}">
     <link rel="stylesheet" href="{{ asset('css/reporting.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <title>Document</title>
 </head>
 <body>
@@ -39,14 +41,14 @@
                 <img src="{{ $imgSrc }}" alt="User Image" style="">
             </div>
             <div class="details">
-                <p class="customer-id">cID: {{ $customer->id }}</p>
+                {{-- <p class="customer-id">cID: {{ $customer->id }}</p> --}}
                 <p class="store-name">{{ $customer->store_name}}</p>
                 <span class="username"><p class="handle">Handled by</p><p>{{ $customer->name }}</p></span>
                 
 
                 <div class="statusButton">
                     <!-- Account Status Display -->
-                    <div class="status-section" style="margin: 15px 0;">
+                    <div class="status-section" style="width: auto;">
                         <span class="status-badge" style="
                             padding: 6px 12px;
                             border-radius: 20px;
@@ -79,7 +81,7 @@
 
                 <!-- Action Buttons -->
                     @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
-                        <div class="action-buttons" style="margin: 20px 0;">
+                        <div class="action-buttons" style="margin-top: 5px">
                             @if($customer->acc_status !== 'Active')
                                 <form action="{{ url('/customer/activate/' . $customer->id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
                                     @csrf
@@ -107,11 +109,11 @@
                                 </form>
                             @endif
                         </div>
-                @endif
+                    @endif
                 </div>
 
 
-                <p style="font-size: 14px;">Joined on {{ $customer->created_at -> format('F Y')}}</p>
+                <p style="font-size: 14px;" class="joined-p"><i class="far fa-clock"></i> Joined on {{ $customer->created_at -> format('F Y')}}</p>
             </div>
 
         </div>
@@ -122,15 +124,15 @@
                 <button class="tab-button" onclick="switchTab('receiptsTab')">Receipts History</button>
             </nav>
 
-            <div class="tab-content active" id="ordersTab" style="overflow-x:auto; overflow-y: auto; overflow: hidden;">
+            <div class="tab-content active" id="ordersTab" style="overflow-x:auto; overflow-y: auto;">
                 @if(isset($orders) && count($orders) > 0)
-                    <table>
+                    <table  style="overflow-x:auto; overflow-y: auto; ">
                         <thead>
                             <tr>
                                 <th>Order #</th>
                                 <th>Status</th>
-                                <th>Total Qty</th>
-                                <th>Total Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
                                 <th>Last Update</th>
                             </tr>
                         </thead>
