@@ -185,3 +185,61 @@ body{
     color: #ea1f21;
     font-size: 15px;
 }
+
+
+
+@media (max-width: 768px) {
+   .loginPage{
+      height: 100%;
+      width: 100%;
+      position: relative;
+   }
+
+   .loginPage .right{
+      height: 80%;
+      width: 90%;
+      border-radius: 25px;
+      position: absolute;
+      background-color: #fff;
+      z-index: 2;
+   }
+
+   .right img{
+      height: 100px;
+   }
+
+   .right h1{
+      font-size: 25px;
+   }
+
+   .right .kindly-mess{
+      font-size: 15px;
+   }
+
+   .loginPage .left{
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      height: 100%;
+      width: 100%;
+      z-index: 1;
+      border-radius: 0;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+
+
+   }
+
+   .loginForm{
+      height: auto;
+   }
+   .form-group{
+      height: auto;
+      margin: 0;
+   }
+
+   .form-group input{
+      height: 30px;
+   }
+}

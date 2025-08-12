@@ -2,7 +2,7 @@
 body{
 
     overflow: hidden;
-    padding: 60px;
+    padding: 10px;
     margin: 0;
     font-family: 'Open Sans', sans-serif;
     font-size: 13px;
@@ -140,3 +140,42 @@ box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
  span a:hover{
     color: #dd7f2d;
  }
+
+
+
+ @media (max-width: 768px) {
+   body{
+      height: 100%;
+            display: flex;
+
+   }
+   .logForm{
+      margin-top: 25px;
+      height: 100%;
+      width: 100%;
+      justify-self: center;
+      align-self: center;
+      display: flex;
+      background-color: #fff;
+      padding: 5px;
+   }
+
+   .companyDetails{
+      height: 100%;
+      width: 100%;
+      border-radius: 25px;
+   }
+
+   .companyDetails h2{
+      font-size: 25px;
+
+   }
+
+   .companyDetails p,
+   .companyDetails span{
+      font-size: 15px;
+
+   }
+
+  
+}
