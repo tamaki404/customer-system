@@ -15,10 +15,10 @@
 </head>
 <body>
 
-    <div class="ordersFrame">
-         <div class="wrapper-title" style="height: auto">
+    <div class="ordersFrame fadein-animate">
+         <div class="wrapper-title" >
             <form action="/date-search" id="searchCon" style="margin-left: 10px" class="date-search" method="GET">
-                <input type="text" style="    width: 390px; border: none;" name="search" class="search-bar" placeholder="Search receipt #, customer, amount, or date" value="{{ request('search') }}">
+                <input type="text" style=" width: 390px; border: none;" name="search" class="search-bar" placeholder="Search receipt #, customer, amount, or date" value="{{ request('search') }}">
                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>
             <form action="/date-search" class="date-search" id="from-to-date" method="GET">
@@ -27,7 +27,8 @@
                 <span >To</span>
                 <input type="date" name="to_date" class="input-date" value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
             </form>
-        </div>
+        </div> 
+
 
 
         <div class="titleCount">

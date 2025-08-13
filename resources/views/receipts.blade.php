@@ -175,7 +175,7 @@
 
 
 
-    <div class="receipt-wrapper">
+    <div class="receipt-wrapper fadein-animate">
         <div class="wrapper-title">
             <form action="/date-search" id="searchCon" style="margin-left: 10px" class="date-search" method="GET">
                 <input type="text" style="    width: 390px; border: none;" name="search" class="search-bar" placeholder="Search receipt #, customer, amount, or date" value="{{ request('search') }}">
@@ -219,7 +219,7 @@
         </div> --}}
 
         @if($receipts->where('status', 'Verified')->count())
-            <div style="margin-bottom: 1rem; font-size: 1.1rem; color: #1976d2; font-weight: 600;">
+            <div style="margin-bottom: 1rem; font-size: 1.1rem; color: orange; font-weight: 600;">
                 Total Amount for Verified Receipts: ₱{{ number_format($receipts->where('status', 'Verified')->sum('total_amount'), 2) }}
             </div>
         @endif

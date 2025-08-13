@@ -19,7 +19,7 @@
     <div class="ordersFrame">
         <a href="{{ route('customer_orders') }}"><- Orders list</a>
         <span class="customer-details">
-            <p style="font-size: 19px; font-weight: bold;">Order#: {{ $orders->first()->order_id }}</p>
+            <p>Order#: {{ $orders->first()->order_id }}</p>
          @php
             $status = $orders->first()->status;
 

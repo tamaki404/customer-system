@@ -325,6 +325,10 @@ class ViewController extends Controller{
             $pendingWeekCount = Receipt::where('status', 'Verified')
                 ->where('created_at', '>=', $oneWeekAgo)
                 ->count();
+
+            $pendingWeekOrder = Orders::where('status', 'Completed')
+                ->where('created_at', '>=', $oneWeekAgo)
+                ->count();
             $pendingOrders = Orders::where('status', 'Pending')
                 ->count();                
 
@@ -441,7 +445,8 @@ class ViewController extends Controller{
             'pendingOrders',
             'userPendingOrders',
             'customerTopProductLabels',
-            'customerTopProductQuantities'
+            'customerTopProductQuantities',
+            'pendingWeekOrder'
 
 
         ));

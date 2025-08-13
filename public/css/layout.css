@@ -4,7 +4,7 @@ body{
     overflow: hidden;
     padding: 0;
     margin: 0;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 13px;
 }
 
@@ -17,6 +17,8 @@ body .mainFrame{
     height: 100%;
     background-color: #ffde59;
     position: relative;
+        overflow-x: auto;
+
 }
 
 /* Mobile Toggle Button */
@@ -77,10 +79,7 @@ body .mainFrame{
 ::-webkit-scrollbar { display: none; }
 
 
-/* .sideAccess.collapsed {
-    transform: translateX(-100%);
-    opacity: 0;
-} */
+/* Remove sidebar entrance animation */
 
 /* Sidebar Header */
 .sidebar-header {
@@ -506,9 +505,8 @@ form .logoutButton:hover{
 }
 
 /* Apply animations */
-.sideAccess:not(.collapsed) {
-    animation: slideIn 0.3s ease-out;
-}
+/* Disable slide-in animation for sidebar */
+.sideAccess:not(.collapsed) { }
 
 .nav-item {
     animation: fadeIn 0.3s ease-out;

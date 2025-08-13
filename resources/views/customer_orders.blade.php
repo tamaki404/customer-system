@@ -13,7 +13,7 @@
 </head>
 <body>
     
-    <div class="orderFrame">
+    <div class="orderFrame fadein-animate">
 
         {{-- <div class="wrapper-title" style="width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
             <form method="GET" action="" class="date-search" id="searchCon" style="margin-left: 10px">

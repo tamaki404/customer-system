@@ -30,7 +30,7 @@
                 ];
             @endphp
 
-            <p id="status" class="{{ $statusClasses[$status] ?? 'status-default' }}">
+            <p id="status" style="font-size: 14px" class="{{ $statusClasses[$status] ?? 'status-default' }}">
                 {{ $status }}
             </p>
 

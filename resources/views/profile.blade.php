@@ -31,7 +31,7 @@
             </div>
         </div>
         <script src="{{ asset('js/fadein.js') }}"></script>
-        <div class="profile-body">
+        <div class="profile-body" style="height: auto">
             @if(auth()->user()->user_type === 'Customer')
             <p class="info-help">Your company’s information is required to ensure accurate identification and processing of transactions.</p>
 
@@ -40,7 +40,7 @@
                 <p class="acc_creation">
                     Account created on {{ auth()->user()->created_at->format('F j, Y') }}
                 </p>
-                <form action="/edit-profile" method="POST" class="profile-form">
+                <form action="/edit-profile" method="POST" class="profile-form" >
                     @csrf
                         <div class="form-group">
                             <label>Name</label>
@@ -71,9 +71,10 @@
                         </div>
 
                     <button class="editProfileBtn" style="font-style: 13px;" type="submit">Save Changes</button>
-                    <p class="updatePassword">To update password, use the forgot password on login</p>
 
                 </form>
+                <p class="updatePassword">To update password, use the forgot password on login</p>
+
 
             </div>
 

@@ -24,17 +24,25 @@
         <h2>📊 My Reports</h2>
         <p>Your personal orders, spending, and receipts</p>
     </div>
+        @php
+            $activeTab = request('active_tab', 'my-overview');
+            $baseParams = [
+                'date_range' => request('date_range', 'last_30_days'),
+                'from_date' => request('from_date'),
+                'to_date' => request('to_date'),
+            ];
+        @endphp
         <nav class="tab-navigation" style="margin-top:10px; background:#fff;">
-        <button class="tab-button active" onclick="switchTab('my-overview')">Overview</button>
-        <button class="tab-button" onclick="switchTab('my-orders')">My Orders</button>
-        <button class="tab-button" onclick="switchTab('my-products')">Top Products</button>
-        <button class="tab-button" onclick="switchTab('my-receipts')">My Receipts</button>
-    </nav>
+            <a style="text-decoration: none" class="tab-button {{ $activeTab === 'my-overview' ? 'active' : '' }}" href="{{ route('reports', array_merge($baseParams, ['active_tab' => 'my-overview'])) }}">Overview</a>
+            <a style="text-decoration: none" class="tab-button {{ $activeTab === 'my-orders' ? 'active' : '' }}" href="{{ route('reports', array_merge($baseParams, ['active_tab' => 'my-orders'])) }}">My Orders</a>
+            <a style="text-decoration: none" class="tab-button {{ $activeTab === 'my-products' ? 'active' : '' }}" href="{{ route('reports', array_merge($baseParams, ['active_tab' => 'my-products'])) }}">Top Products</a>
+            <a style="text-decoration: none" class="tab-button {{ $activeTab === 'my-receipts' ? 'active' : '' }}" href="{{ route('reports', array_merge($baseParams, ['active_tab' => 'my-receipts'])) }}">My Receipts</a>
+        </nav>
 
     <div class="report-container">
 
         <form method="GET" action="{{ route('reports') }}" class="filters-row" style="margin-bottom: 10px; background:#fff;">
-            <input type="hidden" name="active_tab" value="sales">
+            <input type="hidden" name="active_tab" value="{{ $activeTab }}">
             <div class="filter-group">
                 <label>Date Range</label>
                 <select name="date_range" id="myDateRange" onchange="this.form.submit()">
@@ -61,7 +69,7 @@
 
 
 
-        <div id="my-overview" class="tab-content active">
+        <div id="my-overview" class="tab-content {{ $activeTab === 'my-overview' ? 'active' : '' }}">
             <div class="my-report-grid">
                 <div class="my-card">
                     <div class="stat-value">₱{{ number_format($myTotalSpent, 2) }}</div>
@@ -89,14 +97,14 @@
 
 
 
-        <div id="my-products" class="tab-content">
+        <div id="my-products" class="tab-content {{ $activeTab === 'my-products' ? 'active' : '' }}">
             <p style="margin: 12px 0 6px 0; font-weight: 700;">Top Products</p>
             <div class="my-card chart-box">
                 <canvas id="myTopProductsChart"></canvas>
             </div>
         </div>
 
-        <div id="my-orders" class="tab-content">
+        <div id="my-orders" class="tab-content {{ $activeTab === 'my-orders' ? 'active' : '' }}">
             <p style="margin: 12px 0 6px 0; font-weight: 700;">Orders In Range</p>
             <div class="my-card" style="overflow:auto;">
                 <table class="table" style="width:100%;">
@@ -124,7 +132,7 @@
             </div>
         </div>
 
-        <div id="my-receipts" class="tab-content">
+        <div id="my-receipts" class="tab-content {{ $activeTab === 'my-receipts' ? 'active' : '' }}">
             <p style="margin: 12px 0 6px 0; font-weight: 700;">My Receipts</p>
             <div class="my-report-grid">
                 <div class="my-card"><div class="stat-value">{{ $myReceiptsCount }}</div><div class="stat-label">Total Receipts</div></div>
@@ -185,8 +193,8 @@
                 datasets: [{
                     label: 'Quantity',
                     data: @json($myTopProducts->pluck('total_quantity')),
-                    backgroundColor: 'rgba(25, 118, 210, 0.2)',
-                    borderColor: 'rgba(25, 118, 210, 0.8)',
+                    backgroundColor: 'rgba(255, 222, 89, 0.6)',
+                    borderColor: 'rgba(212, 183, 65, 1)',
                     borderWidth: 1,
                     borderRadius: 6
                 }]

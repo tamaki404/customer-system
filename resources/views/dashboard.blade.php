@@ -15,7 +15,7 @@
 </head>
 <body>
 <script src="{{ asset('js/fadein.js') }}"></script>
-<div class="dashBody">
+<div class="dashBody fadein-animate">
 
     @if(auth()->user()->user_type === 'Admin')
 
@@ -95,20 +95,24 @@
     <div class="dashFrame">
         <a class="actCard" href="{{ route('receipts') }}" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid rgb(216, 215, 215);">
             <p class="cardTit">Pending Receipts</p>
-            <h1 id="pendingDayCount">{{$pendingDayCount}}</h1>
+            <h1 id="pendingDayCount" style="color: orange">{{$pendingDayCount}}</h1>
             <p class="dayP">On this day</p>
-        </a>
-        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
-            <p class="cardTit">Accomplished Receipts</p>
-            <h1 id="pendingWeekCount">{{$pendingWeekCount}}</h1>
-            <p class="dayP"> Past 7 Days</p>
-        </a>        
+        </a>   
         <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
             <p class="cardTit">Pending Orders</p>
-            <h1 id="pendingWeekCount">{{$pendingOrders}}</h1>
+            <h1 id="pendingWeekCount" style="color: orange">{{$pendingOrders}}</h1>
+            <p class="dayP"> On this day</p>
+        </a>  
+        <a class="actCard" href="{{ route('receipts') }}" style="border:1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Accomplished Receipt</p>
+            <h1 id="pendingWeekCount">{{$pendingWeekCount}}</h1>
             <p class="dayP"> Past 7 Days</p>
-        </a>        
-
+        </a>           
+        <a class="actCard" href="{{ route('receipts') }}" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border: 1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Accomplished Orders</p>
+            <h1 id="pendingWeekCount">{{$pendingWeekOrder}}</h1>
+            <p class="dayP"> Past 7 Days</p>
+        </a>   
         
 
     </div>
@@ -121,37 +125,6 @@
         </div>
      </div>
 
-    <h2>Today's Verified Receipts</h2>
-    <div class="activities">
-
-
-        @if(isset($verifiedReceiptsToday) && count($verifiedReceiptsToday))
-        @foreach($verifiedReceiptsToday as $activity)
-            @php
-                $status = strtolower($activity->status ?? 'verified');
-                switch ($status) {
-                    case 'cancelled':
-                        $action = 'cancelled receipt';
-                        break;
-                    case 'rejected':
-                        $action = 'rejected receipt';
-                        break;
-                    default:
-                        $action = 'verified receipt';
-                        break;
-                }
-            @endphp
-
-            <a class="activityCard" style="height: 50px;" href="{{ route('receipt_view', ['receipt_id' => $activity->receipt_id]) }}">
-                <span style="font-weight: bold">{{ $activity->verified_by ?? 'System' }} </span> 
-                <span>{{ $action }}</span> <span> #{{ $activity->receipt_number }}</span>
-                <span style="margin-left: auto; color: #333">
-                    {{ \Carbon\Carbon::parse($activity->verified_at ?? $activity->created_at)->format('F j, Y, g:i A') }}
-                </span>
-            </a>
-        @endforeach
-        @endif
-    </div>
     @elseif(auth()->user()->user_type === 'Customer')
 
     <div class="dashGreet">
@@ -164,7 +137,7 @@
            <h1 id="pendingDayCount">{{ $userPendingReceipts->count() }}</h1>
             <p class="dayP">On this week</p>
         </a>
-        <a class="actCard" href="{{ route('receipts') }}" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid rgb(216, 215, 215);">
+        <a class="actCard" href="{{ route('receipts') }}" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px; border: 1px solid rgb(216, 215, 215);">
             <p class="cardTit">Pending Orders</p>
             <h1 id="pendingDayCount">{{ $userPendingOrders->count() }}</h1>
             <p class="dayP">On this week</p>
