@@ -16,7 +16,7 @@
 <body>
 
     <div class="ordersFrame">
-         <div class="wrapper-title">
+         <div class="wrapper-title" style="height: auto">
             <form action="/date-search" id="searchCon" style="margin-left: 10px" class="date-search" method="GET">
                 <input type="text" style="    width: 390px; border: none;" name="search" class="search-bar" placeholder="Search receipt #, customer, amount, or date" value="{{ request('search') }}">
                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>

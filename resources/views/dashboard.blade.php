@@ -173,6 +173,14 @@
     </div>
 
 
+        <h2 style="margin-bottom: 0px;">Top Products This Month</h2>
+        <p style="margin: 0; font-size: 14px;">The products you ordered most this month.</p>
+        <div class="graphFrame">
+            <div class="dashFrame" style="position:relative; height:350px; min-height:220px;">
+                <canvas id="customerTopProductsChart" style="width:100%;height:100%;"></canvas>
+            </div>
+        </div>
+
         <h2 style="margin-bottom: 0px;">Week's History</h2>
         <p style="margin: 0; font-size: 14px;">These are your receipt verification updates from staff for the current week.</p>
         <div class="activities" style="height: 400px; overflow-y: scroll;">
@@ -266,12 +274,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const topStores = @json($topStores ?? []);
+    const prodLabels = @json($customerTopProductLabels ?? []);
+    const prodQty = @json($customerTopProductQuantities ?? []);
     // Shorten label with ellipsis if over 15 chars, but keep full name for tooltip
     const storeLabels = topStores.map(s => s.name.length > 15 ? s.name.slice(0, 15) + '…' : s.name);
     const storeSales = topStores.map(s => s.sales);
     const fullStoreNames = topStores.map(s => s.name);
-    const ctx = document.getElementById('topStoresChart').getContext('2d');
-    if (ctx) {
+    const topStoresCanvas = document.getElementById('topStoresChart');
+    if (topStoresCanvas) {
+        const ctx = topStoresCanvas.getContext('2d');
         new Chart(ctx, {
             type: 'bar',
             data: {
@@ -302,6 +313,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 scales: {
                     y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+    // Customer top products bar chart (responsive)
+    const ctp = document.getElementById('customerTopProductsChart');
+    if (ctp) {
+        new Chart(ctp.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: prodLabels,
+                datasets: [{
+                    label: 'Quantity',
+                    data: prodQty,
+                    backgroundColor: 'rgba(255, 222, 89, 0.6)',
+                    borderColor: 'rgba(212, 183, 65, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    maxBarThickness: 34,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 } }
                 }
             }
         });

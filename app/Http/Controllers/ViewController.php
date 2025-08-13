@@ -405,7 +405,24 @@ class ViewController extends Controller{
             }
 
 
-            
+            // Customer top products (this month)
+            $monthStart = Carbon::now()->startOfMonth();
+            $monthEnd = Carbon::now()->endOfMonth();
+            $topProducts = Orders::select(
+                    'products.name as product_name',
+                    DB::raw('SUM(orders.quantity) as total_qty')
+                )
+                ->join('products', 'orders.product_id', '=', 'products.id')
+                ->where('orders.customer_id', $id)
+                ->whereBetween('orders.created_at', [$monthStart, $monthEnd])
+                ->groupBy('products.name')
+                ->orderByDesc('total_qty')
+                ->take(10)
+                ->get();
+
+            $customerTopProductLabels = $topProducts->pluck('product_name');
+            $customerTopProductQuantities = $topProducts->pluck('total_qty')->map(fn($q) => (int) $q);
+
 
         return view('dashboard', compact(
             'pendingWeekCount',
@@ -422,7 +439,9 @@ class ViewController extends Controller{
             'userPendingReceipts',
             'userVerifiedReceiptsWeek',
             'pendingOrders',
-            'userPendingOrders'
+            'userPendingOrders',
+            'customerTopProductLabels',
+            'customerTopProductQuantities'
 
 
         ));

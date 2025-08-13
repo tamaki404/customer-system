@@ -75,7 +75,37 @@
     }
 }
 
+.date-search {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+    overflow: hidden;
+    width: auto;
+    height: 100%;
+}
 
+
+.date-search input {
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    display: flex
+;
+    justify-content: center;
+    align-items: center;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+.date-search input {
+    background-color: #fffbee;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.date-search span{
+    font-size: 15px;
+}
 
 .status-pending {
     color: #ff9800;
