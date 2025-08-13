@@ -437,6 +437,37 @@ body {
         width: 330px;
         margin-bottom: 10px;
       }
+
+          .date-search{
+        width: 95%;
+    }
+    .titleCount h2{
+        font-size: 25px;
+    }
+    .titleCount p{
+        font-size: 15px;
+    }
+    .mainFrame .showScreen {
+        width: 100%;
+        padding: 10px;
+        margin-top: 0;
+    }
+
+    .orderFrame{
+        padding: 10px;
+    }
+
+    .wrapper-title{
+        flex-direction: column;
+        gap: 5px;
+        height: auto;
+    }
+    .date-search input{
+        width: 140px;
+    }
+    .date-search span{
+        font-size: 13px;
+    }
 }
 
 /* Pagination Styles */

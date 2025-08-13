@@ -106,18 +106,34 @@ class OrderController extends Controller
     {
         $user = auth()->user();
         $search = request('search');
+        $status = request('status');
+        $from = request('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $to = request('to_date', now()->endOfMonth()->format('Y-m-d'));
 
-        $allOrders = Orders::with('product')
-            ->where('customer_id', $user->id)
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('order_id', 'like', "%$search%")
-                    ->orWhere('status', 'like', "%$search%")
-                    ->orWhere('created_at', 'like', "%$search%");
-                });
-            })
-            ->orderByDesc('created_at')
-            ->get();
+        $query = Orders::with('product')->where('customer_id', $user->id);
+
+        // Status filter (tabs)
+        if ($status && in_array($status, ['Pending', 'Processing', 'Completed', 'Cancelled', 'Rejected'])) {
+            $query->where('status', $status);
+        }
+
+        // Date range filter aligned with status
+        $dateColumn = ($status && in_array($status, ['Processing', 'Completed', 'Cancelled', 'Rejected']))
+            ? 'action_at'
+            : 'created_at';
+        $query->whereBetween($dateColumn, [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()]);
+
+        // Search filter
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('order_id', 'like', "%$search%")
+                  ->orWhere('status', 'like', "%$search%")
+                  ->orWhere('created_at', 'like', "%$search%")
+                  ->orWhere('action_at', 'like', "%$search%");
+            });
+        }
+
+        $allOrders = $query->orderByDesc($dateColumn)->get();
 
         $orders = $allOrders->groupBy('order_id')->map(function ($orderItems) {
             $firstItem = $orderItems->first();
@@ -126,6 +142,7 @@ class OrderController extends Controller
                 'customer_id' => $firstItem->customer_id,
                 'status' => $firstItem->status,
                 'created_at' => $firstItem->created_at,
+                'action_at' => $firstItem->action_at,
                 'total_amount' => $orderItems->sum('total_price'),
                 'item_count' => $orderItems->count(),
                 'total_quantity' => $orderItems->sum('quantity'),
@@ -133,7 +150,7 @@ class OrderController extends Controller
             ];
         })->sortByDesc('created_at')->values();
 
-        return view('customer_orders', compact('orders', 'user', 'search'));
+        return view('customer_orders', compact('orders', 'user', 'search', 'status', 'from', 'to'));
     }
 
 
@@ -197,21 +214,38 @@ class OrderController extends Controller
     {
         $user = auth()->user();
         $search = request('search');
+        $status = request('status');
+        $from = request('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $to = request('to_date', now()->endOfMonth()->format('Y-m-d'));
 
-        $allOrders = Orders::with(['product', 'user'])
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('order_id', 'like', "%$search%")
-                    ->orWhere('status', 'like', "%$search%")
-                    ->orWhere('created_at', 'like', "%$search%");
-                })
-                ->orWhereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', "%$search%")
-                    ->orWhere('store_name', 'like', "%$search%");
-                });
+        $query = Orders::with(['product', 'user']);
+
+        // Status filter (tabs)
+        if ($status && in_array($status, ['Pending', 'Processing', 'Completed', 'Cancelled', 'Rejected'])) {
+            $query->where('status', $status);
+        }
+
+        // Date range filter aligned with status state
+        $dateColumn = ($status && in_array($status, ['Processing', 'Completed', 'Cancelled', 'Rejected']))
+            ? 'action_at'
+            : 'created_at';
+        $query->whereBetween($dateColumn, [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()]);
+
+        // Search filter
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('order_id', 'like', "%$search%")
+                  ->orWhere('status', 'like', "%$search%")
+                  ->orWhere('created_at', 'like', "%$search%")
+                  ->orWhere('action_at', 'like', "%$search%");
             })
-            ->orderByDesc('created_at')
-            ->get();
+            ->orWhereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('store_name', 'like', "%$search%");
+            });
+        }
+
+        $allOrders = $query->orderByDesc($dateColumn)->get();
 
         $orders = $allOrders->groupBy('order_id')->map(function ($orderItems) {
             $firstItem = $orderItems->first();
@@ -220,6 +254,7 @@ class OrderController extends Controller
                 'customer_id' => $firstItem->customer_id,
                 'status' => $firstItem->status,
                 'created_at' => $firstItem->created_at,
+                'action_at' => $firstItem->action_at,
                 'total_amount' => $orderItems->sum('total_price'),
                 'item_count' => $orderItems->count(),
                 'total_quantity' => $orderItems->sum('quantity'),
@@ -228,7 +263,7 @@ class OrderController extends Controller
             ];
         })->sortByDesc('created_at')->values();
 
-        return view('orders', compact('orders', 'user', 'search'));
+        return view('orders', compact('orders', 'user', 'search', 'status', 'from', 'to'));
     }
 
     public function orderView($id)

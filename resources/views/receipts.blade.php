@@ -232,6 +232,17 @@
 
             @isset($receipts)
                @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
+                    <div class="status-tabs">
+                        @foreach($tabStatuses as $label => $value)
+                            @php
+                                $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
+                                $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
+                            @endphp
+                            <a href="{{ route('date.search', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">
+                                {{ $label }}
+                            </a>
+                        @endforeach
+                    </div>
                     @if($receipts->isEmpty())
                         <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts found.</div>
                     @else
@@ -283,6 +294,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        
                         
                         <!-- Pagination Controls -->
                         <div class="pagination-wrapper">
