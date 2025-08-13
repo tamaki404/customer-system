@@ -275,6 +275,88 @@ public function reports(Request $request)
     $fromDate = $dateInfo['fromDate'];
     $toDate = $dateInfo['toDate'];
 
+    // Customer-specific reports
+    if (strtolower($user->user_type) === 'customer') {
+        // Spending analytics
+        $customerOrdersQuery = Orders::where('customer_id', $user->id)
+            ->whereBetween('created_at', [$startDate, $endDate]);
+
+        $myTotalSpent = (clone $customerOrdersQuery)->where('status', 'Completed')->sum('total_price');
+        $myCompletedOrders = (clone $customerOrdersQuery)->where('status', 'Completed')->distinct('order_id')->count('order_id');
+        $myAverageOrderValue = $myCompletedOrders > 0 ? $myTotalSpent / $myCompletedOrders : 0;
+
+        $myMonthlySpend = Orders::selectRaw('MONTH(created_at) as month, SUM(total_price) as total')
+            ->where('customer_id', $user->id)
+            ->where('status', 'Completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->pluck('total', 'month');
+
+        // Orders status breakdown
+        $myOrderStatusCounts = Orders::select('status', DB::raw('COUNT(DISTINCT order_id) as count'))
+            ->where('customer_id', $user->id)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        $myOrdersCount = Orders::where('customer_id', $user->id)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->distinct('order_id')
+            ->count('order_id');
+
+        // Orders list grouped by order_id
+        $myOrders = Orders::select(
+                'orders.order_id',
+                'orders.status',
+                DB::raw('SUM(orders.quantity) as total_quantity'),
+                DB::raw('SUM(orders.total_price) as total_price'),
+                DB::raw('MAX(orders.action_at) as action_at'),
+                DB::raw('MAX(orders.created_at) as created_at')
+            )
+            ->where('orders.customer_id', $user->id)
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->groupBy('orders.order_id', 'orders.status')
+            ->orderBy('orders.order_id', 'desc')
+            ->get();
+
+        // Top products I bought in range
+        $myTopProducts = Orders::select(
+                'products.id as product_id',
+                'products.name as product_name',
+                DB::raw('SUM(orders.quantity) as total_quantity'),
+                DB::raw('SUM(orders.quantity * orders.unit_price) as total_revenue')
+            )
+            ->join('products', 'orders.product_id', '=', 'products.id')
+            ->where('orders.customer_id', $user->id)
+            ->where('orders.status', 'Completed')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->groupBy('products.id', 'products.name')
+            ->orderByDesc('total_quantity')
+            ->get();
+
+        // My receipts
+        $myReceiptsQuery = Receipt::where('id', $user->id)
+            ->whereBetween('created_at', [$startDate, $endDate]);
+
+        $myReceiptsCount = (clone $myReceiptsQuery)->count();
+        $myReceiptsPending = (clone $myReceiptsQuery)->where('status', 'Pending')->count();
+        $myReceiptsVerified = (clone $myReceiptsQuery)->where('status', 'Verified')->count();
+        $myReceiptsCancelled = (clone $myReceiptsQuery)->where('status', 'Cancelled')->count();
+        $myReceiptsRejected = (clone $myReceiptsQuery)->where('status', 'Rejected')->count();
+        $myReceiptsVerifiedAmount = (clone $myReceiptsQuery)->where('status', 'Verified')->sum('total_amount');
+
+        return view('reports.customer', compact(
+            'user',
+            'dateRange', 'fromDate', 'toDate', 'startDate', 'endDate',
+            // spending
+            'myTotalSpent', 'myCompletedOrders', 'myAverageOrderValue', 'myMonthlySpend',
+            // orders
+            'myOrderStatusCounts', 'myOrdersCount', 'myTopProducts', 'myOrders',
+            // receipts
+            'myReceiptsCount', 'myReceiptsPending', 'myReceiptsVerified', 'myReceiptsCancelled', 'myReceiptsRejected', 'myReceiptsVerifiedAmount'
+        ));
+    }
+
     $weekStart = Carbon::now()->startOfWeek();
     $weekEnd = Carbon::now()->endOfWeek();
 
