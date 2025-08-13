@@ -424,7 +424,6 @@ form .logoutButton:hover{
     .mainFrame .sideAccess {
         position: fixed;
         left: 0;
-        top: 0;
         z-index: 999;
         width: 280px;
         transform: translateX(-100%);

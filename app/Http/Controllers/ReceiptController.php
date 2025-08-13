@@ -75,14 +75,22 @@ class ReceiptController extends Controller{
         $user = auth()->user();
         $query = Receipt::with('customer');
         
+        // status filter (tabs)
+        $status = $request->input('status');
+        if ($status && in_array($status, ['Pending', 'Verified', 'Cancelled', 'Rejected'])) {
+            $query->where('status', $status);
+        }
+
         // apply date range filter if provided
         $from_date = $request->input('from_date', now()->startOfMonth()->format('Y-m-d'));
         $to_date = $request->input('to_date', now()->endOfMonth()->format('Y-m-d'));
-        
+
         if ($from_date && $to_date) {
-            $query->whereBetween('created_at', [Carbon::parse($from_date)->startOfDay(), Carbon::parse($to_date)->endOfDay()]);
+            // When viewing status-specific tabs for finalized states, use verified_at; otherwise created_at
+            $dateColumn = ($status && in_array($status, ['Verified', 'Cancelled', 'Rejected'])) ? 'verified_at' : 'created_at';
+            $query->whereBetween($dateColumn, [Carbon::parse($from_date)->startOfDay(), Carbon::parse($to_date)->endOfDay()]);
         }
-        
+
         // apply search filter if provided
         $search = $request->input('search', '');
         if ($search) {
@@ -105,10 +113,11 @@ class ReceiptController extends Controller{
         $receipts->appends([
             'from_date' => $from_date,
             'to_date' => $to_date,
-            'search' => $search
+            'search' => $search,
+            'status' => $status
         ]);
         
-        return view('receipts', compact('receipts', 'user', 'from_date', 'to_date', 'search'));
+        return view('receipts', compact('receipts', 'user', 'from_date', 'to_date', 'search', 'status'));
     }
 
 
@@ -159,10 +168,6 @@ class ReceiptController extends Controller{
         $from = $request->input('from_date', now()->startOfMonth()->format('Y-m-d'));
         $to = $request->input('to_date', now()->endOfMonth()->format('Y-m-d'));
 
-        if ($from && $to) {
-            $query->whereBetween('created_at', [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()]);
-        }
-
         // Search filter
         $search = $request->input('search');
         if ($search) {
@@ -176,6 +181,18 @@ class ReceiptController extends Controller{
             });
         }
 
+        // Status filter from tabs
+        $status = $request->input('status');
+        if ($status && in_array($status, ['Pending', 'Verified', 'Cancelled', 'Rejected'])) {
+            $query->where('status', $status);
+        }
+
+        // Date range filter based on context (verified_at for finalized states)
+        if ($from && $to) {
+            $dateColumn = ($status && in_array($status, ['Verified', 'Cancelled', 'Rejected'])) ? 'verified_at' : 'created_at';
+            $query->whereBetween($dateColumn, [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()]);
+        }
+
         if ($user->user_type === 'Staff' || $user->user_type === 'Admin') {
             $receipts = $query->orderBy('created_at', 'desc')->paginate(50);
         } else {
@@ -186,7 +203,8 @@ class ReceiptController extends Controller{
         $receipts->appends([
             'from_date' => $from,
             'to_date' => $to,
-            'search' => $search
+            'search' => $search,
+            'status' => $status
         ]);
         
         return view('receipts', [
@@ -194,7 +212,8 @@ class ReceiptController extends Controller{
             'user' => $user,
             'from_date' => $from,
             'to_date' => $to,
-            'search' => $search
+            'search' => $search,
+            'status' => $status
         ]);
     }
 

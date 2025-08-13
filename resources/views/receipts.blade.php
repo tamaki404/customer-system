@@ -190,6 +190,34 @@
         </div>
         <div class="receipt-container">
 
+        @php
+            $currentStatus = $status ?? request('status');
+            $baseParams = [
+                'from_date' => request('from_date', now()->startOfMonth()->format('Y-m-d')),
+                'to_date' => request('to_date', now()->endOfMonth()->format('Y-m-d')),
+                'search' => request('search', '')
+            ];
+            $tabStatuses = [
+                'All' => null,
+                'Pending' => 'Pending',
+                'Verified' => 'Verified',
+                'Cancelled' => 'Cancelled',
+                'Rejected' => 'Rejected'
+            ];
+        @endphp
+
+        {{-- <div class="status-tabs">
+            @foreach($tabStatuses as $label => $value)
+                @php
+                    $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
+                    $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
+                @endphp
+                <a href="{{ route('date.search', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">
+                    {{ $label }}
+                </a>
+            @endforeach
+        </div> --}}
+
         @if($receipts->where('status', 'Verified')->count())
             <div style="margin-bottom: 1rem; font-size: 1.1rem; color: #1976d2; font-weight: 600;">
                 Total Amount for Verified Receipts: ₱{{ number_format($receipts->where('status', 'Verified')->sum('total_amount'), 2) }}
@@ -288,6 +316,17 @@
                         <h2 class="title">Your Receipts</h2>  
                         <button id="openModalBtn">Submit a Receipt</button>
                     </div>
+                    <div class="status-tabs">
+                        @foreach($tabStatuses as $label => $value)
+                            @php
+                                $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
+                                $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
+                            @endphp
+                            <a href="{{ route('date.search', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">
+                                {{ $label }}
+                            </a>
+                        @endforeach
+                    </div>
                     @if($receipts->isEmpty())
                         <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts found.</div>
                     @else
@@ -295,9 +334,9 @@
                             <table class="receipt-table">
                                 <thead>
                                     <tr>
+                                        <th>Date</th>
                                         <th>Receipt #</th>
                                         <th>Amount</th>
-                                        <th>Date</th>
                                         <th>Status</th>
                                         <th>Verified by</th>
                                         <th>Image</th>
@@ -306,9 +345,9 @@
                                 <tbody>
                                     @foreach($receipts as $receipt)
                                         <tr onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
+                                            <td>{{ \Carbon\Carbon::parse($receipt->created_at)->format('F j, Y') }}</td>
                                             <td>{{ $receipt->receipt_number }}</td>
                                             <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('F j, Y') }}</td>
                                             <td><span class="status {{ strtolower($receipt->status) }}">{{ $receipt->status }}</span></td>
                                             <td>{{ $receipt->verified_by }}</td>
                                             <td>

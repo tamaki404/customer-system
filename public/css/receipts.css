@@ -17,6 +17,37 @@ body {
 
 }
 
+.status-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0 20px 0;
+    flex-wrap: wrap;
+}
+
+.status-tab {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #fffbee;
+    color: #333;
+    border: 1px solid #ffeaa7;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: rgba(0, 0, 0, 0.05) 0 2px 6px;
+    transition: all 0.2s ease;
+}
+
+.status-tab:hover {
+    background: #ffde59;
+    border-color: #ffd54f;
+}
+
+.status-tab.active {
+    background: #ffde59;
+    border-color: #ffd54f;
+    box-shadow: rgba(255, 222, 89, 0.3) 0 2px 8px;
+}
+
 
 
 .receipt-container {
@@ -369,6 +400,14 @@ body {
 
     .form-grid {
         flex-direction: column;
+    }
+
+    .title-wrapper .title{
+        font-size: 20px;
+    }
+
+    #openModalBtn{
+        font-size: 13px;
     }
 
     .receipt-table th,
