@@ -106,6 +106,7 @@
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
     border-radius: 10px;
     padding: 15px;
+    overflow-x: auto;
 }
 
 .order-summary{
@@ -215,3 +216,26 @@ span p{
     color: #757575;
 }
 
+
+@media screen and (max-width: 768px) {
+
+    .date-search{
+        width: 95%;
+    }
+    .titleCount h2{
+        font-size: 25px;
+    }
+    .titleCount p{
+        font-size: 15px;
+    }
+    .mainFrame .showScreen {
+        width: 100%;
+        padding: 10px;
+        margin-top: 0;
+    }
+
+    .orderFrame{
+        padding: 10px;
+    }
+
+}

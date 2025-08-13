@@ -268,12 +268,29 @@ body {
 
         /* Mobile styles */
         @media screen and (max-width: 768px) {
+
+    .mainFrame .showScreen {
+        width: 100%;
+        padding: 0;
+        margin-top: 0;
+    }
             body {
-                padding: 5px;
+                padding: 5;
+                overflow-x: auto;
             }
 
+            .mainFrame .showScreen {
+                width: 100%;
+                margin-top: 0;
+            }
+        
             .profile-card {
-                padding: 20px 15px;
+                padding: 10px 10px;
+            }
+
+            .showScreen{
+                padding: 0;
+                margin-top: 0;
             }
 
             .profile-header {
@@ -317,6 +334,28 @@ body {
             }
             .company{
                 width: 90%;
+            }
+            .info-help{
+                font-size: 14px;
+            }
+            .info-box p{
+                font-size: 14px;
+            }
+            .acc_creation{
+                font-size: 13px;
+                font-weight: normal;
+                color: #888;
+            }
+            .info-box{
+                overflow-x: auto;
+            }
+            .updatePassword{
+                margin-top: 13px;
+                font-weight: normal;
+                color: #888;
+            }
+            .profile-body{
+                height: auto;
             }
         }
 

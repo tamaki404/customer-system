@@ -9,6 +9,8 @@
 <body>
     <div class="verifyFrame">
         <img src="{{ asset(path: 'assets/sunnyLogo1.png') }}" alt="Logo" class="logo">
+        <form method="POST" action="{{ route('verification.resend') }}" id="resendForm">
+            @csrf
         <h2>Verify your email</h2> 
         <p>We've sent you an email, click on it to verify your account</p>
 
@@ -30,17 +32,15 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('verification.resend') }}" id="resendForm">
-            @csrf
+
             <input type="hidden" name="email" value="{{ session('pending_verification_email') }}">
             <button type="submit" class="btn" id="resendBtn">
                 Resend Verification Email
             </button>
         </form>
 
-        <div class="loginFrame">
-            <a href="/login" class="loginButton">Back to Login</a>
-        </div>
+        <a href="{{ route('login') }}">Back to Login</a>
+
     </div>
 
     <script>

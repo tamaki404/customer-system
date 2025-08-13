@@ -366,4 +366,7 @@ span button{
     gap: 5px;
     justify-content: center;
     }
+    .mainFrame .showScreen{
+        margin-top: 0;
+    }
 } 

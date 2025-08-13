@@ -417,6 +417,18 @@ span .expire{
         padding: 15px;
     }
 
+    .cart-content {
+        padding: 20px;
+    }
+
+    .cart-item{
+        overflow-y: auto;
+    }
+
+    .span .cart-title{
+        font-size: 15px;
+    }
+
     .customersFrame h2 {
         font-size: 14px;
     }

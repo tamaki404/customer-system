@@ -152,3 +152,72 @@ form .btn:hover {
     border: 1px solid #bee5eb;
 }
 
+
+.verifyFrame a {
+    font-size: 15px;
+    font-weight: bold;
+    color: #f8912a94;
+    text-decoration: none;
+}
+
+.verifyFrame a:hover {
+    color: #f8912a;
+}
+
+
+
+ @media (max-width: 768px) {
+   body{
+      height: 100%;
+      width: 100%;
+      display: flex;
+      background-color: #ffde59;
+
+   }
+
+   .verifyFrame img{
+    margin: 0;
+   }
+   .verifyFrame{
+      margin-top: 30%;
+      height: 100%;
+      width: 85%;
+
+      background-color: #fff;
+      padding: 20px;
+
+            justify-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+   }
+
+   #resendForm{
+      height: 150px;
+      width: 100%;
+      border-radius: 25px;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      gap: 10px;
+   }
+
+   #resendForm button{
+    height: 50px;
+   }
+
+   .verifyFrame h2{
+      font-size: 25px;
+
+   }
+
+   .verifyFrame p{
+      font-size: 15px;
+      text-align: center;
+
+   }
+
+  
+}

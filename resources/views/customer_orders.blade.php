@@ -38,13 +38,11 @@
 
             @forelse($orders as $order)
                 <div class="order-summary">
-                    {{-- <h3>Order #{{ $order->order_id }}</h3> --}}
                     <a class="order-meta" style="text-decoration: none; color: inherit;" href="{{ route('orders.view', $order->order_id) }}">
 
                         <span>
                             <p style="font-weight: bold; font-size: 15px;">{{ $order->created_at->format('M d, Y - h:i A') }}</p>
                             <p>x{{ $order->total_quantity }}</p>
-                            {{-- <p>Product: {{ $order->product->name }}</p> --}}
 
                         </span>
                         <span>
@@ -69,24 +67,9 @@
 
                         </span>
 
-                        {{-- <button class="view-btn">View order</button> --}}
-
-
-                        {{-- @if ($order->status == 'pending')
-                             <button class="cancel-btn">Cancel order</button>
-                        @endif --}}
-                        
-
                     </a>
                 
-                <!-- Button to view order details -->
-                {{-- <button class="btn btn-sm btn-outline-primary" >
-                    View Order Details
-                </button> --}}
 
-
-
-                <!-- Hidden details section (you can load via AJAX) -->
                 <div id="details-{{ $order->order_id }}" style="display: none; margin-top: 15px;">
                     <p><em>Click to load individual item details...</em></p>
                 </div>

@@ -341,6 +341,12 @@
                 gap: 8px;
             }
 
+            .mainFrame .showScreen {
+                width: 100%;
+                padding: 20px;
+                margin-top: 0;
+            }
+
             .reportsHeader {
                 padding: 15px;
                 min-height: 100px;

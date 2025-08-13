@@ -170,6 +170,10 @@
      .date-search button{
         width: 20%;
     } 
+     .mainFrame .showScreen{
+        margin-top: 0px;
+ 
+    }
 }
 
 @media (max-width: 500px) {

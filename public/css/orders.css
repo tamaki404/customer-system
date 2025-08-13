@@ -232,6 +232,9 @@ span p{
     .addStaffBtn{
         width: 20%;
     } 
+    .mainFrame .showScreen{
+        margin-top: 0;
+    }
 }
 
 @media (max-width: 500px) {

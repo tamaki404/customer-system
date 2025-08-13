@@ -343,6 +343,10 @@ class ViewController extends Controller{
                 ->where('id', $id)
                 ->whereBetween('created_at', [$weekStart, $weekEnd])
                 ->get();
+            $userPendingOrders = Orders::where('status', 'Pending') 
+                ->where('id', $id)
+                ->whereBetween('created_at', [$weekStart, $weekEnd])
+                ->get();
 
             $userApprovedReceipts = Receipt::where('status', 'Verified')
                 ->where('id', $id)
@@ -417,7 +421,8 @@ class ViewController extends Controller{
             'userVerifiedReceiptsWeek',
             'userPendingReceipts',
             'userVerifiedReceiptsWeek',
-            'pendingOrders'
+            'pendingOrders',
+            'userPendingOrders'
 
 
         ));

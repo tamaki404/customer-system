@@ -74,7 +74,7 @@
     <div class="cart-content">
         <div class="header-cart">
             <span>
-                <h3>Order Cart</h3>
+                <h3 class="cart-title">Order Cart</h3>
                 <p>Items in your cart are reserved for 24 hours. Please complete your order before they expire.</p>
             </span>
             <p class="close-cart-btn" style="float:right; font-size:2rem; cursor:pointer; color: #ffde59;">&times;</p>
@@ -99,7 +99,7 @@
             <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
         </form>
 
-        @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
+        @if(auth()->user()->user_type === 'Admin')
              <button id="openModalBtn" class="addStaffBtn">Add Product</button>
         @elseif(auth()->user()->user_type === 'Customer')
             <button class="addStaffBtn">Order cart</button>
