@@ -1,5 +1,5 @@
 .customersFrame{
-        display: flex;
+    display: flex;
     flex-direction: column;
     align-content: start;
     justify-content: start;
@@ -120,9 +120,6 @@
     font-weight: 500;
 }
 
-.customersFrame {
-    padding: 20px;
-}
 
 .customerList table {
     width: 100%;

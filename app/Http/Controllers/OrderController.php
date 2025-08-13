@@ -16,8 +16,14 @@ class OrderController extends Controller
     {
         try {
             $user = auth()->user();
-            $items = $request->input('items', []);
-            $total = $request->input('total', 0);
+            $validated = $request->validate([
+                'items' => 'required|array|min:1',
+                'items.*.id' => 'required|exists:products,id',
+                'items.*.qty' => 'required|integer|min:1|max:999',
+                'total' => 'nullable|numeric|min:0',
+            ]);
+            $items = $validated['items'];
+            $total = $validated['total'] ?? 0;
 
             // Validate user
             if (!$user || $user->user_type !== 'Customer') {
@@ -181,12 +187,37 @@ class OrderController extends Controller
             abort(403, 'Unauthorized action');
         }
 
-        Orders::where('order_id', $order_id)->update([
-            'status' => 'Cancelled'
-        ]);
-
-        return redirect()->route('orders.view', $order_id)
-            ->with('success', 'Order cancelled successfully!');
+        try {
+            DB::beginTransaction();
+            
+            // Get all order items for this order
+            $orderItems = Orders::where('order_id', $order_id)->get();
+            
+            // Restore product quantities
+            foreach ($orderItems as $orderItem) {
+                $product = Product::find($orderItem->product_id);
+                if ($product) {
+                    $product->quantity += $orderItem->quantity;
+                    $product->save();
+                }
+            }
+            
+            // Update order status
+            Orders::where('order_id', $order_id)->update([
+                'status' => 'Cancelled',
+                'action_at' => now(),
+                'action_by' => $user->name,
+            ]);
+            
+            DB::commit();
+            
+            return redirect()->route('orders.view', $order_id)
+                ->with('success', 'Order cancelled successfully! Product quantities have been restored.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error cancelling order: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to cancel order. Please try again.');
+        }
     }
 
         public function store()
@@ -312,15 +343,42 @@ public function markOrderDone($order_id)
 public function rejectOrder($order_id)
 {
     $user = auth()->user();
+    $ownerId = Orders::where('order_id', $order_id)->value('customer_id');
+    if (!in_array($user->user_type, ['Admin', 'Staff']) && $ownerId !== $user->id) {
+        abort(403, 'Unauthorized action');
+    }
 
-    Orders::where('order_id', $order_id)->update([
-        'status' => 'Rejected',
-        'action_at' => now(),
-        'action_by' => $user->name,
-    ]);
-
-    return redirect()->route('order.view', $order_id)
-        ->with('success', 'Order cancelled successfully!');
+    try {
+        DB::beginTransaction();
+        
+        // Get all order items for this order
+        $orderItems = Orders::where('order_id', $order_id)->get();
+        
+        // Restore product quantities (only for non-completed items)
+        foreach ($orderItems->where('status', '!=', 'Completed') as $orderItem) {
+            $product = Product::find($orderItem->product_id);
+            if ($product) {
+                $product->quantity += $orderItem->quantity;
+                $product->save();
+            }
+        }
+        
+        // Update order status
+        Orders::where('order_id', $order_id)->update([
+            'status' => 'Rejected',
+            'action_at' => now(),
+            'action_by' => $user->name,
+        ]);
+        
+        DB::commit();
+        
+        return redirect()->route('orders.view', $order_id)
+            ->with('success', 'Order rejected successfully! Product quantities have been restored.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error rejecting order: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Failed to reject order. Please try again.');
+    }
 }
 
 

@@ -177,15 +177,10 @@ public function login(Request $request)
         ->orWhere('email', $loginValue)
         ->first();
 
-    if (!$user) {
+    if (!$user || !Hash::check($incomingFields['password'], $user->password)) {
+        // Generic to avoid user enumeration
         return back()->withErrors([
-            'loginError' => "User not found"
-        ])->withInput();
-    }
-
-    if (!Hash::check($incomingFields['password'], $user->password)) {
-        return back()->withErrors([
-            'loginError' => "Incorrect password"
+            'loginError' => "Invalid credentials"
         ])->withInput();
     }
 

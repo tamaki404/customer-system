@@ -5,7 +5,7 @@
     align-content: start;
     justify-content: start;
     background-color: #f9f9f9;
-    padding: 10px;
+    padding: 60px;
     gap: 10px;
     width: 97%;
     height: 97%;
@@ -13,6 +13,7 @@
     border-radius: 15px;
 
 }
+
 
 .wrapper-title {
     width: 100%;
@@ -250,6 +251,10 @@ span p{
         display: flex;
         flex-direction: column;
         height: auto;
+    }
+    .ordersFrame{
+        padding: 10px;
+
     }
     #from-to-date{
         width: 100%;

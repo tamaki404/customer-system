@@ -13,8 +13,9 @@
     <title>Product Details</title>
 </head>
 <body>
+
 <div class="productDetailFrame">
-    <span style="display: flex; flex-direction: row; width: 100%; justify-content: space-between;"><h2>Product </h2> </span>
+    <span><h2 style="font-size: 25px; font-weight: bold; color: #333;">Product View</h2> </span>
     <div class="backLink">
         <a href="{{ url('/store') }}">&larr; Back to Store</a>
     </div>
@@ -32,12 +33,12 @@
         </div>
 
         <div class="product-info">
-            <div style="name-price">
+            <div class="name-price">
                 <h1 class="product-name" style="margin:0;">{{ $product->name }}</h1>
-                <h2 class="product-price" style="color: #2e7d32; font-weight: bold;">₱{{ number_format($product->price, 2) }}</h2>
+                <h2 class="product-price">₱{{ number_format($product->price, 2) }}</h2>
             </div>
              <div class="quan-status" style="display:flex; gap: 12px; align-items:center;">
-                <span class="quantity-span" style="background:#f8f9fa; border-radius: 8px;">Stocks: <p>{{ $product->quantity }}</p></span>
+                <span class="quantity-span">Stocks: <p>x{{ $product->quantity }}</p></span>
                 <span class="status-span" style="background:#f8f9fa; border-radius: 8px;">
                     @if ($product->quantity == 0)
                         <span style="color: #b71c1c">Out of stock</span>
@@ -146,9 +147,8 @@
             </div>          
         @endif
     </div>
-
-
 </div>
+
 </body>
 </html>
 @endsection

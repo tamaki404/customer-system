@@ -31,7 +31,7 @@
     <!-- Animated Side Navigation -->
     <div class="sideAccess" id="sideAccess">
         <div class="sidebar-header">
-            <button class="userProfile" onclick="toggleUserProfile()">
+            <div class="userProfile">
                 <div class="imgFrame"> 
                     @php
                         $isBase64 = !empty(auth()->user()->image_mime);
@@ -49,7 +49,7 @@
                     @endif
                     <p class="userTitle">{{ auth()->user()->user_type }}</p> 
                 </div>
-            </button>
+            </div>
         </div>
 
         <div class="sideMenu">

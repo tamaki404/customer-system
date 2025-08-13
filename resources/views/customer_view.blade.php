@@ -28,6 +28,8 @@
                 {{ session('error') }}
             </div>
         @endif
+
+        <a href=""><-- Customers List</a>
         
         <h2>Customer Details</h2>
 

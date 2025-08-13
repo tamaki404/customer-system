@@ -117,52 +117,33 @@
 
 <div class="userList">
     @if(isset($users) && count(value: $users) > 0)
-    <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
-        <thead>
-            <tr style="background:#f7f7fa;">
-                <th style="padding:10px 8px; text-align:left; width:80px;"></th>
-                <th style="padding:10px 8px; text-align:left; width:20%;">Name</th>
-                <th style="padding:10px 8px; text-align:left; width:15%;">ID</th>
-                <th style="padding:10px 8px; text-align:left; width:15%;">User type</th>
-                <th style="padding:10px 8px; text-align:left; width:15%;">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($users as $user)
-            <tr style="border-bottom:1px solid #eee; align-items: center; cursor: pointer;" onclick="window.location='{{ url('/staff_view/' . $user->id) }}'">
-                <td style="padding:10px 8px; width:80px;">
-                    @if($user->image)
-                        @php
-                            $isBase64 = !empty($user->image_mime);
-                            $imgSrc = $isBase64 ? ('data:' . $user->image_mime . ';base64,' . $user->image) : asset('images/' . $user->image);
-                        @endphp
-                        <img src="{{ $imgSrc }}" alt="User Image" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
-                    @else
-                        <span style="color:#aaa;">N/A</span>
-                    @endif
-                </td>
-                <td style="padding:10px 8px; width:20%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                    {{ $user->name }}
-                </td>
-
-
-                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                    {{ $user->id }}
-                </td>
-                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                    {{ $user->user_type }}
-                </td>
-                <td style="padding:10px 8px; width:15%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-
-
-                    <span class="status-badge {{ $user->acc_status ?? 'active' }}" style="padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: white;">
-                        {{ $user->acc_status ?? 'Active' }}
-                    </span>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="staff-grid">
+        @foreach ($users as $user)
+        <a class="staff-card" href="{{ url('/staff_view/' . $user->id) }}">
+            <div class="staff-media">
+                @php
+                    $imgSrc = null;
+                    if ($user->image) {
+                        $isBase64 = !empty($user->image_mime);
+                        $imgSrc = $isBase64 ? ('data:' . $user->image_mime . ';base64,' . $user->image) : asset('images/' . $user->image);
+                    }
+                @endphp
+                @if($imgSrc)
+                    <img src="{{ $imgSrc }}" alt="{{ $user->name }}">
+                @else
+                    <div class="avatar-fallback">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
+                @endif
+            </div>
+            <div class="staff-info">
+                <div class="staff-name" title="{{ $user->name }}">{{ $user->name }}</div>
+                {{-- <div class="staff-sub">ID: {{ $user->id }}</div> --}}
+                <div class="staff-email">{{$user->email}}</div>
+                <div class="staff-sub">{{ $user->user_type }}</div>
+            </div>
+            {{-- <span class="status-badge {{ strtolower($user->acc_status ?? 'active') }}">{{ $user->acc_status ?? 'Active' }}</span> --}}
+        </a>
+        @endforeach
+    </div>
     
     <!-- Pagination Controls -->
     <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">

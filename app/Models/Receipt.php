@@ -21,6 +21,10 @@ class Receipt extends Model
         'invoice_number',
         'notes',
         'receipt_number',
+        'status',
+        'verified_by',
+        'verified_at',
+        'id',
     ];
 
     protected $primaryKey = 'receipt_id';

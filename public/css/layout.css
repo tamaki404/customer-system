@@ -21,6 +21,8 @@ body .mainFrame{
 
 }
 
+
+
 /* Mobile Toggle Button */
 .mobile-toggle {
     display: none;
@@ -121,10 +123,7 @@ body .mainFrame{
     transition: all 0.3s ease;
 }
 
-.userProfile:hover .imgFrame {
-    border-color: #ffd54f;
-    transform: scale(1.05);
-}
+
 
 .imgFrame img{
     width: 100%;
@@ -207,6 +206,7 @@ body .mainFrame{
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 0 15px;
+    outline: none;
 }
 
 .nav-item::before {

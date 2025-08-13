@@ -43,12 +43,12 @@ Route::get('/verify-email-pending', function () {
 })->name('verification.pending');
 
 // Authentication routes
-Route::post('/login-user', [UserController::class, 'login']);
+Route::post('/login-user', [UserController::class, 'login'])->middleware('throttle:10,1');
 Route::post('/logout-user', [UserController::class, 'logout'])->middleware('auth');
 Route::get('/logout', [UserController::class, 'logout'])->middleware('auth');
 
 Route::post('/register-user', [UserController::class, 'register']);
-Route::get('/check-username', [UserController::class, 'checkUsername']);
+Route::get('/check-username', [UserController::class, 'checkUsername'])->middleware('throttle:30,1');
 
 // Email verification routes
 Route::get('/email/verify', [EmailVerificationController::class, 'show'])
