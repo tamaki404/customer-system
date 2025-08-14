@@ -218,37 +218,6 @@ tr td{
 }
 
 
-/* .status-pending {
-    color: #ff9800;
-    font-weight: bold;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    background: #edddd4;
-    color: #572715;
-    border: 1px solid #e6d4c3;
-}
-
-.status-processing {
-    color: #333;
-    font-weight: normal;
-        font-size: 14px;
-
-}
-
-.status-cancelled,
-.status-rejected {
-    color: #f44336;
-    font-weight: bold;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-
-} */
 
 .status-done,
 .status-completed {
