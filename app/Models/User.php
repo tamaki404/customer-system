@@ -39,6 +39,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'store_name',
         'email_verified_at'
     ];
+        public function orders()
+    {
+        return $this->hasMany(Orders::class, 'customer_id', 'id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -62,6 +66,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    
 
     public function hasVerifiedEmail()
     {

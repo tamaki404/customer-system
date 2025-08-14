@@ -66,26 +66,38 @@ class ViewController extends Controller{
 
     public function showCustomers()
     {
-        $query = User::where('user_type', 'Customer');
         $search = request('search');
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('id', 'like', "%$search%")
-                  ->orWhere('store_name', 'like', "%$search%")
-                  ->orWhere('acc_status', 'like', "%$search%")
-                  ->orWhere('username', 'like', "%$search%");
-            });
-        }
-        $users = $query->paginate(25);
-        $verifiedCustomersCount = User::where('user_type', 'Customer')->where('acc_status', 'accepted')->count();
-        
-        // Append search parameter to pagination links
-        if ($search) {
-            $users->appends(['search' => $search]);
-        }
-        
+
+        $users = User::where('user_type', 'Customer')
+            ->when($search, function ($query, $search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('id', 'like', "%$search%")
+                    ->orWhere('store_name', 'like', "%$search%")
+                    ->orWhere('acc_status', 'like', "%$search%")
+                    ->orWhere('username', 'like', "%$search%");
+                });
+            })
+            ->withCount([
+                'orders as orderCount' => function ($q) {
+                    $q->where('status', 'Completed');
+                }
+            ])
+            ->withSum([
+                'orders as totalOrders' => function ($q) {
+                    $q->where('status', 'Completed');
+                }
+            ], 'total_price') // ✅ Using total_price column here
+            ->withMax('orders as lastOrder', 'created_at')
+            ->paginate(25);
+
+        $verifiedCustomersCount = User::where('user_type', 'Customer')
+            ->where('acc_status', 'accepted')
+            ->count();
+
         return view('customers', compact('users', 'verifiedCustomersCount', 'search'));
     }
+
+
     public function viewCustomer($id)
     {
         $customer = User::findOrFail($id);

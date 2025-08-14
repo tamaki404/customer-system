@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ asset('css/customers.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <title>Document</title>
+    <title>Customers</title>
 </head>
 <body>
 <script src="{{ asset('js/fadein.js') }}"></script>
@@ -24,13 +24,8 @@
         <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
     </form>
 
-    
-
     <div class="titleCount"> 
-        <h2>Customer List</h2> 
-        {{-- <span style=" width: auto; display: flex; flex-direction: row; gap: 5px;">
-            <p style="font-weight: bold;">Verified Customers: </p>{{ $verifiedCustomersCount }}
-        </span> --}}
+        <h2>Customers</h2> 
     </div>
     
     <!-- Pagination Info -->
@@ -39,7 +34,7 @@
     </div>
     <div class="customerList" style="padding: 15px;">
         @if(isset($users) && count($users) > 0)
-        <table style="width:100%; border-collapse:collapse;">
+        {{-- <table style="width:100%; border-collapse:collapse;">
             <thead>
                 <tr style="background:#f7f7fa;">
                     <th style="padding:10px 8px;text-align:left;">Customer ID</th>
@@ -127,6 +122,71 @@
                 </tr>
                 @endforeach
             </tbody>
+        </table> --}}
+
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:#f7f7fa; text-align: center;">
+                    <th style="width: 50px; padding: 10px;">#</th> 
+                    <th style="width: 250px;">Store</th>
+                    <th style="width: 80px;">No. of Orders</th>
+                    <th style="width: 150px;">Total Orders</th>
+                    <th style="width: 120px;">Status</th>
+                    <th style="width: 140px;">Last Order</th>
+                    <th style="width: 160px;">Action</th>
+                </tr>
+                
+            </thead>
+            <tbody>
+                @foreach($users as $i => $user)
+                    @php 
+                        $statusClasses = [
+                            'Active' => 'status-active',
+                            'Pending' => 'status-pending',
+                            'Suspended' => 'status-suspended',
+                        ];
+                    @endphp
+                    <tr style="height: 50px; text-align: center; cursor:pointer;" onclick="window.location='{{ url('/customer_view/' . $user->id) }}'">
+                        <td style="padding:10px 8px; font-size: 13px;">
+                            {{ $loop->iteration }}
+                        </td>
+                        <td style="padding:10px 8px; font-size: 13px;">
+                            {{$user->store_name}}
+                        </td>
+                        <td style="padding:10px 8px; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                            {{ $user->orderCount }}
+                        </td>
+                        <td style="padding:10px 8px; font-size: 13px;">
+                            ₱{{ number_format($user->totalOrders, 2) }}
+                        </td>
+                        <td>
+                           <div style="display: flex; align-items: center; justify-content: center;" class="{{ $statusClasses[$user->acc_status] ?? 'status-default' }}">
+                            ● {{ $user->acc_status }}
+                           </div>
+                        </td>
+                        <td style="padding:10px 8px; font-size: 13px;">
+                            {{ $user->lastOrder ? \Carbon\Carbon::parse($user->lastOrder)->format('F j, Y') : 'No orders' }}
+                        </td>
+                        <td>
+                            @if($user->acc_status !== 'Active')
+                                <form action="{{ url('/customer/activate/' . $user->id) }}" method="POST" style="display: inline-block;">
+                                    @csrf
+                                    <button type="submit" class="quick-activate-btn" onclick="event.stopPropagation();">
+                                        Activate
+                                    </button>
+                                </form>
+                            @else
+                                <span style="color: #28a745; font-size: 14px; font-weight: bold;"></span>
+                            @endif
+
+
+                         </td>                    
+                    </tr>
+
+
+                
+                @endforeach
+            </tbody>
         </table>
         
         <!-- Pagination Controls -->
@@ -157,7 +217,9 @@
             <p>No customers found.</p>
         @endif
     </div>
+
 </div>
+
 </body>
 </html>
 @endsection

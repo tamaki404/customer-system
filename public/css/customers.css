@@ -17,7 +17,7 @@
     cursor: pointer;
 }
 .customersFrame table tr:hover {
-    background: #ffde59;
+    background: #f1f1f1;
     box-shadow: 0 2px 8px #0001;
     font-weight: bold;
 }
@@ -140,6 +140,87 @@
     flex-wrap: wrap;
     gap: 10px;
 }
+
+
+table {
+    table-layout: fixed;
+}
+
+
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+tr th{
+    font-weight: normal;
+    font-size: 14px;
+    color: #888;
+}
+tr td{
+    border-bottom: #8888882b solid 0.1px;
+}
+
+
+
+.status-active {
+    font-size: 13px;
+    color: #19c140;
+    background-color: rgba(43, 250, 28, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #19c140;
+    align-self: center;
+    justify-self: center;
+}
+.status-rejected {
+    font-size: 13px;
+    color: rgb(250, 28, 28);
+    background-color: rgba(250, 28, 28, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid rgb(250, 28, 28);
+    align-self: center;
+    justify-self: center;
+}
+
+.status-pending {
+    font-size: 13px;
+    color: #888;
+    background-color: rgba(222, 222, 222, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #888;
+    align-self: center;
+    justify-self: center;
+}
+
+.status-default {
+    color: #757575;
+}
+
+.quick-activate-btn{
+    font-size: 14px;
+    border-radius: 8px;
+    color: #333;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    border: none;
+    padding: 5px;
+    width: 100px;
+    background-color: #ffde59;
+    font-weight: bold;
+    
+}
+
+
+
+
+
+
+
 
 @media (max-width: 768px) {
     .customersFrame {
