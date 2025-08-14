@@ -56,42 +56,68 @@
         </div>
 
 
-        <div class="productList" style="padding: 15px;">
-            @forelse($orders as $order)
-                <a class="order-card" onclick="window.location='{{ route('order.view', $order->order_id) }}'" style="text-decoration: none; color: inherit;">
-                    @php $dateToShow = $order->action_at ?? $order->created_at; @endphp
-                    <p style="margin: 0; font-size: 15px;">{{ \Carbon\Carbon::parse($dateToShow)->format('F j, Y') }}</p>
-                    <span>
-                        <p class="store-name">{{ $order->user->store_name }}</p>
-                         @php
-                            $status = $order->status;
+        <div class="productList" style="padding: 5px;">
+           @if ($orders->count() > 0)
 
-                            $statusClasses = [
-                                'Pending' => 'status-pending',
-                                'Processing' => 'status-processing',
-                                'Cancelled' => 'status-cancelled',
-                                'Rejected' => 'status-rejected',
-                                'Done' => 'status-done',
-                                'Completed' => 'status-completed',
-                            ];
-                        @endphp
+                <table style="width:100%; border-collapse:collapse;" class="orders-table">
+                    <thead>
+                        <tr style="background:#f7f7fa; text-align: center;">
+                            <th style="width: 50px;">#</th> 
+                            <th style="width: 140px;">Date</th>
+                            <th style="width: 250px;">Store Name</th>
+                            <th style="width: 80px;">Status</th>
+                            <th style="width: 80px;">Qty</th>
+                            <th style="width: 120px;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($orders as $order)
+                            @php 
+                                $dateToShow = $order->action_at ?? $order->created_at;
+                                $statusClasses = [
+                                    'Pending' => 'status-pending',
+                                    'Processing' => 'status-processing',
+                                    'Cancelled' => 'status-cancelled',
+                                    'Rejected' => 'status-rejected',
+                                    'Done' => 'status-done',
+                                    'Completed' => 'status-completed',
+                                ];
+                            @endphp
+                            <tr style="height: 50px; text-align: center; cursor:pointer;" 
+                                onclick="window.location='{{ route('order.view', $order->order_id) }}'">
+                                
+                                <td style="padding:10px 8px; font-size: 13px;">
+                                    {{ $loop->iteration }}
+                                </td>
+                                <td style="padding:10px 8px; font-size: 13px;">
+                                    {{ \Carbon\Carbon::parse($dateToShow)->format('F j, Y') }}
+                                </td>
+                                <td style="padding:10px 8px; font-size: 13px; font-weight: bold;">
+                                    {{ $order->user->store_name }}
+                                </td>
+                                <td style="padding:10px; font-size: 13px;" 
+                                    class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
+                                    {{ $order->status }}
+                                </td>
+                                <td style="padding:10px 8px; font-size: 13px;">
+                                    x{{ $order->total_quantity }}
+                                </td>
+                                <td style="color: green; font-weight: bold; padding:10px 8px; font-size: 13px;">
+                                    ₱{{ number_format($order->total_amount, 2) }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td ></td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            @else
 
-                        <p class="{{ $statusClasses[ $order->status] ?? 'status-default' }}">
-                            {{  $order->status }}
-                        </p>
+                <p style="text-align:center; margin:0; width:100%; line-height:500px; font-size: 15px; color: #888">No orders found</p>
 
-
-                        <p>x{{ $order->total_quantity }}</p>
-                        <p style="color: green; font-size: 16px; font-weight: bold;">₱{{ number_format($order->total_amount, 2) }}</p>
-                    </span>
-
-                    
-
-                </a>
-            @empty
-                <div class="noInput">No orders found.</div>
-            @endforelse
-
+            @endif
         </div>
 
 
