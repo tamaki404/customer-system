@@ -32,7 +32,7 @@
 
 
         <div class="titleCount">
-            <h2 style="margin: 5px; width: 100%">Orders List</h2>
+            <h2 style="margin: 5px; width: 100%">Orders</h2>
         </div>
 
         @php
@@ -59,7 +59,7 @@
         <div class="productList" style="padding: 5px;">
            @if ($orders->count() > 0)
 
-                <table style="width:100%; border-collapse:collapse;" class="orders-table">
+                {{-- <table style="width:100%; border-collapse:collapse;" class="orders-table">
                     <thead>
                         <tr style="background:#f7f7fa; text-align: center;">
                             <th style="width: 50px;">#</th> 
@@ -112,7 +112,68 @@
                             </tr>
                         @endforelse
                     </tbody>
+                </table> --}}
+
+                <table style="width:100%; border-collapse:collapse;" class="orders-table">
+                    <thead>
+                        <tr style="background:#f7f7fa; text-align: center; ">
+                            <th style="width: 50px; padding: 10px;">#</th> 
+                            <th style="width: 140px;">Date</th>
+                            <th style="width: 250px;">Customer</th>
+                            <th style="width: 80px;">Total</th>
+                            <th style="width: 80px;">Items</th>
+                            <th style="width: 120px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($orders as $order)
+                            @php 
+                                $dateToShow = $order->action_at ?? $order->created_at;
+                                $statusClasses = [
+                                    'Pending' => 'status-pending',
+                                    'Processing' => 'status-processing',
+                                    'Cancelled' => 'status-cancelled',
+                                    'Rejected' => 'status-rejected',
+                                    'Done' => 'status-done',
+                                    'Completed' => 'status-completed',
+                                ];
+                            @endphp
+                            <tr style="height: 50px; text-align: center; cursor:pointer;" 
+                                onclick="window.location='{{ route('order.view', $order->order_id) }}'">
+                                
+                                <td style="padding:10px 8px; font-size: 13px;">
+                                    {{ $loop->iteration }}
+                                </td>
+                                <td style="padding:10px 8px; font-size: 13px;">
+                                    {{ \Carbon\Carbon::parse($dateToShow)->format(' j F, Y') }}
+                                </td>
+                                <td style="padding:10px 8px; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                                    {{ $order->user->store_name }}
+                                </td>
+                                <td style="padding:10px 8px; font-size: 13px;">
+                                    ₱{{ number_format($order->total_amount, 2) }}
+                                </td>
+                                <td style="padding:10px 8px; font-size: 13px;">
+                                    x{{ $order->total_quantity }}
+                                </td>
+                                <td >
+                              <div style="display: flex; align-items: center; justify-content: center;" 
+                                    class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
+                                    ● {{ $order->status }}
+                                </div>
+
+                                </td>
+
+
+                            </tr>
+                        @empty
+                            <tr>
+                                <td ></td>
+                            </tr>
+                        @endforelse
+                    </tbody>
                 </table>
+
             @else
 
                 <p style="text-align:center; margin:0; width:100%; line-height:500px; font-size: 15px; color: #888">No orders found</p>

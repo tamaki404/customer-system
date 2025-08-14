@@ -65,8 +65,8 @@
 
 .status-tabs {
     display: flex;
-    gap: 8px;
-    margin: 10px 0 20px 0;
+    gap: 5px;
+    margin: 5px 0 5px 0;
     flex-wrap: wrap;
 }
 
@@ -95,56 +95,6 @@
 }
 
 
-.status-pending {
-    color: #ff9800;
-    font-weight: bold;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    background: #edddd4;
-    color: #572715;
-    border: 1px solid #e6d4c3;
-}
-
-.status-processing {
-    color: #333;
-    font-weight: normal;
-        font-size: 14px;
-
-}
-
-.status-cancelled,
-.status-rejected {
-    color: #f44336;
-    font-weight: bold;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-
-}
-
-.status-done,
-.status-completed {
-    color: #4caf50;
-    font-weight: bold;
-        padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: bold;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    background: #d4edda;
-    color: #155724;
-    border: none;
-    width: auto;
-}
-
-.status-default {
-    color: #757575;
-}
 
 
 .noInput{
@@ -252,17 +202,107 @@ table {
     table-layout: fixed;
 }
 
-tbody tr:nth-child(even) {
-    background-color: #f9f9f9; 
-}
 
-tbody tr:nth-child(odd) {
-    background-color: #ffffff; 
-}
 
 tbody tr:hover {
     background-color: #f1f1f1;
 }
+
+tr th{
+    font-weight: normal;
+    font-size: 14px;
+    color: #888;
+}
+tr td{
+    border-bottom: #8888882b solid 0.1px;
+}
+
+
+/* .status-pending {
+    color: #ff9800;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    background: #edddd4;
+    color: #572715;
+    border: 1px solid #e6d4c3;
+}
+
+.status-processing {
+    color: #333;
+    font-weight: normal;
+        font-size: 14px;
+
+}
+
+.status-cancelled,
+.status-rejected {
+    color: #f44336;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+
+} */
+
+.status-done,
+.status-completed {
+    font-size: 13px;
+    color: #19c140;
+    background-color: rgba(43, 250, 28, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #19c140;
+    align-self: center;
+    justify-self: center;
+}
+.status-cancelled,
+.status-rejected {
+    font-size: 13px;
+    color: rgb(250, 28, 28);
+    background-color: rgba(250, 28, 28, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid rgb(250, 28, 28);
+    align-self: center;
+    justify-self: center;
+}
+.status-processing {
+    font-size: 13px;
+    color: #ce7823;
+    background-color: rgba(250, 161, 28, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #ce7823;
+    align-self: center;
+    justify-self: center;
+}
+
+.status-pending {
+    font-size: 13px;
+    color: #888;
+    background-color: rgba(222, 222, 222, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #888;
+    align-self: center;
+    justify-self: center;
+}
+
+.status-default {
+    color: #757575;
+}
+
+
 
 
 @media (max-width: 768px) {
