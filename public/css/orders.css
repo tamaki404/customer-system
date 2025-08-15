@@ -154,7 +154,7 @@
     overflow-y: scroll;
     width: 100%;
     margin: 0;
-        overflow-x: auto;
+    overflow-x: auto;
     width: 100%;
     box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px 0, rgba(0, 0, 0, 0.08) 0 0 0 1px;
     border-radius: 10px;

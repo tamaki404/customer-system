@@ -214,6 +214,11 @@
                     <p>My Orders</p>
                     <div class="nav-indicator"></div>
                 </a>
+                <a class="nav-item{{ $currentRoute == 'purchase_order' ? ' active' : '' }}" href="{{ route('purchase_order') }}">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <p>Purchase Order</p>
+                    <div class="nav-indicator"></div>
+                </a>
                 
                 <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('reports') }}">
                     <span class="material-symbols-outlined">bar_chart</span>

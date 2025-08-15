@@ -121,7 +121,7 @@
     </div>
 
     
-    <div class="productList">
+    <div class="productList" style="padding: 10px">
         @if (auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
 
             @if(isset($products) && count($products) > 0)

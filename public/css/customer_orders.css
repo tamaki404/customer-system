@@ -291,7 +291,7 @@ span p{
         height: auto;
     }
     .date-search input{
-        width: 1px;
+        width: 150px;
     }
     .date-search span{
         font-size: 13px;
