@@ -242,7 +242,15 @@ class OrderController extends Controller
                     ;
                 });
             }
-            $products = $query->orderByDesc('created_at')->paginate(15);
+            $products = $query
+                ->select('products.*')
+                ->selectSub(function ($q) {
+                    $q->from('orders')
+                    ->selectRaw('COUNT(*)')
+                    ->whereColumn('orders.product_id', 'products.id');
+                }, 'sold_quantity')
+                ->orderByDesc('created_at')
+                ->paginate(15);
             if ($search) {
                 $products->appends(['search' => $search]);
             }

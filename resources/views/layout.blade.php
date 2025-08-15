@@ -93,7 +93,7 @@
 
             <a class="nav-item{{ $currentRoute == 'store' ? ' active' : '' }}" href="{{ route('store') }}" data-tooltip="Store">
                 <span class="material-symbols-outlined">store</span>
-                <p>Products</p>
+                <p>Inventory</p>
                 <div class="nav-indicator"></div>
             </a>
 

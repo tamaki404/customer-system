@@ -294,7 +294,6 @@ class ViewController extends Controller{
         return redirect()->route('staffs')->with('success', 'Staff account deleted successfully!');
     }
 
-
         public function showDashboard()
         {
 
@@ -459,12 +458,6 @@ class ViewController extends Controller{
         ));
 
         }
-
-
-
-
-
-
 
         public function ordersDetails($order_id)
         {
