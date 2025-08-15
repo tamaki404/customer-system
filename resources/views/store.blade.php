@@ -39,6 +39,11 @@
                         <span id="description-error" class="error-message"></span>
                     </div>
                     <div>
+                        <label>Product ID</label>
+                        <input type="text" name="product_id" placeholder="Product ID" id="product_id" maxlength="255" required>
+                        <span id="product_id-error" class="error-message"></span>
+                    </div>
+                    <div>
                         <label>Quantity</label>
                         <input type="number" name="quantity" id="quantity" min="0" required>
                         <span id="quantity-error" class="error-message"></span>
@@ -117,7 +122,7 @@
 
     
     <div class="productList">
-        @if (auth()->user()->user_type === 'Admin')
+        @if (auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
 
             @if(isset($products) && count($products) > 0)
                 <table style="width:100%; border-collapse:collapse;" class="orders-table">
@@ -152,7 +157,7 @@
                                 <p style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{ $product->name }}</p>
                             </td>
                             <td style="padding:10px 8px; font-size: 13px;">₱{{ number_format($product->price, 2) }}</td>
-                            <td style="padding:10px 8px; font-size: 13px;">{{ $product->id }}</td>
+                            <td style="padding:10px 8px; font-size: 13px;">{{ $product->product_id }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->sold_quantity }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->quantity }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">

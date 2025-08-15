@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->string('status')->nullable();
             $table->timestamps();
+            $table->string('product_id')->nullable();
         });
     }
 
