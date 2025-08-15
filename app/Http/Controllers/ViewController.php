@@ -15,22 +15,6 @@ use Illuminate\Support\Facades\DB;
 class ViewController extends Controller{
 
 
-    // public function allOrders(){
-    //     $orders = Orders::orderByDesc('created_at')->get();
-    //     return view('orders', compact('orders'));
-    // }
-
-
-
-
-// public function yourOrders($id)
-// {
-//     $user = auth()->user();  
-//     $customer = User::findOrFail($id);
-
-//     $orders = Orders::where('order_id', $id)->orderByDesc('created_at')->get();
-//     return view('orders', compact('orders', 'user'));
-// }
     public function profile()
     {
         $user = auth()->user();
@@ -86,7 +70,7 @@ class ViewController extends Controller{
                 'orders as totalOrders' => function ($q) {
                     $q->where('status', 'Completed');
                 }
-            ], 'total_price') // ✅ Using total_price column here
+            ], 'total_price') 
             ->withMax('orders as lastOrder', 'created_at')
             ->paginate(25);
 
@@ -331,6 +315,16 @@ class ViewController extends Controller{
             ->limit(5)
             ->get(['receipt_id', 'verified_by', 'receipt_number', 'verified_at', 'status']);
 
+            $verifiedOrdersToday = Orders::where(function ($query) use ($today) {
+                $query->whereNotNull('action_by')
+                    ->whereDate('action_at', $today);
+            })
+            ->orWhereIn('status', ['Cancelled', 'Rejected', 'Processing'])
+            ->orderByDesc('action_at')
+            ->limit(5)
+            ->get(['order_id', 'action_by', 'customer_id', 'action_at', 'status']);
+
+
 
             $oneWeekAgo = Carbon::now()->subWeek();
 
@@ -458,7 +452,8 @@ class ViewController extends Controller{
             'userPendingOrders',
             'customerTopProductLabels',
             'customerTopProductQuantities',
-            'pendingWeekOrder'
+            'pendingWeekOrder',
+            'verifiedOrdersToday'
 
 
         ));

@@ -29,7 +29,19 @@
             </div>
         @endif
 
-        <a href=""><-- Customers List</a>
+        <a class="go-back-a" href="/customers"><- Customers</a>
+        <style>
+            .go-back-a{
+                font-size: 15px;
+                color: #f8912a;
+                text-decoration: none;
+                width: auto;
+            }
+            .go-back-a:hover{
+                color: #cd741c;
+            }
+        </style>
+        
         
         <h2>Customer Details</h2>
 

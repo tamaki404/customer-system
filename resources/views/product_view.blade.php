@@ -15,10 +15,21 @@
 <body>
 
 <div class="productDetailFrame">
+    <a class="go-back-a" href="/store"><- Store</a>
+        <style>
+            .go-back-a{
+                font-size: 15px;
+                color: #f8912a;
+                text-decoration: none;
+                width: 80px;
+            }
+            .go-back-a:hover{
+                color: #cd741c;
+            }
+        </style>
+
     <span><h2 style="font-size: 25px; font-weight: bold; color: #333;">Product View</h2> </span>
-    <div class="backLink">
-        <a href="{{ url('/store') }}">&larr; Back to Store</a>
-    </div>
+
     <div class="mainBlock">
         <div class="product-media">
             @php

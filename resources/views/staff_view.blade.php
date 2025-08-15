@@ -16,11 +16,25 @@
     <script src="{{ asset('js/fadein.js') }}"></script>
     
     <div class="staffFrame">
+         <a class="go-back-a" href="/staffs" ><- Staffs</a>
+            <style>
+                .go-back-a{
+                    font-size: 15px;
+                    color: #f8912a;
+                    text-decoration: none;
+                    width: 80px;
+                    margin-right: auto
+                }
+                .go-back-a:hover{
+                    color: #cd741c;
+                }
+            </style>
         <div class="header">
+           
             <h2 >Staff Details</h2>
-            <a href="{{ url('/staffs') }}" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back to Staff List
-            </a>
+            
+
+
         </div>
 
         

@@ -16,7 +16,18 @@
 </head>
 <body>
     <div class="receiptFrame">
-            <a href="{{ url()->previous() }}" class="returnBtn">&larr; Return</a>
+            <a class="go-back-a" href="{{ url()->previous() }}"><- Receipt</a>
+            <style>
+                .go-back-a{
+                    font-size: 15px;
+                    color: #f8912a;
+                    text-decoration: none;
+                    width: 80px;
+                }
+                .go-back-a:hover{
+                    color: #cd741c;
+                }
+            </style>
 
     @if($receipt && $receipt->receipt_image)
         @php

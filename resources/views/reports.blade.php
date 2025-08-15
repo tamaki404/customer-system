@@ -56,7 +56,7 @@
             </form>
 
             <div class="report-actions">
-                <a href="{{ route('reports.export', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
+                {{-- <a href="{{ route('reports.export', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a> --}}
                 <a href="{{ route('reports.export', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
@@ -164,7 +164,7 @@
             </form>
 
             <div class="report-actions">
-                <a href="{{ route('reports.customers', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
+                {{-- <a href="{{ route('reports.customers', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a> --}}
                 <a href="{{ route('reports.customers', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
@@ -292,7 +292,7 @@
             </form>
 
             <div class="report-actions">
-                <a href="{{ route('reports.orders', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
+                {{-- <a href="{{ route('reports.orders', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a> --}}
                 <a href="{{ route('reports.orders', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
@@ -457,7 +457,7 @@
             </form>
 
             <div class="report-actions">
-                <a href="{{ route('reports.products', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
+                {{-- <a href="{{ route('reports.products', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a> --}}
                 <a href="{{ route('reports.products', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
@@ -555,7 +555,7 @@
 
             <div class="report-actions">
                 <a href="{{ route('date.search', request()->only(['from_date','to_date'])) }}" class="btn">🔎 View Receipts List</a>
-                <a href="{{ route('reports.receipts', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a>
+                {{-- <a href="{{ route('reports.receipts', ['type' => 'excel'] + request()->all()) }}" class="btn">📊 Export Excel</a> --}}
                 <a href="{{ route('reports.receipts', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 

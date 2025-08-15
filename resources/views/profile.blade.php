@@ -13,8 +13,8 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="profile-wrapper">
-    <div class="profile-card">
+    <div class="profile-wrapper" style="">
+    <div class="profile-card" style="overflow-x: auto">
         <div class="profile-header">
             @php
                 $isBase64 = !empty(auth()->user()->image_mime);
@@ -28,6 +28,7 @@
                 @endif
 
                 <p class="profile-role">{{ ucfirst(auth()->user()->user_type) }}</p>
+                <p style="font-size: 12px; margin: 0; color: #888;">ID: {{ auth()->user()->id }}</p>
             </div>
         </div>
         <script src="{{ asset('js/fadein.js') }}"></script>

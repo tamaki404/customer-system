@@ -17,6 +17,18 @@
 <body>
     <script src="{{ asset('js/fadein.js') }}"></script>
     <div class="receiptFrame">
+        <a class="go-back-a" href="/receipts"><- Receipts</a>
+        <style>
+            .go-back-a{
+                font-size: 15px;
+                color: #f8912a;
+                text-decoration: none;
+                width: 80px;
+            }
+            .go-back-a:hover{
+                color: #cd741c;
+            }
+        </style>
         <span style="display: flex; width: 100%; justify-content: space-between;"><h2>Receipt #{{ $receipt->receipt_number }}</h2> <p>{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p></span>
 
         <div class="mainBlock">

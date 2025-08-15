@@ -58,9 +58,18 @@ class OrderController extends Controller
                         ], 400);
                     }
                 }
+                $date = date('Ymd');
+                function randomBase36String(int $length): string {
+                    $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    $str = '';
+                    for ($i = 0; $i < $length; $i++) {
+                        $str .= $chars[random_int(0, strlen($chars) - 1)];
+                    }
+                    return $str;
+                }
 
-                // Generate unique order ID
-                $order_id = 'ORD-' . time() . '-' . $user->id;
+                $order_id = 'ORD-' . $date . '-' . randomBase36String(5);
+
 
                 // Process each item
                 foreach ($items as $item) {

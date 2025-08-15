@@ -128,12 +128,12 @@
             <thead>
                 <tr style="background:#f7f7fa; text-align: center;">
                     <th style="width: 50px; padding: 10px;">#</th> 
-                    <th style="width: 250px;">Store</th>
+                    <th style="width: 100px;"></th>
+                    <th style="width: 200px;">Store</th>
                     <th style="width: 80px;">No. of Orders</th>
                     <th style="width: 150px;">Total Orders</th>
                     <th style="width: 120px;">Status</th>
                     <th style="width: 140px;">Last Order</th>
-                    <th style="width: 160px;">Action</th>
                 </tr>
                 
             </thead>
@@ -150,7 +150,19 @@
                         <td style="padding:10px 8px; font-size: 13px;">
                             {{ $loop->iteration }}
                         </td>
-                        <td style="padding:10px 8px; font-size: 13px;">
+                        <td>
+                             @if($user->image)
+                            @php
+                                $isBase64 = !empty($user->image_mime);
+                                $imgSrc = $isBase64 ? ('data:' . $user->image_mime . ';base64,' . $user->image) : asset('images/' . $user->image);
+                            @endphp
+                            <img src="{{ $imgSrc }}" alt="User Image" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                        @else
+                            <span style="color:#aaa;">N/A</span>
+                        @endif
+
+                        </td>
+                        <td style="padding:10px 8px; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
                             {{$user->store_name}}
                         </td>
                         <td style="padding:10px 8px; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
@@ -167,20 +179,7 @@
                         <td style="padding:10px 8px; font-size: 13px;">
                             {{ $user->lastOrder ? \Carbon\Carbon::parse($user->lastOrder)->format('F j, Y') : 'No orders' }}
                         </td>
-                        <td>
-                            @if($user->acc_status !== 'Active')
-                                <form action="{{ url('/customer/activate/' . $user->id) }}" method="POST" style="display: inline-block;">
-                                    @csrf
-                                    <button type="submit" class="quick-activate-btn" onclick="event.stopPropagation();">
-                                        Activate
-                                    </button>
-                                </form>
-                            @else
-                                <span style="color: #28a745; font-size: 14px; font-weight: bold;"></span>
-                            @endif
-
-
-                         </td>                    
+                                         
                     </tr>
 
 

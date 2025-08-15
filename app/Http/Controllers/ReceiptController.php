@@ -140,6 +140,7 @@ class ReceiptController extends Controller{
             $validated['receipt_image'] = $base64Image;
             $validated['receipt_image_mime'] = $mimeType;
         }
+        
 
         // Server-side enforced fields
         $validated['id'] = Auth::id();

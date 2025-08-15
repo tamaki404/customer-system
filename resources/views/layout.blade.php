@@ -129,10 +129,15 @@
                 <p>Orders</p>
                 <div class="nav-indicator"></div>
             </a>
-
+w
             <a class="nav-item{{ $currentRoute == 'customers' ? ' active' : '' }}" href="{{ route('customers') }}" data-tooltip="Customer Management">
                 <span class="material-symbols-outlined">groups</span>
                 <p>Customers</p>
+                <div class="nav-indicator"></div>
+            </a>
+            <a class="nav-item{{ $currentRoute == 'customers' ? ' active' : '' }}" href="{{ route('purchase_order') }}" data-tooltip="Customer Management">
+                <span class="material-symbols-outlined">receipt_long</span>
+                <p>Purchase Order</p>
                 <div class="nav-indicator"></div>
             </a>
 

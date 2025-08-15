@@ -19,7 +19,8 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ProductController;
 use App\Models\Product;
 use App\Http\Controllers\OrderController;
-use App\Models\Order;
+use App\Http\Controllers\PurchaseOrderController;
+
 
 // Public routes (no authentication required)
 Route::get('/login', function () {
@@ -150,6 +151,11 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/customer/activate/{id}', [ViewController::class, 'activateCustomer'])->name('customer.activate');
         Route::post('/customer/suspend/{id}', [ViewController::class, 'suspendCustomer'])->name('customer.suspend');
     });
+
+
+    //purchase order
+    Route::get('/purchase_order', [PurchaseOrderController::class, 'purchaseOrder'])->name('purchase_order');
+
 
 
 
