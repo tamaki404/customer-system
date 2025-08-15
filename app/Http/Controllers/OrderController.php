@@ -239,6 +239,7 @@ class OrderController extends Controller
                     $q->where('name', 'like', "%$search%")
                     ->orWhere('id', 'like', "%$search%")
                     ->orWhere('status', 'like', "%$search%")
+                    ->orWhere('product_id', 'like', "%$search%")
                     ;
                 });
             }

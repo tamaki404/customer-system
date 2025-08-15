@@ -19,8 +19,23 @@ body .mainFrame{
     position: relative;
         overflow-x: auto;
 
-}
 
+    }
+
+
+/* category styles */
+.nav-group {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+.nav-group-title {
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #888;
+    padding-left: 4px;
+ }
 
 
 /* Mobile Toggle Button */
