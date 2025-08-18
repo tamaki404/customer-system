@@ -15,6 +15,8 @@
 </head>
 <body>
     <div class="create-layout">
+        <div id="message-area" style="color: red; margin-bottom: 10px;"></div>
+
         <div class="title">
             <a class="go-back-a" href="/purchase_order"><- Purchase order</a>
            <div class="checkout-steps">
@@ -40,7 +42,7 @@
                 </ul>
             </div>
 
-            <h2>Create Order</h2>
+            {{-- <h2>Create Order</h2> --}}
         </div>
 
         <!-- Display Validation Errors -->
@@ -57,25 +59,26 @@
         <form id="order-form" method="POST" action="{{ route('purchase_orders.store') }}" enctype="multipart/form-data">
             @csrf
             
-            <div class="form-container">
+            <div class="form-container" style="overflow: hidden">
                 <!-- STEP 1: Add to cart -->
-                <section class="products step-section" data-step="1">
-                    <div class="number">
-                        <span class="material-symbols-outlined">looks_one</span>
-                    </div>
-                    <div class="products">
-                        <div class="box-description">
-                            <h2>Add to cart</h2>
-                            <p>Choose products here to add to cart</p>
+                <section class="products step-section" data-step="3" style="z-index: 1">
+          
+                    <div class="products" style="z-index: 1">
+                        <div class="box-description" >
+                            <div class="box-description-inner">
+                                <h2>Add to cart</h2>
+                                <p>Choose products here to add to cart</p>
+                            </div>
+
+
+                            <div class="date-search">
+                                <form method="GET" action="">
+                                    <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID & Status">
+                                    <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                                </form>
+                             </div>
                         </div>
                         
-                        <!-- Search Form (separate from main form) -->
-                        <div class="date-search">
-                            <form method="GET" action="">
-                                <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID & Status">
-                                <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
-                            </form>
-                        </div>
 
                         <div class="products-box">
                             @if(isset($products) && count($products) > 0)
@@ -139,15 +142,13 @@
                 </section>
 
                 <!-- STEP 2: Edit Order -->
-                <section class="edit-order step-section" data-step="2">
-                    <div class="number">
-                        <span class="material-symbols-outlined">looks_two</span>
-                    </div>
-                    <div class="edit-orders">
+                <section class="edit-order step-section" data-step="2" style="overflow: hidden">
+
+                  
+                    <div class="edit-orders" >
                         <h2>Edit Order</h2>
                         <p>Review cart items, adjust quantities, or remove products.</p>
                         <div id="cart-items">
-                            <!-- dynamically filled cart items -->
                         </div>
                     </div>
                     <div class="step-nav">
@@ -157,48 +158,82 @@
                 </section>
 
                 <!-- STEP 3: Address -->
-                <section class="address-order step-section" data-step="3" style="display:none;">
-                    <div class="number">
-                        <span class="material-symbols-outlined">looks_3</span>
+                <section class="address-order step-section" data-step="1" style="display:none;">
+                    <div class="address-form">
+                        <h2>Where are you sending to?</h2>
+                        <p>Enter the address where you want your order delivered.</p>
+
+                        <div class="addresses">
+                            <div class="add-form">
+                                <label for="postal_code">Postal Code<span style="color: red;">*</span></label>
+                                <input type="text" name="postal_code" id="postal_code" required value="{{ old('postal_code') }}">
+                            </div>
+                            <div class="add-form">
+                                <label for="region">Region</label>
+                                <select id="region" style="width: 200px" name="region">
+                                    <option value="">-- Select Region --</option>
+                                    @foreach($regions as $region)
+                                        <option value="{{ $region->region_id }}">{{ $region->region_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="add-form">
+                                <label for="province">Province</label>
+                                <select id="province" style="width: 200px" name="province"></select>
+                            </div>
+
+                            <div class="add-form">
+                                <label for="municipality">Municipality</label>
+                                <select style="width: 220px" id="municipality" name="municipality"></select>
+                            </div>
+
+                            <div class="add-form">
+                                <label for="barangay">Barangay</label>
+                                <select id="barangay" style="width: 230px" name="barangay"></select>
+                            </div>
+
+                            <div class="add-form">
+                                <label for="street">Street Name, Building, House No. <span style="color: red;">*</span></label>
+                                <input type="text" style="width: 350px" name="street" id="street" required value="{{ old('street') }}">
+                            </div>
+
+                            <div class="add-form">
+                                <label for="company_name">Company Name <span style="color: red;">*</span></label>
+                                <input type="text" name="company_name" style="width: 300px" id="company_name" required value="{{ auth()->user()->store_name ?? old('contact_phone') }}" readonly>
+                            </div>
+
+                          
+
+                            <div class="add-form">
+                                <label>Billing Address <span style="color: red;">*</span></label>
+                                <input name="billing_address" style="width: 300px" required>{{ old('billing_address') }}
+                            </div>
+
+                        </div>
+
+                        <div class="contact-form">
+                            <h3>Contact Information</h3>
+                            <div class="add-form">
+                                <label>Mobile <span style="color: red;">*</span></label>
+                                <input type="text" style="width: 170px" name="contact_phone" required value="{{ auth()->user()->mobile ?? old('contact_phone') }}" readonly>
+                            </div>
+
+
+                            <div class="add-form">
+                                <label>Email <span style="color: red;">*</span></label>
+                                <input type="email" style="width: 300px" name="contact_email" value="{{ auth()->user()->email }}" readonly>
+                            </div>
+
+
+
+                        </div>
+
+                        
+
+
                     </div>
-                    <h2>Where are you sending to?</h2>
-
-                    <label for="postal_code">Postal Code<span style="color: red;">*</span></label>
-                    <input type="text" name="postal_code" id="postal_code" required value="{{ old('postal_code') }}">
-
-                    <label for="region">Region</label>
-                    <select id="region" name="region">
-                        <option value="">-- Select Region --</option>
-                        @foreach($regions as $region)
-                            <option value="{{ $region->region_id }}">{{ $region->region_name }}</option>
-                        @endforeach
-                    </select>
-
-                    <label for="province">Province</label>
-                    <select id="province" name="province"></select>
-
-                    <label for="municipality">Municipality</label>
-                    <select id="municipality" name="municipality"></select>
-
-                    <label for="barangay">Barangay</label>
-                    <select id="barangay" name="barangay"></select>
-
-
-                    <label for="street">Street Name, Building, House No. <span style="color: red;">*</span></label>
-                    <input type="text" name="street" id="street" required value="{{ old('street') }}">
-
-                    <label for="company_name">Company Name <span style="color: red;">*</span></label>
-                    <input type="text" name="company_name" id="company_name" required value="{{ auth()->user()->store_name ?? old('contact_phone') }}" readonly>
-
-                    <label>Mobile <span style="color: red;">*</span></label>
-                    <input type="text" name="contact_phone" required value="{{ auth()->user()->mobile ?? old('contact_phone') }}" readonly>
-
-                    <label>Email <span style="color: red;">*</span></label>
-                    <input type="email" name="contact_email" value="{{ auth()->user()->email }}" readonly>
-
-                    <label>Billing Address <span style="color: red;">*</span></label>
-                    <textarea name="billing_address" rows="2" required>{{ old('billing_address') }}</textarea>
-
+                
+                   
 
                     <div class="step-nav">
                         <button type="button" class="prev-btn">Previous</button>

@@ -3,6 +3,63 @@ let cart = {};
 let currentStep = 1;
 const totalSteps = 6;
 
+// Function to display error messages
+function showError(message, targetElement = null) {
+    // Remove any existing error messages
+    const existingErrors = document.querySelectorAll('.error-message');
+    existingErrors.forEach(error => error.remove());
+    
+    // Create error message div
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.style.cssText = `
+        color: #dc3545;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 10px;
+        font-size: 14px;
+        z-index: 9999;
+        position: fixed;
+        top: 50px;
+        left: 50%;
+        width: 90%;
+        transform: translateX(-50%);
+        max-width: 800px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    `;
+    errorDiv.textContent = message;
+    
+    // Insert error message
+    if (targetElement) {
+        targetElement.parentNode.insertBefore(errorDiv, targetElement.nextSibling);
+    } else {
+        // Insert at the top of the current step
+        const currentStepElement = document.querySelector(`[data-step="${currentStep}"]`);
+        if (currentStepElement) {
+            currentStepElement.insertBefore(errorDiv, currentStepElement.firstChild);
+        } else {
+            // Fallback: insert at top of body
+            document.body.insertBefore(errorDiv, document.body.firstChild);
+        }
+    }
+    
+    // Auto-remove error after 5 seconds
+    setTimeout(() => {
+        if (errorDiv.parentNode) {
+            errorDiv.remove();
+        }
+    }, 5000);
+}
+
+// Function to clear error messages
+function clearErrors() {
+    const existingErrors = document.querySelectorAll('.error-message');
+    existingErrors.forEach(error => error.remove());
+}
+
 // Add product to cart
 function addToCart(productId, name, price, stock) {
     if (!cart[productId]) {
@@ -11,10 +68,11 @@ function addToCart(productId, name, price, stock) {
         if (cart[productId].quantity < stock) {
             cart[productId].quantity++;
         } else {
-            alert("No more stock available for " + name);
+            showError(`No more stock available for ${name}`);
             return;
         }
     }
+    clearErrors(); // Clear any existing errors on successful add
     renderCart();
     renderSummary();
 }
@@ -36,7 +94,7 @@ function updateQuantity(productId, qty) {
         renderCart();
         renderSummary();
     } else {
-        alert("Quantity cannot exceed available stock (" + cart[productId].stock + ")");
+        showError(`Quantity cannot exceed available stock (${cart[productId].stock})`);
         renderCart(); // Re-render to reset the input value
     }
 }
@@ -52,14 +110,14 @@ function renderCart() {
     }
 
     let html = `
-        <table class="cart-table" style="width: 100%; border-collapse: collapse;">
+        <table class="cart-table"  style="width:100%; border-collapse:collapse;">
             <thead>
-                <tr style="background-color: #f5f5f5;">
-                    <th style="padding: 10px; border: 1px solid #ddd;">Product</th>
-                    <th style="padding: 10px; border: 1px solid #ddd;">Qty</th>
-                    <th style="padding: 10px; border: 1px solid #ddd;">Price</th>
-                    <th style="padding: 10px; border: 1px solid #ddd;">Subtotal</th>
-                    <th style="padding: 10px; border: 1px solid #ddd;">Action</th>
+                <tr  style="background:#f7f7fa; text-align: center;">
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,17 +125,17 @@ function renderCart() {
 
     Object.values(cart).forEach(item => {
         html += `
-            <tr>
-                <td style="padding: 10px; border: 1px solid #ddd;">${item.name}</td>
-                <td style="padding: 10px; border: 1px solid #ddd;">
+            <tr style="height: 50px; text-align: center; cursor:pointer;">
+                <td style="padding:10px 8px; font-size: 13px;">${item.name}</td>
+                <td style="padding:10px 8px; font-size: 13px;">
                     <input type="number" value="${item.quantity}" min="1" max="${item.stock}" 
                         onchange="updateQuantity(${item.id}, this.value)"
-                        style="width: 60px; padding: 5px;">
+                        style="width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
                 </td>
-                <td style="padding: 10px; border: 1px solid #ddd;">₱${parseFloat(item.price).toFixed(2)}</td>
-                <td style="padding: 10px; border: 1px solid #ddd;">₱${(parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)}</td>
-                <td style="padding: 10px; border: 1px solid #ddd;">
-                    <button type="button" onclick="removeFromCart(${item.id})" 
+                <td style="padding:10px 8px; font-size: 13px;">₱${parseFloat(item.price).toFixed(2)}</td>
+                <td style="padding:10px 8px; font-size: 13px;">₱${(parseFloat(item.price) * parseInt(item.quantity)).toFixed(2)}</td>
+                <td style="padding:10px 8px; font-size: 13px;">
+                    <button type="button" class="remove-product" onclick="removeFromCart(${item.id})" 
                         style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
                         Remove
                     </button>
@@ -198,42 +256,56 @@ function showStep(step) {
     // Update step progress indicator
     updateStepProgress(step);
     
+    // Clear errors when changing steps
+    clearErrors();
+    
     console.log(`Showing step ${step}`);
 }
 
 // Validate current step
 function validateStep(step) {
+    clearErrors(); // Clear previous errors
+    
     switch(step) {
         case 1:
             if (Object.keys(cart).length === 0) {
-                alert("Please add at least one product to your cart.");
+                showError("Please add at least one product to your cart.");
                 return false;
             }
             break;
         case 3:
-            const requiredShippingFields = [ 'postal_code', 'region', 'province', 'municipality', 'barangay', 'street' ];
-            for (let field of requiredShippingFields) {
-                const element = document.querySelector(`[name='${field}']`);
+            const requiredShippingFields = [ 
+                { field: 'postal_code', label: 'Postal Code' },
+                { field: 'region', label: 'Region' },
+                { field: 'province', label: 'Province' },
+                { field: 'municipality', label: 'Municipality' },
+                { field: 'barangay', label: 'Barangay' },
+                { field: 'street', label: 'Street Address' }
+            ];
+            
+            for (let fieldInfo of requiredShippingFields) {
+                const element = document.querySelector(`[name='${fieldInfo.field}']`);
                 if (!element || !element.value.trim()) {
-                    alert(`Please fill in the ${field.replace('_', ' ')}.`);
+                    showError(`${fieldInfo.label} is required.`, element);
                     element?.focus();
                     return false;
                 }
             }
 
             // Validate email format
-            const email = document.querySelector("[name='contact_email']").value;
+            const emailElement = document.querySelector("[name='contact_email']");
+            const email = emailElement?.value || '';
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                alert("Please enter a valid email address.");
-                document.querySelector("[name='contact_email']").focus();
+                showError("Please enter a valid email address.", emailElement);
+                emailElement?.focus();
                 return false;
             }
             break;
         case 4:
             const receiverName = document.querySelector("[name='receiver_name']");
             if (!receiverName || !receiverName.value.trim()) {
-                alert("Receiver Name is required.");
+                showError("Receiver Name is required.", receiverName);
                 receiverName?.focus();
                 return false;
             }
@@ -350,7 +422,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             if (Object.keys(cart).length === 0) {
                 e.preventDefault();
-                alert("Cannot submit order with empty cart.");
+                showError("Cannot submit order with empty cart.");
                 return false;
             }
             
