@@ -13,7 +13,8 @@ class PurchaseOrder extends Model
         'user_id',
         'po_number',
         'receiver_name',
-        'shipping_address',
+        'postal_code', 'region_id', 'province_id',
+        'municipality_id', 'barangay_id', 'street',
         'billing_address',
         'contact_phone',
         'contact_email',
@@ -58,6 +59,22 @@ class PurchaseOrder extends Model
     public function rejectedBy()
     {
         return $this->belongsTo(User::class, 'rejected_by');
+    }
+    
+    public function region() {
+        return $this->belongsTo(Region::class, 'region_id', 'region_id');
+    }
+
+    public function province() {
+        return $this->belongsTo(Province::class, 'province_id', 'province_id');
+    }
+
+    public function municipality() {
+        return $this->belongsTo(Municipality::class, 'municipality_id', 'municipality_id');
+    }
+
+    public function barangay() {
+        return $this->belongsTo(Barangay::class, 'barangay_id', 'barangay_id');
     }
 
     public function getStatusBadgeClassAttribute()

@@ -16,6 +16,7 @@ class AddressController extends Controller
             ->get(['province_id as id','province_name as name']);
     }
 
+
     public function municipalities($provinceId) {
         return Municipality::where('province_id', $provinceId)
             ->orderBy('municipality_name')

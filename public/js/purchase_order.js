@@ -120,7 +120,6 @@ function updateSummary() {
     console.log('Updating summary...');
     
     const fields = [
-        { input: "[name='shipping_address']", summary: "#summary-shipping" },
         { input: "[name='billing_address']", summary: "#summary-billing" },
         { input: "[name='contact_phone']", summary: "#summary-phone" },
         { input: "[name='contact_email']", summary: "#summary-email" },
@@ -169,9 +168,9 @@ function validateStep(step) {
                 return false;
             }
             break;
-        case 3:
-            const requiredFields = ['shipping_address', 'billing_address', 'contact_phone', 'contact_email'];
-            for (let field of requiredFields) {
+      case 3:
+            const requiredShippingFields = [ 'postal_code', 'region', 'province', 'municipality', 'barangay', 'street' ];
+            for (let field of requiredShippingFields) {
                 const element = document.querySelector(`[name='${field}']`);
                 if (!element || !element.value.trim()) {
                     alert(`Please fill in the ${field.replace('_', ' ')}.`);
@@ -179,6 +178,8 @@ function validateStep(step) {
                     return false;
                 }
             }
+
+
             // Validate email format
             const email = document.querySelector("[name='contact_email']").value;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -201,24 +202,50 @@ function validateStep(step) {
     return true;
 }
 
-// Add cart data to form before submission
-function addCartDataToForm() {
-    // Remove existing cart data input if any
-    const existingInput = document.querySelector("[name='cart_data']");
-    if (existingInput) {
-        existingInput.remove();
-    }
-    
-    // Create new hidden input with cart data
-    const cartInput = document.createElement("input");
-    cartInput.type = "hidden";
-    cartInput.name = "cart_data";
-    cartInput.value = JSON.stringify(cart);
-    
+function addAddressToForm() {
     const form = document.getElementById("order-form");
-    form.appendChild(cartInput);
-    
-    console.log('Cart data added to form:', JSON.stringify(cart));
+
+    // Remove old hidden input if any
+    const existing = document.querySelector("[name='shipping_data']");
+    if (existing) existing.remove();
+
+    const shipping = {
+        postal_code: document.querySelector("[name='postal_code']").value,
+        region: document.querySelector("[name='region']").value,
+        province: document.querySelector("[name='province']").value,
+        municipality: document.querySelector("[name='municipality']").value,
+        barangay: document.querySelector("[name='barangay']").value,
+        street: document.querySelector("[name='street']").value,
+    };
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "shipping_data";
+    input.value = JSON.stringify(shipping);
+
+    form.appendChild(input);
+
+    console.log("Shipping address added:", shipping);
+}
+
+// Add cart data to the form as a hidden input
+function addCartDataToForm() {
+    const form = document.getElementById("order-form");
+    if (!form) return;
+
+    // Remove existing hidden input for cart_data if any
+    const existingCartInput = document.querySelector('input[name="cart_data"]');
+    if (existingCartInput) {
+        existingCartInput.remove();
+    }
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "cart_data";
+    input.value = JSON.stringify(cart);
+
+    form.appendChild(input);
+    console.log("Cart data added:", cart);
 }
 
 // Initialize everything when DOM is loaded

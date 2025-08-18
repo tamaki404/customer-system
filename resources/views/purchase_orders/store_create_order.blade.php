@@ -181,6 +181,9 @@
                     <label>Email <span style="color: red;">*</span></label>
                     <input type="email" name="contact_email" value="{{ auth()->user()->email }}" readonly>
 
+                    <label>Billing Address <span style="color: red;">*</span></label>
+                    <textarea name="billing_address" rows="2" required>{{ old('billing_address') }}</textarea>
+
 
                     <div class="step-nav">
                         <button type="button" class="prev-btn">Previous</button>
@@ -202,11 +205,6 @@
                     <input type="text" name="receiver_name" required value="{{ old('receiver_name') }}">
 
 
-
-      
-
-                    <label>Upload Attachment (optional)</label>
-                    <input type="file" name="po_attachment">
 
                     <div class="step-nav">
                         <button type="button" class="prev-btn">Previous</button>
