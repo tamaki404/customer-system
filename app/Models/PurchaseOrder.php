@@ -12,14 +12,12 @@ class PurchaseOrder extends Model
     protected $fillable = [
         'user_id',
         'po_number',
-        'reference_code',
         'receiver_name',
         'shipping_address',
         'billing_address',
         'contact_phone',
         'contact_email',
         'order_notes',
-        'po_attachment',
         'subtotal',
         'tax_amount',
         'grand_total',
@@ -29,7 +27,7 @@ class PurchaseOrder extends Model
         'rejected_at',
         'delivered_at',
         'approved_by',
-        'rejected_by'
+        'rejected_by',
     ];
 
     protected $casts = [

@@ -68,31 +68,49 @@
                 <thead style="background-color: #f9f9f9;">
                     <tr style="background:#f7f7fa; text-align: center;">
                         <th style="width: 50px; padding: 10px;">#</th>
-                        <th style="width: 80px;">Date</th>
-                        <th style="width: 100px;">Purchase Order</th>
-                        <th style="width: 180px;">Customer</th>
-                        <th style="width: 80px;">Received</th>
+                        <th style="width: 100px;">Order Date</th>
+                        <th style="width: 140px;">PO Number</th>
+                        <th style="width: 180px;">Receiver</th>
                         <th style="width: 100px;">Status</th>
-                        <th style="width: 80px;">Total</th>
-                        <th style="width: 120px;">Expected Arrival</th>
+                        <th style="width: 100px;">Subtotal</th>
+                        <th style="width: 100px;">Grand Total</th>
+                        <th style="width: 100px;">Attachment</th>
+                        <th style="width: 120px;">Actions</th>
                     </tr>
                 </thead>
-                <tbody style="text-align: center;">
-                    <tr>
-                        <td>1</td>
-                        <td>2025-08-12</td>
-                        <td>PO-20250812-001</td>
-                        <td>Acme Retail</td>
-                        <td>3 of 5</td>
-                        <td>Partial</td>
-                        <td>$1,250.00</td>
-                        <td>2025-08-20</td>
-                    </tr>
-                 
+                <tbody>
+                    @forelse($purchaseOrders as $index => $order)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $order->order_date->format('Y-m-d') }}</td>
+                            <td>{{ $order->po_number }}</td>
+                            <td>{{ $order->receiver_name }}</td>
+                            <td>
+                                <span class="status-badge status-{{ strtolower($order->status) }}">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </td>
+                            <td>₱{{ number_format($order->subtotal, 2) }}</td>
+                            <td>₱{{ number_format($order->grand_total, 2) }}</td>
+                            <td>
+                                @if($order->po_attachment)
+                                    <a href="{{ asset('storage/'.$order->po_attachment) }}" target="_blank">📎</a>
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td>
+                                {{-- <a href="{{ route('purchase_order.show', $order->id) }}" class="btn-action">View</a>
+                                <a href="{{ route('purchase_order.edit', $order->id) }}" class="btn-action">Edit</a> --}}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="9">No purchase orders found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
-
-   
         </div>
 
         <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">
