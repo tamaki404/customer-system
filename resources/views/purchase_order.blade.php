@@ -40,25 +40,26 @@
             <button class="create-purchase-order" onclick="location.href='/purchase-order/store/order'"><span class="material-symbols-outlined" style="font-size: 14px; font-weight: bold;">add</span> Purchase order</button>
             {{-- <button class="create-purchase-order" onclick="location.href='/purchase-order/create/purchase-order-form'"><span class="material-symbols-outlined" style="font-size: 14px; font-weight: bold;">add</span> Purchase order</button> --}}
         </div>
-        @php
-            $tabStatuses = [
-                'All' => null,
-                'Draft' => 'Draft',
-                'Pending' => 'Pending',
-                'Processing' => 'Processing',
-                'Partial' => 'Partial',
-                'Completed' => 'Completed',
-                'Cancelled' => 'Cancelled',
-            ];
+            @php
+                $tabStatuses = [
+                    'All' => null,
+                    'Draft' => 'Draft',
+                    'Pending' => 'Pending',
+                    'Processing' => 'Processing',
+                    'Partial' => 'Partial',
+                    'Completed' => 'Completed',
+                    'Cancelled' => 'Cancelled',
+                ];
 
-            $baseParams = [
-                'search' => request('search', ''),
-                'from_date' => request('from_date', now()->startOfMonth()->format('Y-m-d')),
-                'to_date' => request('to_date', now()->endOfMonth()->format('Y-m-d')),
-            ];
+                $baseParams = [
+                    'search' => request('search', ''),
+                    'from_date' => request('from_date', now()->startOfMonth()->format('Y-m-d')),
+                    'to_date' => request('to_date', now()->endOfMonth()->format('Y-m-d')),
+                ];
 
-            $currentStatus = request('status');
-        @endphp
+                $currentStatus = request('status'); 
+            @endphp
+
 
 
         <div class="status-tabs">
@@ -67,9 +68,12 @@
                     $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
                     $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
                 @endphp
-                <a href="{{ route('purchase_order', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">{{ $label }}</a>
+                <a href="{{ route('purchase_order', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">
+                    {{ $label }}
+                </a>
             @endforeach
         </div>
+
 
         <div class="purchase-list">
             <table style="width:100%; border-collapse:collapse;" class="orders-table">
