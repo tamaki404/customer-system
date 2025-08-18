@@ -8,6 +8,7 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Region;
 
 class PurchaseOrderController extends Controller
     {
@@ -54,8 +55,11 @@ class PurchaseOrderController extends Controller
         if ($search) {
             $products->appends(['search' => $search]);
         }
-        
-        return view('purchase_orders/store_create_order', compact('user', 'products', 'search'));
+
+          $regions = Region::orderBy('region_name')
+        ->get(['region_id','region_name']);
+
+        return view('purchase_orders/store_create_order', compact('user', 'products', 'search', 'regions'));
     }
 
     public function store(Request $request)

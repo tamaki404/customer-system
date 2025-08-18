@@ -20,6 +20,7 @@ use App\Http\Controllers\ProductController;
 use App\Models\Product;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\AddressController;
 
 
 // Public routes (no authentication required)
@@ -195,6 +196,11 @@ Route::middleware(['auth', 'check.status'])->group(function () {
  
     Route::get('/purchase-order/create/purchase-order-form', [PurchaseOrderController::class, 'purchaseOrderForm'])->name('purchase_order.create');
     Route::get('/purchase-order/store/order', [PurchaseOrderController::class, 'storeOrderView'])->name('purchase_order.store.order');
+
+    //Address
+    Route::get('/regions/{region}/provinces', [AddressController::class, 'provinces'])->name('address.provinces');
+    Route::get('/provinces/{province}/municipalities', [AddressController::class, 'municipalities'])->name('address.municipalities');
+    Route::get('/municipalities/{municipality}/barangays', [AddressController::class, 'barangays'])->name('address.barangays');
 });
 
 
