@@ -140,7 +140,51 @@ function updateSummary() {
         }
     });
     
+    // Update shipping address summary
+    updateShippingAddressSummary();
+    
     renderSummary(); // Also update the cart summary
+}
+
+// Update shipping address summary
+function updateShippingAddressSummary() {
+    const summaryShipping = document.querySelector("#summary-shipping");
+    if (!summaryShipping) return;
+    
+    const addressParts = [
+        document.querySelector("[name='street']")?.value,
+        document.querySelector("[name='barangay'] option:checked")?.textContent,
+        document.querySelector("[name='municipality'] option:checked")?.textContent,
+        document.querySelector("[name='province'] option:checked")?.textContent,
+        document.querySelector("[name='region'] option:checked")?.textContent,
+        document.querySelector("[name='postal_code']")?.value
+    ].filter(part => part && part.trim() && part !== "-- Select Region --" && part !== "-- Select Province --" && part !== "-- Select Municipality --" && part !== "-- Select Barangay --");
+    
+    const shippingAddress = addressParts.length > 0 ? addressParts.join(", ") : "Not provided";
+    summaryShipping.textContent = shippingAddress;
+}
+
+// Update step progress indicator
+function updateStepProgress(step) {
+    const stepItems = document.querySelectorAll(".steps-list .step-item");
+    
+    stepItems.forEach((item, index) => {
+        const stepNumber = index + 1;
+        
+        // Remove all status classes
+        item.classList.remove("active", "completed");
+        
+        if (stepNumber < step) {
+            // Completed steps
+            item.classList.add("completed");
+        } else if (stepNumber === step) {
+            // Current step
+            item.classList.add("active");
+        }
+        // Future steps have no special class
+    });
+    
+    console.log(`Step progress updated to step ${step}`);
 }
 
 // Show specific step
@@ -151,10 +195,8 @@ function showStep(step) {
         sec.style.display = (parseInt(sec.dataset.step) === step) ? "block" : "none";
     });
 
-    // Update header step highlight
-    document.querySelectorAll(".form-steps .step").forEach((el, idx) => {
-        el.classList.toggle("active", idx + 1 === step);
-    });
+    // Update step progress indicator
+    updateStepProgress(step);
     
     console.log(`Showing step ${step}`);
 }
@@ -168,7 +210,7 @@ function validateStep(step) {
                 return false;
             }
             break;
-      case 3:
+        case 3:
             const requiredShippingFields = [ 'postal_code', 'region', 'province', 'municipality', 'barangay', 'street' ];
             for (let field of requiredShippingFields) {
                 const element = document.querySelector(`[name='${field}']`);
@@ -178,7 +220,6 @@ function validateStep(step) {
                     return false;
                 }
             }
-
 
             // Validate email format
             const email = document.querySelector("[name='contact_email']").value;
@@ -190,7 +231,6 @@ function validateStep(step) {
             }
             break;
         case 4:
-            
             const receiverName = document.querySelector("[name='receiver_name']");
             if (!receiverName || !receiverName.value.trim()) {
                 alert("Receiver Name is required.");

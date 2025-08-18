@@ -17,14 +17,29 @@
     <div class="create-layout">
         <div class="title">
             <a class="go-back-a" href="/purchase_order"><- Purchase order</a>
-            {{-- <div class="form-steps">
-                <span class="step active">Create Order</span>
-                <span class="step">Edit Order</span>
-                <span class="step">Address</span>
-                <span class="step">Additional Info</span>
-                <span class="step">Summary</span>
-                <span class="step">Finalize</span>
-            </div> --}}
+           <div class="checkout-steps">
+                @php
+                    $steps = [
+                        1 => 'Add to Cart',
+                        2 => 'Modify Order',
+                        3 => 'Shipping Address',
+                        4 => 'Additional Info',
+                        5 => 'Order Summary',
+                        6 => 'Finalize Order',
+                    ];
+                    $currentStep = 1;
+                @endphp
+
+                <ul class="steps-list">
+                    @foreach($steps as $stepNumber => $stepName)
+                        <li class="step-item {{ $currentStep === $stepNumber ? 'active' : '' }}">
+                            <span class="step-number">{{ $stepNumber }}</span>
+                            <span class="step-name">{{ $stepName }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
             <h2>Create Order</h2>
         </div>
 
