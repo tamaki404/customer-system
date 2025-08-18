@@ -157,6 +157,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     //purchase order
     Route::get('/purchase_order', [PurchaseOrderController::class, 'purchaseOrder'])->name('purchase_order');
 
+
     Route::post('/purchase-order/store', [PurchaseOrderController::class, 'store'])->name('purchase_orders.store');
 
 

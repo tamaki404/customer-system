@@ -15,17 +15,25 @@
 
     <div class="purchaseFrame">
         <div class="search-container">
-            <form action="/date-search" id="text-search" style="margin-left: 10px" class="date-search" method="GET">
-                <input type="text" name="search" class="search-bar" placeholder="Search receipt #, customer, amount, or date" value="{{ request('search') }}">
+            <form action="{{ route('purchase_order') }}" id="text-search" class="date-search" method="GET">
+                <input type="text" name="search" class="search-bar"
+                    placeholder="Search receipt #, customer, amount, or date"
+                    value="{{ request('search') }}">
                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>
-            <form action="/date-search" class="date-search" id="from-to-date" method="GET">
+
+            <form action="{{ route('purchase_order') }}" class="date-search" id="from-to-date" method="GET">
                 <span>From</span>
-                <input type="date" name="from_date" class="input-date" value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
-                <span >To</span>
-                <input type="date" name="to_date" class="input-date" value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
+                <input type="date" name="from_date" class="input-date"
+                    value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                    onchange="this.form.submit()">
+                <span>To</span>
+                <input type="date" name="to_date" class="input-date"
+                    value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                    onchange="this.form.submit()">
             </form>
         </div>
+
 
         <div class="title-purchase">
             <h2>Purchase Order</h2>

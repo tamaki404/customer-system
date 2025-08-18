@@ -12,15 +12,35 @@ use App\Models\Region;
 
 class PurchaseOrderController extends Controller
     {
-    public function purchaseOrder()
-    {
-        $user = auth()->user();
+        public function purchaseOrder()
+        {
+            $user = auth()->user();
+            $search = request('search');
+            $from = request('from_date', now()->startOfMonth()->format('Y-m-d'));
+            $to = request('to_date', now()->endOfMonth()->format('Y-m-d'));
 
-        $purchaseOrders = PurchaseOrder::orderBy('order_date', 'desc')
-            ->paginate(10);
+            $query = PurchaseOrder::query();
 
-        return view('purchase_order', compact('user', 'purchaseOrders'));
-    }
+            // Date filter
+            $query->whereBetween('order_date', [
+                Carbon::parse($from)->startOfDay(),
+                Carbon::parse($to)->endOfDay()
+            ]);
+
+            // Search filter
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('user_id', 'like', "%$search%")
+                    ->orWhere('po_number', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%")
+                    ->orWhere('receiver_name', 'like', "%$search%");
+                });
+            }
+
+            $purchaseOrders = $query->orderBy('order_date', 'desc')->paginate(10);
+
+            return view('purchase_order', compact('user', 'purchaseOrders', 'search', 'from', 'to'));
+        }
 
 
     public function purchaseOrderForm(){
