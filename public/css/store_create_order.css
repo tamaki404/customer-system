@@ -1,0 +1,172 @@
+.create-layout{
+        font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-content: start;
+    justify-content: start;
+    background-color: #f3f5f9;
+    padding: 60px;
+    gap: 10px;
+    width: 97%;
+    height: 97%;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 15px;
+    overflow-y: auto;
+    overflow-x: auto;
+    
+}
+
+.create-layout .title h2{
+    color: #333;
+    font-size: 25px;
+    margin: 15px;
+    font-weight: bold;
+}
+
+.go-back-a{
+    font-size: 15px;
+    color: #f8912a;
+    text-decoration: none;
+    width: auto;
+}
+.go-back-a:hover{
+    color: #cd741c;
+}
+
+.form-container{
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    overflow-x: auto;
+    background-color: #f3f5f9;
+}
+
+.form-container section{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+
+}
+.products .number{
+    padding: 10px;
+}
+.number span{
+    font-size: 30px;
+    color: #f8912a;
+}
+.products .products{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border: 0;
+    width: 90%;
+    height: auto;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+/* .form-container .products{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border: 0;
+    width: 90%;
+    height: auto;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 10px;
+    background-color: #fff;
+} */
+
+.products h2{
+    font-size: 20px;
+    color: #333;
+    font-weight: bold;
+}
+
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.product-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+/* shopee like products list */
+.product-thumb { position: relative; background:#f7f7f7; }
+.product-thumb img { width: 100%; height: 180px; object-fit: cover; display:block; }
+.thumb-placeholder { width: 100%; height: 180px; display:flex; align-items:center; justify-content:center; color:#999; font-size: 12px; }
+
+.badge { position: absolute; left: 8px; top: 8px; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; color: #333; background:#fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+.badge-out { color:#b71c1c; }
+.badge-low { color:#ef6c00; }
+.badge-available { color:#2e7d32; }
+
+.product-body { padding: 12px; display:flex; flex-direction: column; gap: 6px; }
+.product-name { font-size: 14px; font-weight: 600; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.product-price { color:#2e7d32; font-weight: 700; }
+.product-meta { display:flex; justify-content: space-between; font-size: 12px; color:#666; }
+
+.product-actions { padding: 10px 12px 12px 12px; }
+.product-actions .add-to-cart-btn { width: 100%; background: #ffde59; color:#333; border:none; border-radius: 8px; padding: 10px; font-weight: 700; cursor:pointer; box-shadow: rgba(0,0,0,0.12) 0 1px 3px; }
+.product-actions .add-to-cart-btn[disabled] { background:#ddd; color:#999; cursor:not-allowed; }
+.product-actions .add-to-cart-btn:hover { background:#ffd700; }
+
+
+/* search style */
+.date-search {
+    align-items: center;
+    flex-direction: row;
+    display: flex;
+    gap: 5px;
+
+}
+.date-search input {
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: none;
+    width: 300px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+
+.date-search .search-btn {
+    padding: 10px;
+    background-color: #ffde59;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 70px;
+    height: 41px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+.date-search button:hover {
+    transition: background-color 0.3s ease;
+    background-color: #ffd700;
+}
+
+/* end search style */
+

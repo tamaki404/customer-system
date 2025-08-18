@@ -17,9 +17,35 @@ class PurchaseOrderController extends Controller
         return view('purchase_orders/purchase_order_form', compact('user'));
     }
     public function storeOrderView(){
-        $user = auth()->user();
-        $products = Product::all();
-        return view('purchase_orders/store_order_view', compact('products'));
+        
+            $user = auth()->user();
+            $search = request('search');
+            $query = Product::query();
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                    ->orWhere('id', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%")
+                    ->orWhere('product_id', 'like', "%$search%")
+                    ;
+                });
+            }
+            $products = $query
+                ->select('products.*')
+                ->selectSub(function ($q) {
+                    $q->from('orders')
+                    ->selectRaw('COUNT(*)')
+                    ->whereColumn('orders.product_id', 'products.id');
+                }, 'sold_quantity')
+                ->orderByDesc('created_at')
+                ->paginate(15);
+            if ($search) {
+                $products->appends(['search' => $search]);
+            }
+
+
+
+        return view('purchase_orders/store_create_order', compact('user', 'products', 'search'));
     }
 
 

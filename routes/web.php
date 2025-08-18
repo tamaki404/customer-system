@@ -176,6 +176,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/order/view/{id}', [OrderController::class, 'orderView'])->name('order.view');
      
 
+    
+
 
     // Reports
     Route::get('/reports', [ReportsController::class, 'reports'])->name('reports');

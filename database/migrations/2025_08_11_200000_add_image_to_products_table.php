@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->longText('image')->nullable()->after('description');
-            $table->string('image_mime')->nullable()->after('image');
+            // $table->longText('image')->nullable()->after('description');
+            // $table->string('image_mime')->nullable()->after('image');
         });
     }
 
