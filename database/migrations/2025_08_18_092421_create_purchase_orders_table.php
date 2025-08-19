@@ -29,7 +29,7 @@ class CreatePurchaseOrdersTable extends Migration
             $table->decimal('subtotal', 10, 2);
             $table->decimal('tax_amount', 10, 2)->default(0);
             $table->decimal('grand_total', 10, 2);
-            $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled', 'delivered'])->default('pending');
+            $table->string('status');
             $table->timestamp('order_date');
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('rejected_at')->nullable();

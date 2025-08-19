@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->id(); // Auto-incrementing primary key
-            $table->string('order_id'); // Regular field for grouping order items
-            $table->string('po_id')->nullable(); // Nullable field for purchase order association
+            $table->id();
+            $table->string('order_id'); 
+            $table->string('po_id')->nullable(); 
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('product_id');
             $table->integer('quantity');
@@ -25,7 +25,6 @@ return new class extends Migration
             $table->timestamp('action_at')->nullable();
             $table->string('action_by')->nullable();
 
-            // Add indexes for better performance (no foreign keys)
             $table->index('order_id');
             $table->index('customer_id');
             $table->index('product_id');

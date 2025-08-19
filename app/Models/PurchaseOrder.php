@@ -47,6 +47,9 @@ class PurchaseOrder extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function orderItem(){
+        return $this->belongsTo(Orders::class);
+    }
 
     public function items()
     {

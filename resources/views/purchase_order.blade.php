@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ asset('css/purchase-order.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
     <title>Purchase Order</title>
 </head>
 <body>
@@ -18,7 +20,10 @@
             <form action="{{ route('purchase_order') }}" id="text-search" class="date-search" method="GET">
                 <input type="text" name="search" class="search-bar"
                     placeholder="Search receipt #, customer, amount, or date"
-                    value="{{ request('search') }}">
+                    value="{{ request('search') }}"
+                    style="outline:none;"
+                    
+                    >
                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>
 
@@ -37,6 +42,7 @@
 
         <div class="title-purchase">
             <h2>Purchase Order</h2>
+            
             <button class="create-purchase-order" onclick="location.href='/purchase-order/store/order'"><span class="material-symbols-outlined" style="font-size: 14px; font-weight: bold;">add</span> Purchase order</button>
             {{-- <button class="create-purchase-order" onclick="location.href='/purchase-order/create/purchase-order-form'"><span class="material-symbols-outlined" style="font-size: 14px; font-weight: bold;">add</span> Purchase order</button> --}}
         </div>
@@ -72,6 +78,9 @@
                     {{ $label }}
                 </a>
             @endforeach
+
+
+
         </div>
 
 
@@ -82,36 +91,49 @@
                         <th style="width: 50px; padding: 10px;">#</th>
                         <th style="width: 100px;">Order Date</th>
                         <th style="width: 140px;">PO Number</th>
-                        <th style="width: 180px;">Receiver</th>
-                        <th style="width: 100px;">Status</th>
+                        <th style="width: 150px;">Company</th>
+                        <th style="width: 50px;">Quantity</th>
                         <th style="width: 100px;">Subtotal</th>
-                        <th style="width: 100px;">Grand Total</th>
-                        <th style="width: 100px;">Attachment</th>
+                        <th style="width: 100px;">Status</th>
                         <th style="width: 120px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($purchaseOrders as $index => $order)
-                        <tr>
+                        <tr style="height: 50px; text-align: center; cursor:pointer;" 
+                            onclick="window.location='{{ route('purchase_order.view', $order->po_number) }}'">
+
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $order->order_date->format('Y-m-d') }}</td>
                             <td>{{ $order->po_number }}</td>
-                            <td>{{ $order->receiver_name }}</td>
-                            <td>
-                                <span class="status-badge status-{{ strtolower($order->status) }}">
-                                    {{ ucfirst($order->status) }}
-                                </span>
-                            </td>
+                            <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $order->company_name }}</td>
+
+                            <td>{{$order->quantity}}</td>
                             <td>₱{{ number_format($order->subtotal, 2) }}</td>
-                            <td>₱{{ number_format($order->grand_total, 2) }}</td>
                             <td>
-                                @if($order->po_attachment)
-                                    <a href="{{ asset('storage/'.$order->po_attachment) }}" target="_blank">📎</a>
-                                @else
-                                    -
-                                @endif
+                                @php 
+                                    $dateToShow = $order->action_at ?? $order->created_at;
+                                    $statusClasses = [
+                                        'Pending' => 'status-pending',
+                                        'Processing' => 'status-processing',
+                                        'Approved' => 'status-approved',
+                                        'Rejected' => 'status-rejected',
+                                        'Delivered' => 'status-delivered',
+                                        'Draft' => 'status-draft',
+
+                                    ];
+                                @endphp
+                                <span class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
+                                     {{ ucfirst($order->status) }}
+                                </span>
+
+
                             </td>
                             <td>
+                                <a href="" style="text-decoration: none; text-align: align; display: flex; gap: 5px; justify-content: center;">
+                                    <span style="font-size: 17px;" class="material-symbols-outlined">download</span>
+                                    <span>Purchase Order</span>
+                                </a>
                                 {{-- <a href="{{ route('purchase_order.show', $order->id) }}" class="btn-action">View</a>
                                 <a href="{{ route('purchase_order.edit', $order->id) }}" class="btn-action">Edit</a> --}}
                             </td>
@@ -123,32 +145,49 @@
                     @endforelse
                 </tbody>
             </table>
+     
+
+
+           
         </div>
 
-        <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">
-            {{-- @if($users->hasPages()) --}}
-                {{-- <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
-                    @if($users->onFirstPage())
-                        <span style="color: #ccc; cursor: not-allowed;">Previous</span>
-                    @else
-                        <a href="{{ $users->previousPageUrl() }}" 
-                           style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">
-                            Previous
-                        </a>
-                    @endif
-                    
-                    @if($users->hasMorePages())
-                        <a href="{{ $users->nextPageUrl() }}" 
-                           style="color: #1976d2; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid #1976d2; border-radius: 4px;">
-                            Next
-                        </a>
-                    @else
-                        <span style="color: #ccc; cursor: not-allowed;">Next</span>
-                    @endif
-                </div> --}}
-            {{-- @endif --}}
-        </div>
-   
+            <div class="pagination-wrapper" style="margin-top: 10px; text-align: center; display: flex; flex-direction: row; justify-content: space-between;">
+                    {{-- page count --}}
+                @if ($purchaseOrders->total() > 0)
+                    <div style="text-align: center; font-size:14px; color: #555;">
+                        Page {{ $purchaseOrders->currentPage() }} of {{ $purchaseOrders->lastPage() }}
+                    </div>
+                @endif
+
+
+                @if ($purchaseOrders->hasPages())
+                    <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; ">
+
+                        {{-- previous --}}
+                        @if ($purchaseOrders->onFirstPage())
+                            <span style="color: #fb8e24; font-size: 14px; padding: 0.5rem 1rem; border: 1px solid #fb8e24; border-radius: 10px;">Previous</span>
+                        @else
+                            <a href="{{ $purchaseOrders->previousPageUrl() }}" 
+                            style="color: #fb8e24; text-decoration: none; font-size: 14px; padding: 0.5rem 1rem; border: 1px solid #fb8e24; border-radius: 10px;">
+                                Previous
+                            </a>
+                        @endif
+
+                        {{-- next --}}
+                        @if ($purchaseOrders->hasMorePages())
+                            <a href="{{ $purchaseOrders->nextPageUrl() }}" 
+                            style="color: #fb8e24; text-decoration: none; font-size: 14px; padding: 0.5rem 1rem; border: 1px solid #fb8e24; border-radius: 10px;">
+                                Next
+                            </a>
+                        @else
+                            <span style="color: #ccc; padding: 0.5rem 1rem; font-size: 14px; border: 1px solid #ddd; border-radius: 10px;">Next</span>
+                        @endif
+
+                    </div>
+                @endif
+
+            </div>
+    
 
 
     </div>

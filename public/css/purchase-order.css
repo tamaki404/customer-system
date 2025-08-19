@@ -190,6 +190,91 @@ tr{
 }
 
 
+
+/* status */
+
+.status-delivered {
+    font-size: 13px;
+    color: #19c140;
+    background-color: rgba(43, 250, 28, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #19c140;
+    align-self: center;
+    justify-self: center;
+    font-weight: normal;
+}
+.status-approved {
+    font-size: 13px;
+    color: #19c140;
+    background-color: rgba(43, 250, 28, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #19c140;
+    align-self: center;
+    justify-self: center;
+}
+
+
+.status-rejected {
+    font-size: 13px;
+    color: rgb(250, 28, 28);
+    background-color: rgba(250, 28, 28, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid rgb(250, 28, 28);
+    align-self: center;
+    justify-self: center;
+}
+.status-processing {
+    font-size: 13px;
+    color: #ce7823;
+    background-color: rgba(250, 161, 28, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #ce7823;
+    align-self: center;
+    justify-self: center;
+}
+
+.status-pending {
+    font-size: 13px;
+    color: #888;
+    background-color: rgba(222, 222, 222, 0.224);
+    width: 100px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #888;
+    align-self: center;
+    justify-self: center;
+}
+
+.status-draft {
+    color: #757575;
+    font-size: 13px;
+    background-color: rgba(222, 222, 222, 0.224);
+    width: 150px;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid #888;
+    align-self: center;
+    justify-self: center;
+}
+
+.status-default{
+    font-size: 13px;
+    color: #888;
+}
+
+
+
+
+
+
 @media (max-width: 768px) {
 
     .mainFrame .showScreen {
@@ -229,8 +314,6 @@ tr{
         height: 60%;
     }
 
-    table thead {
-    }
 
 
 

@@ -71,10 +71,12 @@
 
 
                             <div class="date-search">
-                                <form method="GET" action="">
+                                <form method="GET" action="{{ route('purchase_order.create') }}">
                                     <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID & Status">
                                     <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
                                 </form>
+
+                            
                              </div>
                         </div>
                         
@@ -239,7 +241,7 @@
                 </section>
 
                 <!-- STEP 4: Additional Info -->
-                <section class="info-order step-section" data-step="4" style="display:none;">
+                <section class="info-order step-section" data-step="4" style="display:none;"> 
 
                     <div class="add-info">
                         <h2>Additional Info</h2>
@@ -279,8 +281,8 @@
                     
                     <div class="step-nav">
                         <button type="button" class="prev-btn">Previous</button>
-                        <button type="button" class="draft-btn">Draft</button>
-                        <button type="submit" class="submit-btn">Place Order</button>
+                        <button type="submit" name="status" class="draft-btn" value="Draft">Draft</button>
+                        <button type="submit" name="status" class="submit-btn" value="Pending">Place Order</button>
                     </div>
                 </section>
 
