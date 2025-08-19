@@ -152,7 +152,127 @@ function renderCart() {
     container.innerHTML = html;
 }
 
-// Render order summary
+// NEW: Render beautiful summary layout with dynamic data
+function renderBeautifulSummary() {
+    const summaryDiv = document.querySelector('.summary-div');
+    if (!summaryDiv) return;
+
+    // Calculate cart totals
+    let subtotal = 0;
+    let cartItemsHtml = '';
+    
+    if (Object.keys(cart).length === 0) {
+        cartItemsHtml = '<p style="color:#888; text-align: center; padding: 20px;">No items in cart.</p>';
+    } else {
+        Object.values(cart).forEach(item => {
+            const itemSubtotal = parseFloat(item.price) * parseInt(item.quantity);
+            subtotal += itemSubtotal;
+            cartItemsHtml += `
+                <p style="font-size: 15px; border-bottom: 1px solid #88888832; margin: 5px 0; padding: 5px 0;">
+                    <span>${item.quantity}x </span>
+                    <span>........</span>
+                    <span>${item.name}</span>
+                    <span style="float: right">₱${itemSubtotal.toFixed(2)}</span>
+                </p>
+            `;
+        });
+    }
+
+    // Get form data
+    const getFieldValue = (selector, defaultValue = 'Not provided') => {
+        const element = document.querySelector(selector);
+        return element?.value?.trim() || defaultValue;
+    };
+
+    const getSelectValue = (selector, defaultValue = 'Not provided') => {
+        const element = document.querySelector(`${selector} option:checked`);
+        return element?.textContent?.trim() || defaultValue;
+    };
+
+    // Build shipping address
+    const addressParts = [
+        getFieldValue("[name='street']"),
+        getSelectValue("[name='barangay']"),
+        getSelectValue("[name='municipality']"),
+        getSelectValue("[name='province']"),
+        getSelectValue("[name='region']"),
+        getFieldValue("[name='postal_code']")
+    ].filter(part => 
+        part && 
+        part !== "Not provided" &&
+        part !== "-- Select Region --" && 
+        part !== "-- Select Province --" && 
+        part !== "-- Select Municipality --" && 
+        part !== "-- Select Barangay --"
+    );
+    
+    const shippingAddress = addressParts.length > 0 ? addressParts.join(", ") : "Not provided";
+
+    // Calculate totals (you can add shipping fee logic here)
+    const shippingFee = 50.00; // Example shipping fee
+    const grandTotal = subtotal + shippingFee;
+
+    // Build the complete summary HTML
+    const summaryHTML = `
+        <h2>Order Summary</h2>
+        <p>Review your order before finalizing.</p>
+
+        <!-- Cart Items Section -->
+        <div class="display-div" style="gap: 15px; flex-direction: column; flex-wrap: wrap; background-color: transparent; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px; margin-bottom: 20px;">
+            <h2 style="font-size: 17px;color: #666;font-weight: bold;margin: 0;margin-top: 15px;">Cart Items</h2>
+            <div class="display-div">
+                <div style="padding: 5px 0; border-bottom: 1px solid #eee;">
+                    ${cartItemsHtml}
+                </div>
+            </div>
+        </div>
+
+        <!-- Receiving Section -->
+        <div class="display-div" style="gap: 15px; flex-direction: column; flex-wrap: wrap; background-color: transparent;  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px; margin-bottom: 20px;">
+            <h2 style="font-size: 17px;color: #666;font-weight: bold;margin: 0;margin-top: 15px;">Receiving</h2>
+            <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 15px;">
+                <div style="width: auto; border-radius: 10px; display: flex; flex-direction: column; padding: 5px; min-width: 300px; width: auto; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
+                    <p style="color: #888; margin: 0; font-size: 13px; width: auto;">Company Name</p>
+                    <p style="color: #333; margin: 0; font-size: 15px; width: auto;">${getFieldValue("[name='company_name']")}</p>
+                </div>
+                <div style="width: auto; border-radius: 10px; display: flex; flex-direction: column; padding: 5px; min-width: 300px; width: auto; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
+                    <p style="color: #888; margin: 0; font-size: 13px;">Shipping Address</p>
+                    <p style="color: #333; margin: 0; font-size: 15px;">${shippingAddress}</p>
+                </div>
+                <div style="width: auto; border-radius: 10px; display: flex; flex-direction: column; padding: 5px; min-width: 300px; width: auto; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
+                    <p style="color: #888; margin: 0; font-size: 13px;">Billing Address</p>
+                    <p style="color: #333; margin: 0; font-size: 15px;">${getFieldValue("[name='billing_address']")}</p>
+                </div>
+                <div style="width: auto; border-radius: 10px; display: flex; flex-direction: column; padding: 5px; min-width: 300px; width: auto; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
+                    <p style="color: #888; margin: 0; font-size: 13px;">Receiver</p>
+                    <p style="color: #333; margin: 0; font-size: 15px;">${getFieldValue("[name='receiver_name']")}</p>
+                </div>
+                <div style="width: auto; border-radius: 10px; display: flex; flex-direction: column; padding: 5px; min-width: 300px; width: auto; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
+                    <p style="color: #888; margin: 0; font-size: 13px;">Contact Phone</p>
+                    <p style="color: #333; margin: 0; font-size: 15px;">${getFieldValue("[name='contact_phone']")}</p>
+                </div>
+                <div style="width: auto; border-radius: 10px; display: flex; flex-direction: column; padding: 5px; min-width: 300px; width: auto; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
+                    <p style="color: #888; margin: 0; font-size: 13px;">Notes</p>
+                    <p style="color: #333; margin: 0; font-size: 15px;">${getFieldValue("[name='order_notes']", "N/A")}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Section -->
+        <div class="display-div" style="gap: 15px; flex-direction: column; flex-wrap: wrap; background-color: transparent; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px; margin-bottom: 20px;">
+            <h2 style="font-size: 17px;color: #666;font-weight: bold;margin: 0;margin-top: 15px;">Payment</h2>
+            <div style="display: flex; flex-direction: column; flex-wrap: wrap;">
+                <p style="font-size: 15px; margin: 0;">Subtotal: <span style="float: right; color: #333; font-weight: bold;">₱${subtotal.toFixed(2)}</span></p>
+                <p style="font-size: 15px; margin: 0;">Shipping Fee: <span style="float: right; color: #333; font-weight: bold;">₱${shippingFee.toFixed(2)}</span></p>
+                <p style="font-size: 15px; margin: 0;">Total Amount: <span style="float: right; color: #333; font-weight: bold;">₱${grandTotal.toFixed(2)}</span></p>
+            </div>
+        </div>
+    `;
+
+    summaryDiv.innerHTML = summaryHTML;
+}
+
+// Legacy render order summary (keep for compatibility with other steps)
 function renderSummary() {
     let container = document.getElementById("order-summary");
     if (!container) return;
@@ -173,15 +293,49 @@ function renderSummary() {
     container.innerHTML += `<div style="margin-top: 10px; padding-top: 10px; border-top: 2px solid #333;"><strong>Total: ₱${total.toFixed(2)}</strong></div>`;
 }
 
-// Update summary with form data
+// Update shipping address summary - ENHANCED VERSION
+function updateShippingAddressSummary() {
+    const summaryShipping = document.querySelector("#summary-shipping");
+    if (!summaryShipping) return;
+    
+    // Get all address components with better null checking
+    const street = document.querySelector("[name='street']")?.value?.trim() || '';
+    const barangay = document.querySelector("[name='barangay'] option:checked")?.textContent?.trim() || '';
+    const municipality = document.querySelector("[name='municipality'] option:checked")?.textContent?.trim() || '';
+    const province = document.querySelector("[name='province'] option:checked")?.textContent?.trim() || '';
+    const region = document.querySelector("[name='region'] option:checked")?.textContent?.trim() || '';
+    const postalCode = document.querySelector("[name='postal_code']")?.value?.trim() || '';
+    
+    // Filter out empty values and default select options
+    const addressParts = [street, barangay, municipality, province, region, postalCode].filter(part => {
+        return part && 
+               part !== "-- Select Region --" && 
+               part !== "-- Select Province --" && 
+               part !== "-- Select Municipality --" && 
+               part !== "-- Select Barangay --";
+    });
+    
+    // Combine into one line
+    const shippingAddress = addressParts.length > 0 ? addressParts.join(", ") : "Not provided";
+    summaryShipping.textContent = shippingAddress;
+    
+    console.log('Shipping address updated:', shippingAddress);
+}
+
+// Update summary with form data - ENHANCED VERSION
 function updateSummary() {
     console.log('Updating summary...');
     
+    // Use the beautiful summary layout
+    renderBeautifulSummary();
+    
+    // Also update legacy summary if it exists
     const fields = [
         { input: "[name='billing_address']", summary: "#summary-billing" },
         { input: "[name='contact_phone']", summary: "#summary-phone" },
         { input: "[name='contact_email']", summary: "#summary-email" },
         { input: "[name='receiver_name']", summary: "#summary-receiver" },
+        { input: "[name='receiver_mobile']", summary: "#summary-receiver-mobile" },
         { input: "[name='order_notes']", summary: "#summary-notes" },
     ];
     
@@ -193,33 +347,29 @@ function updateSummary() {
             const value = inputElement.value.trim();
             summaryElement.textContent = value || "Not provided";
             console.log(`Updated ${field.input}: ${value || "Not provided"}`);
-        } else {
-            console.log(`Missing element - Input: ${!!inputElement}, Summary: ${!!summaryElement}`);
         }
     });
     
     // Update shipping address summary
     updateShippingAddressSummary();
     
-    renderSummary(); // Also update the cart summary
+    // Also update the cart summary for other steps
+    renderSummary();
 }
 
-// Update shipping address summary
-function updateShippingAddressSummary() {
-    const summaryShipping = document.querySelector("#summary-shipping");
-    if (!summaryShipping) return;
+// Setup real-time address field listeners - NEW FUNCTION
+function setupAddressListeners() {
+    const addressFields = ['[name="postal_code"]', '[name="region"]', '[name="province"]', '[name="municipality"]', '[name="barangay"]', '[name="street"]'];
     
-    const addressParts = [
-        document.querySelector("[name='street']")?.value,
-        document.querySelector("[name='barangay'] option:checked")?.textContent,
-        document.querySelector("[name='municipality'] option:checked")?.textContent,
-        document.querySelector("[name='province'] option:checked")?.textContent,
-        document.querySelector("[name='region'] option:checked")?.textContent,
-        document.querySelector("[name='postal_code']")?.value
-    ].filter(part => part && part.trim() && part !== "-- Select Region --" && part !== "-- Select Province --" && part !== "-- Select Municipality --" && part !== "-- Select Barangay --");
+    addressFields.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.addEventListener('change', updateShippingAddressSummary);
+            element.addEventListener('input', updateShippingAddressSummary);
+        }
+    });
     
-    const shippingAddress = addressParts.length > 0 ? addressParts.join(", ") : "Not provided";
-    summaryShipping.textContent = shippingAddress;
+    console.log('Address field listeners setup complete');
 }
 
 // Update step progress indicator
@@ -239,7 +389,6 @@ function updateStepProgress(step) {
             // Current step
             item.classList.add("active");
         }
-        // Future steps have no special class
     });
     
     console.log(`Step progress updated to step ${step}`);
@@ -280,7 +429,9 @@ function validateStep(step) {
                 { field: 'province', label: 'Province' },
                 { field: 'municipality', label: 'Municipality' },
                 { field: 'barangay', label: 'Barangay' },
-                { field: 'street', label: 'Street Address' }
+                { field: 'street', label: 'Street Address' },
+                { field: 'billing_address', label: 'Billing Address' }
+
             ];
             
             for (let fieldInfo of requiredShippingFields) {
@@ -303,12 +454,22 @@ function validateStep(step) {
             }
             break;
         case 4:
-            const receiverName = document.querySelector("[name='receiver_name']");
-            if (!receiverName || !receiverName.value.trim()) {
-                showError("Receiver Name is required.", receiverName);
-                receiverName?.focus();
-                return false;
+
+            const requiedAdditionalInfo = [ 
+                { field: 'receiver_name', label: 'Receiver Name' },
+                { field: 'receiver_mobile', label: 'Mobile' },
+
+            ];
+            
+            for (let fieldInfo of requiedAdditionalInfo) {
+                const element = document.querySelector(`[name='${fieldInfo.field}']`);
+                if (!element || !element.value.trim()) {
+                    showError(`${fieldInfo.label} is required.`, element);
+                    element?.focus();
+                    return false;
+                }
             }
+
             break;
     }
     return true;
@@ -379,6 +540,9 @@ document.addEventListener("DOMContentLoaded", () => {
             addToCart(id, name, price, stock);
         });
     });
+
+    // Setup address field listeners for real-time updates - NEW
+    setupAddressListeners();
 
     // Handle navigation buttons (single event listener)
     document.body.addEventListener("click", e => {

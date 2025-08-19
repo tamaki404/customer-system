@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\Orders;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Region;
@@ -21,6 +22,12 @@ class PurchaseOrderController extends Controller
         $status = request('status');
 
         $query = PurchaseOrder::query();
+
+        if ($user->user_type === 'Staff' || $user->user_type === 'Admin') {
+            $purchaseOrders = $query->orderBy('created_at', 'desc')->paginate(50);
+        } else {
+            $purchaseOrders = $query->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(50);
+        }
 
         // Status filter
         if ($status && in_array($status, ['Draft', 'Pending', 'Processing', 'Partial', 'Completed', 'Cancelled'])) {
@@ -43,18 +50,15 @@ class PurchaseOrderController extends Controller
             });
         }
 
-        $purchaseOrders = $query->orderBy('order_date', 'desc')->paginate(10);
+        // $purchaseOrders = $query->orderBy('order_date', 'desc')->paginate(10);
 
         return view('purchase_order', compact('user', 'purchaseOrders', 'search', 'from', 'to', 'status'));
     }
-
-
 
     public function purchaseOrderForm(){
         $user = auth()->user();
         return view('purchase_orders/purchase_order_form', compact('user'));
     }
-
     public function storeOrderView(){
         $user = auth()->user();
         $search = request('search');
@@ -91,8 +95,12 @@ class PurchaseOrderController extends Controller
 
     public function store(Request $request)
     {
+
+        $user = auth()->user();
+
         $request->validate([
             'receiver_name' => 'required',
+            'company_name' => 'required|string|max:255',
             'postal_code' => 'nullable|string|max:10',
             'region' => 'required|exists:region,region_id',
             'province' => 'required|exists:province,province_id',
@@ -103,6 +111,9 @@ class PurchaseOrderController extends Controller
             'contact_phone' => 'required',
             'contact_email' => 'required|email',
             'cart_data' => 'required',
+            'order_notes' => 'nullable|string|max:500',
+            'receiver_mobile' => 'required|string|max:15',
+
         ]);
 
         $cart = json_decode($request->cart_data, true);
@@ -139,7 +150,8 @@ class PurchaseOrderController extends Controller
             'user_id' => auth()->id(),
             'po_number' => $po_number,
             'receiver_name' => $request->receiver_name,
-             'postal_code'   => $request->postal_code,
+            'receiver_mobile' => $request->receiver_mobile,
+            'postal_code'   => $request->postal_code,
             'region_id'     => $request->region,
             'province_id'   => $request->province,
             'municipality_id' => $request->municipality,
@@ -150,7 +162,6 @@ class PurchaseOrderController extends Controller
             'contact_phone' => $request->contact_phone,
             'contact_email' => $request->contact_email,
             'order_notes' => $request->order_notes,
-            'po_attachment' => $attachmentPath,
             'subtotal' => $subtotal,
             'tax_amount' => $tax,
             'grand_total' => $grandTotal,
@@ -158,11 +169,36 @@ class PurchaseOrderController extends Controller
             'order_date' => Carbon::now(),
         ]);
 
+         $date = date('Ymd');
+
+
+        $order_id = 'ORD-' . $date . '-' . randomBase36String(5);
+
+
+        foreach ($cart as $item) {
+            $product = Product::find($item['id']);
+
+            Orders::create([
+                'po_id' => $po->po_number,
+                'order_id'    => $order_id,
+                'customer_id' => $user->id,
+                'product_id'  => $product->id,
+                'quantity'    => $item['quantity'],
+                'unit_price'  => $product->price,
+                'total_price' => $product->price * $item['quantity'],
+                'status'      => 'Pending',
+
+            ]);
+         }
+
+
+
         // Store purchase order items using product_id
         foreach ($cart as $item) {
             PurchaseOrderItem::create([
-                'purchase_order_id' => $po->id,
+                'po_id' => $po->po_number,
                 'product_id' => $item['id'],
+                'order_id'    => $order_id,
                 'quantity' => intval($item['quantity']),
                 'unit_price' => floatval($item['price']),
                 'total_price' => floatval($item['price']) * intval($item['quantity']),

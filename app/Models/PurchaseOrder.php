@@ -13,6 +13,8 @@ class PurchaseOrder extends Model
         'user_id',
         'po_number',
         'receiver_name',
+        'receiver_mobile',
+        'company_name',
         'postal_code', 'region_id', 'province_id',
         'municipality_id', 'barangay_id', 'street',
         'billing_address',

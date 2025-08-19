@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id(); // Auto-incrementing primary key
             $table->string('order_id'); // Regular field for grouping order items
+            $table->string('po_id')->nullable(); // Nullable field for purchase order association
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('product_id');
             $table->integer('quantity');

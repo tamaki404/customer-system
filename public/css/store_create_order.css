@@ -375,6 +375,94 @@ input:focus, select:focus, textarea:focus {
 }
 
 
+/* step 4 */
+
+.add-info{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border: 0;
+    width: 100%;
+    height: 600px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 10px;
+    background-color: #fff;
+    overflow-x: auto;
+}
+
+/* step 5 */
+.summary-div{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border: 0;
+    width: 100%;
+    height: 600px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 10px;
+    background-color: #fff;
+    overflow-x: auto;
+}
+.summary-div p{
+    margin-bottom: 15px;
+}
+.summary-div h3{
+    font-size: 17px;
+    color: #666;
+    font-weight: bold;
+    margin: 0;
+    margin-top: 15px;
+}
+.display-div{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background-color: #f3f5f9;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+/* step 5 */
+
+.step-nav .submit-btn{
+    width: auto;
+    background-color: #2e7d32;
+    color: #fff;
+    font-weight: bold;
+    min-width: 170px;
+    width: auto;
+}
+.step-nav .prev-btn{
+    width: auto;
+    background-color: #999;
+    color: #fff;
+    font-weight: bold;
+    min-width: 100px;
+    width: auto;
+}
+
+.step-nav .draft-btn{
+    width: auto;
+    background-color: #666;
+    color: #fff;
+    font-weight: bold;
+    min-width: 100px;
+    width: auto;    
+}
+
+.step-nav .submit-btn:hover{
+    background-color: #225c25;
+}
+
+.step-nav .prev-btn:hover{
+    background-color: #7c7c7c;
+}
+
+.step-nav .draft-btn:hover{
+    background-color: #454444;
+}
+
 
 /* shopee like products list */
 

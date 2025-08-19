@@ -27,7 +27,6 @@
                         3 => 'Shipping Address',
                         4 => 'Additional Info',
                         5 => 'Order Summary',
-                        6 => 'Finalize Order',
                     ];
                     $currentStep = 1;
                 @endphp
@@ -61,7 +60,7 @@
             
             <div class="form-container" style="overflow: hidden">
                 <!-- STEP 1: Add to cart -->
-                <section class="products step-section" data-step="3" style="z-index: 1">
+                <section class="products step-section" data-step="1" style="z-index: 1">
           
                     <div class="products" style="z-index: 1">
                         <div class="box-description" >
@@ -158,7 +157,7 @@
                 </section>
 
                 <!-- STEP 3: Address -->
-                <section class="address-order step-section" data-step="1" style="display:none;">
+                <section class="address-order step-section" data-step="3" style="display:none;">
                     <div class="address-form">
                         <h2>Where are you sending to?</h2>
                         <p>Enter the address where you want your order delivered.</p>
@@ -206,7 +205,7 @@
 
                             <div class="add-form">
                                 <label>Billing Address <span style="color: red;">*</span></label>
-                                <input name="billing_address" style="width: 300px" required>{{ old('billing_address') }}
+                                <input name="billing_address" id="billing_address" style="width: 300px" required>{{ old('billing_address') }}
                             </div>
 
                         </div>
@@ -233,8 +232,6 @@
 
                     </div>
                 
-                   
-
                     <div class="step-nav">
                         <button type="button" class="prev-btn">Previous</button>
                         <button type="button" class="next-btn">Next</button>
@@ -243,68 +240,50 @@
 
                 <!-- STEP 4: Additional Info -->
                 <section class="info-order step-section" data-step="4" style="display:none;">
-                    <div class="number">
-                        <span class="material-symbols-outlined">looks_4</span>
+
+                    <div class="add-info">
+                        <h2>Additional Info</h2>
+                        <p>Please provide any additional information that may be relevant to your order.</p>
+
+                        <div class="add-form" style="width: 600px; margin-top: 20px; margin-bottom: 20px;">
+                            <label>Notes / Special Instructions (Optional)</label>
+                            <textarea name="order_notes" rows="2" maxlength="500" style="height: 200px;">{{ old('order_notes') }}</textarea>
+                        </div>
+
+                        <div class="add-form" style="width: 350px">
+                            <label>Receiver Name <span style="color: red;">*</span></label>
+                            <input type="text" name="receiver_name" id="receiver_name" required value="{{ old('receiver_name') }}">
+                        </div>
+                        <div class="add-form" style="width: 250px; margin-top: 20px;">
+                            <label> Mobile <span style="color: red;">*</span></label>
+                            <input type="text" maxlength="15" id="receiver_mobile" name="receiver_mobile" required value="{{ old('receiver_mobile') }}">
                     </div>
-                    <h2>Additional Info</h2>
-                    
-                    <label>Notes / Special Instructions</label>
-                    <textarea name="order_notes" rows="2">{{ old('order_notes') }}</textarea>
 
-                    <label>Receiver Name <span style="color: red;">*</span></label>
-                    <input type="text" name="receiver_name" required value="{{ old('receiver_name') }}">
-
-
+                    </div>
 
                     <div class="step-nav">
                         <button type="button" class="prev-btn">Previous</button>
                         <button type="button" class="next-btn">Next</button>
                     </div>
+
                 </section>
 
                 <!-- STEP 5: Summary -->
                 <section class="summary-order step-section" data-step="5" style="display:none;">
-                    <div class="number">
-                        <span class="material-symbols-outlined">looks_5</span>
+                    <div class="summary-div">
+
+                        <div style="text-align: center; padding: 20px; color: #888;">
+                            <p>Loading order summary...</p>
+                        </div>
                     </div>
-                    <h2>Summary</h2>
-                    <p>Review your order before finalizing.</p>
-
-                    <h3>Cart Items</h3>
-                    <div id="order-summary" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;"></div>
-
-                    <h3>Shipping & Billing</h3>
-                    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-                        <p><strong>Shipping Address:</strong> <span id="summary-shipping">Not provided</span></p>
-                        <p><strong>Billing Address:</strong> <span id="summary-billing">Not provided</span></p>
-                        <p><strong>Contact Phone:</strong> <span id="summary-phone">Not provided</span></p>
-                        <p><strong>Email:</strong> <span id="summary-email">Not provided</span></p>
-                    </div>
-
-                    <h3>Additional Info</h3>
-                    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-                        <p><strong>Receiver Name:</strong> <span id="summary-receiver">Not provided</span></p>
-                        <p><strong>Notes:</strong> <span id="summary-notes">Not provided</span></p>
-                    </div>
-
+                    
                     <div class="step-nav">
                         <button type="button" class="prev-btn">Previous</button>
-                        <button type="button" class="next-btn">Next</button>
+                        <button type="button" class="draft-btn">Draft</button>
+                        <button type="submit" class="submit-btn">Place Order</button>
                     </div>
                 </section>
 
-                <!-- STEP 6: Finalize -->
-                <section class="finalize-order step-section" data-step="6" style="display:none;">
-                    <div class="number">
-                        <span class="material-symbols-outlined">looks_6</span>
-                    </div>
-                    <h2>Finalize Order</h2>
-                    <p>Click "Place Order" to finalize your purchase.</p>
-                    <div class="step-nav">
-                        <button type="button" class="prev-btn">Previous</button>
-                        <button type="submit" class="submit-btn" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Place Order</button>
-                    </div>
-                </section>
             </div>
         </form>
     </div>

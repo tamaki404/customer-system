@@ -13,7 +13,7 @@ class CreatePurchaseOrdersTable extends Migration
             $table->string('po_number')->unique();
             $table->string('reference_code')->nullable();
             $table->string('receiver_name');
-            $table->string('receiver_name');
+            $table->string('receiver_mobile', 15);
             $table->string('postal_code', 10)->nullable();
             $table->unsignedBigInteger('region_id');
             $table->unsignedBigInteger('province_id');

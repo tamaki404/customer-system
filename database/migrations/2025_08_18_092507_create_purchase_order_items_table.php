@@ -10,7 +10,7 @@ class CreatePurchaseOrderItemsTable extends Migration
     {
         Schema::create('purchase_order_items', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('purchase_order_id');
+            $table->unsignedBigInteger('po_id');
             $table->unsignedBigInteger('product_id');
             $table->integer('quantity');
             $table->decimal('unit_price', 8, 2);
@@ -18,7 +18,7 @@ class CreatePurchaseOrderItemsTable extends Migration
             $table->timestamps();
 
             // Add foreign key constraints separately
-            // $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('cascade');
+            // $table->foreign('po_id')->references('id')->on('purchase_orders')->onDelete('cascade');
             // $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
 
             $table->index(['purchase_order_id']);
