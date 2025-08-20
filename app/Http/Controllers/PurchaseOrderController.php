@@ -10,6 +10,7 @@ use App\Models\Orders;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Region;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PurchaseOrderController extends Controller {
     public function purchaseOrder()
@@ -37,6 +38,7 @@ class PurchaseOrderController extends Controller {
             ]);
         }
 
+
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('po_number', 'like', "%$search%")
@@ -52,10 +54,34 @@ class PurchaseOrderController extends Controller {
     }
 
 
-    public function purchaseOrderForm(){
+    public function purchaseOrderForm($po_number)
+    {
         $user = auth()->user();
-        return view('purchase_orders/purchase_order_form', compact('user'));
+        $order = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
+
+        $ordersItem = PurchaseOrderItem::where('po_id', $po_number)
+            ->orderBy('created_at', 'desc') 
+            ->get();
+
+        return view('purchase_orders.purchase_order_form', compact('user', 'order', 'ordersItem'));
     }
+
+
+    public function downloadPDF($po_number)
+    {
+        $user = auth()->user();
+        $order = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
+
+        $ordersItem = PurchaseOrderItem::where('po_id', $po_number)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pdf = Pdf::loadView('purchase_orders.purchase_order_form', compact('user', 'order', 'ordersItem'));
+
+        return $pdf->download("PurchaseOrder-{$order->po_number}.pdf");
+    }
+
+
     public function storeOrderView(){
         $user = auth()->user();
         $search = request('search');
@@ -196,19 +222,15 @@ class PurchaseOrderController extends Controller {
         }
     }
 
+    
 
     public function purchaseOrderView($po_number)
-    {
-        $orderItems = PurchaseOrder::with(['orderItem', 'user'])
-            ->where('po_number', $po_number)
-            ->get();
+    {   
+        $order = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
 
-        if ($orderItems->isEmpty()) {
-            return redirect()->back()->with('error', 'Order not found.');
-        }
-
-        $user = auth()->user();
-
-        return view('purchase_orders/purchase_order_view', compact('orderItems', 'user'));
+        return view('purchase_orders.purchase_order_view', compact('order', ));
     }
+
+
+     
 }

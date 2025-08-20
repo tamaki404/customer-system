@@ -7,12 +7,152 @@
     <title>Purchase Order</title>
 </head>
 <body>
+    {{-- <a href="{{ route('purchase_order.pdf', $order->po_number) }}" 
+   class="btn btn-primary" target="_blank">
+   Download PDF
+</a> --}}
+<style>
+            body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+            color: #333;
+            overflow-x: auto;
+            display: flex;
+        }
+        .form {
+            background: white;
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: auto;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .header-1{
+            background-color: #ffde59;
+            padding: 15px;
+
+        }
+        h2 {
+            text-align: right;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: normal;
+            font-size: 30px;
+        }
+        .header, .shipping-info, .shipping-type, .items, .notes-signatory {
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .sunny-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .sunny-info img {
+            max-height: 60px;
+        }
+        .address p {
+            margin: 2px 0;
+            font-size: 14px;
+        }
+        .order-info p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+        .shipping-info {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .shipping-info div {
+            padding: 10px;
+            border-radius: 6px;
+            flex: 1;
+            border-top: #ffde59 4px solid;
+            box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+        }
+        .shipping-info div h3 {
+            margin-top: 0;
+            font-size: 16px;
+            font-weight: normal;
+            color: #333;
+            font-weight: bold;
+
+
+        }
+   
+        /* .shipping-info div h3{
+            background-color: #ffde59;
+            padding: 5px;
+        } */
+
+        .vendor p{
+            font-size: 14px;
+        }
+        .customer p{
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+            
+        }
+        th {
+            background: #ffde59;
+            text-align: left;
+            padding: 8px;
+            font-size: 15px;
+        }
+        td {
+            padding: 8px;
+            font-size: 14px;
+        }
+        .totals {
+            text-align: right;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .totals p {
+            margin: 4px 0;
+        }
+        .notes-signatory {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .notes, .signatory {
+            flex: 1;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+</style>
+
     <div class="form">
         <div class="header-1">
-            <h2>Purchase Order</h2>
+            <h2>Purchase Order</h2> 
             <div class="header">
                 <div class="sunny-info">
-                    <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Sunny&Scramble Logo">
+                    
+                    <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="">
+                    <img src="{{ public_path('assets/sunnyLogo1.png') }}" style="width:120px;">
+
                     <div class="address">
                         <p><strong>Sunny & Scramble</strong></p>
                         <p>123 Sunny Street</p>
@@ -20,9 +160,9 @@
                     </div>
                 </div>
                 <div class="order-info">
-                    <p><strong>Order ID:</strong> PO-10234</p>
-                    <p><strong>Date:</strong> 2025-08-15</p>
-                    <p><strong>Status:</strong> Approved</p>
+                    <p><strong>Purchase ID:</strong> {{$order->po_number}}</p>
+                    <p><strong>Date:</strong> {{$order->created_at}}</p>
+                    <p><strong>Status:</strong> {{$order->status}}</p>
                 </div>
             </div>
         </div>
@@ -38,11 +178,16 @@
                 </div>
                 <div class="customer">
                     <h3>Customer Information</h3>
-                    <p>Egglog Enterprises</p>
-                    <p>456 Palm Avenue, Baytown, 90210</p>
-                    <p><strong>Contact Person:</strong> Mark Doe</p>
-                    <p><strong>Phone:</strong> (555) 123-4567</p>
-                    <p><strong>Email:</strong> mark.doe@egglogenterprises.com</p>
+                    <p>{{$order->company_name}}</p>
+                    <p style="white-space:wrap;">
+                        {{ $order->street }},
+                        {{ $order->barangay['barangay_name'] }},
+                        {{ $order->municipality['municipality_name'] }},
+                        {{ $order->province['province_name'] }},
+                        {{ $order->region['region_name'] }}
+                    </p>
+                    <p><strong>Contact Person:</strong> {{$order->receiver_name}}</p>
+                    <p><strong>Phone:</strong> {{$order->receiver_mobile}}</p>
                 </div>
 
             </div>
@@ -60,10 +205,10 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Jane Smith</td>
-                            <td>FedEx</td>
-                            <td>Sunnyville</td>
-                            <td>Prepaid</td>
+                            <td>{{$order->receiver_name}}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -85,48 +230,45 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach($ordersItem as $item)
                         <tr>
                             <td>1</td>
-                            <td>P-001</td>
-                            <td>Office Chair</td>
-                            <td>pcs</td>
-                            <td>5</td>
-                            <td>₱3,500.00</td>
-                            <td>₱500.00</td>
-                            <td>₱17,000.00</td>
+                            <td>{{$item->product_id}}</td>
+                            <td>{{$item->product->name}}</td>
+                            <td></td>
+                            <td>{{$item->quantity}}</td>
+                            <td>&#8369;{{ number_format($item->unit_price, 2) }}</td>
+                            <td></td>
+                            <td>&#8369;{{ number_format($item->total_price, 2) }}</td>
+                        
                         </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>P-002</td>
-                            <td>Desk Lamp</td>
-                            <td>pcs</td>
-                            <td>10</td>
-                            <td>₱800.00</td>
-                            <td>₱0.00</td>
-                            <td>₱8,000.00</td>
-                        </tr>
+                        @endforeach
+                        
                     </tbody>
                 </table>
 
 
             </div>
             <div class="totals">
+
+                
+
                 <table style="width: 300px; float: right; border-collapse: collapse; font-size: 14px;">
                     <tr>
                         <td style="padding: 6px; border: 1px solid #ccc;">Subtotal</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">₱25,000.00</td>
+                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">&#8369;{{ number_format($order->subtotal, 2) }}</td>
                     </tr>
                     <tr>
                         <td style="padding: 6px; border: 1px solid #ccc;">Tax</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">₱3,000.00</td>
+                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">{{$order->tax_amount}}</td>
                     </tr>
                     <tr>
                         <td style="padding: 6px; border: 1px solid #ccc;">Discount</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">₱500.00</td>
+                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;"></td>
                     </tr>
                     <tr>
                         <td style="padding: 6px; border: 1px solid #ccc; font-weight: bold;">Total</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right; font-weight: bold;">₱27,500.00</td>
+                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right; font-weight: bold;">&#8369;{{ number_format($order->grand_total, 2) }}</td>
                     </tr>
                 </table>
             </div>
@@ -134,11 +276,11 @@
             <div class="notes-signatory">
                 <div class="notes">
                     <h3>Additional Notes</h3>
-                    <input type="text" name="notes" value="Delivery before 20th August">
+                    <p type="text" name="notes" style="white-space: wrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; ">{{$order->order_notes}}</p>
                 </div>
                 <div class="signatory">
                     <h3>Authorized by</h3>
-                    <input type="text" name="authorized_by" value="Jane Smith">
+                    <p type="text" style="font-size: 13px;" name="authorized_by">{{$order->receiver_name}}</p></p>
                     <p style="font-size: 12px; color: #666;">Name with signature of Authorized person</p>
                 </div>
             </div>

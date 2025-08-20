@@ -47,14 +47,28 @@ class PurchaseOrder extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function product(){
+        return $this->belongsTo(Product::class);
+    }
+
     public function orderItem(){
         return $this->belongsTo(Orders::class);
     }
 
-    public function items()
+
+
+
+        public function items()
     {
-        return $this->hasMany(PurchaseOrderItem::class);
+        return $this->hasMany(PurchaseOrderItem::class, 'po_id', 'po_number');
     }
+
+
+    public function orderItems()
+{
+    return $this->hasMany(PurchaseOrderItem::class, 'po_id', 'po_number');
+}
+
 
     public function approvedBy()
     {

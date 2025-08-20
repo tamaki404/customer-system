@@ -23,9 +23,15 @@ class PurchaseOrderItem extends Model
         'total_price' => 'decimal:2'
     ];
 
+
     public function purchaseOrder()
-    {
-        return $this->belongsTo(PurchaseOrder::class);
+{
+    return $this->belongsTo(PurchaseOrder::class, 'po_id', 'po_number');
+}
+
+    
+    public function orderItem(){
+        return $this->belongsTo(Orders::class);
     }
 
     public function product()

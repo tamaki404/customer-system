@@ -15,6 +15,7 @@
 </head>
 <body>
     <div class="purchase-order-bg">
+        <button onclick="window.location='{{ route('purchase_order.create', $order->po_number) }}'">View Purchase Order</button>
 
     </div>
 </body>

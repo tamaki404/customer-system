@@ -91,7 +91,7 @@
                         <th style="width: 50px; padding: 10px;">#</th>
                         <th style="width: 100px;">Order Date</th>
                         <th style="width: 140px;">PO Number</th>
-                        <th style="width: 150px;">Company</th>
+                        {{-- <th style="width: 150px;">Company</th> --}}
                         <th style="width: 50px;">Quantity</th>
                         <th style="width: 100px;">Subtotal</th>
                         <th style="width: 100px;">Status</th>
@@ -106,9 +106,10 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $order->order_date->format('Y-m-d') }}</td>
                             <td>{{ $order->po_number }}</td>
-                            <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $order->company_name }}</td>
+                            {{-- <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $order->user->store_name }}</td> --}}
 
-                            <td>{{$order->quantity}}</td>
+
+                            <td>{{ $order->items->sum('quantity') }}</td>                            
                             <td>₱{{ number_format($order->subtotal, 2) }}</td>
                             <td>
                                 @php 
