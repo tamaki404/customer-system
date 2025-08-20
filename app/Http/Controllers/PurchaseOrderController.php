@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Region;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseOrderController extends Controller {
     public function purchaseOrder()
@@ -131,6 +132,17 @@ class PurchaseOrderController extends Controller {
         return view('purchase_orders.store_create_order', compact('user', 'products', 'search', 'regions'));
     }
 
+private function randomBase36String($length = 5)
+{
+    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $randomString = '';
+
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[random_int(0, strlen($characters) - 1)];
+    }
+
+    return $randomString;
+}
 
     public function store(Request $request)
     {
@@ -171,6 +183,7 @@ class PurchaseOrderController extends Controller {
                 $attachmentPath = $request->file('po_attachment')->store('attachments', 'public');
             }
 
+            
             $date = date('Ymd');
             $po_number = 'PO-' . $date . '-' . $this->randomBase36String(5);
 
@@ -241,9 +254,16 @@ class PurchaseOrderController extends Controller {
 
     public function purchaseOrderView($po_number)
     {   
+        $po = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
         $order = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
 
-        return view('purchase_orders.purchase_order_view', compact('order', ));
+        $ordersItem = PurchaseOrderItem::where('po_id', $po_number)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $orderCount = PurchaseOrderItem::where('po_id', $po_number)->count();
+
+        return view('purchase_orders.purchase_order_view', compact('po','order', 'ordersItem', 'orderCount' ));
     }
 
 

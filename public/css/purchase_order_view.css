@@ -14,3 +14,239 @@
     overflow-y: auto;
     overflow-x: auto;
 }
+
+.viewPO-btn{
+    font-size: 14px;
+    color: #333 !important;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffde59, #ffd54f);
+    padding: 10px 14px;
+    width: auto;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    border: none;
+    align-items: center;
+    display: flex;
+    gap: 5px;
+}
+
+.viewPO-btn:hover{
+    background-color: #958216;
+    transition: background-color 0.3s ease;
+}
+
+.viewPO-btn span{
+    font-size: 19px
+}
+
+.order-div{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 15px;
+    border-radius: 20px;
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+   box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px; 
+}
+.order-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+.order-id{
+    flex-direction: column;
+    display: flex;
+    margin: 0;
+    gap: 0;
+}
+.order-id p{
+    margin: 0;
+}
+.order-header .status-text{
+    border-radius: 20px;
+    padding: 5px;
+    border: 1px solid #333;
+    font-size: 14px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    width: auto;
+    min-width: 100px;
+    height: auto;
+}
+.shipment-div{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 15px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    border-radius: 10px;
+    padding: 15px;
+    min-width: 300px;
+    width: 500px;
+}
+.shipper-details{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+.shipper-details img{
+    border-radius: 15px;
+    border: 1px solid #999;
+    width: 50px;
+    height: 50px;
+
+}
+
+.shipper-name-address .company-name{
+    font-size: 15px;
+    color: #333;
+    margin: 0;
+    font-weight: bold;
+}
+.ship-detail{
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    text-overflow: ellipsis;
+}
+
+.ship-details, .shipper-details{
+    gap: 5px;
+    font-size: 14px;
+    color: #999;
+}
+
+.recipient-div{
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.recipient-div .shipper-details{
+    flex-direction: column;
+    gap: 5;
+}
+.recipient-title{
+    margin: 0;
+
+}
+
+.items-div{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.each-item-div{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    padding: 10px;
+    width: 300px;
+    gap: 10px;
+}
+.each-item-div img{
+    width: 300px;
+    height: 300px;
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+
+}
+
+.item-detail{
+    gap: 5px;
+}
+.item-detail p{
+    margin: 0;
+}
+.items-list{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 15px;
+    min-width: 500px;
+    width: auto;
+    justify-content: space-evenly;
+}
+.item-name{
+    font-size: 15px;
+    color: #333;
+    margin: 2px;
+}
+.item-price-quan{
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    gap: 5px;
+}
+.item-price-quan .item-total-price{
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+}
+.item-original-price, .item-quantity{
+    font-size: 13px;
+    color: #888;
+    font-weight: normal;
+}
+.item-unit-title-value{
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    gap: 5px;
+    align-items: center;
+}
+.item-unit-title{
+    font-size: 13px;
+    color: #888;
+}
+.item-unit-value{
+    font-size: 13px;
+    color: #666;
+}
+.order-count{
+    font-size: 15px;
+    margin: 0;
+    
+}
+.order-summmary-div{
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    flex-direction: column;
+    display: flex;
+    
+
+
+}
+
+.summary-items{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.summary-items p{
+    margin: 0;
+}
+.total-title{
+    font-weight: bold;
+    font-size: 15px;
+    color: #888;
+}
+.total-total{
+    font-weight: bold;
+    font-size: 15px;
+    color: #666;
+}

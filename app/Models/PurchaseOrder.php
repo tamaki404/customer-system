@@ -47,6 +47,11 @@ class PurchaseOrder extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function order()
+    {
+        return $this->hasOne(Orders::class, 'po_id', 'po_number');
+    }
+
     public function product(){
         return $this->belongsTo(Product::class);
     }
