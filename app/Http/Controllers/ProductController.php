@@ -20,6 +20,7 @@ class ProductController extends Controller
             'status' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'product_id' => 'nullable|string|max:255',
+            'unit'=> 'nullable|string|max:25'
         ]);
         $validated['status'] = $validated['status'] ?? 'Available';
 

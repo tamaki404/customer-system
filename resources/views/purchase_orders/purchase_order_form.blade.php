@@ -235,7 +235,7 @@
                             <td>1</td>
                             <td>{{$item->product_id}}</td>
                             <td>{{$item->product->name}}</td>
-                            <td></td>
+                            <td>{{$item->product->unit}}</td>
                             <td>{{$item->quantity}}</td>
                             <td>&#8369;{{ number_format($item->unit_price, 2) }}</td>
                             <td></td>

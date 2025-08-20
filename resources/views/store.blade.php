@@ -49,6 +49,20 @@
                         <span id="quantity-error" class="error-message"></span>
                     </div>
                     <div>
+                        <label for="unit">Unit</label>
+                        <style>
+
+                        </style>
+                        <select name="unit" id="unit-selector">
+                            <option value="Piece">Piece</option>
+                            <option value="Dozen">Dozen</option>
+                            <option value="Pack">Pack</option>
+                            <option value="Tray">Tray</option>
+                            <option value="Case">Case</option>
+                        </select>
+
+                    </div>
+                    <div>
                         <label>Price</label>
                         <input type="number" name="price" placeholder="Price." id="price" min="0" required>
                         <span id="price-error" class="error-message"></span>
@@ -133,6 +147,7 @@
                             <th style="width: 120px; overflow: hidden; font-size: 13px;">Price</th>
                             <th style="width: 70px; font-size: 13px;">Product ID</th>
                             <th style="width: 80px; font-size: 13px;">Sold</th>
+                            <th style="width: 80px; font-size: 13px;">Unit</th>
                             <th style="width: 80px; font-size: 13px;">Available</th>
                             <th style="width: 100px; font-size: 13px;">Status</th>
                         </tr>
@@ -154,11 +169,12 @@
                                     <div class="thumb-placeholder" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">No Image</div>
                                 @endif
 
-                                <p style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{ $product->name }}</p>
+                                <p style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{ $product->name }} </p>
                             </td>
                             <td style="padding:10px 8px; font-size: 13px;">₱{{ number_format($product->price, 2) }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->product_id }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->sold_quantity }}</td>
+                            <td style="padding:10px 8px; font-size: 13px;">{{ $product->unit }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->quantity }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">
 
@@ -207,7 +223,7 @@
                                 @endif
                             </div>
                             <div class="product-body">
-                                <div class="product-name" title="{{ $product->name }}">{{ $product->name }}</div>
+                                <div class="product-name" title="{{ $product->name }}">{{ $product->name }} <span style="font-size: 11px; color: #9a9a9a; text-transform: uppercase;"> {{$product->unit}}</span></div>
                                 <div class="product-price">₱{{ number_format($product->price, 2) }}</div>
                                 <div class="product-meta">
                                     <span class="stock">{{ $product->quantity }}x</span>

@@ -54,7 +54,12 @@
                 </ul>
             </div>
         @endif
-
+        <div class="date-search">
+            <form class="search-form" method="GET" action="{{ route('purchase_order.store.order') }}">
+                <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name or Product ID">
+                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+            </form>                
+        </div>
         <form id="order-form" method="POST" action="{{ route('purchase_orders.store') }}" enctype="multipart/form-data">
             @csrf
             
@@ -70,14 +75,7 @@
                             </div>
 
 
-                            <div class="date-search">
-                                <form method="GET" action="{{ route('purchase_order.create') }}">
-                                    <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID & Status">
-                                    <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
-                                </form>
-
-                            
-                             </div>
+                      
                         </div>
                         
 

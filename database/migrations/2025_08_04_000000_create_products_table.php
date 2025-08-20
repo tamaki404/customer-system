@@ -12,13 +12,14 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            // $table->binary('image')->nullable();
-            // $table->string('image_mime')->nullable();
+            $table->binary('image')->nullable();
+            $table->string('image_mime')->nullable();
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
             $table->string('status')->nullable();
             $table->timestamps();
             $table->string('product_id')->nullable();
+            $table->string('unit')->nullable();
         });
     }
 

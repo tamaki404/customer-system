@@ -18,5 +18,6 @@ class Product extends Model
         'price',
         'status',
         'product_id',
+        'unit'
     ];
 }

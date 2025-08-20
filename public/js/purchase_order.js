@@ -1,7 +1,7 @@
 // Global variables
 let cart = {};
 let currentStep = 1;
-const totalSteps = 6;
+const totalSteps = 5; // Fixed: should be 5, not 6
 
 // Function to display error messages
 function showError(message, targetElement = null) {
@@ -521,6 +521,75 @@ function addCartDataToForm() {
     console.log("Cart data added:", cart);
 }
 
+// NEW: Navigate to step and show it (for form validation errors)
+function navigateToStep(stepNumber) {
+    if (stepNumber >= 1 && stepNumber <= totalSteps) {
+        currentStep = stepNumber;
+        showStep(currentStep);
+        console.log(`Navigated to step ${stepNumber}`);
+    }
+}
+
+// NEW: Enhanced form validation that navigates to the step with errors
+function validateAllSteps() {
+    // Check Step 1: Cart
+    if (Object.keys(cart).length === 0) {
+        navigateToStep(1);
+        showError("Please add at least one product to your cart.");
+        return false;
+    }
+
+    // Check Step 3: Shipping Address
+    const requiredShippingFields = [ 
+        { field: 'postal_code', label: 'Postal Code' },
+        { field: 'region', label: 'Region' },
+        { field: 'province', label: 'Province' },
+        { field: 'municipality', label: 'Municipality' },
+        { field: 'barangay', label: 'Barangay' },
+        { field: 'street', label: 'Street Address' },
+        { field: 'billing_address', label: 'Billing Address' }
+    ];
+    
+    for (let fieldInfo of requiredShippingFields) {
+        const element = document.querySelector(`[name='${fieldInfo.field}']`);
+        if (!element || !element.value.trim()) {
+            navigateToStep(3);
+            showError(`${fieldInfo.label} is required.`);
+            setTimeout(() => element?.focus(), 300);
+            return false;
+        }
+    }
+
+    // Validate email format
+    const emailElement = document.querySelector("[name='contact_email']");
+    const email = emailElement?.value || '';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        navigateToStep(3);
+        showError("Please enter a valid email address.");
+        setTimeout(() => emailElement?.focus(), 300);
+        return false;
+    }
+
+    // Check Step 4: Additional Info
+    const requiredAdditionalInfo = [ 
+        { field: 'receiver_name', label: 'Receiver Name' },
+        { field: 'receiver_mobile', label: 'Mobile' },
+    ];
+    
+    for (let fieldInfo of requiredAdditionalInfo) {
+        const element = document.querySelector(`[name='${fieldInfo.field}']`);
+        if (!element || !element.value.trim()) {
+            navigateToStep(4);
+            showError(`${fieldInfo.label} is required.`);
+            setTimeout(() => element?.focus(), 300);
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // Initialize everything when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
     console.log('DOM Content Loaded');
@@ -578,23 +647,33 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Handle form submission
+    // FIXED: Enhanced form submission handler
     const form = document.getElementById("order-form");
     if (form) {
         form.addEventListener("submit", function(e) {
             console.log('Form submission triggered');
             
-            if (Object.keys(cart).length === 0) {
-                e.preventDefault();
-                showError("Cannot submit order with empty cart.");
+            // Prevent default submission first
+            e.preventDefault();
+            
+            // Clear any existing errors
+            clearErrors();
+            
+            // Perform comprehensive validation
+            if (!validateAllSteps()) {
+                console.log('Form validation failed');
                 return false;
             }
             
             // Add cart data to form
             addCartDataToForm();
             
-            console.log('Form is being submitted...');
-            return true;
+            console.log('Form validation passed, submitting...');
+            
+            // Submit the form programmatically (this bypasses HTML5 validation)
+            form.submit();
+            
+            return false; // Prevent double submission
         });
     }
 

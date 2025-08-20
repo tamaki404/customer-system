@@ -45,7 +45,7 @@
 
         <div class="product-info">
             <div class="name-price">
-                <h1 class="product-name" style="margin:0;">{{ $product->name }}</h1>
+                <h1 class="product-name" style="margin:0; flex-direction: row; display: flex; align-items: center; gap: 5px">{{ $product->name }} <span style="font-size: 13px; color: #9a9a9a; text-transform: uppercase; margin: 0;"> {{$product->unit}}</span></h1>
                 <h2 class="product-price">₱{{ number_format($product->price, 2) }}</h2>
             </div>
              <div class="quan-status" style="display:flex; gap: 12px; align-items:center;">

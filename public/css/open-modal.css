@@ -20,6 +20,19 @@
   display: flex;
 }
 
+#unit-selector{
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cfd8dc;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #f7f9fa;
+  transition: border 0.2s;
+  margin-bottom: 6px;
+  outline: none;
+  color: #333;
+  cursor: pointer;
+}
 
 .modal-content {
   background: #fff;

@@ -53,6 +53,25 @@ class PurchaseOrderController extends Controller {
         return view('purchase_order', compact('user', 'purchaseOrders', 'search', 'from', 'to', 'status'));
     }
 
+    public function productSearch()
+    {
+        $search = request('search');
+        $query = Product::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('product_id', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%"); 
+            });
+        }
+
+        $products = $query->orderBy('created_at', 'desc');
+
+        return view('store_create_order', compact('search', 'products'));
+    }
+
+
 
     public function purchaseOrderForm($po_number)
     {
@@ -82,38 +101,34 @@ class PurchaseOrderController extends Controller {
     }
 
 
-    public function storeOrderView(){
+    public function storeOrderView()
+    {
         $user = auth()->user();
         $search = request('search');
+
         $query = Product::query();
-        
+
         if ($search) {
             $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                ->orWhere('id', 'like', "%$search%")
-                ->orWhere('status', 'like', "%$search%")
-                ->orWhere('product_id', 'like', "%$search%");
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('product_id', 'like', "%{$search}%");
             });
         }
-        
+
         $products = $query
             ->select('products.*')
             ->selectSub(function ($q) {
                 $q->from('orders')
-                ->selectRaw('COUNT(*)')
+                ->selectRaw('COALESCE(SUM(quantity), 0)') 
                 ->whereColumn('orders.product_id', 'products.id');
             }, 'sold_quantity')
             ->orderByDesc('created_at')
-            ->paginate(15);
-            
-        if ($search) {
-            $products->appends(['search' => $search]);
-        }
+            ->paginate(15)
+            ->withQueryString(); 
+        $regions = Region::orderBy('region_name')
+            ->get(['region_id','region_name']);
 
-          $regions = Region::orderBy('region_name')
-        ->get(['region_id','region_name']);
-
-        return view('purchase_orders/store_create_order', compact('user', 'products', 'search', 'regions'));
+        return view('purchase_orders.store_create_order', compact('user', 'products', 'search', 'regions'));
     }
 
 
