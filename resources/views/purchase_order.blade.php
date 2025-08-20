@@ -22,8 +22,7 @@
                     placeholder="Search receipt #, customer, amount, or date"
                     value="{{ request('search') }}"
                     style="outline:none;"
-                    
-                    >
+                >
                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>
 
@@ -91,7 +90,9 @@
                         <th style="width: 50px; padding: 10px;">#</th>
                         <th style="width: 100px;">Order Date</th>
                         <th style="width: 140px;">PO Number</th>
-                        {{-- <th style="width: 150px;">Company</th> --}}
+                        @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff' )
+                            <th style="width: 150px;">Company</th>
+                        @endif
                         <th style="width: 50px;">Quantity</th>
                         <th style="width: 100px;">Subtotal</th>
                         <th style="width: 100px;">Status</th>
@@ -106,8 +107,9 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $order->order_date->format('Y-m-d') }}</td>
                             <td>{{ $order->po_number }}</td>
-                            {{-- <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $order->user->store_name }}</td> --}}
-
+                            @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff' )
+                              <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $order->user->store_name }}</td>
+                            @endif
 
                             <td>{{ $order->items->sum('quantity') }}</td>                            
                             <td>₱{{ number_format($order->subtotal, 2) }}</td>
