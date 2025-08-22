@@ -220,7 +220,7 @@
                     <div class="nav-indicator"></div>
                 </a>
                 
-                <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('reports') }}">
+                <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('customer_reports') }}">
                     <span class="material-symbols-outlined">bar_chart</span>
                     <p>Reports</p>
                     <div class="nav-indicator"></div>

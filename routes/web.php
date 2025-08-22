@@ -119,6 +119,17 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/order/mark-done/{order_id}', [OrderController::class, 'markOrderDone'])->name('orders.mark.done');
         Route::post('/order/reject/{order_id}', [OrderController::class, 'rejectOrder'])->name('orders.reject');
 
+        Route::get('/reports', [ReportsController::class, 'reports'])->name('reports');
+        Route::get('/reports/dateFilter', [ReportsController::class, 'dateFilter'])->name('dateFilter');
+        Route::get('/reports/export', action: [ReportsController::class, 'exportReports'])->name('reports.export');
+        Route::get('/reports/customers', action: [ReportsController::class, 'exportCustomers'])->name('reports.customers');
+        Route::get('/reports/customer-analytics', [ReportsController::class, 'customerAnalytics'])->name('customer.analytics');
+        Route::get('/reports/products', [ReportsController::class, 'exportProducts'])->name('reports.products');
+        Route::get('/reports/orders', action: [ReportsController::class, 'exportOrders'])->name('reports.orders');
+        Route::get('/reports/receipts', [ReportsController::class, 'exportReceipts'])->name('reports.receipts');
+
+
+
     });
     
     // Tickets management
@@ -187,18 +198,11 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 
 
     // Reports
-    Route::get('/reports', [ReportsController::class, 'reports'])->name('reports');
-    Route::get('/reports/dateFilter', [ReportsController::class, 'dateFilter'])->name('dateFilter');
-    Route::get('/reports/export', action: [ReportsController::class, 'exportReports'])->name('reports.export');
-    Route::get('/reports/customers', action: [ReportsController::class, 'exportCustomers'])->name('reports.customers');
-    Route::get('/reports/customer-analytics', [ReportsController::class, 'customerAnalytics'])->name('customer.analytics');
-    Route::get('/reports/products', [ReportsController::class, 'exportProducts'])->name('reports.products');
-    Route::get('/reports/orders', action: [ReportsController::class, 'exportOrders'])->name('reports.orders');
-    Route::get('/reports/receipts', [ReportsController::class, 'exportReceipts'])->name('reports.receipts');
 
     Route::get('/reports/export/customers', [ReportsController::class, 'exportCustomers'])->name('reports.customers');
- 
- 
+    Route::get('/reports/customers', [ReportsController::class, 'customerReports'])->name('customer_reports');
+    Route::get('/reports/customers/dateFilter', [ReportsController::class, 'customerDateFilter'])->name('customer_dateFilter');
+
 
     //Address
     Route::get('/regions/{region}/provinces', [AddressController::class, 'provinces'])->name('address.provinces');
