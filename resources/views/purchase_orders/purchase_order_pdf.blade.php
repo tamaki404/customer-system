@@ -4,28 +4,194 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ asset('css/purchase-order-form.css') }}">
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <title>Purchase Order</title>
+    <style>
+        @page {
+            margin: 1px 1px 1px 1px;
+        }
+
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            margin: 40px;
+            background-color: #fff;
+            color: #333;
+            overflow-x: auto;
+            display: flex;
+            justify-content: space-evenly;
+            font-size: 12px;  
+        }
+        .form {
+            background: white;
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: auto;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .header-1{
+            background-color: #ffde59;
+            padding: 15px;
+
+        }
+        h2 {
+            text-align: right;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: normal;
+            font-size: 22px;
+        }
+        .header, .shipping-info, .shipping-type, .items, .notes-signatory {
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .sunny-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .sunny-info img {
+            max-height: 60px;
+        }
+        .address p {
+            margin: 2px 0;
+            font-size: 12px;
+        }
+        .order-info p {
+            margin: 4px 0;
+            font-size: 12px;
+        }
+        .shipping-info {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .shipping-info div {
+            padding: 10px;
+            border-radius: 6px;
+            flex: 1;
+            border-top: #ffde59 4px solid;
+            box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+        }
+        .shipping-info div h3 {
+            margin-top: 0;
+            font-size: 14px;
+            font-weight: normal;
+            color: #333;
+            font-weight: bold;
+
+
+        }
+   
+        /* .shipping-info div h3{
+            background-color: #ffde59;
+            padding: 5px;
+        } */
+
+        .vendor p{
+            font-size: 12px;
+        }
+        .customer p{
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+            
+        }
+        th {
+            background: #ffde59;
+            text-align: left;
+            padding: 8px;
+            font-size: 14px;
+        }
+        td {
+            padding: 8px;
+            font-size: 12px;
+        }
+        .totals {
+            text-align: right;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+        .totals p {
+            margin: 4px 0;
+        }
+        .notes-signatory {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .notes, .signatory {
+            flex: 1;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+                    .go-back-a{
+                font-size: 13px;
+                color: #f8912a;
+                text-decoration: none;
+                width: auto;
+            }
+            .go-back-a:hover{
+                color: #cd741c;
+            }
+            .download-purchase-order{
+                padding: 7px;
+                border-radius: 10px;
+                font-size: 12px;
+                color: #fff;
+                width: 100px;
+                border: none;
+                box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;   
+                background-color: #f8912a;
+                font-weight: bold;
+                height: 30px;
+                width: 180px;;
+                align-items: center;
+                display: flex;
+                gap: 5px;
+                cursor: pointer;
+                justify-content: center;
+                display: flex;
+                text-decoration: none;
+            }
+            .download-purchase-order:hover{
+                background-color: #cd741c;
+
+            }
+    </style>
 </head>
 <body style="display: flex; flex-direction: column; flex-wrap: wrap;">
-{{--<a href="{{ route('purchase_order.pdf', $order->po_number) }}" 
-        class="btn btn-primary" target="_blank">
-        Download PDF
-    </a> --}}
 
-    <a class="go-back-a" href="{{ route('purchase_order.view', $order->po_number) }}">
-         <- Order details
-    </a>
+
 
     <div class="form">
+
         <div class="header-1">
             <h2>Purchase Order</h2> 
             <div class="header">
                 <div class="sunny-info">
                     
-                    <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="">
-                    {{-- <img src="{{ public_path('assets/sunnyLogo1.png') }}" style="width:120px;"> --}}
+                    <img src="{{ public_path('assets/sunnyLogo1.png') }}" style="width:120px;">
 
                     <div class="address">
                         <p><strong>Sunny & Scramble</strong></p>
@@ -111,9 +277,9 @@
                             <td>{{$item->product->name}}</td>
                             <td>{{$item->product->unit}}</td>
                             <td>{{$item->quantity}}</td>
-                            <td>&#8369;{{ number_format($item->unit_price, 2) }}</td>
+                            <td>₱{{ number_format($item->unit_price, 2) }}</td>
                             <td></td>
-                            <td>&#8369;{{ number_format($item->total_price, 2) }}</td>
+                            <td>₱{{ number_format($item->total_price, 2) }}</td>
                         
                         </tr>
                         @endforeach
@@ -130,19 +296,19 @@
                 <table style="width: 300px; float: right; border-collapse: collapse; font-size: 14px;">
                     <tr>
                         <td style="padding: 6px; border: 1px solid #ccc;">Subtotal</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">&#8369;{{ number_format($order->subtotal, 2) }}</td>
+                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">₱{{ number_format($order->subtotal, 2) }}</td>
                     </tr>
                     <tr>
                         <td style="padding: 6px; border: 1px solid #ccc;">Tax</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">{{$order->tax_amount}}</td>
+                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">₱{{$order->tax_amount}}</td>
                     </tr>
                     <tr>
                         <td style="padding: 6px; border: 1px solid #ccc;">Discount</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;"></td>
+                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">₱</td>
                     </tr>
                     <tr>
                         <td style="padding: 6px; border: 1px solid #ccc; font-weight: bold;">Total</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right; font-weight: bold;">&#8369;{{ number_format($order->grand_total, 2) }}</td>
+                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right; font-weight: bold;">₱{{ number_format($order->grand_total, 2) }}</td>
                     </tr>
                 </table>
             </div>
@@ -165,9 +331,5 @@
     </div>
 
 
-    <a class="download-purchase-order" href="{{ route('purchase_order.pdf', $order->po_number) }}" target="_blank">
-        <span class="material-symbols-outlined">download</span>
-         Download PDF
-    </a>
 </body>
 </html>

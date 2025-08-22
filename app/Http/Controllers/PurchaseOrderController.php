@@ -54,6 +54,48 @@ class PurchaseOrderController extends Controller {
         return view('purchase_order', compact('user', 'purchaseOrders', 'search', 'from', 'to', 'status'));
     }
 
+    
+    public function cancelOrder($order_id)
+    {
+        $user = auth()->user();
+        $ownerId = Orders::where('order_id', $order_id)->value('customer_id');
+        if (!in_array($user->user_type, ['Admin', 'Staff']) && $ownerId !== $user->id) {
+            abort(403, 'Unauthorized action');
+        }
+
+        try {
+            DB::beginTransaction();
+            
+            // Get all order items for this order
+            $orderItems = Orders::where('order_id', $order_id)->get();
+            
+            // Restore product quantities
+            foreach ($orderItems as $orderItem) {
+                $product = Product::find($orderItem->product_id);
+                if ($product) {
+                    $product->quantity += $orderItem->quantity;
+                    $product->save();
+                }
+            }
+            
+            // Update order status
+            Orders::where('order_id', $order_id)->update([
+                'status' => 'Cancelled',
+                'action_at' => now(),
+                'action_by' => $user->name,
+            ]);
+            
+            DB::commit();
+            
+            return redirect()->route('orders.view', $order_id)
+                ->with('success', 'Order cancelled successfully! Product quantities have been restored.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error cancelling order: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to cancel order. Please try again.');
+        }
+    }
+
     public function productSearch()
     {
         $search = request('search');
@@ -96,8 +138,7 @@ class PurchaseOrderController extends Controller {
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $pdf = Pdf::loadView('purchase_orders.purchase_order_form', compact('user', 'order', 'ordersItem'));
-
+        $pdf = Pdf::loadView('purchase_orders.purchase_order_pdf', compact('user', 'order', 'ordersItem'));
         return $pdf->download("PurchaseOrder-{$order->po_number}.pdf");
     }
 
@@ -132,123 +173,123 @@ class PurchaseOrderController extends Controller {
         return view('purchase_orders.store_create_order', compact('user', 'products', 'search', 'regions'));
     }
 
-private function randomBase36String($length = 5)
-{
-    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $randomString = '';
-
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[random_int(0, strlen($characters) - 1)];
-    }
-
-    return $randomString;
-}
-
-    public function store(Request $request)
+    private function randomBase36String($length = 5)
     {
-        $user = auth()->user();
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randomString = '';
 
-        $request->validate([
-            'receiver_name'   => 'required',
-            'company_name'    => 'required|string|max:255',
-            'postal_code'     => 'nullable|string|max:10',
-            'region'          => 'required|exists:region,region_id',
-            'province'        => 'required|exists:province,province_id',
-            'municipality'    => 'required|exists:municipality,municipality_id',
-            'barangay'        => 'required|exists:barangay,barangay_id',
-            'street'          => 'required|string|max:255',
-            'billing_address' => 'required',
-            'contact_phone'   => 'required',
-            'contact_email'   => 'required|email',
-            'cart_data'       => 'required',
-            'order_notes'     => 'nullable|string|max:500',
-            'receiver_mobile' => 'required|string|max:15',
-        ]);
-
-        $cart = json_decode($request->cart_data, true);
-
-        if (empty($cart)) {
-            return back()->withErrors(['cart_data' => 'Cart cannot be empty.'])->withInput();
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, strlen($characters) - 1)];
         }
 
-        try {
-            DB::beginTransaction();
+        return $randomString;
+    }
 
-            $subtotal = collect($cart)->sum(fn($item) => floatval($item['price']) * intval($item['quantity']));
-            $tax = 0; 
-            $grandTotal = $subtotal + $tax;
+    // public function store(Request $request)
+    // {
+    //     $user = auth()->user();
 
-            $attachmentPath = null;
-            if ($request->hasFile('po_attachment')) {
-                $attachmentPath = $request->file('po_attachment')->store('attachments', 'public');
-            }
+    //     $request->validate([
+    //         'receiver_name'   => 'required',
+    //         'company_name'    => 'required|string|max:255',
+    //         'postal_code'     => 'nullable|string|max:10',
+    //         'region'          => 'required|exists:region,region_id',
+    //         'province'        => 'required|exists:province,province_id',
+    //         'municipality'    => 'required|exists:municipality,municipality_id',
+    //         'barangay'        => 'required|exists:barangay,barangay_id',
+    //         'street'          => 'required|string|max:255',
+    //         'billing_address' => 'required',
+    //         'contact_phone'   => 'required',
+    //         'contact_email'   => 'required|email',
+    //         'cart_data'       => 'required',
+    //         'order_notes'     => 'nullable|string|max:500',
+    //         'receiver_mobile' => 'required|string|max:15',
+    //     ]);
+
+    //     $cart = json_decode($request->cart_data, true);
+
+    //     if (empty($cart)) {
+    //         return back()->withErrors(['cart_data' => 'Cart cannot be empty.'])->withInput();
+    //     }
+
+    //     try {
+    //         DB::beginTransaction();
+
+    //         $subtotal = collect($cart)->sum(fn($item) => floatval($item['price']) * intval($item['quantity']));
+    //         $tax = 0; 
+    //         $grandTotal = $subtotal + $tax;
+
+    //         $attachmentPath = null;
+    //         if ($request->hasFile('po_attachment')) {
+    //             $attachmentPath = $request->file('po_attachment')->store('attachments', 'public');
+    //         }
 
             
-            $date = date('Ymd');
-            $po_number = 'PO-' . $date . '-' . $this->randomBase36String(5);
+    //         $date = date('Ymd');
+    //         $po_number = 'PO-' . $date . '-' . $this->randomBase36String(5);
 
-            $po = PurchaseOrder::create([
-                'user_id'         => $user->id,
-                'po_number'       => $po_number,
-                'receiver_name'   => $request->receiver_name,
-                'receiver_mobile' => $request->receiver_mobile,
-                'postal_code'     => $request->postal_code,
-                'region_id'       => $request->region,
-                'province_id'     => $request->province,
-                'municipality_id' => $request->municipality,
-                'barangay_id'     => $request->barangay,
-                'street'          => $request->street,
-                'company_name'    => $request->company_name,
-                'billing_address' => $request->billing_address,
-                'contact_phone'   => $request->contact_phone,
-                'contact_email'   => $request->contact_email,
-                'order_notes'     => $request->order_notes,
-                'subtotal'        => $subtotal,
-                'tax_amount'      => $tax,
-                'grand_total'     => $grandTotal,
-                'status'          => $request->input('status', 'Pending'),
-                'order_date'      => Carbon::now(),
-            ]);
+    //         $po = PurchaseOrder::create([
+    //             'user_id'         => $user->id,
+    //             'po_number'       => $po_number,
+    //             'receiver_name'   => $request->receiver_name,
+    //             'receiver_mobile' => $request->receiver_mobile,
+    //             'postal_code'     => $request->postal_code,
+    //             'region_id'       => $request->region,
+    //             'province_id'     => $request->province,
+    //             'municipality_id' => $request->municipality,
+    //             'barangay_id'     => $request->barangay,
+    //             'street'          => $request->street,
+    //             'company_name'    => $request->company_name,
+    //             'billing_address' => $request->billing_address,
+    //             'contact_phone'   => $request->contact_phone,
+    //             'contact_email'   => $request->contact_email,
+    //             'order_notes'     => $request->order_notes,
+    //             'subtotal'        => $subtotal,
+    //             'tax_amount'      => $tax,
+    //             'grand_total'     => $grandTotal,
+    //             'status'          => $request->input('status', 'Pending'),
+    //             'order_date'      => Carbon::now(),
+    //         ]);
 
-            $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
+    //         $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
 
-            foreach ($cart as $item) {
-                $product = Product::find($item['id']);
+    //         foreach ($cart as $item) {
+    //             $product = Product::find($item['id']);
 
-                if (!$product) {
-                    throw new \Exception("Product with ID {$item['id']} not found.");
-                }
+    //             if (!$product) {
+    //                 throw new \Exception("Product with ID {$item['id']} not found.");
+    //             }
 
-                Orders::create([
-                    'po_id'       => $po->po_number,
-                    'order_id'    => $order_id,
-                    'customer_id' => $user->id,
-                    'product_id'  => $product->id,
-                    'quantity'    => $item['quantity'],
-                    'unit_price'  => $product->price,
-                    'total_price' => $product->price * $item['quantity'],
-                    'status'     => $request->input('status', 'Pending'),
-                ]);
+    //             Orders::create([
+    //                 'po_id'       => $po->po_number,
+    //                 'order_id'    => $order_id,
+    //                 'customer_id' => $user->id,
+    //                 'product_id'  => $product->id,
+    //                 'quantity'    => $item['quantity'],
+    //                 'unit_price'  => $product->price,
+    //                 'total_price' => $product->price * $item['quantity'],
+    //                 'status'     => $request->input('status', 'Pending'),
+    //             ]);
 
-                PurchaseOrderItem::create([
-                    'po_id'       => $po->po_number,
-                    'product_id'  => $item['id'],
-                    'order_id'    => $order_id,
-                    'quantity'    => intval($item['quantity']),
-                    'unit_price'  => floatval($item['price']),
-                    'total_price' => floatval($item['price']) * intval($item['quantity']),
-                ]);
-            }
+    //             PurchaseOrderItem::create([
+    //                 'po_id'       => $po->po_number,
+    //                 'product_id'  => $item['id'],
+    //                 'order_id'    => $order_id,
+    //                 'quantity'    => intval($item['quantity']),
+    //                 'unit_price'  => floatval($item['price']),
+    //                 'total_price' => floatval($item['price']) * intval($item['quantity']),
+    //             ]);
+    //         }
 
-            DB::commit(); 
+    //         DB::commit(); 
 
-            return redirect()->route('purchase_order')->with('success', 'Purchase order placed successfully!');
+    //         return redirect()->route('purchase_order')->with('success', 'Purchase order placed successfully!');
 
-        } catch (\Throwable $e) {
-            DB::rollBack(); 
-            return back()->withErrors(['error' => 'Failed to place order: ' . $e->getMessage()])->withInput();
-        }
-    }
+    //     } catch (\Throwable $e) {
+    //         DB::rollBack(); 
+    //         return back()->withErrors(['error' => 'Failed to place order: ' . $e->getMessage()])->withInput();
+    //     }
+    // }
 
     
 
@@ -264,6 +305,189 @@ private function randomBase36String($length = 5)
         $orderCount = PurchaseOrderItem::where('po_id', $po_number)->count();
 
         return view('purchase_orders.purchase_order_view', compact('po','order', 'ordersItem', 'orderCount' ));
+    }
+
+
+    public function store(Request $request)
+{
+    $user = auth()->user();
+
+    $request->validate([
+        'receiver_name'   => 'required',
+        'company_name'    => 'required|string|max:255',
+        'postal_code'     => 'nullable|string|max:10',
+        'region'          => 'required|exists:region,region_id',
+        'province'        => 'required|exists:province,province_id',
+        'municipality'    => 'required|exists:municipality,municipality_id',
+        'barangay'        => 'required|exists:barangay,barangay_id',
+        'street'          => 'required|string|max:255',
+        'billing_address' => 'required',
+        'contact_phone'   => 'required',
+        'contact_email'   => 'required|email',
+        'cart_data'       => 'required',
+        'order_notes'     => 'nullable|string|max:500',
+        'receiver_mobile' => 'required|string|max:15',
+    ]);
+
+    $cart = json_decode($request->cart_data, true);
+
+    if (empty($cart)) {
+        return back()->withErrors(['cart_data' => 'Cart cannot be empty.'])->withInput();
+    }
+
+    try {
+        DB::beginTransaction();
+
+        foreach ($cart as $item) {
+            $product = Product::find($item['id']);
+            
+            if (!$product) {
+                DB::rollBack();
+                return back()->withErrors(['error' => "Product with ID {$item['id']} not found."])->withInput();
+            }
+            
+            if ($product->quantity < $item['quantity']) {
+                DB::rollBack();
+                return back()->withErrors([
+                    'error' => "Product '{$product->name}' is out of stock or insufficient quantity. Available: {$product->quantity}, Requested: {$item['quantity']}"
+                ])->withInput();
+            }
+        }
+
+        $subtotal = collect($cart)->sum(fn($item) => floatval($item['price']) * intval($item['quantity']));
+        $tax = 0; 
+        $grandTotal = $subtotal + $tax;
+
+        $attachmentPath = null;
+        if ($request->hasFile('po_attachment')) {
+            $attachmentPath = $request->file('po_attachment')->store('attachments', 'public');
+        }
+
+        $date = date('Ymd');
+        $po_number = 'PO-' . $date . '-' . $this->randomBase36String(5);
+
+        $po = PurchaseOrder::create([
+            'user_id'         => $user->id,
+            'po_number'       => $po_number,
+            'receiver_name'   => $request->receiver_name,
+            'receiver_mobile' => $request->receiver_mobile,
+            'postal_code'     => $request->postal_code,
+            'region_id'       => $request->region,
+            'province_id'     => $request->province,
+            'municipality_id' => $request->municipality,
+            'barangay_id'     => $request->barangay,
+            'street'          => $request->street,
+            'company_name'    => $request->company_name,
+            'billing_address' => $request->billing_address,
+            'contact_phone'   => $request->contact_phone,
+            'contact_email'   => $request->contact_email,
+            'order_notes'     => $request->order_notes,
+            'subtotal'        => $subtotal,
+            'tax_amount'      => $tax,
+            'grand_total'     => $grandTotal,
+            'status'          => $request->input('status', 'Pending'),
+            'order_date'      => Carbon::now(),
+        ]);
+
+        $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
+
+        foreach ($cart as $item) {
+            $product = Product::find($item['id']);
+
+            if (!$product) {
+                throw new \Exception("Product with ID {$item['id']} not found.");
+            }
+
+            // Create order record
+            Orders::create([
+                'po_id'       => $po->po_number,
+                'order_id'    => $order_id,
+                'customer_id' => $user->id,
+                'product_id'  => $product->id,
+                'quantity'    => $item['quantity'],
+                'unit_price'  => $product->price,
+                'total_price' => $product->price * $item['quantity'],
+                'status'     => $request->input('status', 'Pending'),
+            ]);
+
+            // Create purchase order item
+            PurchaseOrderItem::create([
+                'po_id'       => $po->po_number,
+                'product_id'  => $item['id'],
+                'order_id'    => $order_id,
+                'quantity'    => intval($item['quantity']),
+                'unit_price'  => floatval($item['price']),
+                'total_price' => floatval($item['price']) * intval($item['quantity']),
+            ]);
+
+            $product->quantity -= $item['quantity'];
+            $product->save();
+
+      
+            // InventoryTransaction::create([
+            //     'product_id' => $product->id,
+            //     'transaction_type' => 'OUT',
+            //     'quantity' => $item['quantity'],
+            //     'reference_type' => 'Purchase Order',
+            //     'reference_id' => $po->id,
+            //     'notes' => "Deducted for Purchase Order: {$po_number}",
+            //     'created_by' => $user->id,
+            // ]);
+          
+        }
+
+        DB::commit(); 
+
+        return redirect()->route('purchase_order')->with('success', 'Purchase order placed successfully!');
+
+    } catch (\Throwable $e) {
+        DB::rollBack(); 
+        Log::error('Purchase Order creation error: ' . $e->getMessage());
+        Log::error('Stack trace: ' . $e->getTraceAsString());
+        
+        return back()->withErrors(['error' => 'Failed to place order: ' . $e->getMessage()])->withInput();
+    }
+    }
+
+
+    public function cancelPurchaseOrder(Request $request, $id)
+    {
+        try {
+            $purchaseOrder = PurchaseOrder::findOrFail($id);
+            
+            // Only allow cancellation if order is still pending/processing
+            if (!in_array($purchaseOrder->status, ['Pending', 'Processing'])) {
+                return back()->withErrors(['error' => 'Cannot cancel order with status: ' . $purchaseOrder->status]);
+            }
+
+            DB::beginTransaction();
+
+            $purchaseOrderItems = PurchaseOrderItem::where('po_id', $purchaseOrder->po_number)->get();
+            
+            foreach ($purchaseOrderItems as $item) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    // Restore quantity back to inventory
+                    $product->quantity += $item->quantity;
+                    $product->save();
+                }
+            }
+
+            $purchaseOrder->status = 'Cancelled';
+            $purchaseOrder->save();
+
+            Orders::where('po_id', $purchaseOrder->po_number)->update(['status' => 'Cancelled']);
+
+            DB::commit();
+
+            return redirect()->route('purchase_order')->with('success', 'Purchase order cancelled and inventory restored successfully!');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Purchase Order cancellation error: ' . $e->getMessage());
+            
+            return back()->withErrors(['error' => 'Failed to cancel purchase order: ' . $e->getMessage()]);
+        }
     }
 
 

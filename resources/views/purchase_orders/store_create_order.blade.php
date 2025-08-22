@@ -247,7 +247,7 @@
 
                         <div class="add-form" style="width: 600px; margin-top: 20px; margin-bottom: 20px;">
                             <label>Notes / Special Instructions (Optional)</label>
-                            <textarea name="order_notes" rows="2" maxlength="500" style="height: 200px;">{{ old('order_notes') }}</textarea>
+                            <textarea name="order_notes" rows="2" maxlength="200" style="height: 200px;">{{ old('order_notes') }}</textarea>
                         </div>
 
                         <div class="add-form" style="width: 350px">

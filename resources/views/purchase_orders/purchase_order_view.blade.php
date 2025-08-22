@@ -85,6 +85,17 @@
 
             <div class="recipient-div">
                 <div class="shipper-details">
+                    <p class="recipient-title">Bill & Address</p>
+                    <div class="shipper-name-address">
+                        <p class="company-name"> ₱ {{$po->grand_total}}</p>
+                        <p class="ship-detail" style="white-space:normal; word-wrap:break-word;">
+                            {{ $po->billing_address }},
+                            
+                        </p>
+
+                    </div>
+                </div>
+                <div class="shipper-details">
                     <p class="recipient-title">Status</p>
                     <div class="shipper-name-address">
                         <p class="company-name">{{$po->status}}</p>
@@ -180,7 +191,7 @@
                 </div>
                 <div class="summary-items">
                     <p class="total-title">Tax</p>
-                    <p class="total-total"> ₱ {{$po->subtotal}}</p>
+                    <p class="total-total"> ₱ {{$po->tax_amount}}</p>
                 </div>
                 <div class="summary-items">
                     <p class="total-title">Discount</p>
@@ -188,9 +199,14 @@
                 </div>
                 <div class="summary-items" style="margin-top: 10px; background-color: #ffde59; padding: 10px; border-radius: 10px;">
                     <p class="total-title" style="color:#333; font-size:17px; font-weight: bold;">Total</p>
-                    <p class="total-total" style="color:#333; font-size:17px; font-weight: bold;"> ₱ {{$po->subtotal}}</p>
+                    <p class="total-total" style="color:#333; font-size:17px; font-weight: bold;"> ₱ {{$po->grand_total}}</p>
                 </div>
             </div>
+
+            @if ($po->status="Pending")
+                 <button class="invoice-btn">Invoice</button>
+            
+            @endif
      
 
         </div>
