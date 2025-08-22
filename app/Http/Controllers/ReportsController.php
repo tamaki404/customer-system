@@ -565,12 +565,14 @@ public function reports(Request $request)
 
     // Top Purchase Orders
     $topPurchaseOrders = PurchaseOrder::whereBetween('order_date', [$startDate, $endDate])
-        ->orderBy('created_at', 'desc')
+        ->where('status', '!=', 'Draft')  
+        ->orderBy('grand_total', 'desc')
         ->limit(10)
         ->get();
 
     // Monthly data for chart
     $POmonthlyData = PurchaseOrder::selectRaw('DATE_FORMAT(order_date, "%Y-%m") as month, COUNT(*) as count, SUM(grand_total) as value')
+        ->where('status', 'Delivered')  
         ->whereBetween('order_date', [$startDate, $endDate])
         ->groupBy('month')
         ->orderBy('month')

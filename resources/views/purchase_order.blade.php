@@ -119,15 +119,17 @@
                                     $statusClasses = [
                                         'Pending' => 'status-pending',
                                         'Processing' => 'status-processing',
-                                        'Approved' => 'status-approved',
+                                        'Accepted' => 'status-approved',
                                         'Rejected' => 'status-rejected',
                                         'Delivered' => 'status-delivered',
+                                        'Cancelled' => 'status-rejected',
+
                                         'Draft' => 'status-draft',
 
                                     ];
                                 @endphp
                                 <span class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
-                                     {{ ucfirst($order->status) }}
+                                      ● {{ ucfirst($order->status) }}
                                 </span>
 
 
