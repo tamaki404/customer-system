@@ -113,7 +113,7 @@
                                             @if(auth()->user()->user_type === 'Customer')
                                                 <div class="product-actions" onclick="event.stopPropagation();">
                                                     @if($product->quantity > 0)
-                                                        <button type="button" class="add-to-cart-btn"
+                                                        <button type="button" id="sparkle-btn" class="add-to-cart-btn"
                                                             data-product-id="{{ $product->id }}"
                                                             data-product-name="{{ $product->name }}"
                                                             data-product-price="{{ $product->price }}"
@@ -121,9 +121,10 @@
                                                             <i class="fa fa-plus"></i>
                                                         </button>
                                                     @else
-                                                        <button type="button" class="add-to-cart-btn" disabled>
+                                                        <button type="button" class="add-to-cart-btn" id="sparkle-btn" disabled>
                                                             <i class="fa fa-times"></i>
                                                         </button>
+
                                                     @endif
                                                 </div>
                                             @endif

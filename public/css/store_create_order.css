@@ -1,5 +1,34 @@
 
+ /* sparkle aniamtion */
+ #sparkle-btn{
+    position: relative;
 
+  }
+
+  #sparkle-btn::after{
+    content: "-1";
+    position: absolute;
+    left: 50%;
+    top: 0%;
+    transform: translate(-50%, -40%) scale(.2) rotate(-20deg);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #sparkle-btn:enabled:active::after{
+    animation: sparkle-pop 600ms ease-out forwards;
+  }
+
+  @keyframes sparkle-pop {
+    0%   { opacity: 0; transform: translate(-50%, -20%) scale(.2) rotate(-20deg); }
+    20%  { opacity: 1; transform: translate(-50%, -60%) scale(1) rotate(0deg); }
+    60%  { opacity: 1; transform: translate(-50%, -90%) scale(.9) rotate(10deg); }
+    100% { opacity: 0; transform: translate(-50%, -140%) scale(.6) rotate(20deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #sparkle-btn:enabled:active::after { animation: none; }
+  }
 
 .create-layout{
         font-family: 'Inter', sans-serif;
