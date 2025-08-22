@@ -101,13 +101,14 @@ class ReportsController extends Controller
         ->get();
 
     $myPurchaseOrdersCount = $myPurchaseOrders->count();
-    $myPurchaseOrdersTotal = $myPurchaseOrders->sum('grand_total');
+    $myPurchaseOrdersTotal = $myPurchaseOrders->where('status', 'Delivered')->sum('grand_total');
     
     // Purchase order statistics by status
     $myPOPending = $myPurchaseOrders->where('status', 'Pending')->count();
     $myPOProcessing = $myPurchaseOrders->where('status', 'Processing')->count();
-    $myPOCompleted = $myPurchaseOrders->where('status', 'Completed')->count();
+    $myPOCompleted = $myPurchaseOrders->where('status', 'Delivered')->count();
     $myPOCancelled = $myPurchaseOrders->where('status', 'Cancelled')->count();
+    $myPORejected = $myPurchaseOrders->where('status', 'Cancelled')->count();
 
     // Monthly PO data
     $myPOMonthlyData = collect();

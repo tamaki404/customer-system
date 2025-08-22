@@ -311,17 +311,17 @@
                                 </tr>
                             @endforeach
                         @else
-                            <tr>
+                            {{-- <tr>
                                 <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
                                     <div>
-                                        <h4>No Purchase Orders Found</h4>
+                                        <h4 f>No Purchase Orders Found</h4>
                                         <p>You haven't created any purchase orders yet.</p>
-                                        {{-- <a href="{{ route('customer.purchase_order.create') }}" class="btn" style="background: #ffde59; color: #333; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: 600; margin-top: 10px; display: inline-block;">
+                                        <a href="{{ route('customer.purchase_order.create') }}" class="btn" style="background: #ffde59; color: #333; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: 600; margin-top: 10px; display: inline-block;">
                                             Create Your First Purchase Order
-                                        </a> --}}
+                                        </a>
                                     </div>
                                 </td>
-                            </tr>
+                            </tr> --}}
                         @endif
                     </tbody>
                 </table>
