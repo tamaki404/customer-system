@@ -31,6 +31,8 @@ class PurchaseOrder extends Model
         'delivered_at',
         'approved_by',
         'rejected_by',
+        'cancelled_by',
+        'cancelled_at',
     ];
 
     protected $casts = [
@@ -40,6 +42,7 @@ class PurchaseOrder extends Model
         'order_date' => 'datetime',
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
+        'cancelled_at' => 'datetime',
         'delivered_at' => 'datetime',
     ];
 

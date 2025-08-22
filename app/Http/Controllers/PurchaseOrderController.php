@@ -510,7 +510,23 @@ public function changeStatus(Request $request)
         $po->status = $status;
         $po->approved_by = $user; 
         $po->approved_at = now(); 
-
+        $po->save();
+    }
+    elseif($status=="Delivered"){
+        $po->status = $status;
+        $po->delivered_at = now(); 
+        $po->save();
+    }
+    elseif($status=="Cancelled"){
+        $po->status = $status;
+        $po->approved_by = $user; 
+        $po->cancelled_at = now(); 
+        $po->save();
+    }
+    elseif($status=="Rejected"){
+        $po->status = $status;
+        $po->rejected_by = $user; 
+        $po->rejected_at = now(); 
         $po->save();
     }
 

@@ -32,17 +32,30 @@
         <h2 style="font-size: 25px; font-weight: bold; color: #333;">Order details</h2> 
 
     </span>
-    
-<form class="purchase-order-action-div" action="{{ route('change.po_status') }}" method="POST">
-    @csrf
-    <p>Order manager</p>
-    <button type="submit" name="status" value="Accepted">Accept</button>
-    <button type="submit" name="status" value="Cancelled">Cancel</button>
-    <button type="submit" name="status" value="Rejected">Reject</button>
-    <input type="hidden" name="po_id" value="{{ $po->id }}">
-    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+ 
+    <form class="order-actions" action="{{ route('change.po_status') }}" method="POST">
+        @csrf
 
-</form>
+            @if($po->status === "Pending")
+                <button type="submit" name="status" value="Accepted" class="btn btn-success">Accept</button>
+                <button type="submit" name="status" value="Rejected" class="btn btn-warning">Reject</button>
+                <button type="submit" name="status" value="Cancelled" class="btn btn-danger">Cancel</button>
+
+            @elseif($po->status === "Accepted")
+                  <button type="submit" name="status" value="Delivered" class="btn btn-primary">Mark as Delivered</button>
+
+            @else
+               {{-- <p class="muted-status-notify">This order has been {{ $po->status }}.</p> --}}
+            @endif
+
+ 
+
+
+        {{-- Always include these --}}
+        <input type="hidden" name="po_id" value="{{ $po->id }}">
+        <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+    </form>
+
 
 
     <div class="order-div">
@@ -188,6 +201,18 @@
                     </div>
                     @endif
 
+                    @if ($po->status === 'Cancelled' && $po->cancelled_at)
+                        <div class="timeline-item">
+                            <span class="dot"></span>
+                            <div class="content">
+                                <p class="label">Cancelled</p>
+                                <p class="date">{{ \Carbon\Carbon::parse($po->cancelled_at)->format('d F Y h:i A') }}</p>
+                            </div>
+                        </div>
+                    @endif
+
+           
+
                     @if ($po->delivered_at)
                     <div class="timeline-item">
                         <span class="dot"></span>
@@ -271,9 +296,8 @@
                 </div>
             </div>
 
-            @if ($po->status="Pending")
+            @if ($po->status==="Delivered")
                  <button class="invoice-btn">Invoice</button>
-            
             @endif
      
 
