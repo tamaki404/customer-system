@@ -31,12 +31,14 @@ class CreatePurchaseOrdersTable extends Migration
             $table->decimal('grand_total', 10, 2);
             $table->string('status');
             $table->timestamp('order_date');
-            $table->timestamp('approved_at')->nullable();
-            $table->timestamp('rejected_at')->nullable();
-            $table->timestamp('delivered_at')->nullable();
 
+            $table->timestamp('approved_at')->nullable();
             $table->string('approved_by', 26)->nullable();
+            $table->timestamp('delivered_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
             $table->string('rejected_by', 26)->nullable();
+            $table->timestamp('cancelled_at', 26)->nullable();
+            $table->string('cancelled_by', 26)->nullable();
             $table->timestamps();
 
 

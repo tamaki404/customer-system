@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\Orders;
+use Carbon\Traits\Timestamp;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Region;
@@ -327,6 +328,7 @@ class PurchaseOrderController extends Controller {
         'cart_data'       => 'required',
         'order_notes'     => 'nullable|string|max:500',
         'receiver_mobile' => 'required|string|max:15',
+        
     ]);
 
     $cart = json_decode($request->cart_data, true);
@@ -365,6 +367,7 @@ class PurchaseOrderController extends Controller {
 
         $date = date('Ymd');
         $po_number = 'PO-' . $date . '-' . $this->randomBase36String(5);
+        $status = $request->input('status', 'Pending');
 
         $po = PurchaseOrder::create([
             'user_id'         => $user->id,
@@ -385,55 +388,48 @@ class PurchaseOrderController extends Controller {
             'subtotal'        => $subtotal,
             'tax_amount'      => $tax,
             'grand_total'     => $grandTotal,
-            'status'          => $request->input('status', 'Pending'),
+            'status'          => $status,
             'order_date'      => Carbon::now(),
         ]);
 
         $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
 
-        foreach ($cart as $item) {
-            $product = Product::find($item['id']);
+            if ($status !== 'Draft') {
+            $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
 
-            if (!$product) {
-                throw new \Exception("Product with ID {$item['id']} not found.");
+            foreach ($cart as $item) {
+                $product = Product::find($item['id']);
+
+                if (!$product) {
+                    throw new \Exception("Product with ID {$item['id']} not found.");
+                }
+
+                // Create order record
+                Orders::create([
+                    'po_id'       => $po->po_number,
+                    'order_id'    => $order_id,
+                    'customer_id' => $user->id,
+                    'product_id'  => $product->id,
+                    'quantity'    => $item['quantity'],
+                    'unit_price'  => $product->price,
+                    'total_price' => $product->price * $item['quantity'],
+                    'status'      => $status,
+                ]);
+
+                // Create purchase order item
+                PurchaseOrderItem::create([
+                    'po_id'       => $po->po_number,
+                    'product_id'  => $item['id'],
+                    'order_id'    => $order_id,
+                    'quantity'    => intval($item['quantity']),
+                    'unit_price'  => floatval($item['price']),
+                    'total_price' => floatval($item['price']) * intval($item['quantity']),
+                ]);
+
+                // Deduct stock only for non-draft
+                $product->quantity -= $item['quantity'];
+                $product->save();
             }
-
-            // Create order record
-            Orders::create([
-                'po_id'       => $po->po_number,
-                'order_id'    => $order_id,
-                'customer_id' => $user->id,
-                'product_id'  => $product->id,
-                'quantity'    => $item['quantity'],
-                'unit_price'  => $product->price,
-                'total_price' => $product->price * $item['quantity'],
-                'status'     => $request->input('status', 'Pending'),
-            ]);
-
-            // Create purchase order item
-            PurchaseOrderItem::create([
-                'po_id'       => $po->po_number,
-                'product_id'  => $item['id'],
-                'order_id'    => $order_id,
-                'quantity'    => intval($item['quantity']),
-                'unit_price'  => floatval($item['price']),
-                'total_price' => floatval($item['price']) * intval($item['quantity']),
-            ]);
-
-            $product->quantity -= $item['quantity'];
-            $product->save();
-
-      
-            // InventoryTransaction::create([
-            //     'product_id' => $product->id,
-            //     'transaction_type' => 'OUT',
-            //     'quantity' => $item['quantity'],
-            //     'reference_type' => 'Purchase Order',
-            //     'reference_id' => $po->id,
-            //     'notes' => "Deducted for Purchase Order: {$po_number}",
-            //     'created_by' => $user->id,
-            // ]);
-          
         }
 
         DB::commit(); 
@@ -450,46 +446,76 @@ class PurchaseOrderController extends Controller {
     }
 
 
-    public function cancelPurchaseOrder(Request $request, $id)
-    {
-        try {
-            $purchaseOrder = PurchaseOrder::findOrFail($id);
+    // public function cancelPurchaseOrder(Request $request, $id)
+    // {
+    //     try {
+    //         $purchaseOrder = PurchaseOrder::findOrFail($id);
             
-            // Only allow cancellation if order is still pending/processing
-            if (!in_array($purchaseOrder->status, ['Pending', 'Processing'])) {
-                return back()->withErrors(['error' => 'Cannot cancel order with status: ' . $purchaseOrder->status]);
+    //         // Only allow cancellation if order is still pending/processing
+    //         if (!in_array($purchaseOrder->status, ['Pending', 'Processing'])) {
+    //             return back()->withErrors(['error' => 'Cannot cancel order with status: ' . $purchaseOrder->status]);
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         $purchaseOrderItems = PurchaseOrderItem::where('po_id', $purchaseOrder->po_number)->get();
+            
+    //         foreach ($purchaseOrderItems as $item) {
+    //             $product = Product::find($item->product_id);
+    //             if ($product) {
+    //                 // Restore quantity back to inventory
+    //                 $product->quantity += $item->quantity;
+    //                 $product->save();
+    //             }
+    //         }
+
+    //         $purchaseOrder->status = 'Cancelled';
+    //         $purchaseOrder->save();
+
+    //         Orders::where('po_id', $purchaseOrder->po_number)->update(['status' => 'Cancelled']);
+
+    //         DB::commit();
+
+    //         return redirect()->route('purchase_order')->with('success', 'Purchase order cancelled and inventory restored successfully!');
+
+    //     } catch (\Throwable $e) {
+    //         DB::rollBack();
+    //         Log::error('Purchase Order cancellation error: ' . $e->getMessage());
+            
+    //         return back()->withErrors(['error' => 'Failed to cancel purchase order: ' . $e->getMessage()]);
+    //     }
+    // }
+
+public function changeStatus(Request $request)
+{
+    $po = PurchaseOrder::findOrFail($request->po_id);
+    $status = $request->input('status'); // "Accepted", "Cancelled", "Rejected"
+    $po_id = $request->input(key: 'po_id');
+    $user = $request->input('user_id');
+    $po->status = $status;
+    $po->save();
+
+    if (in_array($status, ['Cancelled', 'Rejected'])) {
+        $purchaseOrderItems = PurchaseOrderItem::where('po_id', $po->po_number)->get();
+
+        foreach ($purchaseOrderItems as $item) {
+            $product = Product::find($item->product_id);
+            if ($product) {
+                $product->quantity += $item->quantity;
+                $product->save();
             }
-
-            DB::beginTransaction();
-
-            $purchaseOrderItems = PurchaseOrderItem::where('po_id', $purchaseOrder->po_number)->get();
-            
-            foreach ($purchaseOrderItems as $item) {
-                $product = Product::find($item->product_id);
-                if ($product) {
-                    // Restore quantity back to inventory
-                    $product->quantity += $item->quantity;
-                    $product->save();
-                }
-            }
-
-            $purchaseOrder->status = 'Cancelled';
-            $purchaseOrder->save();
-
-            Orders::where('po_id', $purchaseOrder->po_number)->update(['status' => 'Cancelled']);
-
-            DB::commit();
-
-            return redirect()->route('purchase_order')->with('success', 'Purchase order cancelled and inventory restored successfully!');
-
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            Log::error('Purchase Order cancellation error: ' . $e->getMessage());
-            
-            return back()->withErrors(['error' => 'Failed to cancel purchase order: ' . $e->getMessage()]);
         }
     }
+    if($status=="Accepted"){
+        $po->status = $status;
+        $po->approved_by = $user; 
+        $po->approved_at = now(); 
 
+        $po->save();
+    }
+
+    return back()->with('success', "Purchase order has been {$status}.");
+}
 
      
 }

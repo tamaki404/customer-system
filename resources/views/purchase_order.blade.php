@@ -41,9 +41,9 @@
 
         <div class="title-purchase">
             <h2>Purchase Order</h2>
-            
-            <button class="create-purchase-order" onclick="location.href='/purchase-order/store/order'"><span class="material-symbols-outlined" style="font-size: 14px; font-weight: bold;">add</span> Purchase order</button>
-            {{-- <button class="create-purchase-order" onclick="location.href='/purchase-order/create/purchase-order-form'"><span class="material-symbols-outlined" style="font-size: 14px; font-weight: bold;">add</span> Purchase order</button> --}}
+            @if(auth()->user()->user_type === 'Customer')
+                 <button class="create-purchase-order" onclick="location.href='/purchase-order/store/order'"><span class="material-symbols-outlined" style="font-size: 14px; font-weight: bold;">add</span> Purchase order</button>
+            @endif
         </div>
             @php
                 $tabStatuses = [

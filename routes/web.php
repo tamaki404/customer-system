@@ -1,7 +1,3 @@
-
-
-
-
 <?php
 
 use App\Http\Controllers\ReportsController;
@@ -22,8 +18,9 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\AddressController;
 
-
-// Public routes (no authentication required)
+// ================================
+// PUBLIC ROUTES (No Authentication Required)
+// ================================
 Route::get('/login', function () {
     return view('login');
 })->name('login');
@@ -44,33 +41,15 @@ Route::get('/verify-email-pending', function () {
     return view('auth.verify-email-pending');
 })->name('verification.pending');
 
-// Authentication routes
+// ================================
+// AUTHENTICATION ROUTES (No Auth Required)
+// ================================
 Route::post('/login-user', [UserController::class, 'login'])->middleware('throttle:10,1');
-Route::post('/logout-user', [UserController::class, 'logout'])->middleware('auth');
-Route::get('/logout', [UserController::class, 'logout'])->middleware('auth');
-
 Route::post('/register-user', [UserController::class, 'register']);
 Route::get('/check-username', [UserController::class, 'checkUsername'])->middleware('throttle:30,1');
 
 // Email verification routes
-Route::get('/email/verify', [EmailVerificationController::class, 'show'])
-    ->middleware('auth')
-    ->name('verification.notice');
-
-    
-
-Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
-    ->middleware(['auth', 'signed'])
-    ->name('verification.verify');
-
 Route::get('/verify-email/{token}', [UserController::class, 'verifyEmail'])->name('verify.email');
-Route::post('/resend-verification', [UserController::class, 'resendVerification'])->name('verification.resend')->middleware('throttle:3,1');
-
-// Laravel's built-in resend verification route
-Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('message', 'Verification link sent!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 // Password reset routes
 Route::get('password/forgot', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -78,12 +57,37 @@ Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEm
 Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
+// ================================
+// AUTHENTICATED ROUTES (Basic Auth Required)
+// ================================
+Route::middleware(['auth'])->group(function () {
+    
+    // Logout routes
+    Route::post('/logout-user', [UserController::class, 'logout']);
+    Route::get('/logout', [UserController::class, 'logout']);
+    
+    // Email verification routes (authenticated)
+    Route::get('/email/verify', [EmailVerificationController::class, 'show'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware(['signed'])
+        ->name('verification.verify');
+    Route::post('/resend-verification', [UserController::class, 'resendVerification'])
+        ->name('verification.resend')
+        ->middleware('throttle:3,1');
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('message', 'Verification link sent!');
+    })->middleware(['throttle:6,1'])->name('verification.send');
+});
 
-// Product add route (Admin only, but form already checks user_type)
-Route::post('/add-product', [ProductController::class, 'store'])->middleware(['auth', 'check.status']);
-
-// Protected routes (require authentication and active status)
+// ================================
+// AUTHENTICATED & ACTIVE USERS (Auth + Status Check)
+// ================================
 Route::middleware(['auth', 'check.status'])->group(function () {
+    
+    // ================================
+    // GENERAL USER ROUTES (All authenticated users)
+    // ================================
     
     // Dashboard
     Route::get('/dashboard', [ViewController::class, 'showDashboard'])->name('dashboard');
@@ -92,58 +96,106 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/profile', function () {
         return view('profile');
     })->name('profile');
-    
     Route::post('/edit-profile', [UserController::class, 'updateProfile']);
     
-    // Receipts management
-    Route::get('/receipts', [ReceiptController::class, 'showUserReceipts'])->name('receipts');
-    Route::get('/receipts_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipts.view');
-    Route::get('/receipt_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipt_view');
-    Route::get('/receipt_image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
-    
-    Route::post('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');
-    
-    Route::get('/date-search', [ReceiptController::class, 'dateSearch'])->name('date.search');
-    
-    // Receipt verification and cancellation (Admin/Staff only)
-    Route::middleware(['check.role:Admin,Staff'])->group(function () {
-        Route::post('/receipts/verify/{receipt_id}', [ReceiptController::class, 'verifyReceipt'])->name('receipts.verify');
-        Route::post('/receipts/cancel/{receipt_id}', [ReceiptController::class, 'cancelReceipt'])->name('receipts.cancel');
-        Route::post('/receipts/reject/{receipt_id}', [ReceiptController::class, 'rejectReceipt'])->name('receipts.reject');
-        Route::post('/product/unlist/{product_id}', [ProductController::class, 'unlistProduct'])->name('products.unlist');
-        Route::post('/product/add-stock/{product_id}', [ProductController::class, 'addStock'])->name('products.addStock');
-        Route::post('/product/list/{product_id}', [ProductController::class, 'listProduct'])->name('products.list');
-        Route::delete('/product/delete/{product_id}', [ProductController::class, 'deleteProduct'])->name('products.delete');
-
-        Route::post('/order/accept/{order_id}', [OrderController::class, 'acceptOrder'])->name('orders.accept');
-        Route::post('/order/mark-done/{order_id}', [OrderController::class, 'markOrderDone'])->name('orders.mark.done');
-        Route::post('/order/reject/{order_id}', [OrderController::class, 'rejectOrder'])->name('orders.reject');
-
-        Route::get('/reports', [ReportsController::class, 'reports'])->name('reports');
-        Route::get('/reports/dateFilter', [ReportsController::class, 'dateFilter'])->name('dateFilter');
-        Route::get('/reports/export', action: [ReportsController::class, 'exportReports'])->name('reports.export');
-        Route::get('/reports/customers', action: [ReportsController::class, 'exportCustomers'])->name('reports.customers');
-        Route::get('/reports/customer-analytics', [ReportsController::class, 'customerAnalytics'])->name('customer.analytics');
-        Route::get('/reports/products', [ReportsController::class, 'exportProducts'])->name('reports.products');
-        Route::get('/reports/orders', action: [ReportsController::class, 'exportOrders'])->name('reports.orders');
-        Route::get('/reports/receipts', [ReportsController::class, 'exportReceipts'])->name('reports.receipts');
-
-
-
-    });
-    
-    // Tickets management
+    // Tickets management (All users)
     Route::get('/tickets', [TicketController::class, 'showTickets'])->name('tickets');
     Route::post('/submit-ticket', [TicketController::class, 'submitTicket']);
     Route::get('/specTicket/{ticketID}', [TicketController::class, 'specTicket'])->name('specTicket');
     Route::put('/tickets/update/{ticketID}', [TicketController::class, 'ticketsUpdate'])->name('tickets.update');
     
-    // Staff management (Admin only)
+    // Address lookups (All users)
+    Route::get('/regions/{region}/provinces', [AddressController::class, 'provinces'])->name('address.provinces');
+    Route::get('/provinces/{province}/municipalities', [AddressController::class, 'municipalities'])->name('address.municipalities');
+    Route::get('/municipalities/{municipality}/barangays', [AddressController::class, 'barangays'])->name('address.barangays');
+    
+    // ================================
+    // CUSTOMER SPECIFIC ROUTES
+    // ================================
+    
+    // Store and Orders (Customer functionality)
+    Route::get('/store', [OrderController::class, 'store'])->name('store');
+    Route::get('/customer_orders', [OrderController::class, 'customerOrders'])->name('customer_orders');
+    Route::get('/view-order/{id}', [OrderController::class, 'viewOrder'])->name('orders.view');
+    Route::get('/order/view/{id}', [OrderController::class, 'orderView'])->name('order.view');
+    Route::post('/order/cancel/{order_id}', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+    Route::post('/checkout', [OrderController::class, 'checkout']);
+    
+    // Product viewing
+    Route::get('/product-image/{id}', [ProductController::class, 'showImage'])->name('product.image');
+    Route::get('/product/{id}', function($id) {
+        $product = Product::findOrFail($id);
+        return view('product_view', compact('product'));
+    })->name('product_view.view');
+    
+    // Purchase Orders (Customer functionality)
+    Route::get('/purchase_order', [PurchaseOrderController::class, 'purchaseOrder'])->name('purchase_order');
+    Route::post('/purchase-order/store', [PurchaseOrderController::class, 'store'])->name('purchase_orders.store');
+    Route::get('/purchase-order/create/purchase-order-form/{po_number}', [PurchaseOrderController::class, 'purchaseOrderForm'])->name('purchase_order.create');
+    Route::get('/purchase-order/store/order', [PurchaseOrderController::class, 'storeOrderView'])->name('purchase_order.store.order');
+    Route::get('/purchase_order/view/{po_number}', [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchase_order.view');
+    Route::get('/purchase-order/{po_number}/pdf', [PurchaseOrderController::class, 'downloadPDF'])->name('purchase_order.pdf');
+    Route::get('/product-search', [PurchaseOrderController::class, 'productSearch'])->name('product-search');
+    
+    // Receipts (Customer functionality)
+    Route::get('/receipts', [ReceiptController::class, 'showUserReceipts'])->name('receipts');
+    Route::get('/receipts_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipts.view');
+    Route::get('/receipt_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipt_view');
+    Route::get('/receipt_image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
+    Route::post('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');
+    Route::get('/date-search', [ReceiptController::class, 'dateSearch'])->name('date.search');
+    
+    // Customer Reports (Customer functionality)
+    Route::get('/reports/customers', [ReportsController::class, 'customerReports'])->name('customer_reports');
+    Route::get('/reports/customers/dateFilter', [ReportsController::class, 'customerDateFilter'])->name('customer_dateFilter');
+    
+    // ================================
+    // ADMIN & STAFF ROUTES
+    // ================================
+    Route::middleware(['check.role:Admin,Staff'])->group(function () {
+        
+
+        
+        // Order Management
+        Route::get('/orders', [OrderController::class, 'orders'])->name('orders');
+        Route::post('/order/accept/{order_id}', [OrderController::class, 'acceptOrder'])->name('orders.accept');
+        Route::post('/order/mark-done/{order_id}', [OrderController::class, 'markOrderDone'])->name('orders.mark.done');
+        Route::post('/order/reject/{order_id}', [OrderController::class, 'rejectOrder'])->name('orders.reject');
+        
+        // Receipt Management
+        Route::post('/receipts/verify/{receipt_id}', [ReceiptController::class, 'verifyReceipt'])->name('receipts.verify');
+        Route::post('/receipts/cancel/{receipt_id}', [ReceiptController::class, 'cancelReceipt'])->name('receipts.cancel');
+        Route::post('/receipts/reject/{receipt_id}', [ReceiptController::class, 'rejectReceipt'])->name('receipts.reject');
+        
+        // Customer Management
+        Route::get('/customers', [ViewController::class, 'showCustomers'])->name('customers');
+        Route::get('/customer_view/{customer_id}', [ViewController::class, 'viewCustomer'])->name('customer.view');
+
+        //Purchase order management
+Route::post('/product_order/orders/change_status', [PurchaseOrderController::class, 'changeStatus'])
+    ->name('change.po_status');
+
+
+        
+        // Reports (Admin/Staff)
+        Route::get('/reports', [ReportsController::class, 'reports'])->name('reports');
+        Route::get('/reports/dateFilter', [ReportsController::class, 'dateFilter'])->name('dateFilter');
+        Route::get('/reports/export', [ReportsController::class, 'exportReports'])->name('reports.export');
+        Route::get('/reports/export/customers', [ReportsController::class, 'exportCustomers'])->name('reports.customers');
+        Route::get('/reports/customer-analytics', [ReportsController::class, 'customerAnalytics'])->name('customer.analytics');
+        Route::get('/reports/products', [ReportsController::class, 'exportProducts'])->name('reports.products');
+        Route::get('/reports/orders', [ReportsController::class, 'exportOrders'])->name('reports.orders');
+        Route::get('/reports/receipts', [ReportsController::class, 'exportReceipts'])->name('reports.receipts');
+    });
+    
+    // ================================
+    // ADMIN ONLY ROUTES
+    // ================================
     Route::middleware(['check.role:Admin'])->group(function () {
+        
+        // Staff management
         Route::get('/staffs', [ViewController::class, 'showStaffs'])->name('staffs');
         Route::post('/add-staff', [UserController::class, 'addStaff']);
-        
-        // Staff Management Routes
         Route::get('/staff_view/{staff_id}', [ViewController::class, 'viewStaff'])->name('staff.view');
         Route::post('/staff/update-profile/{id}', [ViewController::class, 'updateStaffProfile'])->name('staff.update.profile');
         Route::post('/staff/change-password/{id}', [ViewController::class, 'changeStaffPassword'])->name('staff.change.password');
@@ -151,63 +203,18 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/staff/update-status/{id}', [ViewController::class, 'updateStaffStatus'])->name('staff.update.status');
         Route::post('/staff/deactivate/{id}', [ViewController::class, 'deactivateStaff'])->name('staff.deactivate');
         Route::delete('/staff/delete/{id}', [ViewController::class, 'deleteStaff'])->name('staff.delete');
-    });
-    
-    // Customer management (Admin/Staff only)
-    Route::middleware(['check.role:Admin,Staff'])->group(function () {
-        Route::get('/customers', [ViewController::class, 'showCustomers'])->name('customers');
-        Route::get('/customer_view/{customer_id}', [ViewController::class, 'viewCustomer'])->name('customer.view');
+
+        // Product management
+        Route::post('/add-product', [ProductController::class, 'store']);
+        Route::post('/product/unlist/{product_id}', [ProductController::class, 'unlistProduct'])->name('products.unlist');
+        Route::post('/product/add-stock/{product_id}', [ProductController::class, 'addStock'])->name('products.addStock');
+        Route::post('/product/list/{product_id}', [ProductController::class, 'listProduct'])->name('products.list');
+        Route::delete('/product/delete/{product_id}', [ProductController::class, 'deleteProduct'])->name('products.delete');
         
-        // Customer accept/suspend actions
+        //Customer management
         Route::post('/customer/accept/{id}', [ViewController::class, 'acceptCustomer'])->name('customer.accept');
         Route::post('/customer/activate/{id}', [ViewController::class, 'activateCustomer'])->name('customer.activate');
         Route::post('/customer/suspend/{id}', [ViewController::class, 'suspendCustomer'])->name('customer.suspend');
+        
     });
-
-
-    //purchase order
-    Route::get('/purchase_order', [PurchaseOrderController::class, 'purchaseOrder'])->name('purchase_order');
-    Route::post('/purchase-order/store', [PurchaseOrderController::class, 'store'])->name('purchase_orders.store');
-    Route::get('/purchase-order/create/purchase-order-form/{po_number}', [PurchaseOrderController::class, 'purchaseOrderForm'])->name(name: 'purchase_order.create');
-    Route::get('/purchase-order/store/order', [PurchaseOrderController::class, 'storeOrderView'])->name('purchase_order.store.order');
-    Route::get('/purchase_order/view/{po_number}', [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchase_order.view');
-    Route::get('/purchase-order/{po_number}/pdf', [PurchaseOrderController::class, 'downloadPDF'])
-        ->name('purchase_order.pdf');
-    Route::get('/product-search', [PurchaseOrderController::class, 'productSearch'])->name('product-search');
-
-
-
-
-
-    // Orders
-    Route::get('/store', [OrderController::class, 'store'])->name('store');
-    Route::get('/customer_orders', [OrderController::class, 'customerOrders'])->name('customer_orders');
-    Route::get('/view-order/{id}', [OrderController::class, 'viewOrder'])->name('orders.view');
-    Route::get('/orders', [OrderController::class, 'orders'])->name('orders');
-    Route::post('/order/cancel/{order_id}', action: [OrderController::class, 'cancelOrder'])->name('orders.cancel');
-    Route::post('/checkout', action: [OrderController::class, 'checkout']);
-    Route::get('/product-image/{id}', [ProductController::class, 'showImage'])->name('product.image');
-    Route::get('/product/{id}', function($id) {
-        $product = Product::findOrFail($id);
-        return view('product_view', compact('product'));
-    })->middleware(['auth', 'check.status'])->name('product_view.view');
-    Route::get('/order/view/{id}', [OrderController::class, 'orderView'])->name('order.view');
-     
-
-    
-
-
-    // Reports
-
-    Route::get('/reports/export/customers', [ReportsController::class, 'exportCustomers'])->name('reports.customers');
-    Route::get('/reports/customers', [ReportsController::class, 'customerReports'])->name('customer_reports');
-    Route::get('/reports/customers/dateFilter', [ReportsController::class, 'customerDateFilter'])->name('customer_dateFilter');
-
-
-    //Address
-    Route::get('/regions/{region}/provinces', [AddressController::class, 'provinces'])->name('address.provinces');
-    Route::get('/provinces/{province}/municipalities', [AddressController::class, 'municipalities'])->name('address.municipalities');
-    Route::get('/municipalities/{municipality}/barangays', [AddressController::class, 'barangays'])->name('address.barangays');
 });
-
-

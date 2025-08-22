@@ -32,6 +32,18 @@
         <h2 style="font-size: 25px; font-weight: bold; color: #333;">Order details</h2> 
 
     </span>
+    
+<form class="purchase-order-action-div" action="{{ route('change.po_status') }}" method="POST">
+    @csrf
+    <p>Order manager</p>
+    <button type="submit" name="status" value="Accepted">Accept</button>
+    <button type="submit" name="status" value="Cancelled">Cancel</button>
+    <button type="submit" name="status" value="Rejected">Reject</button>
+    <input type="hidden" name="po_id" value="{{ $po->id }}">
+    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+
+</form>
+
 
     <div class="order-div">
         <div class="order-header">
@@ -99,15 +111,25 @@
                     <p class="recipient-title">Status</p>
                     <div class="shipper-name-address">
                         <p class="company-name">{{$po->status}}</p>
-                        @if ($po->status=='Pending')
-                            <p class="ship-detail" style="font-size: 13px">{{$po->created_at->format('d F Y h:i A') }}</p>
-                        @elseif ($po->status=='Approved')
-                            <p class="ship-detail" style="font-size: 13px">{{$po->approved_at->format('d F Y h:i A') }}</p>
-                        @elseif ($po->status=='Rejected')
-                            <p class="ship-detail" style="font-size: 13px">{{$po->rejected_at->format('d F Y h:i A') }}</p>
-                        @elseif ($po->status=='Delivered')
-                            <p class="ship-detail" style="font-size: 13px">{{$po->delivered_at->format('d F Y h:i A') }}</p>
-                        
+                        @if ($po->status == 'Pending')
+                            <p class="ship-detail" style="font-size: 13px">
+                                {{ $po->created_at->format('d F Y h:i A') }}
+                            </p>
+
+                        @elseif ($po->status == 'Approved' && $po->approved_at)
+                            <p class="ship-detail" style="font-size: 13px">
+                                {{ $po->approved_at->format('d F Y h:i A') }}
+                            </p>
+
+                        @elseif ($po->status == 'Rejected' && $po->rejected_at)
+                            <p class="ship-detail" style="font-size: 13px">
+                                {{ $po->rejected_at->format('d F Y h:i A') }}
+                            </p>
+
+                        @elseif ($po->status == 'Delivered' && $po->delivered_at)
+                            <p class="ship-detail" style="font-size: 13px">
+                                {{ $po->delivered_at->format('d F Y h:i A') }}
+                            </p>
                         @endif
                     </div>
                 </div>
@@ -133,7 +155,53 @@
             </div>      
 
         </div>
+        <div class="shipment-div" style="width: 100%">
+            <div class="ship-details">
+                <p class="timeline-title">Timeline</p>
 
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <span class="dot"></span>
+                        <div class="content">
+                            <p class="label">Order placed</p>
+                            <p class="date">{{ $po->created_at->format('d F Y h:i A') }}</p>
+                        </div>
+                    </div>
+
+                    @if ($po->approved_at)
+                    <div class="timeline-item">
+                        <span class="dot"></span>
+                        <div class="content">
+                            <p class="label">Approved</p>
+                            <p class="date">{{ $po->approved_at->format('d F Y h:i A') }}</p>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ($po->rejected_at)
+                    <div class="timeline-item">
+                        <span class="dot"></span>
+                        <div class="content">
+                            <p class="label">Rejected</p>
+                            <p class="date">{{ $po->rejected_at->format('d F Y h:i A') }}</p>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if ($po->delivered_at)
+                    <div class="timeline-item">
+                        <span class="dot"></span>
+                        <div class="content">
+                            <p class="label">Delivered</p>
+                            <p class="date">{{ $po->delivered_at->format('d F Y h:i A') }}</p>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+
+        </div>
         <div class="items-div">
             <div style="margin: 0; font-size: 15px; gap: 10px; margin-top: 10px; color: #333; display: flex; flex-direction: row;">
                 Products ordered 

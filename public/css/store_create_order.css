@@ -1,9 +1,37 @@
+.default-add-btn{
+    border-radius: 12px;
+    font-size: 14px;
+    color: #333;
+    padding: 8px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    background-color: #ffde59;
+}
+.load-add-btn{
+    border-radius: 12px;
+    font-size: 14px;
+    color: #fff;
+    padding: 8px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    background-color: #888;
+
+}
+.default-add-btn:hover{
+    background-color: #e3c650;
+}
+.load-add-btn:hover{
+    background-color: #626161;
+
+}
+
 
  /* sparkle aniamtion */
  #sparkle-btn{
     position: relative;
 
   }
+
 
   #sparkle-btn::after{
     content: "-1";

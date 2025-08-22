@@ -163,53 +163,90 @@
                         <h2>Where are you sending to?</h2>
                         <p>Enter the address where you want your order delivered.</p>
 
-                        <div class="addresses">
-                            <div class="add-form">
-                                <label for="postal_code">Postal Code<span style="color: red;">*</span></label>
-                                <input type="text" name="postal_code" id="postal_code" required value="{{ old('postal_code') }}">
-                            </div>
-                            <div class="add-form">
-                                <label for="region">Region</label>
-                                <select id="region" style="width: 200px" name="region">
-                                    <option value="">-- Select Region --</option>
-                                    @foreach($regions as $region)
-                                        <option value="{{ $region->region_id }}">{{ $region->region_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="add-form">
-                                <label for="province">Province</label>
-                                <select id="province" style="width: 200px" name="province"></select>
-                            </div>
+                        <form id="addressForm">
+                            <div class="addresses">
+                                <div class="add-form">
+                                    <label for="postal_code">Postal Code<span style="color: red;">*</span></label>
+                                    <input type="text" name="postal_code" id="postal_code" required value="{{ old('postal_code') }}">
+                                </div>
+                                
+                                <div class="add-form">
+                                    <label for="region">Region</label>
+                                    <select id="region" style="width: 200px" name="region">
+                                        <option value="">-- Select Region --</option>
+                                        @foreach($regions as $region)
+                                            <option value="{{ $region->region_id }}">{{ $region->region_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <div class="add-form">
+                                    <label for="province">Province</label>
+                                    <select id="province" style="width: 200px" name="province">
+                                        <option value="">-- Select Province --</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="add-form">
+                                    <label for="municipality">Municipality</label>
+                                    <select style="width: 220px" id="municipality" name="municipality">
+                                        <option value="">-- Select City / Municipality --</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="add-form">
+                                    <label for="barangay">Barangay</label>
+                                    <select id="barangay" style="width: 230px" name="barangay">
+                                        <option value="">-- Select Barangay --</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="add-form">
+                                    <label for="street">Street Name, Building, House No. <span style="color: red;">*</span></label>
+                                    <input type="text" style="width: 350px" name="street" id="street" required value="{{ old('street') }}">
+                                </div>
+                                
+                                <div class="add-form">
+                                    <label for="company_name">Company Name <span style="color: red;">*</span></label>
+                                    <input type="text" name="company_name" style="width: 300px" id="company_name" required value="{{ auth()->user()->store_name ?? old('contact_phone') }}" readonly>
+                                </div>
+                                
+                                <div class="add-form">
+                                    <label>Billing Address <span style="color: red;">*</span></label>
+                                    <input name="billing_address" id="billing_address" style="width: 300px" required value="{{ old('billing_address') }}">
+                                </div>
 
-                            <div class="add-form">
-                                <label for="municipality">Municipality</label>
-                                <select style="width: 220px" id="municipality" name="municipality"></select>
+                                <!-- Simplified Default Address Options -->
+                                <div class="default-options">
+                                    {{-- <h4>Default Address</h4> --}}
+                                    
+                                    <div class="default-buttons" style="flex-direction: column; display: flex; gap: 5px">
+                                        <button type="button" class="default-add-btn" onclick="saveDefaultAddress()">
+                                            💾 Save as default
+                                        </button>
+                                        
+                                        <button type="button" class="load-add-btn" onclick="loadDefaultAddress()">
+                                            📥 Load default address
+                                        </button>
+
+                                        
+                                        {{-- <div class="checkbox-item" style="margin-left: 20px;">
+                                            <input type="checkbox" id="auto_save" name="auto_save">
+                                            <label for="auto_save">Auto-save when form is filled</label>
+                                        </div> --}}
+                                    </div>
+                                    
+                                    <!-- Saved Address Display -->
+                                    {{-- <div id="savedAddressDisplay" class="saved-address" style="display: none;">
+                                        <h4>Your Default Address</h4>
+                                        <div id="addressPreview" class="address-preview"></div>
+                                        <button type="button" class="btn btn-secondary" style="margin-top: 10px; padding: 5px 10px; font-size: 12px;" onclick="clearDefaultAddress()">
+                                            🗑️ Clear Saved Address
+                                        </button>
+                                    </div> --}}
+                                </div>
                             </div>
-
-                            <div class="add-form">
-                                <label for="barangay">Barangay</label>
-                                <select id="barangay" style="width: 230px" name="barangay"></select>
-                            </div>
-
-                            <div class="add-form">
-                                <label for="street">Street Name, Building, House No. <span style="color: red;">*</span></label>
-                                <input type="text" style="width: 350px" name="street" id="street" required value="{{ old('street') }}">
-                            </div>
-
-                            <div class="add-form">
-                                <label for="company_name">Company Name <span style="color: red;">*</span></label>
-                                <input type="text" name="company_name" style="width: 300px" id="company_name" required value="{{ auth()->user()->store_name ?? old('contact_phone') }}" readonly>
-                            </div>
-
-                          
-
-                            <div class="add-form">
-                                <label>Billing Address <span style="color: red;">*</span></label>
-                                <input name="billing_address" id="billing_address" style="width: 300px" required>{{ old('billing_address') }}
-                            </div>
-
-                        </div>
+                        </form>
 
                         <div class="contact-form">
                             <h3>Contact Information</h3>
