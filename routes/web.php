@@ -172,8 +172,13 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::get('/customer_view/{customer_id}', [ViewController::class, 'viewCustomer'])->name('customer.view');
 
         //Purchase order management
-Route::post('/product_order/orders/change_status', [PurchaseOrderController::class, 'changeStatus'])
-    ->name('change.po_status');
+        Route::post('/product_order/orders/change_status', [PurchaseOrderController::class, 'changeStatus'])
+            ->name('change.po_status');
+
+        //po invoice
+        Route::get('/purchase-order/invoice/display/{po_number}', [PurchaseOrderController::class, 'invoiceView'])->name(name: 'invoice.view');
+
+
 
 
         

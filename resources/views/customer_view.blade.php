@@ -56,21 +56,56 @@
             </div>
             <div class="details">
                 {{-- <p class="customer-id">cID: {{ $customer->id }}</p> --}}
-                <p class="store-name">{{ $customer->store_name}}</p>
-                <span class="username"><p class="handle">Handled by</p><p>{{ $customer->name }}</p></span>
-                
+                <div class="store-name">
+                        <p class="storename" style="display: flex">{{ $customer->store_name}} 
+                            
+                            <span class="status-badge"
+                           style="
+                            @if($customer->acc_status === 'Active')
+                                color: #155724;
+                            @elseif($customer->acc_status === 'accepted')
+                                color: #0c5460;
+                            @elseif($customer->acc_status === 'suspended')
+                                color: #721c24;
+                            @else
+                                color: #856404;
+                            @endif "
+                            
+                            title="{{$customer->acc_status}}">
+                            ●                    
+                        </span></p>
+                        
+                 
+                </div>
+                <span class="username" style="margin: 0"><p class="handle" style="margin: 0">Handled by</p><p style="margin: 0">{{ $customer->name }}</p></span>
+                <div class="customer-contacts">
+                    <p>
+                        <span class="material-symbols-outlined">mail</span>
+                        {{ $customer->email }}
+                    </p>
+                    <p>
+                        <span class="material-symbols-outlined">smartphone</span>
+                        {{ $customer->mobile }}
+                    </p>
+                    <p>
+                        <span class="material-symbols-outlined">call</span>
+                        {{ $customer->telephone }}
+                    </p>
+                </div>
+
 
                 <div class="statusButton">
                     <!-- Account Status Display -->
-                    <div class="status-section" style="width: auto;">
+                    {{-- <div class="status-section" style="width: auto;">
                         <span class="status-badge" style="
                             padding: 6px 12px;
                             border-radius: 20px;
                             font-size: 12px;
                             font-weight: 600;
-                            text-transform: uppercase;
                             letter-spacing: 0.5px;
-                            width: auto;
+                            width: 100px;
+                            align-items: center;
+                            text-align: center;
                             @if($customer->acc_status === 'Active')
                                 background: #d4edda;
                                 color: #155724;
@@ -91,11 +126,11 @@
                         ">
                             {{ $customer->acc_status }}
                         </span>
-                    </div>
+                    </div> --}}
 
                 <!-- Action Buttons -->
                     @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
-                        <div class="action-buttons" style="margin-top: 5px">
+                        <div class="action-buttons" style="margin-left: auto">
                             @if($customer->acc_status !== 'Active')
                                 <form action="{{ url('/customer/activate/' . $customer->id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
                                     @csrf
@@ -352,7 +387,7 @@
                         @endif
                     </div>
                 @else
-                    <div class="no-receipts">No receipts found for this customer.</div>
+                    <div class="no-receipts">No purchase order found for this customer.</div>
                 @endif
 
             </div>

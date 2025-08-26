@@ -106,8 +106,11 @@ body {
 .reactivate-btn:hover{
     background: #138496;
 }
-
-.details .store-name{
+.store-name{
+    display: flex;
+    flex-direction: row;
+}
+.details .store-name p{
     font-size: 25px;
     font-weight: bold;
     color: #333;
@@ -298,16 +301,37 @@ span .handle{
   display: inline-block;
 }
 
+.customer-contacts{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 10px;
+
+}
+.customer-contacts p{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    font-size: 14px;
+    margin: 0;
+    color: #666;
+}
+.no-receipts{
+    font-size: 14px;
+    color: #666;
+}
+
 
     /* Mobile-friendly customer details */
     @media (max-width: 768px) {
         .customerFrame .customerDetails {
             width: 100%;
             height: auto;
-            padding: 20px;
+            padding: 30px;
         }
          .customerFrame {
-            padding: 10px;
+            padding: 5px;
             
         }
         .customerDetails{
@@ -337,10 +361,7 @@ span .handle{
             flex-wrap: wrap;
             width: 65%;
         }
-        .details .store-name{
-            font-size: 18px;
-            margin: 0;
-        }
+    
         .username{
             flex-direction: row;
             margin: 0;
@@ -349,6 +370,10 @@ span .handle{
         .username p{
             font-size: 14px;
         }
+        .details .store-name p {
+            font-size: 20px;
+
+        }
         .statusButton{
             flex-direction: column;
             margin: 0;
@@ -356,7 +381,13 @@ span .handle{
         .status-section{
             margin: 0;
         }
-        .status-section .status-badge{
+        .store-name{
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .store-name.status-badge{
             width: auto;
             font-size: 14px;
             margin: 0;
@@ -373,6 +404,9 @@ span .handle{
             font-size: 9px;
             margin: 0;
             color: #888;
+        }
+        .customer-contacts span {
+            font-size: 16px;
         }
 
 

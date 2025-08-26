@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\Invoice;
 use App\Models\Orders;
 use Carbon\Traits\Timestamp;
 use Illuminate\Http\Request;
@@ -131,6 +132,17 @@ class PurchaseOrderController extends Controller {
         return view('purchase_orders.purchase_order_form', compact('user', 'order', 'ordersItem'));
     }
 
+    public function invoiceView($po_number)
+    {
+        $user = auth()->user();
+        $order = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
+        $invoice = Invoice::where('po_number', $po_number)->firstOrFail();
+        $invoiceItems = PurchaseOrderItem::where('po_id', $po_number)
+            ->orderBy('created_at', 'desc') 
+            ->get();
+
+        return view('purchase_orders.invoice-view', compact('user', 'order', 'invoiceItems', 'invoice'));
+    }
 
     public function downloadPDF($po_number)
     {
@@ -491,14 +503,15 @@ class PurchaseOrderController extends Controller {
 public function changeStatus(Request $request)
 {
     $po = PurchaseOrder::findOrFail($request->po_id);
-    $status = $request->input('status'); // "Accepted", "Cancelled", "Rejected"
-    $po_id = $request->input(key: 'po_id');
+    $status = $request->input('status'); 
     $user = $request->input('user_id');
+
+    // Always update the status first
     $po->status = $status;
-    $po->save();
 
     if (in_array($status, ['Cancelled', 'Rejected'])) {
-        $purchaseOrderItems = PurchaseOrderItem::where('po_id', $po->po_number)->get();
+        // Return products to stock
+        $purchaseOrderItems = PurchaseOrderItem::where('purchase_order_id', $po->id)->get();
 
         foreach ($purchaseOrderItems as $item) {
             $product = Product::find($item->product_id);
@@ -508,32 +521,45 @@ public function changeStatus(Request $request)
             }
         }
     }
-    if($status=="Accepted"){
-        $po->status = $status;
+
+    if ($status === "Accepted") {
         $po->approved_by = $user; 
         $po->approved_at = now(); 
-        $po->save();
-    }
-    elseif($status=="Delivered"){
-        $po->status = $status;
+    } 
+    elseif ($status === "Delivered") {
         $po->delivered_at = now(); 
-        $po->save();
-    }
-    elseif($status=="Cancelled"){
-        $po->status = $status;
-        $po->approved_by = $user; 
+
+        // Create invoice
+        $date = date('Ymd');
+        $invoice_number = 'INV-' . $date . '-' . $this->randomBase36String(5);
+
+        $invoice = new Invoice();
+        $invoice->po_number = $po->po_number; 
+        $invoice->user_id = $po->user_id; 
+
+        $invoice->invoice_number = $invoice_number;
+        $invoice->delivered_at = $po->delivered_at; 
+        $invoice->billing_address = $po->billing_address; 
+        $invoice->subtotal = $po->subtotal; 
+        $invoice->tax_amount = $po->tax_amount;
+        $invoice->grand_total = $po->grand_total;
+        $invoice->status = 'unpaid';
+        $invoice->save();
+    } 
+    elseif ($status === "Cancelled") {
         $po->cancelled_at = now(); 
-        $po->save();
-    }
-    elseif($status=="Rejected"){
-        $po->status = $status;
-        $po->rejected_by = $user; 
+        $po->cancelled_by = $user;
+    } 
+    elseif ($status === "Rejected") {
         $po->rejected_at = now(); 
-        $po->save();
+        $po->rejected_by = $user; 
     }
+
+    $po->save();
 
     return back()->with('success', "Purchase order has been {$status}.");
 }
+
 
      
 }

@@ -42,7 +42,7 @@
                 <button type="submit" name="status" value="Cancelled" class="btn btn-danger">Cancel</button>
 
             @elseif($po->status === "Accepted")
-                  <button type="submit" name="status" value="Delivered" class="btn btn-primary">Mark as Delivered</button>
+                <button type="submit" name="status" value="Delivered" class="btn btn-primary">Mark as Delivered</button>
 
             @else
                {{-- <p class="muted-status-notify">This order has been {{ $po->status }}.</p> --}}
@@ -297,7 +297,10 @@
             </div>
 
             @if ($po->status==="Delivered")
-                 <button class="invoice-btn">Invoice</button>
+                <button  class="invoice-btn" onclick="window.location='{{ route('invoice.view', $po->po_number) }}'">
+                    <span class="material-symbols-outlined">description</span>
+                     Invoice
+                </button>           
             @endif
      
 
