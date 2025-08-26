@@ -132,49 +132,98 @@
 
         </div>
 
-        <div class="receiptsCorner">
-            <nav class="tab-navigation">
+        <div class="receiptsCorner" style=" overflow-y: auto;">
+            <nav class="tab-navigation" style="height: auto">
                 <button class="tab-button active" onclick="switchTab('ordersTab')">Orders History</button>
                 <button class="tab-button" onclick="switchTab('receiptsTab')">Receipts History</button>
+                <button class="tab-button" onclick="switchTab('purchaseOrderTab')">Purchase Order History</button>
+
             </nav>
 
-            <div class="tab-content active" id="ordersTab" style="overflow-x:auto; overflow-y: auto;">
+            <div class="tab-content active" id="ordersTab" style="overflow-x:auto; padding: 0">
                 @if(isset($orders) && count($orders) > 0)
                     <table  style="overflow-x:auto; overflow-y: auto; ">
                         <thead>
                             <tr>
                                 <th>Order #</th>
-                                <th>Status</th>
+                                <th>Last Update</th>
                                 <th>Quantity</th>
                                 <th>Total</th>
-                                <th>Last Update</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
+
                             @foreach($orders as $order)
+                                @php 
+                                    $dateToShow = $order->action_at ?? $order->created_at;
+                                    $statusClasses = [
+                                        'Pending' => 'status-pending',
+                                        'Processing' => 'status-processing',
+                                        'Cancelled' => 'status-cancelled',
+                                        'Rejected' => 'status-rejected',
+                                        'Done' => 'status-done',
+                                        'Completed' => 'status-completed',
+                                    ];
+                                 @endphp
+
                                 <tr onclick="window.location='{{ url('/view-order/' . $order->order_id) }}'">
-                                    <td>{{ $order->order_id }}</td>
-                                    <td>{{ $order->status }}</td>
-                                    <td>x{{ $order->total_quantity }}</td>
-                                    <td>₱{{ number_format($order->total_price, 2) }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($order->action_at)->format('M d, Y H:i') }}</td>
+                                    <td class="td-tem">{{ $order->order_id }}</td>
+                                    <td class="td-tem" >{{ \Carbon\Carbon::parse($order->action_at)->format('M d, Y H:i') }}</td>
+                                    <td class="td-tem">x{{ $order->total_quantity }}</td>
+                                    <td class="td-tem" >₱{{ number_format($order->total_price, 2) }}</td>
+                                    <td class="td-tem">
+                                        <div  
+                                            class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
+                                            {{ $order->status }}
+                                        </div>
+                                    </td>
+
+
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+                    <div class="pagination-wrapper" >
+                        @if ($orders->total() > 0)
+                            <div>
+                                Page {{ $orders->currentPage() }} of {{ $orders->lastPage() }}
+                            </div>
+                        @endif
+
+                        @if ($orders->hasPages())
+                            <div class="pagination-controls">
+                                @if ($orders->onFirstPage())
+                                    <span class="previous-btn" >Previous</span>
+                                @else
+                                    <a href="{{ $orders->previousPageUrl() }}" class="href-previous-btn">Previous</a>
+                                @endif
+
+                                @if ($orders->hasMorePages())
+                                    <a class="href-next-btn" href="{{ $orders->nextPageUrl() }}" >Next</a>
+                                @else
+                                    <span class="span-next">Next</span>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
                 @else
                     <div class="no-receipts">No orders found for this customer.</div>
                 @endif
+
+
+
+                
             </div>
 
-            <div class="tab-content" id="receiptsTab" style="overflow-x:auto;">
+            <div class="tab-content" id="receiptsTab" style="overflow-x:auto;  auto; height: auto; padding: 0">
                 @if(isset($receipts) && count($receipts) > 0)
                     <table>
                         <thead>
                             <tr>
                                 <th>Receipt #</th>
-                                <th>Amount</th>
                                 <th>Date</th>
+                                <th>Amount</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -184,21 +233,128 @@
                                     <td>{{ $receipt->receipt_number }}</td>
                                     <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
                                     <td>{{ $receipt->created_at->format('F j, Y') }}</td>
-                                    <td style="color:
-                                        @if($receipt->status === 'Verified') green
-                                        @elseif($receipt->status === 'Pending') #333
-                                        @elseif($receipt->status === 'Cancelled') orange
-                                        @elseif($receipt->status === 'Rejected') red
-                                        @else #333
-                                        @endif
-                                    ;">{{ $receipt->status }}</td>
+                               <td>
+                                    @php 
+                                        $statusClasses = [
+                                            'Pending' => 'status-pending',
+                                            'Verified' => 'status-verified',
+                                            'Cancelled' => 'status-cancelled',
+                                            'Rejected' => 'status-rejected',
+                                         ];
+                                    @endphp
+
+                                    <div class="{{ $statusClasses[$receipt->status] ?? 'status-default' }}">
+                                        {{ $receipt->status }}
+                                    </div>
+                               </td>
+
+
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+                    <div class="pagination-wrapper" >
+                        @if ($orders->total() > 0)
+                            <div style="height: auto">
+                                Page {{ $orders->currentPage() }} of {{ $orders->lastPage() }}
+                            </div>
+                        @endif
+
+                        @if ($orders->hasPages())
+                            <div class="pagination-controls">
+                                @if ($orders->onFirstPage())
+                                    <span class="previous-btn" >Previous</span>
+                                @else
+                                    <a href="{{ $orders->previousPageUrl() }}" class="href-previous-btn">Previous</a>
+                                @endif
+
+                                @if ($orders->hasMorePages())
+                                    <a class="href-next-btn" style="" href="{{ $orders->nextPageUrl() }}" >Next</a>
+                                @else
+                                    <span class="span-next">Next</span>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
                 @else
                     <div class="no-receipts">No receipts found for this customer.</div>
                 @endif
+
+            </div>
+            <div class="tab-content" id="purchaseOrderTab" style="overflow-x:auto;  auto; height: auto; padding: 0">
+                @if(isset($receipts) && count($receipts) > 0)
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>PO #</th>
+                                <th>Date</th>
+                                <th>Quantity</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($purchaseOrders as $purchase)
+                                <tr onclick="window.location='{{ route('purchase_order.view', $purchase->po_number) }}'">
+
+                                    <td >{{ $purchase->po_number }}</td>
+                                    <td>{{ $purchase->created_at->format('F j, Y') }}</td>
+                                    <td>x{{ $purchase->items->sum('quantity') }}</td>                            
+
+                                    <td>₱{{ number_format($purchase->grand_total, 2) }}</td>
+                                <td class="order-actions">
+                                    @php 
+                                        $dateToShow = $order->action_at ?? $order->created_at;
+                                        $statusClasses = [
+                                            'Pending' => 'status-pending',
+                                            'Processing' => 'status-processing',
+                                            'Accepted' => 'status-approved',
+                                            'Rejected' => 'status-rejected',
+                                            'Delivered' => 'status-delivered',
+                                            'Cancelled' => 'status-cancelled',
+                                            'Draft' => 'status-draft',
+
+                                        ];
+                                    @endphp
+                                    <span class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+
+
+                                </td>
+
+
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="pagination-wrapper" >
+                        @if ($orders->total() > 0)
+                            <div style="height: auto">
+                                Page {{ $orders->currentPage() }} of {{ $orders->lastPage() }}
+                            </div>
+                        @endif
+
+                        @if ($orders->hasPages())
+                            <div class="pagination-controls">
+                                @if ($orders->onFirstPage())
+                                    <span class="previous-btn" >Previous</span>
+                                @else
+                                    <a href="{{ $orders->previousPageUrl() }}" class="href-previous-btn">Previous</a>
+                                @endif
+
+                                @if ($orders->hasMorePages())
+                                    <a class="href-next-btn" style="" href="{{ $orders->nextPageUrl() }}" >Next</a>
+                                @else
+                                    <span class="span-next">Next</span>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                @else
+                    <div class="no-receipts">No receipts found for this customer.</div>
+                @endif
+
             </div>
         </div>
 

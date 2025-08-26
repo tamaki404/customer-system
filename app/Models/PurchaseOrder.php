@@ -43,8 +43,13 @@ class PurchaseOrder extends Model
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
         'cancelled_at' => 'datetime',
-        'delivered_at' => 'datetime',
+        'delivered_at' => 'datetime',  
+        'unit_price' => 'decimal:2',
+        'total_price' => 'decimal:2',
+    
+        'quantity' => 'integer',
     ];
+
 
     public function user()
     {

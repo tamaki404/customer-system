@@ -13,7 +13,7 @@ body {
     align-content: start;
     justify-content: start;
     background-color: #f9f9f9;
-    padding: 60px;
+    padding: 30px;
     gap: 10px;
     width: 97%;
     height: 97%;
@@ -33,7 +33,7 @@ body {
 
 .customerFrame .customerDetails{
     width: 100%;
-    height: 40%;
+    height: 30%;
     background-color: #f0f4f8;
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -68,8 +68,12 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    margin: 0;
 
 }
+
+
+
 
 .activate-btn, .suspend-btn, .reactivate-btn{
     background: #28a74691;
@@ -104,9 +108,10 @@ body {
 }
 
 .details .store-name{
-    font-size: 40px;
+    font-size: 25px;
     font-weight: bold;
     color: #333;
+    margin: 0;
 }
 
 .details .customer-id{
@@ -153,7 +158,7 @@ span .handle{
             padding: 12px 14px;
             border-bottom: 1px solid #e0e0e0;
             text-align: left;
-            font-size: 1rem;
+            font-size: 14px;
             color: #333;
         }
         .customerFrame th {
@@ -172,9 +177,9 @@ span .handle{
             font-size: 1.1rem;
         }
 
-        .receiptsCorner div{
+        /* .receiptsCorner div{
             width: 100%;
-            height: 350px;
+            height: auto;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -182,7 +187,116 @@ span .handle{
             overflow: hidden;
             padding: 0;
 
-        }
+        } */
+
+
+
+.pagination-wrapper{
+     text-align: center; display: flex; flex-direction: row; width: 100%; justify-content: space-between; overflow: hidden; margin-top: 5px;
+}
+.pagination-controls{
+     display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+}
+.previous-btn{
+    color: #fb8e24; font-size: 14px; padding: 0.5rem 1rem; border: 1px solid #fb8e24; border-radius: 10px;
+}
+.href-previous-btn{
+    color: #fb8e24; text-decoration: none; font-size: 14px; padding: 0.5rem 1rem; border: 1px solid #fb8e24; border-radius: 10px;
+}
+.href-next-btn{
+    color: #fb8e24; text-decoration: none; font-size: 14px; padding: 0.5rem 1rem; border: 1px solid #fb8e24; border-radius: 10px;
+}
+.span-next{
+    color: #ccc; padding: 0.5rem 1rem; font-size: 14px; border: 1px solid #ddd; border-radius: 10px;
+}
+
+
+
+.order-actions span { 
+    font-size: 13px;
+    text-align: left;
+}
+.status-pending {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #b45309;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-processing {
+  background: #dbeafe;
+  border: 1px solid #3b82f6;
+  color: #1e40af;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-approved {
+  background: #dcfce7;
+  border: 1px solid #22c55e;
+  color: #166534;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-delivered {
+  background: #e0e7ff;
+  border: 1px solid #6366f1;
+  color: #3730a3;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-cancelled {
+  background: #f3f4f6;
+  border: 1px solid #6b7280;
+  color: #374151;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-draft {
+  background: #f1f5f9;
+  border: 1px solid #94a3b8;
+  color: #334155;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+
+.status-verified {
+  background: #dcfce7;
+  border: 1px solid #22c55e;
+  color: #166534;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 13px;
+  display: inline-block;
+}
 
 
     /* Mobile-friendly customer details */
@@ -207,6 +321,17 @@ span .handle{
 
 
         }
+        .pagination-wrapper{
+            display: flex;
+            flex-direction: row;
+        }
+        .tab-content{
+            font-size: 13px;
+        }
+        table{
+            height: auto;
+        }
+
         .details{
             flex-direction: column;
             flex-wrap: wrap;

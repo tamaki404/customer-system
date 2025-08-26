@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\PurchaseOrder;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Receipt;
@@ -88,7 +89,7 @@ class ViewController extends Controller{
 
         $receipts = Receipt::where('id', $id)
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(7, ['*'], 'receipts_page');
 
         $orders = Orders::select(
                 'orders.order_id',
@@ -100,10 +101,16 @@ class ViewController extends Controller{
             ->where('orders.customer_id', $id)
             ->groupBy('orders.order_id', 'orders.status')
             ->orderBy('action_at', 'desc')
-            ->get();
+            ->paginate(7, ['*'], 'orders_page');
 
-        return view('customer_view', compact('customer', 'receipts', 'orders'));
+        $purchaseOrders = PurchaseOrder::where('user_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(7, ['*'], 'purchaseOrder_page');
+
+
+        return view('customer_view', compact('customer', 'receipts', 'orders', 'purchaseOrders'));
     }
+
 
     public function viewStaff($id)
     {
