@@ -268,9 +268,9 @@
                                                         ];
                                                     @endphp
 
-                                                    <div style="display: flex; align-items: center; justify-content: center;" 
+                                                    <div 
                                                         class="{{ $statusClasses[$receipt->status] ?? 'status-default' }}">
-                                                        ● {{ $receipt->status }}
+                                                         {{ $receipt->status }}
                                                     </div>
 
                                                 </td>
@@ -384,9 +384,9 @@
                                                         ];
                                                     @endphp
 
-                                                    <div style="display: flex; align-items: center; justify-content: center;" 
+                                                    <div
                                                         class="{{ $statusClasses[$receipt->status] ?? 'status-default' }}">
-                                                        ● {{ $receipt->status }}
+                                                         {{ $receipt->status }}
                                                     </div>
 
                                                 </td>

@@ -113,7 +113,7 @@
 
                             <td>{{ $order->items->sum('quantity') }}</td>                            
                             <td>₱{{ number_format($order->subtotal, 2) }}</td>
-                            <td>
+                            <td class="order-actions">
                                 @php 
                                     $dateToShow = $order->action_at ?? $order->created_at;
                                     $statusClasses = [
@@ -122,14 +122,13 @@
                                         'Accepted' => 'status-approved',
                                         'Rejected' => 'status-rejected',
                                         'Delivered' => 'status-delivered',
-                                        'Cancelled' => 'status-rejected',
-
+                                        'Cancelled' => 'status-cancelled',
                                         'Draft' => 'status-draft',
 
                                     ];
                                 @endphp
                                 <span class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
-                                      ● {{ ucfirst($order->status) }}
+                                       {{ ucfirst($order->status) }}
                                 </span>
 
 

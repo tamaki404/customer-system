@@ -362,3 +362,63 @@
     text-align: center;
     font-size: 14px;
 }
+
+
+
+
+
+@media (max-width: 768px) {
+    .purchase-order-bg {
+        padding: 15px;
+    }
+
+    .items-list{
+        display: flex;
+        height: auto;
+        width: 100%;
+        flex-direction: column;
+        gap:2px;
+        justify-content: center;
+        align-items: start;
+    }
+
+     .mainFrame .showScreen{
+        margin-top: 0px;
+ 
+    }
+    .each-item-div{
+        width: 300px;
+        min-width: 300px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .date-search {
+        flex-direction: row;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .date-search input{
+        width: 80%;
+    }
+     .date-search button{
+        width: 20%;
+    } 
+
+    .customersFrame {
+        padding: 10px;
+    }
+    .page-count{
+        font-size: 14px !important; 
+        margin: 5px;
+    }
+    h2{
+        margin: 0;
+    }
+    .titleCount{
+        margin: 0;
+        height: auto;
+    }
+}

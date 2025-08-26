@@ -179,13 +179,13 @@
                             <td style="padding:10px 8px; font-size: 13px;">
 
                                 @if($product->status === 'Unlisted')
-                                    <span class="status-unlisted">● Unlisted</span>
+                                    <span class="status-unlisted"> Unlisted</span>
                                 @elseif($product->quantity === 0)
-                                    <span class="status-noStock">● Out of Stock</span>
+                                    <span class="status-noStock"> No Stock</span>
                                 @elseif($product->quantity < 5)
-                                    <span class="status-lowStock">● Low Stock</span>
+                                    <span class="status-lowStock"> Low Stock</span>
                                 @elseif($product->quantity > 0)
-                                    <span class="status-available">● Available</span>
+                                    <span class="status-available"> Available</span>
                                 @endif
 
                             </td>

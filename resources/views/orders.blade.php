@@ -103,10 +103,10 @@
                                 <td style="padding:10px 8px; font-size: 13px;">
                                     x{{ $order->total_quantity }}
                                 </td>
-                                <td>
-                                    <div style="display: flex; align-items: center; justify-content: center;" 
+                                <td style="text-align: center; displasy: flex;">
+                                    <div  
                                         class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
-                                        ● {{ $order->status }}
+                                        {{ $order->status }}
                                     </div>
 
                                 </td>

@@ -15,7 +15,7 @@
 </head>
 <body>
     <div class="purchase-order-bg">
-            <a class="go-back-a" href="/purchase_order"><- Purchase Order</a>
+        <a class="go-back-a" href="/purchase_order"><- Purchase Order</a>
         <style>
             .go-back-a{
                 font-size: 15px;

@@ -43,7 +43,7 @@
                     <th style="width: 200px;">Store</th>
                     <th style="width: 80px;">No. of Orders</th>
                     <th style="width: 150px;">Total Orders</th>
-                    <th style="width: 120px;">Status</th>
+                    <th style="width: 120px; ">Status</th>
                     <th style="width: 140px;">Last Order</th>
                 </tr>
                 
@@ -82,10 +82,11 @@
                         <td style="padding:10px 8px; font-size: 13px;">
                             ₱{{ number_format($user->totalOrders, 2) }}
                         </td>
-                        <td>
-                           <div style="display: flex; align-items: center; justify-content: center;" class="{{ $statusClasses[$user->acc_status] ?? 'status-default' }}">
-                            ● {{ $user->acc_status }}
-                           </div>
+
+                        <td style="width: 150px; text-align: center;">
+                            <span class="{{ $statusClasses[$user->acc_status] ?? 'status-default' }}">
+                                {{ $user->acc_status }}
+                            </span>
                         </td>
                         <td style="padding:10px 8px; font-size: 13px;">
                             {{ $user->lastOrder ? \Carbon\Carbon::parse($user->lastOrder)->format('F j, Y') : 'No orders' }}
