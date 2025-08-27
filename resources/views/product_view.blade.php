@@ -44,29 +44,22 @@
         </div>
 
         <div class="product-info">
-            <div class="name-price">
-                <h1 class="product-name" style="margin:0; flex-direction: row; display: flex; align-items: center; gap: 5px">{{ $product->name }} <span style="font-size: 13px; color: #9a9a9a; text-transform: uppercase; margin: 0;"> {{$product->unit}}</span></h1>
-                <h2 class="product-price">₱{{ number_format($product->price, 2) }}</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h1 class="product-name">{{ $product->name }} ({{ $product->unit }})</h1>
+                <h2 class="product-value">₱{{ number_format($product->price, 2) }}</h2>
             </div>
-             <div class="quan-status" style="display:flex; gap: 12px; align-items:center;">
-                <span class="status-span" style="background:#f8f9fa; border-radius: 8px;">
-                    @if ($product->quantity == 0)
-                        <span style="color: #b71c1c">Out of stock</span>
-                    @elseif ($product->quantity <= 10)
-                        <span style="color: #ef6c00">Low on stocks</span>
-                    @else
-                        <span class="quantity-span">Stocks: <p>x{{ $product->quantity }}</p></span>
-                        <span style="color: #2e7d32">{{ $product->status ?? 'Available' }}</span>
-                    @endif
 
-                    @if($soldQuantity > '0')
-                        <span class="sold-quantity" style="color: #888; font-weight: normal; font-size: 12px; align-items: center; justify-content: center; display: flex;">{{$soldQuantity}} sold</span>
-                    @endif
-                </span>
-            </div>
+            <span class="product-quantity">
+                <strong>Stocks:</strong> x{{ $product->quantity }}
+            </span>
+
             <p class="product-description">{{ $product->description }}</p>
-           
+
+            @if($soldQuantity > 0)
+                <p style="color:#666; font-size:14px;">{{ $soldQuantity }} sold</p>
+            @endif
         </div>
+
 
         @if (auth()->user()->user_type != 'Customer')
             <div class="modify-block">

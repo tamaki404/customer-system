@@ -22,68 +22,126 @@
   <div class="modal-content">
     <span class="close-btn">&times;</span>
      @if(auth()->user()->user_type === 'Admin')
-        <div class="form-section">
-            <h3 class="form-title" style="margin: 1px">Add New Product</h3>
-            <p style="font-size: 16px;">Please ensure all information entered is accurate and complete.</p>
+<div class="form-section">
+    <h3 class="form-title" style="margin: 1px">Add New Product</h3>
+    <p style="font-size: 16px;">Please ensure all information entered is accurate and complete.</p>
 
-            <form action="/add-product" class="receipt-form" id="submitForm" method="post" enctype="multipart/form-data">
-                @csrf
-                <div class="form-grid">
-                    <div>
-                        <label>Name</label>
-                        <input type="text" name="name" placeholder="Name" maxlength="100" required>
-                    </div>
-                    <div>
-                        <label>Description</label>
-                        <input type="text" name="description" placeholder="Product Description" id="description" maxlength="255" required>
-                        <span id="description-error" class="error-message"></span>
-                    </div>
-                    <div>
-                        <label>Product ID</label>
-                        <input type="text" name="product_id" placeholder="Product ID" id="product_id" maxlength="255" required>
-                        <span id="product_id-error" class="error-message"></span>
-                    </div>
-                    <div>
-                        <label>Quantity</label>
-                        <input type="number" name="quantity" id="quantity" min="0" required>
-                        <span id="quantity-error" class="error-message"></span>
-                    </div>
-                    <div>
-                        <label for="unit">Unit</label>
-                        <style>
+    <form action="/add-product" class="receipt-form" id="submitForm" method="post" enctype="multipart/form-data">
+        @csrf
+        <div class="form-grid">
+            <!-- Product Name -->
+            <div>
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" placeholder="Product Name" maxlength="100" required>
+                @error('name')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
 
-                        </style>
-                        <select name="unit" id="unit-selector">
-                            <option value="Piece">Piece</option>
-                            <option value="Dozen">Dozen</option>
-                            <option value="Pack">Pack</option>
-                            <option value="Tray">Tray</option>
-                            <option value="Case">Case</option>
-                        </select>
+            <!-- Description -->
+            <div>
+                <label for="description">Description</label>
+                <input type="text" name="description" id="description" placeholder="Product Description" maxlength="255" required>
+                @error('description')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
 
-                    </div>
-                    <div>
-                        <label>Price</label>
-                        <input type="number" name="price" placeholder="Price." id="price" min="0" required>
-                        <span id="price-error" class="error-message"></span>
-                    </div>
-                    <div class="full">
-                        <label>Product Image</label>
-                        <input type="file" name="image" accept="image/*">
-                    </div>
-                </div>
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                <button type="submit" class="submit-btn"  id="submitBtn" style="color: #333; font-size: 15px; box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">Add Product</button>
-            </form>
+            <!-- Product ID -->
+            <div>
+                <label for="product_id">Product ID</label>
+                <input type="text" name="product_id" id="product_id" placeholder="Unique Product ID" maxlength="255" required>
+                @error('product_id')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Quantity -->
+            <div>
+                <label for="quantity">Quantity</label>
+                <input type="number" name="quantity" id="quantity" min="0" required>
+                @error('quantity')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Unit -->
+            <div>
+                <label for="unit">Unit</label> 
+                <select name="unit" id="unit-selector" required> 
+                    <option value="">-- Select Unit --</option>
+                    <option value="Piece">Piece</option> 
+                    <option value="Dozen">Dozen</option>
+                    <option value="Pack">Pack</option>
+                    <option value="Tray">Tray</option>
+                    <option value="Case">Case</option> 
+                </select> 
+            </div>
+
+            <!-- Price -->
+            <div>
+                <label for="price">Price</label>
+                <input type="number" name="price" id="price" placeholder="0.00" min="0" step="0.01" required>
+                @error('price')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Category -->
+            <div>
+                <label for="category">Category</label>
+                <select name="category" id="category" required>
+                    <option value="">-- Select Category --</option>
+                    <option value="Livestock">Livestock</option>
+                    <option value="Eggs">Eggs</option>
+                    <option value="Frozen Goods">Frozen Goods</option>
+                    <option value="Beverages">Beverages</option>
+                </select>
+                @error('category')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Status -->
+            <div>
+                <label for="status">Status</label>
+                <select name="status" id="status" required>
+                    <option value="Listed">Listed</option>
+                    <option value="Unlisted">Unlisted</option>
+                </select>
+                @error('status')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Image -->
+            <div class="full">
+                <label for="image">Product Image</label>
+                <input type="file" name="image" id="image" accept="image/*">
+                @error('image')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
         </div>
+
+        <!-- Show all validation errors (fallback) -->
+        @if ($errors->any())
+            <div class="alert alert-danger" style="margin-top:10px;">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <button type="submit" class="submit-btn" id="submitBtn" 
+            style="color: #333; font-size: 15px; box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
+            Add Product
+        </button>
+    </form>
+</div>
+
     @endif
   </div>
 </div>

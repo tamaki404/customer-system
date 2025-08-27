@@ -20,7 +20,7 @@
   display: flex;
 }
 
-#unit-selector{
+#unit-selector, #category, #status{
   width: 100%;
   padding: 10px 14px;
   border: 1px solid #cfd8dc;
@@ -33,6 +33,7 @@
   color: #333;
   cursor: pointer;
 }
+
 
 .modal-content {
   background: #fff;

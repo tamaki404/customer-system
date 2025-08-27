@@ -17,11 +17,11 @@
 
 .product-media { 
     background:#fff;
-     border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-       overflow:hidden;
-        width: 400px;
-        height: 400px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow:hidden;
+    width: 500px;
+    height: 500px;
 }
 
 
@@ -86,21 +86,33 @@ table tr{
 
 .product-name{
     font-weight: bold;
-    font-size: 25px;
+    font-size: 20px;
     color: #333;
     margin: 0;
 }
 .product-description{
-    font-size: 16px;
+    font-size: 14px;
     color: #333;
     margin: 0;
+    width: 80%;
+}
+.product-value{
+    font-size: 19px;
+    color: #2e7d32;
+    font-weight: bold;
+    margin: 0;
+
+}
+.product-quantity{
+    font-size: 14px;
+    flex-direction: row;
+    justify-content: baseline;
+    gap: 5px;
+    margin: 0;
+    color:#666;
 }
 
-span{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
+
 .quantity-span{
     background-color: transparent;
     text-align: center;
@@ -131,10 +143,8 @@ span{
     flex-direction: column;
     gap: 10px;
     width:700px;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-    border-radius: 16px;
     padding: 30px;
-    height: 500px;
+    height: auto;
 
 }
 .main-block{
