@@ -27,7 +27,7 @@
             <div class="form-section">
                 <h3 class="form-title" style="margin: 1px">Submit New Receipt</h3>
                 <p>Please upload your receipt below. Ensure all information is accurate before submission.</p>
-                <form action="/submit-receipt" class="receipt-form" method="POST" enctype="multipart/form-data">
+                <form action="/submit-receipt" id="submitForm" class="receipt-form" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-grid">
                         <input type="hidden" name="id" value="{{ auth()->user()->id }}">
@@ -462,6 +462,7 @@
     </div>
 
 <script src="{{ asset('scripts/open-modal.js') }}"></script>
+<script src="{{ asset('js/disbaleBtn.js') }}"></script>
 
 
 

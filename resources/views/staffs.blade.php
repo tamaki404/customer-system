@@ -32,7 +32,7 @@
             <h3 class="form-title"  style="margin: 1px">Add New Staff Member</h3>
             <p style="font-size: 16px;">Please ensure all information entered is accurate and complete.</p>
 
-            <form action="/add-staff"  class="receipt-form"  method="post" enctype="multipart/form-data">
+            <form action="/add-staff"  class="receipt-form" id="submitForm"  method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="form-grid">
                     <div>
@@ -182,6 +182,7 @@
 @endauth
 
 <script src="{{ asset('scripts/open-modal.js') }}"></script>
+<script src="{{ asset('js/disbaleBtn.js') }}"></script>
 
 
 

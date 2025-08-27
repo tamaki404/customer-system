@@ -26,7 +26,7 @@
             <h3 class="form-title" style="margin: 1px">Add New Product</h3>
             <p style="font-size: 16px;">Please ensure all information entered is accurate and complete.</p>
 
-            <form action="/add-product" class="receipt-form" method="post" enctype="multipart/form-data">
+            <form action="/add-product" class="receipt-form" id="submitForm" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="form-grid">
                     <div>
@@ -81,7 +81,7 @@
                         </ul>
                     </div>
                 @endif
-                <button type="submit" class="submit-btn" id="submitBtn" style="color: #333; font-size: 15px; box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">Add Product</button>
+                <button type="submit" class="submit-btn"  id="submitBtn" style="color: #333; font-size: 15px; box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">Add Product</button>
             </form>
         </div>
     @endif
@@ -284,6 +284,7 @@
 
 <script src="{{ asset('scripts/cart.js') }}"></script>
 <script src="{{ asset('scripts/open-modal.js') }}"></script>
+<script src="{{ asset('js/disbaleBtn.js') }}"></script>
 
 </body>
 </html>

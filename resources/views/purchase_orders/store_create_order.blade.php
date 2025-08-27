@@ -60,7 +60,7 @@
                  <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>                
         </div>
-        <form id="order-form" method="POST" action="{{ route('purchase_orders.store') }}" enctype="multipart/form-data">
+        <form id="order-form submitForm" method="POST" action="{{ route('purchase_orders.store') }}" enctype="multipart/form-data">
             @csrf
             
             <div class="form-container" style="overflow: hidden">
@@ -320,8 +320,8 @@
                     
                     <div class="step-nav">
                         <button type="button" class="prev-btn">Previous</button>
-                        <button type="submit" name="status" class="draft-btn" value="Draft">Draft</button>
-                        <button type="submit" name="status" class="submit-btn" value="Pending">Place Order</button>
+                        <button type="submit" name="status" class="draft-btn" id="submitBtn" value="Draft">Draft</button>
+                        <button type="submit" name="status" class="submit-btn" id="submitBtn" value="Pending">Place Order</button>
                     </div>
                 </section>
 

@@ -86,13 +86,13 @@
                 @endif
                 
                 @if(auth()->user()->user_type === 'Admin' || auth()->user()->id === $staff->id)
-                <form action="{{ url('/staff/upload-image/' . $staff->id) }}" method="POST" enctype="multipart/form-data" class="image-upload-form">
+                <form action="{{ url('/staff/upload-image/' . $staff->id) }}" id="submitForm" method="POST" enctype="multipart/form-data" class="image-upload-form">
                     @csrf
                     <input type="file" name="image" id="image" accept="image/*" style="display: none;">
                     <button type="button" class="upload-btn" onclick="document.getElementById('image').click()">
                         <i class="fas fa-camera"></i> Change Image
                     </button>
-                    <button type="submit" class="save-btn" style="display: none;">Use this Image</button>
+                    <button type="submit" id="submitBtn" class="save-btn" style="display: none;">Use this Image</button>
                 </form>
                 @endif
             </div>
@@ -175,7 +175,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeEditModal()">&times;</span>
             <h3>Edit Profile Information</h3>
-            <form action="{{ url('/staff/update-profile/' . $staff->id) }}" method="POST">
+            <form action="{{ url('/staff/update-profile/' . $staff->id) }}" id="submitForm" method="POST">
                 @csrf
                 <div class="form-group">
                     <label>Name:</label>
@@ -190,8 +190,8 @@
                     <input type="email" name="email" value="{{ $staff->email }}" required>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="save-btn">Save Changes</button>
-                    <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="save-btn" id="submitBtn">Save Changes</button>
+                    <button type="button" class="cancel-btn" id="submitBtn" onclick="closeEditModal()">Cancel</button>
                 </div>
             </form>
         </div>
@@ -202,7 +202,7 @@
          <div class="modal-content">
              <span class="close" onclick="closePasswordModal()">&times;</span>
              <h3>Change Password</h3>
-             <form action="{{ url('/staff/change-password/' . $staff->id) }}" method="POST">
+             <form action="{{ url('/staff/change-password/' . $staff->id) }}" id="submitForm" method="POST">
                  @csrf
                  @if(auth()->user()->user_type !== 'Admin' || auth()->user()->id === $staff->id)
                  <div class="form-group">
@@ -225,8 +225,8 @@
                      <input type="password" name="new_password_confirmation" required>
                  </div>
                  <div class="form-actions">
-                     <button type="submit" class="save-btn">Change Password</button>
-                     <button type="button" class="cancel-btn" onclick="closePasswordModal()">Cancel</button>
+                     <button type="submit" id="submitBtn" class="save-btn">Change Password</button>
+                     <button type="button" id="submitBtn" class="cancel-btn" onclick="closePasswordModal()">Cancel</button>
                  </div>
              </form>
          </div>
@@ -237,7 +237,7 @@
          <div class="modal-content">
              <span class="close" onclick="closeStatusModal()">&times;</span>
              <h3>Update Staff Status</h3>
-             <form action="{{ url('/staff/update-status/' . $staff->id) }}" method="POST">
+             <form action="{{ url('/staff/update-status/' . $staff->id) }}" id="submitForm" method="POST">
                  @csrf
                  <div class="form-group">
                      <label>Current Status:</label>
@@ -255,8 +255,8 @@
                      </select>
                  </div>
                  <div class="form-actions">
-                     <button type="submit" class="status-btn">Update Status</button>
-                     <button type="button" class="cancel-btn" onclick="closeStatusModal()">Cancel</button>
+                     <button type="submit" class="status-btn"  id="submitBtn">Update Status</button>
+                     <button type="button" class="cancel-btn" onclick="closeStatusModal()"  id="submitBtn">Cancel</button>
                  </div>
              </form>
          </div>
@@ -268,13 +268,13 @@
              <span class="close" onclick="closeDeactivateModal()">&times;</span>
              <h3>Deactivate Account</h3>
              <p>Are you sure you want to deactivate this staff account? They will not be able to log in until reactivated.</p>
-             <form action="{{ url('/staff/deactivate/' . $staff->id) }}" method="POST">
+             <form action="{{ url('/staff/deactivate/' . $staff->id) }}" method="POST" id="submitForm">
                  @csrf
                  <div class="form-actions">
                      <button type="submit" class="deactivate-btn">Deactivate</button>
                      <button type="button" class="cancel-btn" onclick="closeDeactivateModal()">Cancel</button>
                  </div>
-             </form>
+             </form id="submitBtn">
          </div>
      </div>
 
@@ -284,7 +284,7 @@
             <span class="close" onclick="closeDeleteModal()">&times;</span>
             <h3>Delete Account</h3>
             <p><strong>Warning:</strong> This action cannot be undone. All data associated with this account will be permanently deleted.</p>
-            <form action="{{ url('/staff/delete/' . $staff->id) }}" method="POST">
+            <form action="{{ url('/staff/delete/' . $staff->id) }}" method="POST"  id="submitForm">
                 @csrf
                 @method('DELETE')
                 <div class="form-group">
@@ -292,13 +292,14 @@
                     <input type="text" name="confirm_delete" placeholder="DELETE" required>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="delete-btn">Delete Account</button>
+                    <button type="submit" class="delete-btn"  id="submitBtn">Delete Account</button>
                     <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
+<script src="{{ asset('js/disbaleBtn.js') }}"></script>
     <script>
         // Image upload functionality
         document.getElementById('image').addEventListener('change', function() {

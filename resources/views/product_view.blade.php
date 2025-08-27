@@ -117,10 +117,10 @@
 
                         <h2 style="font-size: 25px; font-weight: bold; margin: 5px 0;">Add Stocks</h2>
                         <p>You can add stocks here to keep the product available</p>
-                        <form id="addStockForm" class="addStockForm" action="{{ route('products.addStock', $product->id) }}" method="POST" style="margin-top:1.5rem;">
+                        <form id="addStockForm" id="submitForm" class="addStockForm" action="{{ route('products.addStock', $product->id) }}" method="POST" style="margin-top:1.5rem;">
                             @csrf
                             <input type="int" name="addedStock" maxlength="3" required>
-                            <button type="submit" class="add-stock-btn" style="">Add stock</button>
+                            <button type="submit" id="submitBtn" class="add-stock-btn" style="">Add stock</button>
                         </form>
                     </div>
                 </div>
@@ -159,6 +159,7 @@
         @endif
     </div>
 </div>
+<script src="{{ asset('js/disbaleBtn.js') }}"></script>
 
 </body>
 </html>
