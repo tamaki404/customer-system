@@ -226,10 +226,16 @@
                             </div>
                             <div class="product-body">
                                 <div class="product-name" title="{{ $product->name }}">{{ $product->name }} <span style="font-size: 11px; color: #9a9a9a; text-transform: uppercase;"> {{$product->unit}}</span></div>
-                                <div class="product-price">₱{{ number_format($product->price, 2) }}</div>
-                                <div class="product-meta">
-                                    <span class="stock">{{ $product->quantity }}x</span>
+                                <div class="product-price" style="flex-direction: row; display: flex; justify-content: space-between;">
+                                    ₱{{ number_format($product->price, 2) }}
+                                    @if($product->sold_quantity !== '0')
+                                        <span class="sold-quantity" style="color: #888; font-weight: normal; font-size: 12px; align-items: center; justify-content: center; display: flex;">{{$product->sold_quantity}} sold</span>
+                                    @endif
                                 </div>
+                                {{-- <div class="product-meta">
+                                    <span class="stock">{{ $product->quantity }}x</span>
+                                    
+                                </div> --}}
                             </div>
                             @if(auth()->user()->user_type === 'Customer')
                                 <div class="product-actions" onclick="event.stopPropagation();">

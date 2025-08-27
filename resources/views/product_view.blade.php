@@ -49,14 +49,18 @@
                 <h2 class="product-price">₱{{ number_format($product->price, 2) }}</h2>
             </div>
              <div class="quan-status" style="display:flex; gap: 12px; align-items:center;">
-                <span class="quantity-span">Stocks: <p>x{{ $product->quantity }}</p></span>
                 <span class="status-span" style="background:#f8f9fa; border-radius: 8px;">
                     @if ($product->quantity == 0)
                         <span style="color: #b71c1c">Out of stock</span>
                     @elseif ($product->quantity <= 10)
                         <span style="color: #ef6c00">Low on stocks</span>
                     @else
+                        <span class="quantity-span">Stocks: <p>x{{ $product->quantity }}</p></span>
                         <span style="color: #2e7d32">{{ $product->status ?? 'Available' }}</span>
+                    @endif
+
+                    @if($soldQuantity > '0')
+                        <span class="sold-quantity" style="color: #888; font-weight: normal; font-size: 12px; align-items: center; justify-content: center; display: flex;">{{$soldQuantity}} sold</span>
                     @endif
                 </span>
             </div>

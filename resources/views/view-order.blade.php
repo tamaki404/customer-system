@@ -17,7 +17,13 @@
 <body>
      
     <div class="ordersFrame">
-        <a href="{{ route('orders') }}"><- Orders list</a>
+        @if(auth()->user()->user_type !== 'Customer')
+         <a href="{{ route('orders') }}"><- Orders list</a>
+        @elseif(auth()->user()->user_type === 'Customer')
+         <a href="{{ route('customer_orders') }}"><- Orders list</a>
+        @endif
+
+
         <span class="customer-details">
             <p>Order#: {{ $orders->first()->order_id }}</p>
          @php

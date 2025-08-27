@@ -123,11 +123,9 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     
     // Product viewing
     Route::get('/product-image/{id}', [ProductController::class, 'showImage'])->name('product.image');
-    Route::get('/product/{id}', function($id) {
-        $product = Product::findOrFail($id);
-        return view('product_view', compact('product'));
-    })->name('product_view.view');
-    
+
+    Route::get('/product/{id}', [ProductController::class, 'productView'])->name('product_view.view');
+
     // Purchase Orders (Customer functionality)
     Route::get('/purchase_order', [PurchaseOrderController::class, 'purchaseOrder'])->name('purchase_order');
     Route::post('/purchase-order/store', [PurchaseOrderController::class, 'store'])->name('purchase_orders.store');

@@ -248,8 +248,9 @@ public function store()
         ->select('products.*')
         ->selectSub(function ($q) {
             $q->from('orders')
-            ->selectRaw('COUNT(*)')
-            ->whereColumn('orders.product_id', 'products.id');
+            ->selectRaw('COALESCE(SUM(quantity), 0)')
+            ->whereColumn('orders.product_id', 'products.id')
+            ->where('status', 'Completed'); // 👈 only completed orders
         }, 'sold_quantity')
         ->orderByRaw("
             CASE 
@@ -259,15 +260,17 @@ public function store()
                 ELSE 4
             END
         ")
-        ->orderByDesc('created_at')  
+        ->orderByDesc('created_at')
         ->paginate(15);
-    
+
     if ($search) {
         $products->appends(['search' => $search]);
     }
-    
-    return view('store', compact('user', 'products', 'search'));
-}
+
+
+        
+        return view('store', compact('user', 'products', 'search'));
+    }
 
     
     public function orders()

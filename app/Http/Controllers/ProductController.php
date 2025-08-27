@@ -71,6 +71,19 @@ class ProductController extends Controller
     }
 
 
+    public function productView($id)
+    {
+        $product = Product::findOrFail($id);
+
+        $soldQuantity = \DB::table('orders')
+            ->where('product_id', $product->id)
+            ->where('status', 'Completed')
+            ->sum('quantity');
+
+        return view('product_view', compact('product', 'soldQuantity'));
+    }
+
+
 
     public function listProduct($product_id)
     {
