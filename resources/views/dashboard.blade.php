@@ -25,20 +25,24 @@
      </div>
      <div class="dashFrame" >
         <a class="actCard" href="{{ route('receipts') }}" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border: 1px solid rgb(216, 215, 215);">
-            <p class="cardTit">Pending Receipts</p>
+            <p class="cardTit">Pending receipts</p>
             <h1 id="pendingDayCount">{{$pendingDayCount}}</h1>
             <p class="dayP">Past 7 days</p>
         </a>
         <a class="actCard" href="{{ route('orders') }}" style="border:1px solid rgb(216, 215, 215);">
-            <p class="cardTit">Pending Orders</p>
+            <p class="cardTit">Orders</p>
             <h1 id="pendingWeekCount">{{$pendingOrders}}</h1>
-            <p class="dayP"> All Count</p>
+            <p class="dayP"> Pending count</p>
         </a>        
-
+        <a class="actCard" href="{{ route('orders') }}" style="border:1px solid rgb(216, 215, 215);">
+            <p class="cardTit">Purchase orders</p>
+            <h1 id="pendingWeekCount">{{$pendingPOs}}</h1>
+            <p class="dayP"> Pending count</p>
+        </a>    
         <a class="actCard" href="{{ route('customers') }}" style="border:1px solid rgb(216, 215, 215); border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
-            <p class="cardTit">Under Review</p>
+            <p class="cardTit">Under review</p>
             <h1 id="totalReceipts" style="color: orange">{{$pendingJoins}}</h1>
-            <p class="dayP"> See Users</p>
+            <p class="dayP"> See users</p>
         </a>
 
     </div>

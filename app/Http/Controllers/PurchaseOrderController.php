@@ -14,7 +14,7 @@ use Carbon\Carbon;
 use App\Models\Region;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 class PurchaseOrderController extends Controller {
     public function purchaseOrder()
     {
@@ -511,7 +511,7 @@ public function changeStatus(Request $request)
 
     if (in_array($status, ['Cancelled', 'Rejected'])) {
         // Return products to stock
-        $purchaseOrderItems = PurchaseOrderItem::where('purchase_order_id', $po->id)->get();
+        $purchaseOrderItems = PurchaseOrderItem::where('po_id', $po->id)->get();
 
         foreach ($purchaseOrderItems as $item) {
             $product = Product::find($item->product_id);

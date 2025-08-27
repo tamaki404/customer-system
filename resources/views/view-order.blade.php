@@ -17,7 +17,7 @@
 <body>
      
     <div class="ordersFrame">
-        <a href="{{ route('customer_orders') }}"><- Orders list</a>
+        <a href="{{ route('orders') }}"><- Orders list</a>
         <span class="customer-details">
             <p>Order#: {{ $orders->first()->order_id }}</p>
          @php

@@ -413,7 +413,7 @@
                     </thead>
                     <tbody>
                    @foreach($topStores as $store)
-                        <tr>
+                        <tr style="cursor: pointer"  onclick="window.location='{{ url('/customer_view' . $store->id) }}'">
                             <td>{{ $store->customer->store_name ?? 'Unknown' }}</td>
                             <td>{{ $store->total_orders }}</td>
                             <td>₱{{ $store->total_revenue }}</td>
@@ -526,7 +526,7 @@
                     <tbody>
                         @if(isset($topPurchaseOrders))
                             @foreach($topPurchaseOrders as $po)
-                                <tr  onclick="window.location='{{ url('/purchase_order_view/' . $po->po_number) }}'">
+                                <tr style="cursor: pointer"  onclick="window.location='{{ url('/purchase_order/view/' . $po->po_number) }}'">
                                     <td>{{ $po->po_number }}</td>
                                     <td>{{ $po->company_name }}</td>
                                     <td>{{ $po->receiver_name }}</td>

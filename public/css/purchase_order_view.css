@@ -18,7 +18,7 @@
 .viewPO-btn{
     font-size: 14px;
     color: #333 !important;
-    font-weight: 700;
+    font-weight: normal;
     background: linear-gradient(135deg, #ffde59, #ffd54f);
     padding: 10px 14px;
     width: auto;
@@ -28,16 +28,19 @@
     align-items: center;
     display: flex;
     gap: 5px;
+    justify-content: center;
 }
 
 .viewPO-btn:hover{
-    background-color: #958216;
+    background-color: #796a10 !important;
     transition: background-color 0.3s ease;
 }
 
+
 .viewPO-btn span{
-    font-size: 19px
+    font-size: 15px
 }
+
 
 .order-div{
     display: flex;
@@ -176,7 +179,6 @@
     gap: 15px;
     min-width: 500px;
     width: auto;
-    justify-content: space-evenly;
 }
 .item-name{
     font-size: 15px;
@@ -253,18 +255,25 @@
 
 .invoice-btn{
     border-radius: 8px;
-    padding: 7px;
+    padding: 10px 14px;
     width: 100px;
     border: none;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;   
-    font-size: 15px;
+    font-size: 14px;
     color: #fff;
     background-color: #f8912a;
-    font-weight: bold;
+    gap: 5px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+.invoice-btn span{
+    font-size: 14px
 }
 .invoice-btn:hover{
     background-color: #cd741c;
-   
+       transition: background-color 0.3s ease;
+
 }
 
 /* timeline */

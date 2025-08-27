@@ -41,7 +41,7 @@
                 <p class="acc_creation">
                     Account created on {{ auth()->user()->created_at->format('F j, Y') }}
                 </p>
-                <form action="/edit-profile" method="POST" class="profile-form" >
+                <form action="/edit-profile" method="POST" id="submitForm" class="profile-form" >
                     @csrf
                         <div class="form-group">
                             <label>Name</label>
@@ -71,7 +71,7 @@
                             </div>
                         </div>
 
-                    <button class="editProfileBtn" style="font-style: 13px;" type="submit">Save Changes</button>
+                    <button class="editProfileBtn"  id="submitBtn" style="font-style: 13px;" type="submit">Save Changes</button>
 
                 </form>
                 <p class="updatePassword">To update password, use the forgot password on login</p>
@@ -114,7 +114,7 @@
             @elseif(auth()->user()->user_type === 'Admin')
             <div class="info-box">
                 <p style="font-size: 15px;">Please review and update your profile details. Ensure your contact information is accurate.</p>
-                <form action="/edit-profile" method="POST" class="profile-form">
+                <form action="/edit-profile" method="POST" id="submitForm" class="profile-form">
                 @csrf
                     <div class="form-group">
                         <label>Name</label>
@@ -140,7 +140,7 @@
                     
 
 
-                <button class="editProfileBtn" type="submit">Save changes</button>
+                <button class="editProfileBtn" id="submitBtn" type="submit">Save changes</button>
                 
             </form>
                 <p class="updatePassword">To update password, use the forgot password on login</p>
@@ -151,9 +151,14 @@
         </div>
     </div>
     </div>
+
+    
 </body>
 </html>
 
+
+
+<script src="{{ asset('js/disbaleBtn.js') }}"></script>
 
 
 @endsection

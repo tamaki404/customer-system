@@ -81,6 +81,7 @@
 
                         <div class="products-box">
                             @if(isset($products) && count($products) > 0)
+                
                                 <div class="product-grid">
                                     @foreach ($products as $product)
                                         @php
@@ -88,47 +89,49 @@
                                             $isOut = $product->quantity == 0;
                                             $isLow = !$isOut && $product->quantity <= 10;
                                         @endphp
-                                        <div class="product-card" onclick="window.location='{{ url('/product/' . $product->id) }}'">
-                                            <div class="product-thumb">
-                                                @if($dataUri)
-                                                    <img src="{{ $dataUri }}" alt="{{ $product->name }}">
-                                                @else
-                                                    <div class="thumb-placeholder">No Image</div>
-                                                @endif
-                                                @if($isOut)
-                                                    <span class="badge badge-out">Out of stock</span>
-                                                @elseif($isLow)
-                                                    <span class="badge badge-low">Low stock</span>
-                                                @else
-                                                    <span class="badge badge-available">Available</span>
-                                                @endif
-                                            </div>
-                                            <div class="product-body">
-                                                <div class="product-name" title="{{ $product->name }}">{{ $product->name }}</div>
-                                                <div class="product-price">₱{{ number_format($product->price, 2) }}</div>
-                                                <div class="product-meta">
-                                                    <span class="stock">{{ $product->quantity }}x</span>
-                                                </div>
-                                            </div>
-                                            @if(auth()->user()->user_type === 'Customer')
-                                                <div class="product-actions" onclick="event.stopPropagation();">
-                                                    @if($product->quantity > 0)
-                                                        <button type="button" id="sparkle-btn" class="add-to-cart-btn"
-                                                            data-product-id="{{ $product->id }}"
-                                                            data-product-name="{{ $product->name }}"
-                                                            data-product-price="{{ $product->price }}"
-                                                            data-product-stock="{{ $product->quantity }}">
-                                                            <i class="fa fa-plus"></i>
-                                                        </button>
+                                        @if($product->status != "Unlisted" && $product->quantity !== 0)
+                                            <div class="product-card" onclick="window.location='{{ url('/product/' . $product->id) }}'">
+                                                <div class="product-thumb">
+                                                    @if($dataUri)
+                                                        <img src="{{ $dataUri }}" alt="{{ $product->name }}">
                                                     @else
-                                                        <button type="button" class="add-to-cart-btn" id="sparkle-btn" disabled>
-                                                            <i class="fa fa-times"></i>
-                                                        </button>
-
+                                                        <div class="thumb-placeholder">No Image</div>
+                                                    @endif
+                                                    @if($isOut)
+                                                        <span class="badge badge-out">Out of stock</span>
+                                                    @elseif($isLow)
+                                                        <span class="badge badge-low">Low stock</span>
+                                                    @else
+                                                        <span class="badge badge-available">Available</span>
                                                     @endif
                                                 </div>
-                                            @endif
-                                        </div>
+                                                <div class="product-body">
+                                                    <div class="product-name" title="{{ $product->name }}">{{ $product->name }}</div>
+                                                    <div class="product-price">₱{{ number_format($product->price, 2) }}</div>
+                                                    <div class="product-meta">
+                                                        <span class="stock">{{ $product->quantity }}x</span>
+                                                    </div>
+                                                </div>
+                                                @if(auth()->user()->user_type === 'Customer')
+                                                    <div class="product-actions" onclick="event.stopPropagation();">
+                                                        @if($product->quantity > 0)
+                                                            <button type="button" id="sparkle-btn" class="add-to-cart-btn"
+                                                                data-product-id="{{ $product->id }}"
+                                                                data-product-name="{{ $product->name }}"
+                                                                data-product-price="{{ $product->price }}"
+                                                                data-product-stock="{{ $product->quantity }}">
+                                                                <i class="fa fa-plus"></i>
+                                                            </button>
+                                                        @else
+                                                            <button type="button" class="add-to-cart-btn" id="sparkle-btn" disabled>
+                                                                <i class="fa fa-times"></i>
+                                                            </button>
+
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endif
                                     @endforeach
                                 </div>
                             @else

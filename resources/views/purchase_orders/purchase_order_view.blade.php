@@ -159,7 +159,7 @@
                         <p class="company-name">{{$po->po_number}}</p>
                         <button style="margin-top: 5px" class="viewPO-btn" onclick="window.location='{{ route('purchase_order.create', $po->po_number) }}'">
                             <span class="material-symbols-outlined">description</span>
-                            View Purchase Order
+                            Purchase order
                         </button>
                     </div>
                    

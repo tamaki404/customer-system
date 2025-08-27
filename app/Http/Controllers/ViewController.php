@@ -343,7 +343,8 @@ class ViewController extends Controller{
                 ->count();
             $pendingOrders = Orders::where('status', 'Pending')
                 ->count();                
-
+            $pendingPOs = PurchaseOrder::where('status', 'Pending')
+                ->count();    
             $pendingDayCount = Receipt::where('status', 'Pending')->count();
             $activeUsers = User::where('last_seen_at', '>=', now()->subMinutes(15))->count();
             $pendingJoins = User::where('acc_status', 'pending')
@@ -459,7 +460,8 @@ class ViewController extends Controller{
             'customerTopProductLabels',
             'customerTopProductQuantities',
             'pendingWeekOrder',
-            'verifiedOrdersToday'
+            'verifiedOrdersToday',
+            'pendingPOs'
 
 
         ));

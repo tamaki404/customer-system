@@ -202,6 +202,8 @@
             @if(isset($products) && count($products) > 0)
                 <div class="product-grid">
                     @foreach ($products as $product)
+                        @if($product->status != "Unlisted" && $product->quantity !== 0)
+
                         @php
                             $dataUri = (!empty($product->image) && !empty($product->image_mime)) ? ('data:' . $product->image_mime . ';base64,' . $product->image) : null;
                             $isOut = $product->quantity == 0;
@@ -247,7 +249,9 @@
                                 </div>
                             @endif
                         </div>
+                        @endif
                     @endforeach
+
                 </div>
 
                 <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">

@@ -68,20 +68,26 @@
 
                     @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
                     <div class="actionBtn" >
-                        @if($receipt->status !== 'Verified')
-                        <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="verifyButton">Verify</button>
-                        </form>
+                        @if($receipt->status === 'Verified')
+
+                        @elseif($receipt->status === 'Cancelled')
+
+
+                        @elseif($receipt->status=== 'Pending')
+                            <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="verifyButton">Verify</button>
+                            </form>
+                            <form  action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                <button class="cancelAction" type="submit">Cancel</button>
+                            </form>
+                            <form action="{{ url('/receipts/reject/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                <button class="rejectAction" type="submit">Reject</button>
+                            </form>     
                         @endif
-                        <form  action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
-                            @csrf
-                            <button class="cancelAction" type="submit">Cancel</button>
-                        </form>
-                        <form action="{{ url('/receipts/reject/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
-                            @csrf
-                            <button class="rejectAction" type="submit">Reject</button>
-                        </form>     
+
                     </div>
                     @endif
 
