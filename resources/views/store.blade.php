@@ -175,7 +175,7 @@
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->product_id }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->sold_quantity }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->unit }}</td>
-                            <td style="padding:10px 8px; font-size: 13px;">{{ $product->quantity }}</td>
+                            <td style="padding:10px 8px; font-size: 13px;">x{{ $product->quantity }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">
 
                                 @if($product->status === 'Unlisted')

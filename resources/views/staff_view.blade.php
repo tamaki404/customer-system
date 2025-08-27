@@ -292,7 +292,7 @@
                     <input type="text" name="confirm_delete" placeholder="DELETE" required>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="delete-btn"  id="submitBtn">Delete Account</button>
+                    <button type="submit" class="delete-btn"  id="deleteBtn">Delete Account</button>
                     <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
                 </div>
             </form>

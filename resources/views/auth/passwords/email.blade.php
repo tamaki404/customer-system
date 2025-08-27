@@ -15,13 +15,13 @@
         <img src="{{ asset(path: 'assets/sunnyLogo1.png') }}" alt="Logo" class="logo">
         <h2>Password Reset</h2>
         <p>Enter your email address to receive a password reset link.</p>
-        <form method="POST" action="{{ route('password.email') }}">
+        <form method="POST" action="{{ route('password.email') }}" id="passwordReset">
             @csrf
             <div class="emailInput">
                 <p>Email</p>
                 <input type="email" name="email" required placeholder="Used email" required>
             </div>
-            <button type="submit">Reset password</button>
+            <button type="submit" id="submitBtn">Reset password</button>
 
         </form>
 
@@ -33,7 +33,7 @@
         @endif
 
 
-        <a href="{{ route('login') }}">Back to Login</a>
+        <a href="{{ route('login') }}" >Back to Login</a>
     </div>
 
 </body>

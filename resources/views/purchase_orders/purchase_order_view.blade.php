@@ -33,28 +33,29 @@
 
     </span>
  
-    <form class="order-actions" action="{{ route('change.po_status') }}" method="POST">
-        @csrf
+    @if(auth()->user()->user_type !== 'Customer')
+        <form class="order-actions" action="{{ route('change.po_status') }}" method="POST">
+            @csrf
 
-            @if($po->status === "Pending")
-                <button type="submit" name="status" value="Accepted" class="btn btn-success">Accept</button>
-                <button type="submit" name="status" value="Rejected" class="btn btn-warning">Reject</button>
-                <button type="submit" name="status" value="Cancelled" class="btn btn-danger">Cancel</button>
+                @if($po->status === "Pending")
+                    <button type="submit" name="status" value="Accepted" class="btn btn-success">Accept</button>
+                    <button type="submit" name="status" value="Rejected" class="btn btn-warning">Reject</button>
+                    <button type="submit" name="status" value="Cancelled" class="btn btn-danger">Cancel</button>
 
-            @elseif($po->status === "Accepted")
-                <button type="submit" name="status" value="Delivered" class="btn btn-primary">Mark as Delivered</button>
+                @elseif($po->status === "Accepted")
+                    <button type="submit" name="status" value="Delivered" class="btn btn-primary">Mark as Delivered</button>
 
-            @else
-               {{-- <p class="muted-status-notify">This order has been {{ $po->status }}.</p> --}}
-            @endif
+                @else
+                {{-- <p class="muted-status-notify">This order has been {{ $po->status }}.</p> --}}
+                @endif
+    @endif
+    
 
- 
 
-
-        {{-- Always include these --}}
-        <input type="hidden" name="po_id" value="{{ $po->id }}">
-        <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
-    </form>
+            {{-- Always include these --}}
+            <input type="hidden" name="po_id" value="{{ $po->id }}">
+            <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+        </form>
 
 
 

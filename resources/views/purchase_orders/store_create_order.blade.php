@@ -60,7 +60,7 @@
                  <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>                
         </div>
-        <form id="order-form submitForm" method="POST" action="{{ route('purchase_orders.store') }}" enctype="multipart/form-data">
+        <form id="orderForm" method="POST" action="{{ route('purchase_orders.store') }}" enctype="multipart/form-data">
             @csrf
             
             <div class="form-container" style="overflow: hidden">
@@ -331,6 +331,8 @@
 
     <script src="{{ asset('js/purchase_order.js') }}"></script>
     <script src="{{ asset('js/address.js') }}"></script>
+  <script src="{{ asset('js/disbaleBtn.js') }}"></script>
+layout  
 </body>
 </html>
 

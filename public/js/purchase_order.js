@@ -476,7 +476,7 @@ function validateStep(step) {
 }
 
 function addAddressToForm() {
-    const form = document.getElementById("order-form");
+    const form = document.getElementById("orderForm");
 
     // Remove old hidden input if any
     const existing = document.querySelector("[name='shipping_data']");
@@ -503,7 +503,7 @@ function addAddressToForm() {
 
 // Add cart data to the form as a hidden input
 function addCartDataToForm() {
-    const form = document.getElementById("order-form");
+    const form = document.getElementById("orderForm");
     if (!form) return;
 
     // Remove existing hidden input for cart_data if any
@@ -648,7 +648,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // FIXED: Enhanced form submission handler
-    const form = document.getElementById("order-form");
+    const form = document.getElementById("orderForm");
     if (form) {
         form.addEventListener("submit", function(e) {
             console.log('Form submission triggered');

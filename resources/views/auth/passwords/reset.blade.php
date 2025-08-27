@@ -18,7 +18,7 @@
         <h2>Password Reset</h2>
         <span><p>{{ old('email', request('email')) }}</p>you can now reset your password</span>
        
-        <form method="POST" action="{{ route('password.update') }}">
+        <form method="POST" action="{{ route('password.update') }}" id="passwordReset">
             @csrf
             <input type="hidden" name="token" value="{{ $token }}">
             <input type="hidden" name="email" value="{{ old('email', request('email')) }}">
@@ -30,7 +30,7 @@
                 <p>Confirm password</p>
                 <input type="password" name="password_confirmation" required placeholder="">
             </div>
-            <button type="submit">Reset Password</button>
+            <button type="submit" id="submitBtn">Reset Password</button>
         </form>
 
 
@@ -45,6 +45,8 @@
 
         <a href="{{ route('login') }}">Back to Login</a>
     </div>
+
+    <script src="{{ asset('js/disbaleBtn.js') }}"></script>
 
 </body>
 </html>

@@ -390,7 +390,7 @@
                                                     </div>
 
                                                 </td>
-                                                <td style="font-size: 14px">{{ $receipt->verified_by }}</td>
+                                                <td style="font-size: 13px">{{ $receipt->verified_by }}</td>
                                                 <td>
                                                     @if($receipt->receipt_image)
                                                         @php

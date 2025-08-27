@@ -90,7 +90,7 @@ class ProductController extends Controller
         }
         $product->delete();
 
-        return redirect()->route('ordering')->with('success', 'Product deleted successfully!');
+        return redirect()->route('store', $product_id)->with('success', 'Product deleted successfully!');
     }
 
 }

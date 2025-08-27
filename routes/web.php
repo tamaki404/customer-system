@@ -131,7 +131,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     // Purchase Orders (Customer functionality)
     Route::get('/purchase_order', [PurchaseOrderController::class, 'purchaseOrder'])->name('purchase_order');
     Route::post('/purchase-order/store', [PurchaseOrderController::class, 'store'])->name('purchase_orders.store');
-    Route::get('/purchase-order/create/purchase-order-form/{po_number}', [PurchaseOrderController::class, 'purchaseOrderForm'])->name('purchase_order.create');
+    Route::get('/purchase-order/create/purchase-orderForm/{po_number}', [PurchaseOrderController::class, 'purchaseOrderForm'])->name('purchase_order.create');
     Route::get('/purchase-order/store/order', [PurchaseOrderController::class, 'storeOrderView'])->name('purchase_order.store.order');
     Route::get('/purchase_order/view/{po_number}', [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchase_order.view');
     Route::get('/purchase-order/{po_number}/pdf', [PurchaseOrderController::class, 'downloadPDF'])->name('purchase_order.pdf');
@@ -214,7 +214,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/product/unlist/{product_id}', [ProductController::class, 'unlistProduct'])->name('products.unlist');
         Route::post('/product/add-stock/{product_id}', [ProductController::class, 'addStock'])->name('products.addStock');
         Route::post('/product/list/{product_id}', [ProductController::class, 'listProduct'])->name('products.list');
-        Route::delete('/product/delete/{product_id}', [ProductController::class, 'deleteProduct'])->name('products.delete');
+        Route::delete('/product/delete/{product_id}', [ProductController::class, 'deleteProduct'])->name('products.deleteProduct');
         
         //Customer management
         Route::post('/customer/accept/{id}', [ViewController::class, 'acceptCustomer'])->name('customer.accept');

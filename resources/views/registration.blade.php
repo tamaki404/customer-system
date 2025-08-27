@@ -111,7 +111,7 @@
                     </ul>
                 </div>
             @endif
-        <button type="submit">Sign Up</button>
+        <button type="submit" id="submitBtn">Sign Up</button>
 
 
        
@@ -130,6 +130,7 @@
 
 
 <script src="{{asset('js/register.js')}}"></script>
+<script src="{{ asset('js/disbaleBtn.js') }}"></script>
 
 </body>
 </html> 

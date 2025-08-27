@@ -89,11 +89,11 @@
                 @endif
 
                 <!-- Delete Button triggers modal -->
-                @if (auth()->user()->user_type != 'Admin')
+                {{-- @if (auth()->user()->user_type != 'Admin')
                     <button class="delete-btn" id="openDeleteModalBtn" style="width: auto; background-color: rgba(255, 0, 0, 0.281);" disabled><i class="fa-regular fa-circle-xmark"></i> Can't delete</button>
                 @else
                     <button class="delete-btn" id="openDeleteModalBtn" style="width: 120px; background-color: rgba(255, 0, 0, 0.664);"><i class="fa-solid fa-trash-can"></i> Delete</button>
-                @endif
+                @endif --}}
                 <!-- Delete Modal -->
                 <div id="deleteModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
                     <div class="formBlock" style="background:#fff; padding:2rem; border-top: #e53935 4px solid; border-radius:8px; min-width:320px; max-width:90vw; position:relative; text-align:center;">
@@ -101,7 +101,7 @@
 
                         <h2 style="font-size: 25px; font-weight: bold; margin: 5px 0;">Confirm Delete</h2>
                         <p>Are you sure you want to delete this product? This action cannot be undone.</p>
-                        <form id="deleteProductForm" action="{{ url('/product/delete/' . $product->id) }}" method="POST" style="margin-top:1.5rem;">
+                        <form id="deleteProductForm" action="{{ route('products.deleteProduct', $product->id) }}" method="POST" style="margin-top:1.5rem;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" id="delete" style="">Yes, Delete</button>
@@ -131,22 +131,19 @@
                     const openStock = document.getElementById('openStockModal');
                     const stockModal = document.getElementById('stockModal');
                     const closeStock = document.getElementById('closeStockModal');
-                    const cancelStock = document.getElementById('cancelStockModal');
 
                     const openBtn = document.getElementById('openDeleteModalBtn');
                     const modal = document.getElementById('deleteModal');
                     const closeBtn = document.getElementById('closeDeleteModalBtn');
                     const cancelBtn = document.getElementById('cancelDeleteBtn');
 
-                    if (openBtn && modal && closeBtn && cancelBtn && openStock) {
+                    if (openBtn && modal && closeBtn && openStock) {
 
                         openStock.onclick = () => { stockModal.style.display = 'flex'; };
                         closeStock.onclick = () => { stockModal.style.display = 'none'; };
-                        cancelStock.onclick = () => { stockModal.style.display = 'none'; };
 
                         openBtn.onclick = () => { modal.style.display = 'flex'; };
                         closeBtn.onclick = () => { modal.style.display = 'none'; };
-                        cancelBtn.onclick = () => { modal.style.display = 'none'; };
 
                         window.onclick = function(event) {
                             if (event.target === modal) { modal.style.display = 'none'; }

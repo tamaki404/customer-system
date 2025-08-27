@@ -165,7 +165,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     //purchase order
     Route::get('/purchase_order', [PurchaseOrderController::class, 'purchaseOrder'])->name('purchase_order');
     Route::post('/purchase-order/store', [PurchaseOrderController::class, 'store'])->name('purchase_orders.store');
-    Route::get('/purchase-order/create/purchase-order-form/{po_number}', [PurchaseOrderController::class, 'purchaseOrderForm'])->name(name: 'purchase_order.create');
+    Route::get('/purchase-order/create/purchase-orderForm/{po_number}', [PurchaseOrderController::class, 'purchaseOrderForm'])->name(name: 'purchase_order.create');
     
     Route::get('/purchase-order/store/order', [PurchaseOrderController::class, 'storeOrderView'])->name('purchase_order.store.order');
     Route::get('/purchase_order/view/{po_number}', [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchase_order.view');
