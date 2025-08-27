@@ -12,100 +12,7 @@
     <title>My Reports</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .my-report-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; }
-        .my-card{ background:#fff; border-radius:10px; padding:14px; box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px 0, rgba(0, 0, 0, 0.08) 0 0 0 1px; }
-        .chart-box{ position:relative; height:320px; min-height:220px; }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-
-        .status-processing {
-            background: #cce5ff;
-            color: #004085;
-            border: 1px solid #a3d5ff;
-        }
-
-        .status-completed {
-            background: #d1edff;
-            color: #155724;
-            border: 1px solid #a8d8a8;
-        }
-
-        .status-cancelled {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .status-draft {
-            background: #e2e3e5;
-            color: #383d41;
-            border: 1px solid #d6d8db;
-        }
-
-        .po-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .btn-small {
-            padding: 4px 8px;
-            font-size: 12px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-view {
-            background: #007bff;
-            color: white;
-        }
-
-        .btn-view:hover {
-            background: #0056b3;
-            color: white;
-        }
-
-        .btn-download {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-download:hover {
-            background: #1e7e34;
-            color: white;
-        }
-
-        .btn-cancel {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-cancel:hover {
-            background: #c82333;
-            color: white;
-        }
+  
     </style>
 </head>
 <body>
@@ -194,24 +101,29 @@
 
         <!-- My Orders Tab -->
         <div id="my-orders" class="tab-content {{ $activeTab === 'my-orders' ? 'active' : '' }}">
-            <p style="margin: 12px 0 6px 0; font-weight: 700;">Orders In Range</p>
+            {{-- <p style="margin: 12px 0 6px 0; font-weight: 700;">Orders In Range</p> --}}
             <div class="my-card" style="overflow:auto;">
                 <table class="table" style="width:100%;">
                     <thead>
                         <tr>
                             <th>Order ID</th>
                             <th>Status</th>
-                            <th>Total Quantity</th>
-                            <th>Total Price</th>
+                            <th>Quantity</th>
+                            <th>Amount</th>
                             <th>Updated</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($myOrders as $o)
-                            <tr>
-                                <td>{{ $o->order_id }}</td>
-                                <td>{{ $o->status }}</td>
-                                <td>{{ $o->total_quantity }}</td>
+                            <tr style="cursor: pointer"  onclick="window.location='{{ url('/order/view/' . $o->order_id) }}'">                                    
+                                <td style="font-weight: bold">{{ $o->order_id }}</td>
+                                
+                                <td>
+                                    <span style="text-transform: uppercase;" class="status-badge status-{{ strtolower($o->status) }}">
+                                            {{ $o->status }}
+                                    </span>
+                                </td>
+                                <td>x{{ $o->total_quantity }}</td>
                                 <td>₱{{ number_format($o->total_price, 2) }}</td>
                                 <td>{{ \Carbon\Carbon::parse($o->action_at ?? $o->created_at)->format('M d, Y g:i A') }}</td>
                             </tr>
@@ -265,49 +177,30 @@
                     <thead>
                         <tr>
                             <th>PO Number</th>
-                            <th>Company Name</th>
                             <th>Status</th>
-                            <th>Total Amount</th>
+                            <th>Quantity</th>
+                            <th>Amount</th>
                             <th>Order Date</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if(isset($myPurchaseOrders) && $myPurchaseOrders->count() > 0)
                             @foreach($myPurchaseOrders as $po)
-                                <tr>
+                                <tr style="cursor: pointer"  onclick="window.location='{{ url('/purchase_order/view/' . $po->po_number) }}'">                                    
                                     <td>
                                         <strong>{{ $po->po_number }}</strong>
                                         <br>
                                         <small style="color: #666;">{{ $po->receiver_name }}</small>
                                     </td>
-                                    <td>{{ $po->company_name }}</td>
                                     <td>
-                                        <span class="status-badge status-{{ strtolower($po->status) }}">
+                                        <span style="text-transform: uppercase;" class="status-badge status-{{ strtolower($po->status) }}">
                                             {{ $po->status }}
                                         </span>
                                     </td>
+                                    <td>x{{ $po->items->sum('quantity') }}</td>
                                     <td>₱{{ number_format($po->grand_total, 2) }}</td>
                                     <td>{{ $po->order_date->format('M d, Y') }}</td>
-                                    <td>
-                                        <div class="po-actions">
-                                            <a href="{{ route('purchase_order.view', $po->po_number) }}" class="btn-small btn-view">
-                                                👁️ View
-                                            </a>
-                                            {{-- <a href="{{ route('purchase_order.download', $po->po_number) }}" class="btn-small btn-download">
-                                                📄 PDF
-                                            </a> --}}
-                                            {{-- @if(in_array($po->status, ['Pending', 'Processing']))
-                                                <form method="POST" action="{{ route('purchase_order.cancel', $po->id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this purchase order?')">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="btn-small btn-cancel">
-                                                        ❌ Cancel
-                                                    </button>
-                                                </form>
-                                            @endif --}}
-                                        </div>
-                                    </td>
+           
                                 </tr>
                             @endforeach
                         @else

@@ -526,7 +526,7 @@
                     <tbody>
                         @if(isset($topPurchaseOrders))
                             @foreach($topPurchaseOrders as $po)
-                                <tr>
+                                <tr  onclick="window.location='{{ url('/purchase_order_view/' . $po->po_number) }}'">
                                     <td>{{ $po->po_number }}</td>
                                     <td>{{ $po->company_name }}</td>
                                     <td>{{ $po->receiver_name }}</td>
