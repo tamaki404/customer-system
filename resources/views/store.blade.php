@@ -204,6 +204,7 @@
                             <th style="width: 120px; overflow: hidden; font-size: 13px;">Product</th>
                             <th style="width: 120px; overflow: hidden; font-size: 13px;">Price</th>
                             <th style="width: 70px; font-size: 13px;">Product ID</th>
+                            <th style="width: 120px; overflow: hidden; font-size: 13px;">Category</th>
                             <th style="width: 80px; font-size: 13px;">Sold</th>
                             <th style="width: 80px; font-size: 13px;">Unit</th>
                             <th style="width: 80px; font-size: 13px;">Available</th>
@@ -231,6 +232,7 @@
                             </td>
                             <td style="padding:10px 8px; font-size: 13px;">₱{{ number_format($product->price, 2) }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->product_id }}</td>
+                            <td style="padding:10px 8px; font-size: 13px;">{{ $product->category }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->sold_quantity }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">{{ $product->unit }}</td>
                             <td style="padding:10px 8px; font-size: 13px;">x{{ $product->quantity }}</td>

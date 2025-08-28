@@ -18,6 +18,7 @@ class ProductController extends Controller
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'status' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'product_id' => 'nullable|string|max:255',
             'unit'=> 'nullable|string|max:25'
