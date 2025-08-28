@@ -261,9 +261,9 @@
 
             <div class="search-cart">
                 {{-- <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image" width="100" class="ownerImage"> --}}
-                <form method="GET" action="" class="date-search">
-                    <input type="text" class="search-input" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID, Category or Status">
-                    <button type="submit" class="search-btn" style="background-color: transparent;"><i class="fas fa-search"></i></button>
+                <form method="GET" action="" class="date-search" style="background-color: #fffbee; border-radius: 15px; height: 45px;">
+                    <input type="text" class="search-input"  name="search" style="outline:none; background-color: #fffbee; font-size: 14px;" value="{{ request('search') }}" placeholder="Search by Name, Product ID, Category or Status">
+                    <button type="submit" class="search-btn" style="background-color: #fffbee; height: 100%;"><i class="fas fa-search"></i></button>
                 </form>
                 <button class="addStaffBtn" style="background: #ffde59; width: 80px;">
                     <span class="material-symbols-outlined" style="font-size: 23px; color: #333; font-weight: normal;">shopping_cart</span>
@@ -272,6 +272,21 @@
             </div>
 
             <div class="category-list">
+                <style>
+                    .category-list a{
+                        padding: 8px 14px;
+                        border-radius: 999px;
+                        background: #fffbee;
+                        color: #333;
+                        border: 1px solid #ffeaa7;
+                        text-decoration: none;
+                        font-size: 14px;
+                        font-weight: 600;
+                        align-content: center;
+                        box-shadow: rgba(0, 0, 0, 0.05) 0 2px 6px;
+                        transition: all 0.2s ease;
+                    }
+                </style>
                 <a href="#">
                     <img src="{{ asset('assets/categories/category_eggs.jpeg') }}" alt="Eggs" class="category_img">
                     <span>Eggs</span>
@@ -388,7 +403,7 @@
                             $isOut = $product->quantity == 0;
                             $isLow = !$isOut && $product->quantity <= 10;
                         @endphp
-                        <div class="product-card" onclick="window.location='{{ url('/product/' . $product->id) }}'">
+                        <div class="product-card" style="background-color: #fffbee;" onclick="window.location='{{ url('/product/' . $product->id) }}'">
                             <div class="product-thumb">
                                 @if($dataUri)
                                     <img src="{{ $dataUri }}" alt="{{ $product->name }}">
