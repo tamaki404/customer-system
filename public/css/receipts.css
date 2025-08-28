@@ -324,7 +324,7 @@ body {
 
 .receipt-form input:focus,
 .receipt-form textarea:focus {
-    border: 1.5px solid #1976d2;
+        border: 1.5px solid #ff9800;
     outline: none;
     background: #fff;
 }

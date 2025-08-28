@@ -252,7 +252,9 @@ public function store()
             $q->where('name', 'like', "%$search%")
             ->orWhere('id', 'like', "%$search%")
             ->orWhere('status', 'like', "%$search%")
-            ->orWhere('product_id', 'like', "%$search%");
+            ->orWhere('product_id', 'like', value: "%$search%")
+            ->orWhere('category', 'like', value: "%$search%");
+
         });
     }
 

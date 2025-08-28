@@ -172,7 +172,7 @@
 
     <div class="titleFrame">
         <form method="GET" action="" class="date-search">
-            <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID & Status">
+            <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID, Category or Status">
             <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
         </form>
 
@@ -216,7 +216,6 @@
                     {{ $label }} ({{ $count }})
                 </a>
             @endforeach
-
         </div>
 
     

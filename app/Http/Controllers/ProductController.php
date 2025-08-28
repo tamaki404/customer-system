@@ -67,30 +67,28 @@ class ProductController extends Controller
         return redirect()->route('product_view.view', $product_id)->with('success', 'Product unlisted successfully!');
     }
 
-public function addStock($product_id)
-{
-    $validated = request()->validate([
-        'addedStock' => 'required|integer|min:1|max:999'
-    ]);
+    public function addStock($product_id)
+    {
+        $validated = request()->validate([
+            'addedStock' => 'required|integer|min:1|max:999'
+        ]);
 
-    $product = Product::findOrFail($product_id);
-    $product->quantity += $validated['addedStock'];
+        $product = Product::findOrFail($product_id);
+        $product->quantity += $validated['addedStock'];
 
-    if ($product->quantity === 0) {
-        $product->status = "No stock";
-    } elseif ($product->quantity < 20) {
-        $product->status = "Low stock";
-    } else {
-        $product->status = "Available";
+        if ($product->quantity === 0) {
+            $product->status = "No stock";
+        } elseif ($product->quantity < 20) {
+            $product->status = "Low stock";
+        } else {
+            $product->status = "Available";
+        }
+
+        $product->save();
+
+        return redirect()->route('product_view.view', $product_id)
+                        ->with('success', 'Stock added successfully!');
     }
-
-    $product->save();
-
-    return redirect()->route('product_view.view', $product_id)
-                     ->with('success', 'Stock added successfully!');
-}
-
-
 
     public function productView($id)
     {
@@ -104,7 +102,37 @@ public function addStock($product_id)
         return view('product_view', compact('product', 'soldQuantity'));
     }
 
+    public function editProduct(Request $request, $product_id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'category' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'product_id' => 'nullable|string|max:255',
+            'unit'=> 'nullable|string|max:25'
+        ]);
 
+        $product = Product::findOrFail($product_id);
+        
+        $product->name        = $validated['name'];
+        $product->description = $validated['description'];
+        $product->price       = $validated['price'];
+        $product->unit        = $validated['unit'];
+        $product->category    = $validated['category'];
+        $product->product_id    = $validated['product_id'];
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $product->image = base64_encode(file_get_contents($file->getRealPath()));
+            $product->image_mime = $file->getMimeType();
+        }
+
+        $product->save();
+
+        return redirect()->route('product_view.view', $product_id)->with('success', 'Product listed successfully!');
+    }
 
     public function listProduct($product_id)
     {

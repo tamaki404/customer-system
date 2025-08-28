@@ -14,6 +14,123 @@
 </head>
 <body>
 
+{{-- edit product modal --}}
+<div id="modalmodifyProduct" style="display:none; position:fixed; z-index:9999; left:0; overflow: hidden; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
+    <div class="formBlock" style="">
+        <span id="closeModifyProduct" style="position:absolute; top:10px; right:20px; font-size:2rem; cursor:pointer;">&times;</span>
+
+        <div class="product-header" style="text-align: center; margin-bottom: 1.5rem;">
+
+            <h2 style="font-size: 20px; font-weight: bold; margin: 5px 0; color: #333;">
+                Edit product
+            </h2>
+        </div>
+
+        <form id="modifyProductForm" class="modifyProductForm" action="{{ route('products.editProduct', $product->id) }}" method="POST" style="margin-top:1.5rem;">
+            @csrf
+            <div class="form-grid">
+                <!-- Name -->
+                <div>
+                    <label for="name">Name</label>
+                    <input  type="text" name="name" id="name" value="{{$product->name}}" placeholder="Product Name" maxlength="100" required>
+                    {{-- @error('name')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror --}}
+                </div>
+                <!-- Description -->
+                <div style="width: 100%;">
+                    <label for="description">Description</label>
+                    <textarea 
+                        name="description" 
+                        id="description" 
+                        placeholder="Product Description" 
+                        maxlength="500" 
+                        required
+                        style="width: 100%; height: 100px; resize: vertical; padding: 8px; box-sizing: border-box;"
+                    >{{ $product->description }}</textarea>
+                    @error('description')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
+                </div>
+                <!-- Price -->
+                <div>
+                    <label for="price">Price</label>
+                    <input type="number" name="price" id="price" value="{{$product->price}}" placeholder="0.00" min="0" step="0.01" required>
+                    @error('price')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Product ID -->
+                <div>
+                    <label for="product_id">Product ID</label>
+                    <input type="string" name="product_id" id="product_id" value="{{$product->product_id}}" placeholder="product_id" min="0" maxlength="255" required>
+                    @error('product_id')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Unit -->
+                <div>
+                    <label for="unit">Unit</label>
+                    <select name="unit" id="unit-selector" required> 
+                        <option value="">-- Select Unit --</option>
+                        <option value="Piece" {{ $product->unit == 'Piece' ? 'selected' : '' }}>Piece</option> 
+                        <option value="Dozen" {{ $product->unit == 'Dozen' ? 'selected' : '' }}>Dozen</option>
+                        <option value="Pack" {{ $product->unit == 'Pack' ? 'selected' : '' }}>Pack</option>
+                        <option value="Tray" {{ $product->unit == 'Tray' ? 'selected' : '' }}>Tray</option>
+                        <option value="Case" {{ $product->unit == 'Case' ? 'selected' : '' }}>Case</option> 
+                    </select>
+
+                    @error('product_id')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
+                </div>
+                <!-- Category -->
+                <div>
+                    <label for="category">Category </label>
+                    <select name="category" id="category" required>
+                        <option value="">-- Select Category --</option>
+                        <option value="Livestock" {{ $product->category == 'Livestock' ? 'selected' : '' }}>Livestock</option>
+                        <option value="Eggs" {{ $product->category == 'Eggs' ? 'selected' : '' }}>Eggs</option>
+                        <option value="Frozen Goods" {{ $product->category == 'Frozen Goods' ? 'selected' : '' }}>Frozen Goods</option>
+                        <option value="Beverages" {{ $product->category == 'Beverages' ? 'selected' : '' }}>Beverages</option>
+                    </select>
+
+                    @error('category')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Image -->
+                <div class="full">
+                    <label for="image">Product Image</label>
+                    <input type="file" name="image" id="image" accept="image/*">
+                    @error('image')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
+                </div>
+
+            </div>
+        <!-- Show all validation errors (fallback) -->
+        @if ($errors->any())
+            <div class="alert alert-danger" style="margin-top:10px;">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <p style="margin: 5px; font-size: 13px; color: #666;;">Kindly double check the changed details before submitting</p>
+        <button type="submit" class="submit-btn" id="submitBtn" 
+            style="color: #333; font-size: 15px; box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
+            Save
+        </button>        
+        </form>
+    </div>
+</div>
+
 <div class="productDetailFrame">
     <a class="go-back-a" href="/store"><- Store</a>
         <style>
@@ -87,6 +204,12 @@
                     </form>                
                 @endif
 
+                <button class="edit-btn openModifyProduct" data-product-id="{{ $product->id }}" 
+                    style="width: 190px; background: linear-gradient(135deg, #ffde59, #ffde59); color: #333;">
+                    <i class="fa-regular fa-square-plus"></i> Edit Product
+                </button>
+
+
                 <!-- Delete Button triggers modal -->
                 {{-- @if (auth()->user()->user_type != 'Admin')
                     <button class="delete-btn" id="openDeleteModalBtn" style="width: auto; background-color: rgba(255, 0, 0, 0.281);" disabled><i class="fa-regular fa-circle-xmark"></i> Can't delete</button>
@@ -118,55 +241,77 @@
                         <p>You can add stocks here to keep the product available</p>
                         <form id="addStockForm" class="addStockForm" action="{{ route('products.addStock', $product->id) }}" method="POST" style="margin-top:1.5rem;">
                             @csrf
-                            <input type="number" name="addedStock" maxlength="3" required>
+                            <input type="number" name="addedStock" min="3" placeholder="000">
                             <button type="submit" id="submitBtn" class="add-stock-btn" style="">Add stock</button>
                         </form>
                     </div>
                 </div>
 
-                <script>
-                document.addEventListener('DOMContentLoaded', function() {
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            /** DELETE MODAL **/
+            const openDeleteBtn = document.getElementById('openDeleteModalBtn');
+            const deleteModal = document.getElementById('deleteModal');
+            const closeDeleteBtn = document.getElementById('closeDeleteModalBtn');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
 
+            if (openDeleteBtn && deleteModal && closeDeleteBtn) {
+                openDeleteBtn.onclick = () => { deleteModal.style.display = 'flex'; };
+                closeDeleteBtn.onclick = () => { deleteModal.style.display = 'none'; };
+                if (cancelDeleteBtn) cancelDeleteBtn.onclick = () => { deleteModal.style.display = 'none'; };
+            }
 
-                    const openBtn = document.getElementById('openDeleteModalBtn');
-                    const modal = document.getElementById('deleteModal');
-                    const closeBtn = document.getElementById('closeDeleteModalBtn');
-                    const cancelBtn = document.getElementById('cancelDeleteBtn');
+            /** EDIT PRODUCT MODAL **/
+            const editModal = document.getElementById('modalmodifyProduct');
+            const closeEditBtn = document.getElementById('closeModifyProduct');
 
-                    if (openBtn && modal && closeBtn) {
+            document.querySelectorAll('.openModifyProduct').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    editModal.style.display = 'flex';
+                });
+            });
 
+            if (closeEditBtn) {
+                closeEditBtn.onclick = () => { editModal.style.display = 'none'; };
+            }
 
-                        openBtn.onclick = () => { modal.style.display = 'flex'; };
-                        closeBtn.onclick = () => { modal.style.display = 'none'; };
+            /** STOCK MODAL **/
+            const stockModal = document.getElementById('stockModal');
+            const closeStockBtn = document.getElementById('closeStockModal');
 
-                        window.onclick = function(event) {
-                            if (event.target === modal) { modal.style.display = 'none'; }
-                        };
+            document.querySelectorAll('.openStockBtn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const productId = btn.dataset.productId;
+                    const form = document.getElementById('addStockForm');
+                    form.action = `/products/${productId}/addStock`;
+                    stockModal.style.display = 'flex';
+                });
+            });
+
+            if (closeStockBtn) {
+                closeStockBtn.onclick = () => { stockModal.style.display = 'none'; };
+            }
+
+            /** WINDOW CLICK CLOSE **/
+            window.onclick = function(event) {
+                if (event.target === deleteModal) deleteModal.style.display = 'none';
+                if (event.target === editModal) editModal.style.display = 'none';
+                if (event.target === stockModal) stockModal.style.display = 'none';
+            };
+
+            /** SUBMIT BUTTON LOADER (avoid same id issue) **/
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    let btn = form.querySelector('button[type="submit"]');
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.innerText = "Processing...";
                     }
                 });
+            });
+        });
+        </script>
 
-                document.addEventListener('DOMContentLoaded', function() {
-                    const stockModal = document.getElementById('stockModal');
-                    const closeStock = document.getElementById('closeStockModal');
-
-                    document.querySelectorAll('.openStockBtn').forEach(btn => {
-                        btn.addEventListener('click', () => {
-                            const productId = btn.dataset.productId;
-                            const form = document.getElementById('addStockForm');
-                            form.action = `/products/${productId}/addStock`;
-
-                            stockModal.style.display = 'flex';
-                        });
-                    });
-
-                    closeStock.onclick = () => { stockModal.style.display = 'none'; };
-
-                    window.onclick = function(event) {
-                        if (event.target === stockModal) { stockModal.style.display = 'none'; }
-                    };
-                });
-
-                </script>
 
                 
             </div>          
