@@ -229,100 +229,94 @@ class OrderController extends Controller
         }
     }
 
-public function store() {
-    $user = auth()->user();
-    $search = request('search');
-    $status = request('status');
-    $filter = request('filter'); // Add this line to get filter parameter
-    
-    $query = Product::query();
-    
-    $statuses = ['Available', 'Low stock', 'No stock', 'Unlisted'];
-    $statusCounts = [];
-    foreach ($statuses as $s) {
-        $statusCounts[$s] = Product::where('status', $s)->count();
+    public function store() {
+        $user = auth()->user();
+        $search = request('search');
+        $status = request('status');
+        $filter = request('filter'); 
+        
+        $query = Product::query();
+        
+        $statuses = ['Available', 'Low stock', 'No stock', 'Unlisted'];
+        $statusCounts = [];
+        foreach ($statuses as $s) {
+            $statusCounts[$s] = Product::where('status', $s)->count();
+        }
+        $statusCounts['All'] = Product::count();
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                ->orWhere('id', 'like', "%$search%")
+                ->orWhere('status', 'like', "%$search%")
+                ->orWhere('product_id', 'like', "%$search%")
+                ->orWhere('category', 'like', "%$search%");
+            });
+        }
+        
+        if ($status && $status !== 'All') {
+            $query->where('status', $status);
+        }
+        
+        $products = $query
+            ->select('products.*')
+            ->selectSub(function ($q) {
+                $q->from('orders')
+                ->selectRaw('COALESCE(SUM(quantity), 0)')
+                ->whereColumn('orders.product_id', 'products.id')
+                ->where('status', 'Completed');
+            }, 'sold_quantity');
+        
+        switch ($filter) {
+            case 'asc':
+                $products = $products->orderBy('name', 'asc');
+                break;
+            case 'desc':
+                $products = $products->orderBy('name', 'desc');
+                break;
+            case 'new':
+                $products = $products->orderBy('created_at', 'desc');
+                break;
+            case 'old':
+                $products = $products->orderBy('created_at', 'asc');
+                break;
+            case 'sold-most':
+                $products = $products->orderByDesc('sold_quantity');
+                break;
+            case 'sold-least':
+                $products = $products->orderBy('sold_quantity', 'asc');
+                break;
+            default:
+                $products = $products->orderByRaw("
+                    CASE 
+                        WHEN quantity > 0 AND status != 'Unlisted' THEN 1
+                        WHEN quantity = 0 THEN 2
+                        WHEN status = 'Unlisted' THEN 3
+                        ELSE 4
+                    END
+                ")->orderByDesc('created_at');
+                break;
+        }
+        
+        $products = $products->paginate(15);
+        
+        $appendParams = [];
+        if ($search) {
+            $appendParams['search'] = $search;
+        }
+        if ($status) {
+            $appendParams['status'] = $status;
+        }
+        if ($filter) {
+            $appendParams['filter'] = $filter;
+        }
+        
+        if (!empty($appendParams)) {
+            $products->appends($appendParams);
+        }
+        
+        return view('store', compact('user', 'products', 'search', 'statusCounts', 'filter'));
     }
-    $statusCounts['All'] = Product::count();
-    
-    // Search functionality
-    if ($search) {
-        $query->where(function($q) use ($search) {
-            $q->where('name', 'like', "%$search%")
-            ->orWhere('id', 'like', "%$search%")
-            ->orWhere('status', 'like', "%$search%")
-            ->orWhere('product_id', 'like', "%$search%")
-            ->orWhere('category', 'like', "%$search%");
-        });
-    }
-    
-    // Status filtering
-    if ($status && $status !== 'All') {
-        $query->where('status', $status);
-    }
-    
-    // Add sold_quantity as a subquery
-    $products = $query
-        ->select('products.*')
-        ->selectSub(function ($q) {
-            $q->from('orders')
-            ->selectRaw('COALESCE(SUM(quantity), 0)')
-            ->whereColumn('orders.product_id', 'products.id')
-            ->where('status', 'Completed');
-        }, 'sold_quantity');
-    
-    // Apply filtering/sorting based on filter parameter
-    switch ($filter) {
-        case 'asc':
-            $products = $products->orderBy('name', 'asc');
-            break;
-        case 'desc':
-            $products = $products->orderBy('name', 'desc');
-            break;
-        case 'new':
-            $products = $products->orderBy('created_at', 'desc');
-            break;
-        case 'old':
-            $products = $products->orderBy('created_at', 'asc');
-            break;
-        case 'sold-most':
-            $products = $products->orderByDesc('sold_quantity');
-            break;
-        case 'sold-least':
-            $products = $products->orderBy('sold_quantity', 'asc');
-            break;
-        default:
-            // Default ordering (your existing logic)
-            $products = $products->orderByRaw("
-                CASE 
-                    WHEN quantity > 0 AND status != 'Unlisted' THEN 1
-                    WHEN quantity = 0 THEN 2
-                    WHEN status = 'Unlisted' THEN 3
-                    ELSE 4
-                END
-            ")->orderByDesc('created_at');
-            break;
-    }
-    
-    $products = $products->paginate(15);
-    
-    // Preserve search and filter parameters in pagination
-    $appendParams = [];
-    if ($search) {
-        $appendParams['search'] = $search;
-    }
-    if ($status) {
-        $appendParams['status'] = $status;
-    }
-    if ($filter) {
-        $appendParams['filter'] = $filter;
-    }
-    
-    if (!empty($appendParams)) {
-        $products->appends($appendParams);
-    }
-    
-    return view('store', compact('user', 'products', 'search', 'statusCounts', 'filter'));
-}
     
     public function orders()
     {
@@ -395,74 +389,74 @@ public function store() {
         return view('order_view', compact('orderItems', 'user'));
     }
 
-public function acceptOrder($order_id)
-{
-    $user = auth()->user();
+    public function acceptOrder($order_id)
+    {
+        $user = auth()->user();
 
-    Orders::where('order_id', $order_id)->update([
-        'status' => 'Processing',
-        'action_at' => now(),
-        'action_by' => $user->name,
-    ]);
-
-    return redirect()->route('order.view', $order_id)
-        ->with('success', 'Order accepted successfully!');
-}
-
-public function markOrderDone($order_id)
-{
-    $user = auth()->user();
-
-    Orders::where('order_id', $order_id)->update([
-        'status' => 'Completed',
-        'action_at' => now(),
-        'action_by' => $user->name,
-    ]);
-
-    return redirect()->route('order.view', $order_id)
-        ->with('success', 'Order marked as done successfully!');
-}
-
-public function rejectOrder($order_id)
-{
-    $user = auth()->user();
-    $ownerId = Orders::where('order_id', $order_id)->value('customer_id');
-    if (!in_array($user->user_type, ['Admin', 'Staff']) && $ownerId !== $user->id) {
-        abort(403, 'Unauthorized action');
-    }
-
-    try {
-        DB::beginTransaction();
-        
-        // Get all order items for this order
-        $orderItems = Orders::where('order_id', $order_id)->get();
-        
-        // Restore product quantities (only for non-completed items)
-        foreach ($orderItems->where('status', '!=', 'Completed') as $orderItem) {
-            $product = Product::find($orderItem->product_id);
-            if ($product) {
-                $product->quantity += $orderItem->quantity;
-                $product->save();
-            }
-        }
-        
-        // Update order status
         Orders::where('order_id', $order_id)->update([
-            'status' => 'Rejected',
+            'status' => 'Processing',
             'action_at' => now(),
             'action_by' => $user->name,
         ]);
-        
-        DB::commit();
-        
-        return redirect()->route('orders.view', $order_id)
-            ->with('success', 'Order rejected successfully! Product quantities have been restored.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Error rejecting order: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'Failed to reject order. Please try again.');
+
+        return redirect()->route('order.view', $order_id)
+            ->with('success', 'Order accepted successfully!');
     }
-}
+
+    public function markOrderDone($order_id)
+    {
+        $user = auth()->user();
+
+        Orders::where('order_id', $order_id)->update([
+            'status' => 'Completed',
+            'action_at' => now(),
+            'action_by' => $user->name,
+        ]);
+
+        return redirect()->route('order.view', $order_id)
+            ->with('success', 'Order marked as done successfully!');
+    }
+
+    public function rejectOrder($order_id)
+    {
+        $user = auth()->user();
+        $ownerId = Orders::where('order_id', $order_id)->value('customer_id');
+        if (!in_array($user->user_type, ['Admin', 'Staff']) && $ownerId !== $user->id) {
+            abort(403, 'Unauthorized action');
+        }
+
+        try {
+            DB::beginTransaction();
+            
+            // Get all order items for this order
+            $orderItems = Orders::where('order_id', $order_id)->get();
+            
+            // Restore product quantities (only for non-completed items)
+            foreach ($orderItems->where('status', '!=', 'Completed') as $orderItem) {
+                $product = Product::find($orderItem->product_id);
+                if ($product) {
+                    $product->quantity += $orderItem->quantity;
+                    $product->save();
+                }
+            }
+            
+            // Update order status
+            Orders::where('order_id', $order_id)->update([
+                'status' => 'Rejected',
+                'action_at' => now(),
+                'action_by' => $user->name,
+            ]);
+            
+            DB::commit();
+            
+            return redirect()->route('orders.view', $order_id)
+                ->with('success', 'Order rejected successfully! Product quantities have been restored.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error rejecting order: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to reject order. Please try again.');
+        }
+    }
 
 
 }

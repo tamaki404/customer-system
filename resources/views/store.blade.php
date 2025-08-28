@@ -172,28 +172,31 @@
 </div>
 
 <div class="startBody">
-
-    <div class="titleFrame">
-        <form method="GET" action="" class="date-search">
-            <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID, Category or Status">
-            <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
-        </form>
+    @if (auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
+        <div class="titleFrame">
+            <form method="GET" action="" class="date-search">
+                <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID, Category or Status">
+                <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+            </form>
 
         @if(auth()->user()->user_type === 'Admin')
-             <button id="openModalBtn" class="addStaffBtn">Add Product</button>
-        @elseif(auth()->user()->user_type === 'Customer')
-            <button class="addStaffBtn">Order cart</button>
-        @endif
-    </div>
+                <button id="openModalBtn" class="addStaffBtn">Add Product</button>
+            @elseif(auth()->user()->user_type === 'Customer')
+                <button class="addStaffBtn">Order cart</button>
+            @endif 
+        </div>
+    @endif
 
 
     <div class="titleCount">
         @if (auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
             <h2>Inventory</h2>
-        @elseif (auth()->user()->user_type === 'Customer')
-            <h2>Products</h2>
-        @endif
+            @endif
+
     </div>
+
+
+    @if (auth()->user()->user_type !== 'Customer')
 
         @php
         $tabStatuses = [
@@ -240,13 +243,70 @@
                     <option value="sold-least" {{ request('filter') === 'sold-least' ? 'selected' : '' }}>Sold least</option>
                 </select>
             </div>
-
+        
 
 
 
 
 
         </div>
+
+    @elseif (auth()->user()->user_type === 'Customer')
+
+        <div class="category-container" 
+     style="background-image: linear-gradient(to bottom, rgba(255, 222, 89, 0.8), rgba(255, 222, 89, 0.5)), url('{{ asset('assets/store_bg.jpg') }}');">
+
+
+
+
+            <div class="search-cart">
+                {{-- <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image" width="100" class="ownerImage"> --}}
+                <form method="GET" action="" class="date-search">
+                    <input type="text" class="search-input" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name, Product ID, Category or Status">
+                    <button type="submit" class="search-btn" style="background-color: transparent;"><i class="fas fa-search"></i></button>
+                </form>
+                <button class="addStaffBtn" style="background: #ffde59; width: 80px;">
+                    <span class="material-symbols-outlined" style="font-size: 23px; color: #333; font-weight: normal;">shopping_cart</span>
+                    {{-- <p>Cart</p> --}}
+                </button>
+            </div>
+
+            <div class="category-list">
+                <a href="#">
+                    <img src="{{ asset('assets/categories/category_eggs.jpeg') }}" alt="Eggs" class="category_img">
+                    <span>Eggs</span>
+                </a>
+
+                <a href="#">
+                    <img src="{{ asset('assets/categories/category_whole_chickens.jpeg') }}" alt="Whole Chickens" class="category_img">
+                    <span>Whole Chickens</span>
+                </a>
+
+                <a href="#">
+                    <img src="{{ asset('assets/categories/category_cuts.jpg') }}" alt="Meat & Poultry Cuts" class="category_img">
+                    <span>Meat & Poultry Cuts</span>
+                </a>
+
+                <a href="#">
+                    <img src="{{ asset('assets/categories/category_processed.jpg') }}" alt="Processed & Value-Added" class="category_img">
+                    <span>Processed & Value-Added</span>
+                </a>
+
+                <a href="#">
+                    <img src="{{ asset('assets/categories/category_ready_ulam.jpg') }}" alt="Ready Ulam" class="category_img">
+                    <span>Ready Ulam</span>
+                </a>
+            </div>
+
+
+
+
+        </div>
+
+
+    @endif
+
+    
 
     
     <div class="productList" style="padding: 10px">
@@ -407,9 +467,46 @@
 
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cartModal = document.getElementById('cartModal');
+    const cartBtn = document.querySelector('.addStaffBtn'); 
+    const closeCartBtn = document.querySelector('.close-cart-btn');
+    
+    if (cartBtn) {
+        cartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            cartModal.style.display = 'block';
+            document.body.style.overflow = 'hidden'; 
+        });
+    }
+    
+    if (closeCartBtn) {
+        closeCartBtn.addEventListener('click', function() {
+            cartModal.style.display = 'none';
+            document.body.style.overflow = 'auto'; 
+        });
+    }
+    
+    window.addEventListener('click', function(e) {
+        if (e.target === cartModal) {
+            cartModal.style.display = 'none';
+            document.body.style.overflow = 'auto'; 
+        }
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && cartModal.style.display === 'block') {
+            cartModal.style.display = 'none';
+            document.body.style.overflow = 'auto'; 
+        }
+    });
+});
+
+</script>
+
 <script src="{{ asset('scripts/cart.js') }}"></script>
-<script src="{{ asset('scripts/open-modal.js') }}"></script>
-<script src="{{ asset('js/disableBtn.js') }}"></script>
+
 <script src="{{ asset('js/filter-products.js') }}"></script>
 
 </body>
