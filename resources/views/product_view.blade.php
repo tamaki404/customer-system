@@ -64,7 +64,7 @@
                 <!-- Product ID -->
                 <div>
                     <label for="product_id">Product ID</label>
-                    <input type="string" name="product_id" id="product_id" value="{{$product->product_id}}" placeholder="product_id" min="0" maxlength="255" required>
+                    <input type="string" name="product_id" id="product_id" value="{{$product->product_id}}" placeholder="Product ID" min="0" maxlength="255" required>
                     @error('product_id')
                         <span class="error-message">{{ $message }}</span>
                     @enderror
@@ -180,23 +180,7 @@
                 <p class="category-label">Category: </p>
                 <p class="category">{{$product->category}}</p>
             </div>      
-            <style>
-                .category-div{
-                    display: flex;
-                    flex-direction: row;
-                    gap: 5px;
-                }
-                .category-label{
-                    font-size: 14px;
-                }
-                .category{
-                    font-weight: bold;
-                    color: #333;
-                    font-size: 14px;
-                }
-
-            
-            </style>                                                                                                                                                                                             
+                                                                                                                                                                                           
 
 
         </div>

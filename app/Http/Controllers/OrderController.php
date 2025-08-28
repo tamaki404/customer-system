@@ -229,67 +229,100 @@ class OrderController extends Controller
         }
     }
 
-public function store()
-{
+public function store() {
     $user = auth()->user();
     $search = request('search');
-    $query = Product::query();
     $status = request('status');
-
-
+    $filter = request('filter'); // Add this line to get filter parameter
+    
+    $query = Product::query();
+    
     $statuses = ['Available', 'Low stock', 'No stock', 'Unlisted'];
-
-    $statuses = ['Available', 'Low stock', 'No stock', 'Unlisted'];
-
     $statusCounts = [];
     foreach ($statuses as $s) {
         $statusCounts[$s] = Product::where('status', $s)->count();
     }
-    $statusCounts['All'] = Product::count(); 
-
+    $statusCounts['All'] = Product::count();
+    
+    // Search functionality
     if ($search) {
         $query->where(function($q) use ($search) {
             $q->where('name', 'like', "%$search%")
             ->orWhere('id', 'like', "%$search%")
             ->orWhere('status', 'like', "%$search%")
-            ->orWhere('product_id', 'like', value: "%$search%")
-            ->orWhere('category', 'like', value: "%$search%");
-
+            ->orWhere('product_id', 'like', "%$search%")
+            ->orWhere('category', 'like', "%$search%");
         });
     }
-
-    if ($status && $status !== 'All') {
-    $query->where('status', $status);   
-    }   
     
+    // Status filtering
+    if ($status && $status !== 'All') {
+        $query->where('status', $status);
+    }
+    
+    // Add sold_quantity as a subquery
     $products = $query
         ->select('products.*')
         ->selectSub(function ($q) {
             $q->from('orders')
             ->selectRaw('COALESCE(SUM(quantity), 0)')
             ->whereColumn('orders.product_id', 'products.id')
-            ->where('status', 'Completed'); // 👈 only completed orders
-        }, 'sold_quantity')
-        ->orderByRaw("
-            CASE 
-                WHEN quantity > 0 AND status != 'Unlisted' THEN 1
-                WHEN quantity = 0 THEN 2
-                WHEN status = 'Unlisted' THEN 3
-                ELSE 4
-            END
-        ")
-        ->orderByDesc('created_at')
-        ->paginate(15);
-
+            ->where('status', 'Completed');
+        }, 'sold_quantity');
+    
+    // Apply filtering/sorting based on filter parameter
+    switch ($filter) {
+        case 'asc':
+            $products = $products->orderBy('name', 'asc');
+            break;
+        case 'desc':
+            $products = $products->orderBy('name', 'desc');
+            break;
+        case 'new':
+            $products = $products->orderBy('created_at', 'desc');
+            break;
+        case 'old':
+            $products = $products->orderBy('created_at', 'asc');
+            break;
+        case 'sold-most':
+            $products = $products->orderByDesc('sold_quantity');
+            break;
+        case 'sold-least':
+            $products = $products->orderBy('sold_quantity', 'asc');
+            break;
+        default:
+            // Default ordering (your existing logic)
+            $products = $products->orderByRaw("
+                CASE 
+                    WHEN quantity > 0 AND status != 'Unlisted' THEN 1
+                    WHEN quantity = 0 THEN 2
+                    WHEN status = 'Unlisted' THEN 3
+                    ELSE 4
+                END
+            ")->orderByDesc('created_at');
+            break;
+    }
+    
+    $products = $products->paginate(15);
+    
+    // Preserve search and filter parameters in pagination
+    $appendParams = [];
     if ($search) {
-        $products->appends(['search' => $search]);
+        $appendParams['search'] = $search;
     }
-
-
-        
-        return view('store', compact('user', 'products', 'search', 'statusCounts'));
+    if ($status) {
+        $appendParams['status'] = $status;
     }
-
+    if ($filter) {
+        $appendParams['filter'] = $filter;
+    }
+    
+    if (!empty($appendParams)) {
+        $products->appends($appendParams);
+    }
+    
+    return view('store', compact('user', 'products', 'search', 'statusCounts', 'filter'));
+}
     
     public function orders()
     {

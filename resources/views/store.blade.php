@@ -12,6 +12,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/open-modal.css') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif !important; }</style>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <title>Store</title>
 </head>
 <body>
@@ -201,21 +204,48 @@
             'No stock' => 'No stock',
         ];
 
-        $baseParams = ['search' => request('search', '')];
+        $baseParams = [
+            'search' => request('search', ''),
+            'filter' => request('filter', '')
+        ];
+        $baseParams = array_filter($baseParams);
+
         $currentStatus = request('status'); 
         @endphp
 
-        <div class="status-tabs">
-            @foreach($tabStatuses as $label => $value)
-                @php
-                    $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
-                    $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
-                    $count = $statusCounts[$label] ?? 0;
-                @endphp
-                <a href="{{ route('store', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">
-                    {{ $label }} ({{ $count }})
-                </a>
-            @endforeach
+        <div class="status-tabs" style="display: flex; flex-direction: row; justify-content: space-between; margin: 0;">
+            <div>
+                @foreach($tabStatuses as $label => $value)
+                    @php
+                        $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
+                        $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
+                        $count = $statusCounts[$label] ?? 0;
+                    @endphp
+                    <a href="{{ route('store', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">
+                        {{ $label }} ({{ $count }})
+                    </a>
+                @endforeach
+            </div>
+
+
+            <div class="filter-container">
+                <span class="material-symbols-outlined">filter_alt</span>
+                <select id="filter">
+                    <option value="">-- Filter --</option>
+                    <option value="asc" {{ request('filter') === 'asc' ? 'selected' : '' }}>Ascending</option>
+                    <option value="desc" {{ request('filter') === 'desc' ? 'selected' : '' }}>Descending</option>
+                    <option value="new" {{ request('filter') === 'new' ? 'selected' : '' }}>Newest</option>
+                    <option value="old" {{ request('filter') === 'old' ? 'selected' : '' }}>Oldest</option>
+                    <option value="sold-most" {{ request('filter') === 'sold-most' ? 'selected' : '' }}>Sold most</option>
+                    <option value="sold-least" {{ request('filter') === 'sold-least' ? 'selected' : '' }}>Sold least</option>
+                </select>
+            </div>
+
+
+
+
+
+
         </div>
 
     
@@ -380,6 +410,7 @@
 <script src="{{ asset('scripts/cart.js') }}"></script>
 <script src="{{ asset('scripts/open-modal.js') }}"></script>
 <script src="{{ asset('js/disableBtn.js') }}"></script>
+<script src="{{ asset('js/filter-products.js') }}"></script>
 
 </body>
 </html>

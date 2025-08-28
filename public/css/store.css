@@ -266,6 +266,43 @@ tbody td{
 }
 
 
+/* filter */
+.filter-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid #ffde59;
+  border-radius: 8px;
+  background: #fffbee;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.filter-container:hover {
+  border-color: #ffde59;
+}
+
+.filter-container span {
+  font-size: 20px;
+  color: #333;
+}
+
+.filter-container select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#filter option{
+    font-weight: normal;
+    color: #333;
+}
+
 @media (max-width: 900px) {
   .startBody { padding: 20px; }
   .product-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
