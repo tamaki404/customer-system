@@ -191,6 +191,34 @@
             <h2>Products</h2>
         @endif
     </div>
+
+        @php
+        $tabStatuses = [
+            'All' => null,
+            'Available' => 'Available',
+            'Unlisted' => 'Unlisted',
+            'Low stock' => 'Low stock',
+            'No stock' => 'No stock',
+        ];
+
+        $baseParams = ['search' => request('search', '')];
+        $currentStatus = request('status'); 
+        @endphp
+
+        <div class="status-tabs">
+            @foreach($tabStatuses as $label => $value)
+                @php
+                    $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
+                    $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
+                    $count = $statusCounts[$label] ?? 0;
+                @endphp
+                <a href="{{ route('store', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">
+                    {{ $label }} ({{ $count }})
+                </a>
+            @endforeach
+
+        </div>
+
     
     <div class="productList" style="padding: 10px">
         @if (auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')

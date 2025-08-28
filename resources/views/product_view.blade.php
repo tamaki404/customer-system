@@ -173,6 +173,7 @@
         @endif
     </div>
 </div>
+
 <script>
     document.getElementById('addStockForm').addEventListener('submit', function(event) {
     let button = document.getElementById('submitBtn');
@@ -183,6 +184,7 @@
 
 
 </script>
+
 </body>
 </html>
 @endsection

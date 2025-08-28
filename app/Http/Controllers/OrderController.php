@@ -234,7 +234,19 @@ public function store()
     $user = auth()->user();
     $search = request('search');
     $query = Product::query();
-    
+    $status = request('status');
+
+
+    $statuses = ['Available', 'Low stock', 'No stock', 'Unlisted'];
+
+    $statuses = ['Available', 'Low stock', 'No stock', 'Unlisted'];
+
+    $statusCounts = [];
+    foreach ($statuses as $s) {
+        $statusCounts[$s] = Product::where('status', $s)->count();
+    }
+    $statusCounts['All'] = Product::count(); 
+
     if ($search) {
         $query->where(function($q) use ($search) {
             $q->where('name', 'like', "%$search%")
@@ -243,6 +255,10 @@ public function store()
             ->orWhere('product_id', 'like', "%$search%");
         });
     }
+
+    if ($status && $status !== 'All') {
+    $query->where('status', $status);   
+    }   
     
     $products = $query
         ->select('products.*')
@@ -269,7 +285,7 @@ public function store()
 
 
         
-        return view('store', compact('user', 'products', 'search'));
+        return view('store', compact('user', 'products', 'search', 'statusCounts'));
     }
 
     
