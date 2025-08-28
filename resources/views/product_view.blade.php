@@ -66,7 +66,9 @@
                 {{-- <form action="{{ url('/product/add-stocks/' . $product->id) }}" method="POST">
                     @csrf
                 </form> --}}
-                <button class="edit-btn" id="openStockModal" style="width: 190px; background: linear-gradient(135deg, #4caf50, #45a049);"><i class="fa-regular fa-square-plus"></i> Add stocks</button>
+                <button class="edit-btn openStockBtn" data-product-id="{{ $product->id }}" style="width: 190px; background: linear-gradient(135deg, #4caf50, #45a049);">
+                    <i class="fa-regular fa-square-plus"></i> Add stocks
+                </button>
 
                @if ($product->status === 'Listed')
                     <form action="{{ url('/product/unlist/' . $product->id) }}" method="POST">
@@ -114,9 +116,9 @@
 
                         <h2 style="font-size: 25px; font-weight: bold; margin: 5px 0;">Add Stocks</h2>
                         <p>You can add stocks here to keep the product available</p>
-                        <form id="addStockForm" id="submitForm" class="addStockForm" action="{{ route('products.addStock', $product->id) }}" method="POST" style="margin-top:1.5rem;">
+                        <form id="addStockForm" class="addStockForm" action="{{ route('products.addStock', $product->id) }}" method="POST" style="margin-top:1.5rem;">
                             @csrf
-                            <input type="int" name="addedStock" maxlength="3" required>
+                            <input type="number" name="addedStock" maxlength="3" required>
                             <button type="submit" id="submitBtn" class="add-stock-btn" style="">Add stock</button>
                         </form>
                     </div>
@@ -125,36 +127,62 @@
                 <script>
                 document.addEventListener('DOMContentLoaded', function() {
 
-                    const openStock = document.getElementById('openStockModal');
-                    const stockModal = document.getElementById('stockModal');
-                    const closeStock = document.getElementById('closeStockModal');
 
                     const openBtn = document.getElementById('openDeleteModalBtn');
                     const modal = document.getElementById('deleteModal');
                     const closeBtn = document.getElementById('closeDeleteModalBtn');
                     const cancelBtn = document.getElementById('cancelDeleteBtn');
 
-                    if (openBtn && modal && closeBtn && openStock) {
+                    if (openBtn && modal && closeBtn) {
 
-                        openStock.onclick = () => { stockModal.style.display = 'flex'; };
-                        closeStock.onclick = () => { stockModal.style.display = 'none'; };
 
                         openBtn.onclick = () => { modal.style.display = 'flex'; };
                         closeBtn.onclick = () => { modal.style.display = 'none'; };
 
                         window.onclick = function(event) {
                             if (event.target === modal) { modal.style.display = 'none'; }
-                            if (event.target === stockModal) { stockModal.style.display = 'none'; }
                         };
                     }
                 });
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    const stockModal = document.getElementById('stockModal');
+                    const closeStock = document.getElementById('closeStockModal');
+
+                    document.querySelectorAll('.openStockBtn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const productId = btn.dataset.productId;
+                            const form = document.getElementById('addStockForm');
+                            form.action = `/products/${productId}/addStock`;
+
+                            stockModal.style.display = 'flex';
+                        });
+                    });
+
+                    closeStock.onclick = () => { stockModal.style.display = 'none'; };
+
+                    window.onclick = function(event) {
+                        if (event.target === stockModal) { stockModal.style.display = 'none'; }
+                    };
+                });
+
                 </script>
+
+                
             </div>          
         @endif
     </div>
 </div>
-<script src="{{ asset('js/disbaleBtn.js') }}"></script>
+<script>
+    document.getElementById('addStockForm').addEventListener('submit', function(event) {
+    let button = document.getElementById('submitBtn');
+    button.disabled = true;
+    button.innerText = "Processing...";
+});
 
+
+
+</script>
 </body>
 </html>
 @endsection

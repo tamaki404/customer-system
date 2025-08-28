@@ -23,6 +23,7 @@ class ProductController extends Controller
             'product_id' => 'nullable|string|max:255',
             'unit'=> 'nullable|string|max:25'
         ]);
+
         $validated['status'] = $validated['status'] ?? 'Available';
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
@@ -31,10 +32,19 @@ class ProductController extends Controller
             $validated['image_mime'] = $mime;
         }
 
+        if ($validated['quantity'] === '0') {
+            $validated['status'] = "No stock";
+        } elseif ($validated['quantity'] < 20) {
+            $validated['status'] = "Low stock";
+        } else {
+            $validated['status'] = "Available";
+        }
+
         Product::create($validated);
 
         return redirect()->back()->with('success', 'Product added successfully!');
     }
+
 
     /**
      * Display product image stored in database
@@ -57,19 +67,29 @@ class ProductController extends Controller
         return redirect()->route('product_view.view', $product_id)->with('success', 'Product unlisted successfully!');
     }
 
-    public function addStock($product_id)
-    {
-        $validated = request()->validate([
-            'addedStock' => 'required|integer|min:1|max:999'
-        ]);
+public function addStock($product_id)
+{
+    $validated = request()->validate([
+        'addedStock' => 'required|integer|min:1|max:999'
+    ]);
 
-        $product = Product::findOrFail($product_id);
-        $product->quantity += $validated['addedStock'];
-        $product->save();
+    $product = Product::findOrFail($product_id);
+    $product->quantity += $validated['addedStock'];
 
-        return redirect()->route('product_view.view', $product_id)
-            ->with('success', 'Stock added successfully!');
+    if ($product->quantity === 0) {
+        $product->status = "No stock";
+    } elseif ($product->quantity < 20) {
+        $product->status = "Low stock";
+    } else {
+        $product->status = "Available";
     }
+
+    $product->save();
+
+    return redirect()->route('product_view.view', $product_id)
+                     ->with('success', 'Stock added successfully!');
+}
+
 
 
     public function productView($id)

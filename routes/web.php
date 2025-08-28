@@ -210,7 +210,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         // Product management
         Route::post('/add-product', [ProductController::class, 'store']);
         Route::post('/product/unlist/{product_id}', [ProductController::class, 'unlistProduct'])->name('products.unlist');
-        Route::post('/product/add-stock/{product_id}', [ProductController::class, 'addStock'])->name('products.addStock');
+        Route::post('/products/{product_id}/addStock', [ProductController::class, 'addStock'])->name('products.addStock');
         Route::post('/product/list/{product_id}', [ProductController::class, 'listProduct'])->name('products.list');
         Route::delete('/product/delete/{product_id}', [ProductController::class, 'deleteProduct'])->name('products.deleteProduct');
         

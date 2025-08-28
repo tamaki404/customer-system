@@ -106,7 +106,7 @@
             <div>
                 <label for="status">Status</label>
                 <select name="status" id="status" required>
-                    <option value="Listed">Listed</option>
+                    <option value="Available">Listed</option>
                     <option value="Unlisted">Unlisted</option>
                 </select>
                 @error('status')
@@ -191,12 +191,12 @@
             <h2>Products</h2>
         @endif
     </div>
-
     
     <div class="productList" style="padding: 10px">
         @if (auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
 
             @if(isset($products) && count($products) > 0)
+
                 <table style="width:100%; border-collapse:collapse;" class="orders-table">
                     <thead style="background-color: #f9f9f9;">
                         <tr style="height: 50px; text-align: center; cursor:pointer;" style="background:#dfdfdf; text-align: center; ">
@@ -211,47 +211,49 @@
                             <th style="width: 100px; font-size: 13px;">Status</th>
                         </tr>
                     </thead>
-                <tbody>
-                    
-                    @foreach ($products as $index => $product)
-                    
-                        <tr style="text-align: center;" onclick="window.location='{{ url('/product/' . $product->id) }}'">
-                            <td style="padding:10px 8px; font-size: 13px;">{{ $index + 1 }}</td>
-                            @php
-                                $dataUri = (!empty($product->image) && !empty($product->image_mime)) ? ('data:' . $product->image_mime . ';base64,' . $product->image) : null;
-                                
-                            @endphp
-                            <td style=" padding:10px 8px; gap: 10px; font-size: 13px; display: flex; flex-direction: row; align-items: center;"> 
-                                @if($dataUri)
-                                <img src="{{ $dataUri }}" alt="{{ $product->name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-                                @else
-                                    <div class="thumb-placeholder" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">No Image</div>
-                                @endif
+                    <tbody>
+                        
+                        @foreach ($products as $index => $product)
 
-                                <p style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{ $product->name }} </p>
-                            </td>
-                            <td style="padding:10px 8px; font-size: 13px;">₱{{ number_format($product->price, 2) }}</td>
-                            <td style="padding:10px 8px; font-size: 13px;">{{ $product->product_id }}</td>
-                            <td style="padding:10px 8px; font-size: 13px;">{{ $product->category }}</td>
-                            <td style="padding:10px 8px; font-size: 13px;">{{ $product->sold_quantity }}</td>
-                            <td style="padding:10px 8px; font-size: 13px;">{{ $product->unit }}</td>
-                            <td style="padding:10px 8px; font-size: 13px;">x{{ $product->quantity }}</td>
-                            <td style="padding:10px 8px; font-size: 13px;">
 
-                                @if($product->status === 'Unlisted')
-                                    <span class="status-unlisted"> Unlisted</span>
-                                @elseif($product->quantity === 0)
-                                    <span class="status-noStock"> No Stock</span>
-                                @elseif($product->quantity < 5)
-                                    <span class="status-lowStock"> Low Stock</span>
-                                @elseif($product->quantity > 0)
-                                    <span class="status-available"> Available</span>
-                                @endif
+                            <tr style="text-align: center;" onclick="window.location='{{ url('/product/' . $product->id) }}'">
+                                <td style="padding:10px 8px; font-size: 13px;">{{ $index + 1 }}</td>
+                                @php
+                                    $dataUri = (!empty($product->image) && !empty($product->image_mime)) ? ('data:' . $product->image_mime . ';base64,' . $product->image) : null;
+                                    
+                                @endphp
+                                <td style=" padding:10px 8px; gap: 10px; font-size: 13px; display: flex; flex-direction: row; align-items: center;"> 
+                                    @if($dataUri)
+                                    <img src="{{ $dataUri }}" alt="{{ $product->name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                    @else
+                                        <div class="thumb-placeholder" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">No Image</div>
+                                    @endif
 
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
+                                    <p style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{ $product->name }} </p>
+                                </td>
+                                <td style="padding:10px 8px; font-size: 13px;">₱{{ number_format($product->price, 2) }}</td>
+                                <td style="padding:10px 8px; font-size: 13px;">{{ $product->product_id }}</td>
+                                <td style="padding:10px 8px; font-size: 13px;">{{ $product->category }}</td>
+                                <td style="padding:10px 8px; font-size: 13px;">{{ $product->sold_quantity }}</td>
+                                <td style="padding:10px 8px; font-size: 13px;">{{ $product->unit }}</td>
+                                <td style="padding:10px 8px; font-size: 13px;">x{{ $product->quantity }}</td>
+                                <td style="padding:10px 8px; font-size: 13px;">
+
+                                    @if($product->status === 'Unlisted')
+                                        <span class="status-unlisted"> Unlisted</span>
+                                    @elseif($product->status === 'No stock')
+                                        <span class="status-noStock"> No Stock</span>
+                                    @elseif($product->status === 'Low stock')
+                                        <span class="status-lowStock"> Low Stock</span>
+                                    @elseif($product->status === 'Available')
+                                        <span class="status-available"> Available</span>
+                                    @endif
+
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                
 
             @else
                 <p style="text-align:center; margin:0; width:100%; line-height:500px; font-size: 15px; color: #888">No orders found</p>
@@ -350,7 +352,7 @@
 
 <script src="{{ asset('scripts/cart.js') }}"></script>
 <script src="{{ asset('scripts/open-modal.js') }}"></script>
-<script src="{{ asset('js/disbaleBtn.js') }}"></script>
+<script src="{{ asset('js/disableBtn.js') }}"></script>
 
 </body>
 </html>

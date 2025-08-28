@@ -158,7 +158,7 @@
 
 
 
-<script src="{{ asset('js/disbaleBtn.js') }}"></script>
+<script src="{{ asset('js/disableBtn.js') }}"></script>
 
 
 @endsection

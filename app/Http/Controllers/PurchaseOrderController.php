@@ -324,7 +324,7 @@ class PurchaseOrderController extends Controller {
 
 
     public function store(Request $request)
-{
+    {
     $user = auth()->user();
 
     $request->validate([
@@ -344,6 +344,7 @@ class PurchaseOrderController extends Controller {
         'receiver_mobile' => 'required|string|max:15',
         
     ]);
+
 
     $cart = json_decode($request->cart_data, true);
 
@@ -406,6 +407,9 @@ class PurchaseOrderController extends Controller {
             'order_date'      => Carbon::now(),
         ]);
 
+    
+        
+
         $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
 
             if ($status !== 'Draft') {
@@ -440,9 +444,23 @@ class PurchaseOrderController extends Controller {
                     'total_price' => floatval($item['price']) * intval($item['quantity']),
                 ]);
 
-                // Deduct stock only for non-draft
+
                 $product->quantity -= $item['quantity'];
+
+                // Update status based on new quantity
+                if ($product->quantity === '0') {
+                    $product->status = "No stock";
+                } elseif ($product->quantity < 20) {
+                    $product->status = "Low stock";
+                } else {
+                    $product->status = "Available";
+                }
+
                 $product->save();
+
+
+
+
             }
         }
 
@@ -500,65 +518,62 @@ class PurchaseOrderController extends Controller {
     //     }
     // }
 
-public function changeStatus(Request $request)
-{
-    $po = PurchaseOrder::findOrFail($request->po_id);
-    $status = $request->input('status'); 
-    $user = $request->input('user_id');
+    public function changeStatus(Request $request)
+    {
+        $po = PurchaseOrder::findOrFail($request->po_id);
+        $status = $request->input('status'); 
+        $user = $request->input('user_id');
 
-    // Always update the status first
-    $po->status = $status;
+        $po->status = $status;
 
-    if (in_array($status, ['Cancelled', 'Rejected'])) {
-        // Return products to stock
-        $purchaseOrderItems = PurchaseOrderItem::where('po_id', $po->id)->get();
+        if (in_array($status, ['Cancelled', 'Rejected'])) {
+            $purchaseOrderItems = PurchaseOrderItem::where('po_id', $po->id)->get();
 
-        foreach ($purchaseOrderItems as $item) {
-            $product = Product::find($item->product_id);
-            if ($product) {
-                $product->quantity += $item->quantity;
-                $product->save();
+            foreach ($purchaseOrderItems as $item) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $product->quantity += $item->quantity;
+                    $product->save();
+                }
             }
         }
+
+        if ($status === "Accepted") {
+            $po->approved_by = $user; 
+            $po->approved_at = now(); 
+        } 
+        elseif ($status === "Delivered") {
+            $po->delivered_at = now(); 
+
+            $date = date('Ymd');
+            $invoice_number = 'INV-' . $date . '-' . $this->randomBase36String(5);
+
+            $invoice = new Invoice();
+            $invoice->po_number = $po->po_number; 
+            $invoice->user_id = $po->user_id; 
+
+            $invoice->invoice_number = $invoice_number;
+            $invoice->delivered_at = $po->delivered_at; 
+            $invoice->billing_address = $po->billing_address; 
+            $invoice->subtotal = $po->subtotal; 
+            $invoice->tax_amount = $po->tax_amount;
+            $invoice->grand_total = $po->grand_total;
+            $invoice->status = 'unpaid';
+            $invoice->save();
+        } 
+        elseif ($status === "Cancelled") {
+            $po->cancelled_at = now(); 
+            $po->cancelled_by = $user;
+        } 
+        elseif ($status === "Rejected") {
+            $po->rejected_at = now(); 
+            $po->rejected_by = $user; 
+        }
+
+        $po->save();
+
+        return back()->with('success', "Purchase order has been {$status}.");
     }
-
-    if ($status === "Accepted") {
-        $po->approved_by = $user; 
-        $po->approved_at = now(); 
-    } 
-    elseif ($status === "Delivered") {
-        $po->delivered_at = now(); 
-
-        // Create invoice
-        $date = date('Ymd');
-        $invoice_number = 'INV-' . $date . '-' . $this->randomBase36String(5);
-
-        $invoice = new Invoice();
-        $invoice->po_number = $po->po_number; 
-        $invoice->user_id = $po->user_id; 
-
-        $invoice->invoice_number = $invoice_number;
-        $invoice->delivered_at = $po->delivered_at; 
-        $invoice->billing_address = $po->billing_address; 
-        $invoice->subtotal = $po->subtotal; 
-        $invoice->tax_amount = $po->tax_amount;
-        $invoice->grand_total = $po->grand_total;
-        $invoice->status = 'unpaid';
-        $invoice->save();
-    } 
-    elseif ($status === "Cancelled") {
-        $po->cancelled_at = now(); 
-        $po->cancelled_by = $user;
-    } 
-    elseif ($status === "Rejected") {
-        $po->rejected_at = now(); 
-        $po->rejected_by = $user; 
-    }
-
-    $po->save();
-
-    return back()->with('success', "Purchase order has been {$status}.");
-}
 
 
      

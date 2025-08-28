@@ -331,7 +331,7 @@
 
     <script src="{{ asset('js/purchase_order.js') }}"></script>
     <script src="{{ asset('js/address.js') }}"></script>
-  <script src="{{ asset('js/disbaleBtn.js') }}"></script>
+  <script src="{{ asset('js/disableBtn.js') }}"></script>
 layout  
 </body>
 </html>
