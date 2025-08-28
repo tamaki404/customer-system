@@ -91,10 +91,12 @@
                     <label for="category">Category </label>
                     <select name="category" id="category" required>
                         <option value="">-- Select Category --</option>
-                        <option value="Livestock" {{ $product->category == 'Livestock' ? 'selected' : '' }}>Livestock</option>
                         <option value="Eggs" {{ $product->category == 'Eggs' ? 'selected' : '' }}>Eggs</option>
-                        <option value="Frozen Goods" {{ $product->category == 'Frozen Goods' ? 'selected' : '' }}>Frozen Goods</option>
-                        <option value="Beverages" {{ $product->category == 'Beverages' ? 'selected' : '' }}>Beverages</option>
+                        <option value="Whole Chickens" {{ $product->category == 'Whole Chickens' ? 'selected' : '' }}>Whole Chickens</option>
+                        <option value="Meat & Poultry Cuts" {{ $product->category == 'Meat & Poultry Cuts' ? 'selected' : '' }}>Meat & Poultry Cuts</option>
+                        <option value="Processed" {{ $product->category == 'Processed' ? 'selected' : '' }}>Processed</option>
+                        <option value="Ready Ulam" {{ $product->category == 'Ready Ulam' ? 'selected' : '' }}>Ready Ulam</option>
+
                     </select>
 
                     @error('category')
