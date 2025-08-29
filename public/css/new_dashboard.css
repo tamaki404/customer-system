@@ -1,0 +1,275 @@
+.dashBody {
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-content: start;
+    justify-content: start;
+    background-color: #f9f9f9;
+    padding: 60px;
+    gap: 10px;
+    width: 97%;
+    height: 100vh;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 15px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.head-section{
+    display: flex;
+    flex-direction: row;
+    width: auto;
+    flex-wrap: wrap;
+}
+.head-section .greet-div{
+    display: flex;
+    flex-direction: column;
+    width: auto;
+}
+.greet-div h1,
+.greet-div h4{
+    margin: 0;
+    color: #333;
+
+}
+.greet-div h1{
+    font-size: 35px;
+    font-weight: bold;
+}
+.greet-div h4{
+    font-size: 20px;
+    font-weight: normal;
+}
+.status-cards-list{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: auto;
+    height: auto;
+    gap: 10px;
+    margin-top: 10px;
+}
+.status-card{
+    min-width: 220px;
+    border-radius: 15px;
+    height: 100px;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    color: #333;
+}
+
+.status-card:is(:hover, :focus) {
+  box-shadow: 0px 8px 10px 1px rgba(0, 0, 0, 0.2);
+  transform: translateY(-8px);
+}
+.status-card .card-title{
+    font-size: 14px;
+    color: #666;
+
+}
+.status-card .card-content{
+    display: flex;
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: start;
+    padding: 10px;
+}
+.card-content h1,
+.card-content span{
+    margin: 0;
+    color: #333;
+}
+.card-content h1{
+    font-weight: bold;
+    font-size: 30px;
+}
+.card-content span{
+    color: #f8912a;
+    font-size: 19px;
+}
+.card-add-count{
+    font-size: 15px;
+}
+.purchase-order-chart{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-height: 300px;
+    margin-top: 10px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;    text-decoration: none;
+    padding: 10px;
+    border-radius: 15px;
+
+}
+.purchase-order-chart p{
+    font-size: 15px;
+    color: #333;
+    margin: 0;
+    font-weight: bold;
+}
+#purchaseOrdersChart{
+    margin: 0;
+}
+.end-contents{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: auto;
+    height: auto;
+    gap: 10px;
+
+}
+.end-contents .recent-orders-list{
+    width: 500px;
+    height: 300px;
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+}
+.recent-orders-title{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+    height: auto;
+    border-bottom: 0.5px solid #66666611;
+}
+.recent-orders-title p{
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+    margin: 0;
+}
+.recent-orders-title a{
+    color: #666;
+    font-size: 13px;
+    text-decoration: none;
+}
+.recent-orders-title a:hover{
+    color: #333;
+}
+.recent-orders-title p{
+    font-weight: bold;
+}
+.recent-orders{
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-y: auto;
+}
+.recent-orders .order-row{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 60px;
+    padding: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.order-row p{
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    gap: 3px;
+    justify-content: space-between;
+}
+.order-row p span{
+    font-size: 12px;
+    color: #333;
+}
+.order-row p .company{
+    font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    
+}
+.order-row p .po-id{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.order-row p .status{
+
+}
+/* po status */
+
+.status-pending {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #b45309;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-processing {
+  background: #dbeafe;
+  border: 1px solid #3b82f6;
+  color: #1e40af;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-approved {
+  background: #dcfce7;
+  border: 1px solid #22c55e;
+  color: #166534;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-delivered,
+.sttaus-completed {
+  background: #e0e7ff;
+  border: 1px solid #6366f1;
+  color: #3730a3;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-cancelled {
+  background: #f3f4f6;
+  border: 1px solid #6b7280;
+  color: #374151;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-draft {
+  background: #f1f5f9;
+  border: 1px solid #94a3b8;
+  color: #334155;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+

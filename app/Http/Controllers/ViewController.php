@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Product;
 use App\Models\Orders;
 use Illuminate\Support\Facades\DB;
+use Users;
 
 
 
@@ -301,7 +302,8 @@ class ViewController extends Controller{
         return redirect()->route('staffs')->with('success', 'Staff account deleted successfully!');
     }
 
-        public function showDashboard()
+
+    public function showDashboard()
         {
 
             $user = auth()->user();
@@ -441,6 +443,10 @@ class ViewController extends Controller{
             $customerTopProductQuantities = $topProducts->pluck('total_qty')->map(fn($q) => (int) $q);
 
 
+
+
+
+
         return view('dashboard', compact(
             'pendingWeekCount',
             'pendingDayCount',
@@ -461,12 +467,91 @@ class ViewController extends Controller{
             'customerTopProductQuantities',
             'pendingWeekOrder',
             'verifiedOrdersToday',
-            'pendingPOs'
-
-
+            'pendingPOs',
+          
         ));
 
         }
+
+        public function dashboardData()
+        {
+            // greeting
+            $hour = Carbon::now()->format('H');
+            if ($hour < 12) {
+                $greeting = "Good Morning";
+            } elseif ($hour < 18) {
+                $greeting = "Good Afternoon";
+            } else {
+                $greeting = "Good Evening";
+            }
+
+            $user = auth()->user();
+
+            // card counts
+            $purchaseOrdersCount = PurchaseOrder::where('status', 'pending')
+                ->whereDate('created_at', '!=', Carbon::today())
+                ->count();
+            $ordersCount = Orders::where('status', 'pending')
+                ->whereDate('created_at', '!=', Carbon::today())
+                ->count();
+            $receiptsCount = Receipt::where('status', 'pending')
+                ->whereDate('created_at', '!=', Carbon::today())
+                ->count();
+            $usersCount = User::where('acc_status', 'pending')
+                ->whereDate('created_at', '!=', Carbon::today())
+                ->count();
+
+            // new added data today
+            $newPurchaseOrdersCount = PurchaseOrder::where('status', 'pending')
+                ->whereDate('created_at', Carbon::today())
+                ->count();
+            $newOrdersCount = Orders::where('status', 'pending')
+                ->whereDate('created_at', Carbon::today())
+                ->count();
+            $newReceiptsCount = Receipt::where('status', 'pending')
+                ->whereDate('created_at', Carbon::today())
+                ->count();
+            $newUsersCount = User::where('acc_status', 'pending')
+                ->whereDate('created_at', Carbon::today())
+                ->count();
+
+            //  purchase orders per day this month
+            $ordersPerDay = PurchaseOrder::select(
+                    DB::raw('DATE(created_at) as date'),
+                    DB::raw('COUNT(*) as total')
+                )
+                ->whereMonth('created_at', Carbon::now()->month)
+                ->whereYear('created_at', Carbon::now()->year)
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
+
+            // extract labels and values for Chart.js
+            $labels = $ordersPerDay->pluck('date');
+            $data = $ordersPerDay->pluck('total');
+            
+            //recent purchase orders list
+            $recentPurchaseOrders = PurchaseOrder::orderBy('created_at', 'desc')
+                ->take(10)
+                ->get();
+
+            return view('dashboard', compact(
+                'greeting',
+                'purchaseOrdersCount',
+                'ordersCount',
+                'receiptsCount',
+                'usersCount',
+                'newPurchaseOrdersCount',
+                'newOrdersCount',
+                'newReceiptsCount',
+                'newUsersCount',
+                'labels',
+                'data',
+                'recentPurchaseOrders'
+            ));
+        }
+
+
 
         public function ordersDetails($order_id)
         {

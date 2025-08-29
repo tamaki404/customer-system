@@ -91,7 +91,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     
     // Dashboard
     Route::get('/dashboard', [ViewController::class, 'showDashboard'])->name('dashboard');
-    
+    Route::get('/dashboard', [ViewController::class, 'dashboardData'])->name('dashboard');
+
     // Profile management
     Route::get('/profile', function () {
         return view('profile');
