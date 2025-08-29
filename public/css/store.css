@@ -265,6 +265,13 @@ tbody td{
     box-shadow: rgba(255, 222, 89, 0.3) 0 2px 8px;
 }
 
+.staff-status-tabs{
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    flex-wrap: wrap;
+}
 
 /* filter */
 .filter-container {
@@ -442,6 +449,9 @@ tbody td{
 }
 .category-list a img{
     display: none;
+}
+.showScreen{
+    margin-top: 0;
 }
 
 }
