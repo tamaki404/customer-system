@@ -20,6 +20,25 @@
             <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
             <h4>Here's your dashboard overview.</h4>
         </div>
+
+        <form action="{{ route('dashboard') }}" class="date-search" id="from-to-date" method="GET">
+            <p>Date picker</p>
+            <div class="from-to-picker">
+                <div class="month-div">
+                    <span>From</span>
+                    <input type="date" name="from_date" class="input-date"
+                        value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                        onchange="this.form.submit()">
+                </div>
+                <div class="month-div">
+                    <span>To</span>
+                    <input type="date" name="to_date" class="input-date"
+                        value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                        onchange="this.form.submit()">
+                </div>
+            </div>
+        </form>
+
     </section>
     <section class="status-cards-list">
         <a class="status-card" href="{{ route('receipts') }}">
@@ -72,39 +91,50 @@
                 <a href="/purchase_order">Show all ></a>
             </div>
             <div class="recent-orders">
-                @foreach($recentPurchaseOrders as $order)
-                    <a class="order-row">
-                        <p>
-                            <span class="company">{{$order->user->store_name}}</span>
-                            <span class="po-id">{{$order->po_number}}</span>
-                        </p>
-                        <p>
-                            <span class="name">{{$order->receiver_name}}</span>
-                            {{-- <span class="status">Pending</span> --}}
-                            @php 
-                                $statusClasses = [
-                                    'Pending' => 'status-pending',
-                                    'Processing' => 'status-processing',
-                                    'Accepted' => 'status-approved',
-                                    'Rejected' => 'status-rejected',
-                                    'Delivered' => 'status-delivered',
-                                    'Cancelled' => 'status-cancelled',
-                                    'Draft' => 'status-draft',
-                                ];
-                            @endphp
-                            <span style="font-size: 13px" class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
-                                {{ ucfirst($order->status) }}
-                            </span>
-                        </p>
+                @if ($recentPurchaseOrders->count() > 0)
+                    @foreach($recentPurchaseOrders as $order)
 
-                    </a>
-                @endforeach
+                        <a class="order-row" href="{{ route('purchase_order.view', $order->po_number) }}">
+                            <p>
+                                <span class="company">{{$order->user->store_name}}</span>
+                                <span class="po-id">{{$order->po_number}}</span>
+                            </p>
+                            <p>
+                                <span class="name">{{$order->receiver_name}}</span>
+                                @php 
+                                    $statusClasses = [
+                                        'Pending' => 'status-pending',
+                                        'Processing' => 'status-processing',
+                                        'Accepted' => 'status-approved',
+                                        'Rejected' => 'status-rejected',
+                                        'Delivered' => 'status-delivered',
+                                        'Cancelled' => 'status-cancelled',
+                                        'Draft' => 'status-draft',
+                                    ];
+                                @endphp
+                                <span style="font-size: 13px" class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </p>
 
+                        </a>
+                    @endforeach
+                @else
+                <p style="font-size: 14px; color:#666; align-self: center; justify-self: center; margin-top: 100px">No order data found.</p>
+                @endif
             </div>
-
         </div>
         <div class="delivery-status">
-
+            <div class="recent-orders-title">
+                <p>Order status</p>
+            </div>
+            <p class="order-count">
+                <span class="delivered-count">{{$completedOrders}}</span>
+                <span class="delivered-label">Fulfilled orders</span>
+            </p>
+            <div class="recent-orders">
+                <canvas id="statusChart" height="120"></canvas>
+            </div>
         </div>
 
     </section>
@@ -163,6 +193,82 @@
                 }
             }
         }
+    });
+
+    //order single line graph
+    const statusData = @json($statusPercents);
+
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+
+    const statusChart = new Chart(statusCtx, {
+        type: 'bar',
+        data: {
+            labels: [''], 
+            datasets: Object.keys(statusData).map((status, index) => ({
+                label: status,
+                data: [statusData[status]],
+                backgroundColor: [
+                '#37415172', 
+                '#3730a372',
+                '#33415572', 
+                '#f59e0b72', 
+                '#991b1b72' 
+                ][index % 5],
+                borderWidth: 0
+            }))
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.x + '%';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    min: 0,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                },
+                y: {
+                    stacked: true,
+                    display: false
+                }
+            }
+        },
+        plugins: [{
+            afterDatasetsDraw: function(chart) {
+                const ctx = chart.ctx;
+                chart.data.datasets.forEach((dataset, i) => {
+                    const meta = chart.getDatasetMeta(i);
+                    if (!meta.hidden) {
+                        meta.data.forEach((element, index) => {
+                            const data = dataset.data[index];
+                            if (data > 8) { 
+                                ctx.fillStyle = '#fff';
+                                ctx.font = 'bold 14px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                const pos = element.tooltipPosition();
+                                ctx.fillText(data + '%', pos.x, pos.y);
+                            }
+                        });
+                    }
+                });
+            }
+        }]
     });
 </script>
 

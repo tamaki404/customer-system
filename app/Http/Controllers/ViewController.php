@@ -473,67 +473,95 @@ class ViewController extends Controller{
 
         }
 
-        public function dashboardData()
+        public function dashboardData(Request $request)
         {
-            // greeting
+            // Greeting
             $hour = Carbon::now()->format('H');
-            if ($hour < 12) {
-                $greeting = "Good Morning";
-            } elseif ($hour < 18) {
-                $greeting = "Good Afternoon";
-            } else {
-                $greeting = "Good Evening";
-            }
+            $greeting = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Evening");
 
             $user = auth()->user();
 
-            // card counts
+            // Get date range (default = this month)
+            $from = $request->input('from_date', Carbon::now()->startOfMonth()->toDateString());
+            $to   = $request->input('to_date', Carbon::now()->endOfMonth()->toDateString());
+
+            // Card counts (except today)
             $purchaseOrdersCount = PurchaseOrder::where('status', 'pending')
                 ->whereDate('created_at', '!=', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
                 ->count();
+
             $ordersCount = Orders::where('status', 'pending')
                 ->whereDate('created_at', '!=', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
                 ->count();
+
             $receiptsCount = Receipt::where('status', 'pending')
                 ->whereDate('created_at', '!=', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
                 ->count();
+
             $usersCount = User::where('acc_status', 'pending')
                 ->whereDate('created_at', '!=', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
                 ->count();
 
-            // new added data today
+            // New data today
             $newPurchaseOrdersCount = PurchaseOrder::where('status', 'pending')
                 ->whereDate('created_at', Carbon::today())
-                ->count();
-            $newOrdersCount = Orders::where('status', 'pending')
-                ->whereDate('created_at', Carbon::today())
-                ->count();
-            $newReceiptsCount = Receipt::where('status', 'pending')
-                ->whereDate('created_at', Carbon::today())
-                ->count();
-            $newUsersCount = User::where('acc_status', 'pending')
-                ->whereDate('created_at', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
                 ->count();
 
-            //  purchase orders per day this month
+            $newOrdersCount = Orders::where('status', 'pending')
+                ->whereDate('created_at', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            $newReceiptsCount = Receipt::where('status', 'pending')
+                ->whereDate('created_at', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            $newUsersCount = User::where('acc_status', 'pending')
+                ->whereDate('created_at', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            // Purchase orders per day in selected range
             $ordersPerDay = PurchaseOrder::select(
                     DB::raw('DATE(created_at) as date'),
                     DB::raw('COUNT(*) as total')
                 )
-                ->whereMonth('created_at', Carbon::now()->month)
-                ->whereYear('created_at', Carbon::now()->year)
+                ->whereBetween('created_at', [$from, $to])
                 ->groupBy('date')
                 ->orderBy('date')
                 ->get();
 
-            // extract labels and values for Chart.js
             $labels = $ordersPerDay->pluck('date');
-            $data = $ordersPerDay->pluck('total');
-            
-            //recent purchase orders list
-            $recentPurchaseOrders = PurchaseOrder::orderBy('created_at', 'desc')
+            $data   = $ordersPerDay->pluck('total');
+
+            // Recent purchase orders
+            $recentPurchaseOrders = PurchaseOrder::whereBetween('created_at', [$from, $to])
+                ->orderBy('created_at', 'desc')
                 ->take(10)
                 ->get();
+
+            // Status percentages
+            $totalOrders = PurchaseOrder::whereBetween('created_at', [$from, $to])->count();
+
+            $statusCounts = PurchaseOrder::select('status', DB::raw('COUNT(*) as total'))
+                ->whereBetween('created_at', [$from, $to])
+                ->groupBy('status')
+                ->pluck('total', 'status');
+
+            $statusPercents = $statusCounts->map(function ($count) use ($totalOrders) {
+                return $totalOrders > 0 ? round(($count / $totalOrders) * 100, 2) : 0;
+            });
+
+            // Fulfilled orders
+            $completedOrders = PurchaseOrder::where('status', 'Delivered')
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
 
             return view('dashboard', compact(
                 'greeting',
@@ -547,9 +575,12 @@ class ViewController extends Controller{
                 'newUsersCount',
                 'labels',
                 'data',
-                'recentPurchaseOrders'
+                'recentPurchaseOrders',
+                'statusPercents',
+                'completedOrders'
             ));
         }
+
 
 
 
