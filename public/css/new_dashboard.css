@@ -47,7 +47,6 @@
     width: auto;
     height: auto;
     gap: 10px;
-    margin-top: 10px;
 }
 .status-card{
     flex: 1;      
@@ -358,9 +357,16 @@
     box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
 }
 
-
-
-
+/* date results display */
+.date-results-label{
+    margin: 0; margin-top: 15px; font-size: 15px;        
+}
+.date-results-label span{
+    color: #666
+}
+.date-results-label strong{
+    font-size: 15px; color: #333;
+}
 
 
 @media screen and (max-width: 768px) {
@@ -418,6 +424,29 @@
     .chart-wrapper canvas {
         min-width: 600px;  
     }
-
+    .date-search{
+        margin-top: 10px;
+    }
+    .date-search p{
+        font-size: 13px;
+    }
+    .month-div{
+        font-size: 12px;
+        margin-top: 5px;
+    }
+    .month-div input{
+        font-size: 12px;
+    }
+    /* date results display */
+    .date-results-label{
+        margin: 0; margin-top: 15px; font-size: 13px;        
+    }
+    .date-results-label span{
+        color: #666
+    }
+    .date-results-label strong{
+        font-size: 14px; color: #333;
+    }
+    
 
 }

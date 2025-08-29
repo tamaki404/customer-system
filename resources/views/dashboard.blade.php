@@ -15,7 +15,9 @@
 <body>
 
 <div class="dashBody">
+    
     <section class="head-section">
+
         <div class="greet-div">
             <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
             <h4>Here's your dashboard overview.</h4>
@@ -40,6 +42,16 @@
         </form>
 
     </section>
+
+    @if(request('from_date') && request('to_date'))
+        <p class="date-results-label" >
+            <span style="">Showing results from</span>
+            <strong style="">{{ \Carbon\Carbon::parse(request('from_date'))->format('M d, Y') }}</strong> 
+            <span style="">to</span> 
+            <strong style="">{{ \Carbon\Carbon::parse(request('to_date'))->format('M d, Y') }}</strong>
+        </p>
+    @endif
+
     <section class="status-cards-list">
         <a class="status-card" href="{{ route('receipts') }}">
             <p class="card-title">Purchase orders</p>
