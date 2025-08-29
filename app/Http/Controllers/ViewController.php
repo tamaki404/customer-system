@@ -480,7 +480,7 @@ class ViewController extends Controller{
             $greeting = $hour < 12 ? "Good Morning" : ($hour < 18 ? "Good Afternoon" : "Good Evening");
 
             $user = auth()->user();
-
+            $id = $user->id;
             // Get date range (default = this month)
             $from = $request->input('from_date', Carbon::now()->startOfMonth()->toDateString());
             $to   = $request->input('to_date', Carbon::now()->endOfMonth()->toDateString());
@@ -563,6 +563,53 @@ class ViewController extends Controller{
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
+
+
+   
+
+            $customerPendings = PurchaseOrder::where('status', 'Delivered')
+                ->where('user_id', $id)
+                ->whereDate('created_at', '!=', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            $customerOrders = Orders::where('status', 'Completed')
+                ->where('customer_id', $id)
+                ->whereDate('created_at', '!=', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            $customerReceipts = Receipt::where('status', 'Verified')
+                ->where('id', $id)
+                ->whereDate('created_at', '!=', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            // New data today
+            $newCustomerPendings = PurchaseOrder::where('status', 'Delivered')
+                ->where('user_id', $id)
+                ->whereDate('created_at', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            $newCustomerOrders = Orders::where('status', 'Completed')
+                ->where('customer_id', $id)
+                ->whereDate('created_at', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            $newCustomerReceipts = Receipt::where('status', 'Verified')
+                ->where('id', $id)
+                ->whereDate('created_at', Carbon::today())
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            $recentOrder = PurchaseOrder::whereBetween('created_at', [$from, $to])
+                ->where('user_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+
             return view('dashboard', compact(
                 'greeting',
                 'purchaseOrdersCount',
@@ -577,10 +624,16 @@ class ViewController extends Controller{
                 'data',
                 'recentPurchaseOrders',
                 'statusPercents',
-                'completedOrders'
+                'completedOrders',
+                'customerPendings',
+                'customerOrders',
+                'customerReceipts',
+                'newCustomerPendings',
+                'newCustomerOrders',
+                'newCustomerReceipts',
+                'recentOrder'
             ));
         }
-
 
 
 

@@ -369,6 +369,117 @@
 }
 
 
+
+
+
+
+
+
+
+
+
+
+/* customer */
+
+
+
+
+
+/* timeline */
+.recent-order{
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 15px;
+    padding: 10px;
+    gap: 5px;
+}
+.order-timeline {
+    display: grid;
+    flex: 1;
+    grid-template-columns: repeat(4, 1fr);
+    width: auto;
+    
+}
+.recent-order-label{
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.recent-order .order-details{
+    display: flex;
+    width: auto;
+    flex-direction: row;
+    margin: 0;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.quan-total{
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    font-size: 14px
+
+}
+.order-details .po_number{
+    font-size: 14px;
+}
+
+.timeline-step {
+    text-align: center;
+    position: relative;
+}
+
+.timeline-step .dot {
+    display: block;
+    width: 16px;
+    height: 16px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    background: #d1d5db; 
+    border: 2px solid white;
+    z-index: 3;
+}
+
+#line{
+    width: auto; 
+    border-bottom: 18px solid #ffde59;
+    margin: 2px;
+    border-radius: 30px;
+}
+
+.timeline-step.active .dot {
+    background: #ffde59; 
+}
+
+.timeline-step p {
+    font-size: 13px;
+    color: #374151;
+    margin: 0;
+}
+
+.timeline-step small {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @media screen and (max-width: 768px) {
     .dashBody {
         padding: 20px;

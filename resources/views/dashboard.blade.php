@@ -14,147 +14,293 @@
 </head>
 <body>
 
+<script src="{{ asset('js/fadein.js') }}"></script>
+
 <div class="dashBody">
-    
-    <section class="head-section">
+ 
 
-        <div class="greet-div">
-            <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
-            <h4>Here's your dashboard overview.</h4>
-        </div>
+    @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
+        <section class="head-section">
 
-        <form action="{{ route('dashboard') }}" class="date-search" id="from-to-date" method="GET">
-            <p>Date picker</p>
-            <div class="from-to-picker">
-                <div class="month-div">
-                    <span>From</span>
-                    <input type="date" name="from_date" class="input-date"
-                        value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
-                        onchange="this.form.submit()">
+            <div class="greet-div">
+                <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
+                <h4>Here's your dashboard overview.</h4>
+            </div>
+
+            <form action="{{ route('dashboard') }}" class="date-search" id="from-to-date" method="GET">
+                <p>Date picker</p>
+                <div class="from-to-picker">
+                    <div class="month-div">
+                        <span>From</span>
+                        <input type="date" name="from_date" class="input-date"
+                            value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                            onchange="this.form.submit()">
+                    </div>
+                    <div class="month-div">
+                        <span>To</span>
+                        <input type="date" name="to_date" class="input-date"
+                            value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                            onchange="this.form.submit()">
+                    </div>
                 </div>
-                <div class="month-div">
-                    <span>To</span>
-                    <input type="date" name="to_date" class="input-date"
-                        value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
-                        onchange="this.form.submit()">
-                </div>
-            </div>
-        </form>
+            </form>
 
-    </section>
+        </section>
 
-    @if(request('from_date') && request('to_date'))
-        <p class="date-results-label" >
-            <span style="">Showing results from</span>
-            <strong style="">{{ \Carbon\Carbon::parse(request('from_date'))->format('M d, Y') }}</strong> 
-            <span style="">to</span> 
-            <strong style="">{{ \Carbon\Carbon::parse(request('to_date'))->format('M d, Y') }}</strong>
-        </p>
-    @endif
-
-    <section class="status-cards-list">
-        <a class="status-card" href="{{ route('receipts') }}">
-            <p class="card-title">Purchase orders</p>
-            <div class="card-content">
-                <h1 class="card-count" id="pendingDayCount">{{$purchaseOrdersCount}}</h1>
-                @if($newPurchaseOrdersCount > 0)
-                    <span class="card-add-count">+{{$newPurchaseOrdersCount}}</span>
-                @endif
-            </div>
-        </a>
-
-        <a class="status-card" href="{{ route('receipts') }}">
-            <p class="card-title">Orders</p>
-            <div class="card-content">
-                <h1 class="card-count" id="pendingDayCount">{{$ordersCount}}</h1>
-                @if($newOrdersCount > 0)
-                    <span class="card-add-count">+{{$newOrdersCount}}</span>
-                @endif
-            </div>
-        </a>
-        <a class="status-card" href="{{ route('receipts') }}">
-            <p class="card-title">Receipts</p>
-            <div class="card-content">
-                <h1 class="card-count" id="pendingDayCount">{{$receiptsCount}}</h1>
-                @if($newReceiptsCount > 0)
-                    <span class="card-add-count">+{{$newReceiptsCount}}</span>
-                @endif                
-            </div>
-        </a>
-        <a class="status-card" href="{{ route('receipts') }}">
-            <p class="card-title">Users</p>
-            <div class="card-content">
-                <h1 class="card-count" id="pendingDayCount">{{$usersCount}}</h1>
-                @if($newUsersCount > 0)
-                    <span class="card-add-count">+{{$newUsersCount}}</span>
-                @endif                
-                
-            </div>
-        </a>
-    </section>
-    <section class="purchase-order-chart">
-        <p>Purchase orders this month</p>
-        <canvas id="purchaseOrdersChart" height="300px"></canvas>
-    </section>
-    <section class="end-contents">
-        <div class="recent-orders-list">
-            <div class="recent-orders-title">
-                <p>Recent orders</p>
-                <a href="/purchase_order">Show all ></a>
-            </div>
-            <div class="recent-orders">
-                @if ($recentPurchaseOrders->count() > 0)
-                    @foreach($recentPurchaseOrders as $order)
-
-                        <a class="order-row" href="{{ route('purchase_order.view', $order->po_number) }}">
-                            <p>
-                                <span class="company">{{$order->user->store_name}}</span>
-                                <span class="po-id">{{$order->po_number}}</span>
-                            </p>
-                            <p>
-                                <span class="name">{{$order->receiver_name}}</span>
-                                @php 
-                                    $statusClasses = [
-                                        'Pending' => 'status-pending',
-                                        'Processing' => 'status-processing',
-                                        'Accepted' => 'status-approved',
-                                        'Rejected' => 'status-rejected',
-                                        'Delivered' => 'status-delivered',
-                                        'Cancelled' => 'status-cancelled',
-                                        'Draft' => 'status-draft',
-                                    ];
-                                @endphp
-                                <span style="font-size: 13px" class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
-                                    {{ ucfirst($order->status) }}
-                                </span>
-                            </p>
-
-                        </a>
-                    @endforeach
-                @else
-                <p style="font-size: 14px; color:#666; align-self: center; justify-self: center; margin-top: 100px">No order data found.</p>
-                @endif
-            </div>
-        </div>
-        <div class="delivery-status">
-            <div class="recent-orders-title">
-                <p>Order status</p>
-            </div>
-            <p class="order-count">
-                <span class="delivered-count">{{$completedOrders}}</span>
-                <span class="delivered-label">Fulfilled orders</span>
+        @if(request('from_date') && request('to_date'))
+            <p class="date-results-label" >
+                <span style="">Showing results from</span>
+                <strong style="">{{ \Carbon\Carbon::parse(request('from_date'))->format('M d, Y') }}</strong> 
+                <span style="">to</span> 
+                <strong style="">{{ \Carbon\Carbon::parse(request('to_date'))->format('M d, Y') }}</strong>
             </p>
-            <div class="recent-orders">
-                <canvas id="statusChart" height="120"></canvas>
-            </div>
-        </div>
+        @endif
 
-    </section>
+        <section class="status-cards-list">
+            <a class="status-card" href="{{ route('receipts') }}">
+                <p class="card-title">Purchase orders</p>
+                <div class="card-content">
+                    <h1 class="card-count" id="pendingDayCount">{{$purchaseOrdersCount}}</h1>
+                    @if($newPurchaseOrdersCount > 0)
+                        <span class="card-add-count">+{{$newPurchaseOrdersCount}}</span>
+                    @endif
+                </div>
+            </a>
+
+            <a class="status-card" href="{{ route('receipts') }}">
+                <p class="card-title">Orders</p>
+                <div class="card-content">
+                    <h1 class="card-count" id="pendingDayCount">{{$ordersCount}}</h1>
+                    @if($newOrdersCount > 0)
+                        <span class="card-add-count">+{{$newOrdersCount}}</span>
+                    @endif
+                </div>
+            </a>
+            <a class="status-card" href="{{ route('receipts') }}">
+                <p class="card-title">Receipts</p>
+                <div class="card-content">
+                    <h1 class="card-count" id="pendingDayCount">{{$receiptsCount}}</h1>
+                    @if($newReceiptsCount > 0)
+                        <span class="card-add-count">+{{$newReceiptsCount}}</span>
+                    @endif                
+                </div>
+            </a>
+            <a class="status-card" href="{{ route('receipts') }}">
+                <p class="card-title">Users</p>
+                <div class="card-content">
+                    <h1 class="card-count" id="pendingDayCount">{{$usersCount}}</h1>
+                    @if($newUsersCount > 0)
+                        <span class="card-add-count">+{{$newUsersCount}}</span>
+                    @endif                
+                    
+                </div>
+            </a>
+        </section>
+        <section class="purchase-order-chart">
+            <p>
+                Purchase orders record 
+
+            </p>
+            <canvas id="purchaseOrdersChart" height="300px"></canvas>
+        </section>
+        <section class="end-contents">
+            <div class="recent-orders-list">
+                <div class="recent-orders-title">
+                    <p>Recent orders</p>
+                    <a href="/purchase_order">Show all ></a>
+                </div>
+                <div class="recent-orders">
+                    @if ($recentPurchaseOrders->count() > 0)
+                        @foreach($recentPurchaseOrders as $order)
+
+                            <a class="order-row" href="{{ route('purchase_order.view', $order->po_number) }}">
+                                <p>
+                                    <span class="company">{{$order->user->store_name}}</span>
+                                    <span class="po-id">{{$order->po_number}}</span>
+                                </p>
+                                <p>
+                                    <span class="name">{{$order->receiver_name}}</span>
+                                    @php 
+                                        $statusClasses = [
+                                            'Pending' => 'status-pending',
+                                            'Processing' => 'status-processing',
+                                            'Accepted' => 'status-approved',
+                                            'Rejected' => 'status-rejected',
+                                            'Delivered' => 'status-delivered',
+                                            'Cancelled' => 'status-cancelled',
+                                            'Draft' => 'status-draft',
+                                        ];
+                                    @endphp
+                                    <span style="font-size: 13px" class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </p>
+
+                            </a>
+                        @endforeach
+                    @else
+                    <p style="font-size: 14px; color:#666; align-self: center; justify-self: center; margin-top: 100px">No order data found.</p>
+                    @endif
+                </div>
+            </div>
+            <div class="delivery-status">
+                <div class="recent-orders-title">
+                    <p>Order status</p>
+                </div>
+                <p class="order-count">
+                    <span class="delivered-count">{{$completedOrders}}</span>
+                    <span class="delivered-label">Fulfilled orders</span>
+                </p>
+                <div class="recent-orders">
+                    <canvas id="statusChart" height="120"></canvas>
+                </div>
+            </div>
+        </section>
+
+    @elseif(auth()->user()->user_type === 'Customer')
+        <section class="head-section">
+
+            <div class="greet-div">
+                <h1>{{ $greeting }}, {{ auth()->user()->name }} 👋</h1>
+                <h4>Here's your dashboard overview.</h4>
+            </div>
+
+            <form action="{{ route('dashboard') }}" class="date-search" id="from-to-date" method="GET">
+                <p>Date picker</p>
+                <div class="from-to-picker">
+                    <div class="month-div">
+                        <span>From</span>
+                        <input type="date" name="from_date" class="input-date"
+                            value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                            onchange="this.form.submit()">
+                    </div>
+                    <div class="month-div">
+                        <span>To</span>
+                        <input type="date" name="to_date" class="input-date"
+                            value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                            onchange="this.form.submit()">
+                    </div>
+                </div>
+            </form>
+
+        </section>
+
+        @if(request('from_date') && request('to_date'))
+            <p class="date-results-label" >
+                <span style="">Showing results from</span>
+                <strong style="">{{ \Carbon\Carbon::parse(request('from_date'))->format('M d, Y') }}</strong> 
+                <span style="">to</span> 
+                <strong style="">{{ \Carbon\Carbon::parse(request('to_date'))->format('M d, Y') }}</strong>
+            </p>
+        @endif
+
+        <section class="status-cards-list">
+            <a class="status-card" href="{{ route('receipts') }}">
+                <p class="card-title">Purchase orders</p>
+                <div class="card-content">
+                    <h1 class="card-count" id="pendingDayCount">{{$customerPendings}}</h1>
+                    @if($newCustomerPendings > 0)
+                        <span class="card-add-count">+{{$newCustomerPendings}}</span>
+                    @endif
+                </div>
+            </a>
+
+            <a class="status-card" href="{{ route('receipts') }}">
+                <p class="card-title">Orders</p>
+                <div class="card-content">
+                    <h1 class="card-count" id="pendingDayCount">{{$customerOrders}}</h1>
+                    @if($newCustomerOrders > 0)
+                        <span class="card-add-count">+{{$newCustomerOrders}}</span>
+                    @endif
+                </div>
+            </a>
+            <a class="status-card" href="{{ route('receipts') }}">
+                <p class="card-title">Receipts</p>
+                <div class="card-content">
+                    <h1 class="card-count" id="pendingDayCount">{{$customerReceipts}}</h1>
+                    @if($newCustomerReceipts > 0)
+                        <span class="card-add-count">+{{$newCustomerReceipts}}</span>
+                    @endif                
+                </div>
+            </a>
+
+        </section>
+       <section class="recent-order">
+            @if($recentOrder)
+                <p class="recent-order-label">
+                    <span>Recent order</span>
+                    <a style="font-size: 13px; font-weight: normal; color: #666" >View order ></a>
+                </p>
+                <p class="order-details" style="margin-bottom: 10px">
+                    <span class="po_number">{{ $recentOrder->po_number }}</span>
+                    <span class="quan-total">
+                        <span>x{{ $recentOrder->items->sum('quantity') }}</span>
+                        <span style="font-weight: bold; color: green">₱{{ number_format($recentOrder->subtotal, 2) }}</span>
+                    </span>
+                    
+                </p>
+
+                <div class="order-timeline">
+                    <div class="timeline-step {{ $recentOrder->created_at ? 'active' : '' }}">
+                        @if ($recentOrder->created_at)
+                           <div id="line" class=""></div>
+                        @endif                        
+                        <p>Created<br><small>{{ $recentOrder->created_at->format('M d, H:i a') }}</small></p>
+                    </div>
+
+                    <div class="timeline-step {{ $recentOrder->approved_at ? 'active' : '' }}">
+                        @if ($recentOrder->approved_at)
+                           <div id="line" class=""></div>
+                        @endif
+                        <p>Approved<br>
+                            <small>{{ $recentOrder->approved_at ? $recentOrder->approved_at->format('M d, H:i a') : '' }}</small>
+                        </p>
+                    </div>
+
+                    <div class="timeline-step {{ $recentOrder->delivered_at ? 'active' : '' }}">
+                        @if ($recentOrder->delivered_at)
+                           <div id="line" class=""></div>
+                        @endif
+
+                        <p>Delivered<br>
+                            <small>{{ $recentOrder->delivered_at ? $recentOrder->delivered_at->format('M d, H:i a') : '' }}</small>
+                        </p>
+                    </div>
+
+                    <div class="timeline-step {{ $recentOrder->cancelled_at ? 'active' : '' }}">
+                        @if ($recentOrder->cancelled_at)
+                           <div id="line" class=""></div>
+                        @else
+                           <div id="line" style="border-bottom: 18px solid #d1d5db;"></div>
+                        @endif
+
+
+                            <p>Cancelled<br>
+                                <small>{{ $recentOrder->cancelled_at ? $recentOrder->cancelled_at->format('M d, H:i a') : '' }}</small>
+                            </p>
+
+                    </div>
+                </div>
+            @else
+                <p style="font-size: 14px; color:#666; text-align:center; margin-top: 100px">
+                    No order data found.
+                </p>
+            @endif
+        </section>
+
+
+
+
+
+       
+    @endif
+    
 
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
     const ctx = document.getElementById('purchaseOrdersChart').getContext('2d');
 
