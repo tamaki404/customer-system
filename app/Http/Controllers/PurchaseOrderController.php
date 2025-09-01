@@ -55,6 +55,9 @@ class PurchaseOrderController extends Controller {
             ->where('status', '!=', 'Draft')  
             ->orderBy('order_date', 'desc')
             ->paginate(50);
+
+
+
         return view('purchase_order', compact('user', 'purchaseOrders', 'search', 'from', 'to', 'status'));
     }
 

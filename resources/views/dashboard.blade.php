@@ -225,10 +225,11 @@
             </a>
 
         </section>
-       <section class="recent-order">
-            @if($recentOrder)
+        <section class="recent-order">
+        
                 <p class="recent-order-label">
                     <span>Recent order</span>
+            @if($recentOrder)
                     <a style="" href="{{ route('purchase_order.view', $recentOrder->po_number) }}">View order ></a>
                 </p>
                 <p class="order-details" style="margin-bottom: 10px">
@@ -276,11 +277,13 @@
                         </p>
 
                     @else
+                    
                         <div class="timeline-step {{ $recentOrder->approved_at ? 'active' : '' }}">
                             @if ($recentOrder->approved_at)
-                            <div id="line" class=""></div>
+                             <div id="line" class=""></div>
+                            @else
+                                <div id="line" style="border-bottom: 18px solid #d1d5db;"></div>
                             @endif
-                           <div id="line" style="border-bottom: 18px solid #d1d5db;"></div>
 
                             <p>Approved<br>
                                 <small>{{ $recentOrder->approved_at ? $recentOrder->approved_at->format('M d, H:i a') : '' }}</small>
@@ -289,9 +292,11 @@
 
                         <div class="timeline-step {{ $recentOrder->delivered_at ? 'active' : '' }}">
                             @if ($recentOrder->delivered_at)
-                            <div id="line" class=""></div>
+                                <div id="line" class=""></div>
+                            @else
+                                <div id="line" style="border-bottom: 18px solid #d1d5db;"></div>
+
                             @endif
-                           <div id="line" style="border-bottom: 18px solid #d1d5db;"></div>
 
                             <p>Delivered<br>
                                 <small>{{ $recentOrder->delivered_at ? $recentOrder->delivered_at->format('M d, H:i a') : '' }}</small>
@@ -305,11 +310,56 @@
                     
                 </div>
             @else
-                <p style="font-size: 14px; color:#666; text-align:center; margin-top: 100px">
+
+                <p style="font-size: 14px; color:#666; text-align:center; margin-top: 50px">
                     No order data found.
                 </p>
             @endif
         </section>
+
+        <section class="spending-summary-chart">
+            <p style="color: #333; font-weight: bold; font-size: 16px;">
+                Spending summary  
+            </p>
+            <canvas id="spendingChart" height="140px"></canvas>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                const spendingCtx = document.getElementById('spendingChart').getContext('2d');
+
+                const chart = new Chart(spendingCtx, {
+                    type: 'line',
+                    data: {
+                        labels: @json($spendingLabels), 
+                        datasets: [{
+                            label: 'Weekly spending',   
+                            data: @json($spendingData), 
+                            borderColor: '#ffde59',
+                            backgroundColor: '#ffde5972', 
+                            fill: true,                 
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#ffde59',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₱' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            </script>
+        </section>
+
 
 
 
@@ -373,7 +423,8 @@
                     }
                 }
             }
-        }
+        },
+        
     });
 
     //order single line graph

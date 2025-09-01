@@ -610,6 +610,31 @@ class ViewController extends Controller{
                 ->first();
 
 
+            $spendingSummary = PurchaseOrder::where('user_id', $id)
+                ->selectRaw("
+                    YEARWEEK(order_date, 1) as week,
+                    MIN(DATE(order_date)) as week_start,
+                    SUM(grand_total) as total_spent
+                ")
+                ->where('status', 'Delivered')
+                ->whereBetween('order_date', [$from, $to])
+                ->groupBy(DB::raw("YEARWEEK(order_date, 1)"))
+                ->orderBy('week')
+                ->get();
+
+            $spendingLabels = $spendingSummary->map(function ($row) {
+                $start = \Carbon\Carbon::parse($row->week_start);
+                return $start->format('M d') . ' - ' . $start->copy()->addDays(6)->format('M d');
+            });
+
+            $spendingData = $spendingSummary->pluck('total_spent');
+
+
+
+
+
+
+
             return view('dashboard', compact(
                 'greeting',
                 'purchaseOrdersCount',
@@ -631,7 +656,11 @@ class ViewController extends Controller{
                 'newCustomerPendings',
                 'newCustomerOrders',
                 'newCustomerReceipts',
-                'recentOrder'
+                'recentOrder',
+                'spendingSummary',
+                'spendingLabels',
+                'spendingData'
+
             ));
         }
 
