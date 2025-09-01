@@ -100,7 +100,7 @@
                         data: {
                             labels: [
                                 @foreach($monthlySales as $month => $total)
-                                    "{{ DateTime::createFromFormat('!m', $month)->format('F') }}",
+                                    "{{ $month }}",
                                 @endforeach
                             ],
                             datasets: [{
@@ -110,9 +110,9 @@
                                         {{ $total }},
                                     @endforeach
                                 ],
-                                backgroundColor: '#ffde59',
-                                borderColor: '#e5c43f',
-                                borderWidth: 1
+                                borderColor: '#ffde59',
+                                backgroundColor: '#ffde5972',
+                                borderWidth: 2,
                             }]
                         },
                         options: {
@@ -132,6 +132,7 @@
                     });
                 </script>
             </div>
+
         </div>
 
         {{-- Customer Analytics tab --}}

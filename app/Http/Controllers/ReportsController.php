@@ -17,6 +17,9 @@ use App\Exports\OrdersSummaryExport;
 use App\Exports\ProductsExport;
 use App\Exports\ReceiptsExport;
 use App\Models\PurchaseOrder;
+use DatePeriod;
+use DateInterval;
+use DateTime;
 
 
 class ReportsController extends Controller
@@ -293,19 +296,29 @@ private function getProductAnalytics($startDate, $endDate)
     ];
 }
 
-private function getSalesAnalytics($startDate, $endDate)
+
+private function getSalesAnalytics($startDate = null, $endDate = null)
 {
-    // Apply date filtering to sales queries
+    // Fallback: if no dates, default to last 2 months before current month
+    if (!$startDate || !$endDate) {
+        $endDate = Carbon::now()->startOfMonth()->subMonth(); // last month
+        $startDate = (clone $endDate)->subMonths(1);          // 2 months before
+    } else {
+        $startDate = Carbon::parse($startDate)->startOfMonth();
+        $endDate = Carbon::parse($endDate)->endOfMonth();
+    }
+
+    // Build base orders query
     $ordersQuery = Orders::whereBetween('created_at', [$startDate, $endDate]);
-    
-    $totalSales = $ordersQuery->where('status', 'Completed')->sum('total_price');
-    $completedOrdersCount = $ordersQuery->where('status', 'Completed')->count();
-    
+
+    $totalSales = (clone $ordersQuery)->where('status', 'Completed')->sum('total_price');
+    $completedOrdersCount = (clone $ordersQuery)->where('status', 'Completed')->count();
+
     $averageOrderValue = $completedOrdersCount > 0 
         ? $totalSales / $completedOrdersCount 
         : 0;
 
-    // Payment success rate with date filtering
+    // Payment success rate
     $successfulPayments = Orders::whereBetween('created_at', [$startDate, $endDate])
         ->where('status', 'Completed')
         ->distinct('order_id')
@@ -319,13 +332,26 @@ private function getSalesAnalytics($startDate, $endDate)
     $paymentSuccessRate = $totalPaymentAttempts > 0
         ? round(($successfulPayments / $totalPaymentAttempts) * 100, 2)
         : 0;
-    
-    // Monthly sales data with date filtering
+
+    // Monthly sales from DB
     $monthlySales = Orders::selectRaw('MONTH(created_at) as month, SUM(total_price) as total')
         ->where('status', 'Completed')
         ->whereBetween('created_at', [$startDate, $endDate])
         ->groupBy('month')
         ->pluck('total', 'month');
+
+    // Generate full month range (fill gaps with 0)
+    $monthsRange = [];
+    $period = new DatePeriod(
+        new DateTime($startDate->format('Y-m-01')),
+        new DateInterval('P1M'),
+        (new DateTime($endDate->format('Y-m-01')))->modify('+1 month')
+    );
+
+    foreach ($period as $dt) {
+        $monthNum = (int) $dt->format('n');
+        $monthsRange[$dt->format('F')] = $monthlySales[$monthNum] ?? 0;
+    }
 
     return [
         'totalSales' => $totalSales,
@@ -334,9 +360,10 @@ private function getSalesAnalytics($startDate, $endDate)
         'successfulPayments' => $successfulPayments,
         'totalPaymentAttempts' => $totalPaymentAttempts,
         'paymentSuccessRate' => $paymentSuccessRate,
-        'monthlySales' => $monthlySales
+        'monthlySales' => $monthsRange, // <-- Now has full months with zeros
     ];
 }
+
 
 private function parseDateRange(Request $request)
 {
