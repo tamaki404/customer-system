@@ -229,7 +229,7 @@
             @if($recentOrder)
                 <p class="recent-order-label">
                     <span>Recent order</span>
-                    <a style="font-size: 13px; font-weight: normal; color: #666" >View order ></a>
+                    <a style="" href="{{ route('purchase_order.view', $recentOrder->po_number) }}">View order ></a>
                 </p>
                 <p class="order-details" style="margin-bottom: 10px">
                     <span class="po_number">{{ $recentOrder->po_number }}</span>
@@ -245,41 +245,64 @@
                         @if ($recentOrder->created_at)
                            <div id="line" class=""></div>
                         @endif                        
-                        <p>Created<br><small>{{ $recentOrder->created_at->format('M d, H:i a') }}</small></p>
+                        <p>Order placed<br><small>{{ $recentOrder->created_at->format('M d, H:i a') }}</small></p>
                     </div>
 
-                    <div class="timeline-step {{ $recentOrder->approved_at ? 'active' : '' }}">
-                        @if ($recentOrder->approved_at)
-                           <div id="line" class=""></div>
-                        @endif
-                        <p>Approved<br>
-                            <small>{{ $recentOrder->approved_at ? $recentOrder->approved_at->format('M d, H:i a') : '' }}</small>
-                        </p>
-                    </div>
-
-                    <div class="timeline-step {{ $recentOrder->delivered_at ? 'active' : '' }}">
-                        @if ($recentOrder->delivered_at)
-                           <div id="line" class=""></div>
-                        @endif
-
-                        <p>Delivered<br>
-                            <small>{{ $recentOrder->delivered_at ? $recentOrder->delivered_at->format('M d, H:i a') : '' }}</small>
-                        </p>
-                    </div>
-
-                    <div class="timeline-step {{ $recentOrder->cancelled_at ? 'active' : '' }}">
+                     @if ($recentOrder->cancelled_at)
+                        <div class="timeline-step {{ $recentOrder->cancelled_at ? 'active' : '' }}">
                         @if ($recentOrder->cancelled_at)
-                           <div id="line" class=""></div>
+                           <div id="line" class="" style="border-bottom: 18px solid red;"></div>
                         @else
                            <div id="line" style="border-bottom: 18px solid #d1d5db;"></div>
                         @endif
 
+                        <p>
+                            Cancelled
+                            <br>
+                            <small>{{ $recentOrder->cancelled_at ? $recentOrder->cancelled_at->format('M d, H:i a') : '' }}</small>
+                        </p>
+                     @elseif($recentOrder->rejected_at) 
+                        <div class="timeline-step {{ $recentOrder->rejected_at ? 'active' : '' }}">
+                        @if ($recentOrder->rejected_at)
+                           <div id="line" class="" style="border-bottom: 18px solid red;"></div>
+                        @else
+                           <div id="line" style="border-bottom: 18px solid #d1d5db;"></div>
+                        @endif
 
-                            <p>Cancelled<br>
-                                <small>{{ $recentOrder->cancelled_at ? $recentOrder->cancelled_at->format('M d, H:i a') : '' }}</small>
+                        <p>
+                            Rejected
+                            <br>
+                            <small>{{ $recentOrder->rejected_at ? $recentOrder->rejected_at->format('M d, H:i a') : '' }}</small>
+                        </p>
+
+                    @else
+                        <div class="timeline-step {{ $recentOrder->approved_at ? 'active' : '' }}">
+                            @if ($recentOrder->approved_at)
+                            <div id="line" class=""></div>
+                            @endif
+                           <div id="line" style="border-bottom: 18px solid #d1d5db;"></div>
+
+                            <p>Approved<br>
+                                <small>{{ $recentOrder->approved_at ? $recentOrder->approved_at->format('M d, H:i a') : '' }}</small>
                             </p>
+                        </div>
 
-                    </div>
+                        <div class="timeline-step {{ $recentOrder->delivered_at ? 'active' : '' }}">
+                            @if ($recentOrder->delivered_at)
+                            <div id="line" class=""></div>
+                            @endif
+                           <div id="line" style="border-bottom: 18px solid #d1d5db;"></div>
+
+                            <p>Delivered<br>
+                                <small>{{ $recentOrder->delivered_at ? $recentOrder->delivered_at->format('M d, H:i a') : '' }}</small>
+                            </p>
+                        </div>
+
+                     @endif
+
+
+
+                    
                 </div>
             @else
                 <p style="font-size: 14px; color:#666; text-align:center; margin-top: 100px">

@@ -204,7 +204,7 @@
                     <div class="timeline-item">
                         <span class="dot"></span>
                         <div class="content">
-                            <p class="label">Rejected</p>
+                            <p class="label" style="color: red">Rejected</p>
                             <p class="date">{{ $po->rejected_at->format('d F Y h:i A') }}</p>
                         </div>
                     </div>
@@ -214,7 +214,11 @@
                         <div class="timeline-item">
                             <span class="dot"></span>
                             <div class="content">
-                                <p class="label">Cancelled</p>
+                                @if($po->cancelled_user_type === 'Customer')
+                                    <p class="label" style="color: red">You cancelled this transaction</p>
+                                @else
+                                    <p class="label" style="color: red">Cancelled</p>
+                                @endif
                                 <p class="date">{{ \Carbon\Carbon::parse($po->cancelled_at)->format('d F Y h:i A') }}</p>
                             </div>
                         </div>
@@ -226,7 +230,7 @@
                     <div class="timeline-item">
                         <span class="dot"></span>
                         <div class="content">
-                            <p class="label">Delivered</p>
+                            <p class="label" style="color: #3730a3">Delivered</p>
                             <p class="date">{{ $po->delivered_at->format('d F Y h:i A') }}</p>
                         </div>
                     </div>

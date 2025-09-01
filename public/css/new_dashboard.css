@@ -406,6 +406,16 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+
+}
+.recent-order-label a{
+    font-size: 13px; 
+    font-weight: normal; 
+    color: #666; 
+    text-decoration: none;
+}
+.recent-order-label a:hover{
+    color: #222;
 }
 
 .recent-order .order-details{
