@@ -33,6 +33,7 @@ class PurchaseOrder extends Model
         'rejected_by',
         'cancelled_by',
         'cancelled_at',
+        'cancelled_user_type',
     ];
 
     protected $casts = [

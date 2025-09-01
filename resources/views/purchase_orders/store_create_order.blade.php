@@ -320,7 +320,7 @@
                     
                     <div class="step-nav">
                         <button type="button" class="prev-btn">Previous</button>
-                        <button type="submit" name="status" class="draft-btn" id="submitBtn" value="Draft">Draft</button>
+                        {{-- <button type="submit" name="status" class="draft-btn" id="submitBtn" value="Draft">Draft</button> --}}
                         <button type="submit" name="status" class="submit-btn" id="submitBtn" value="Pending">Place Order</button>
                     </div>
                 </section>
@@ -332,7 +332,7 @@
     <script src="{{ asset('js/purchase_order.js') }}"></script>
     <script src="{{ asset('js/address.js') }}"></script>
   <script src="{{ asset('js/disableBtn.js') }}"></script>
-layout  
+  
 </body>
 </html>
 

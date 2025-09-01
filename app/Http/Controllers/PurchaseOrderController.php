@@ -541,6 +541,7 @@ class PurchaseOrderController extends Controller {
         if ($status === "Accepted") {
             $po->approved_by = $user; 
             $po->approved_at = now(); 
+            
         } 
         elseif ($status === "Delivered") {
             $po->delivered_at = now(); 
@@ -568,6 +569,7 @@ class PurchaseOrderController extends Controller {
         elseif ($status === "Rejected") {
             $po->rejected_at = now(); 
             $po->rejected_by = $user; 
+
         }
 
         $po->save();
@@ -575,6 +577,38 @@ class PurchaseOrderController extends Controller {
         return back()->with('success', "Purchase order has been {$status}.");
     }
 
+    public function cancelPOStatus(Request $request)
+    {
+        $po = PurchaseOrder::findOrFail($request->po_id);
+        $status = $request->input('status'); 
+        $user = $request->input('user_id');
+        $user_type = $request->input('user_type');
 
+        $po->status = $status;
+
+        if (in_array($status, ['Cancelled', 'Rejected'])) {
+            $purchaseOrderItems = PurchaseOrderItem::where('po_id', $po->id)->get();
+
+            foreach ($purchaseOrderItems as $item) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $product->quantity += $item->quantity;
+                    $product->save();
+                }
+            }
+        }
+
+      
+        if ($status === "Cancelled") {
+            $po->cancelled_at = now(); 
+            $po->cancelled_by = $user;
+            $po->cancelled_user_type= $user_type;
+        } 
+
+
+        $po->save();
+        return back()->with('success', 'Purchase order saved successfully.');
+
+    }
      
 }

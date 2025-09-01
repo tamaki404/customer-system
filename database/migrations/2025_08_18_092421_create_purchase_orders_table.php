@@ -39,6 +39,8 @@ class CreatePurchaseOrdersTable extends Migration
             $table->string('rejected_by', 26)->nullable();
             $table->timestamp('cancelled_at', 26)->nullable();
             $table->string('cancelled_by', 26)->nullable();
+            $table->string('cancelled_user_type', 26)->nullable();
+            
             $table->timestamps();
 
 

@@ -33,9 +33,9 @@
 
     </span>
  
-    @if(auth()->user()->user_type !== 'Customer')
         <form class="order-actions" action="{{ route('change.po_status') }}" method="POST">
             @csrf
+            @if(auth()->user()->user_type !== 'Customer')
 
                 @if($po->status === "Pending")
                     <button type="submit" name="status" value="Accepted" class="btn btn-success">Accept</button>
@@ -46,19 +46,27 @@
                     <button type="submit" name="status" value="Delivered" class="btn btn-primary">Mark as Delivered</button>
 
                 @else
-                {{-- <p class="muted-status-notify">This order has been {{ $po->status }}.</p> --}}
                 @endif
-    @endif
-    
 
+            <input type="hidden" name="po_id" value="{{ $po->id }}">
+            <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+            @endif
+        </form>
+
+        <form class="order-actions" action="{{ route('customer.po_status') }}" method="POST">
+            @csrf
+
+            @if(auth()->user()->user_type === 'Customer')
+                @if($po->status === 'Pending')
+                <button type="submit" name="status" value="Cancelled" class="btn btn-danger">Cancel</button>
+                @endif
+            @endif
 
             {{-- Always include these --}}
             <input type="hidden" name="po_id" value="{{ $po->id }}">
             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+            <input type="hidden" name="user_type" value="{{ auth()->user()->user_type }}">
         </form>
-
-
-
     <div class="order-div">
         <div class="order-header">
             <div class="order-id">

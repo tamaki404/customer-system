@@ -10,7 +10,7 @@
                 localStorage.setItem('default_address', JSON.stringify(addressData));
                 
                 this.showMessage('Default address saved successfully!', 'success');
-                this.updateSavedAddressDisplay();
+                // this.updateSavedAddressDisplay();
             },
 
             // Load default address
@@ -32,7 +32,7 @@
             clearDefaultAddress: function() {
                 localStorage.removeItem('default_address');
                 this.showMessage('Default address cleared!', 'info');
-                this.updateSavedAddressDisplay();
+                // this.updateSavedAddressDisplay();
             },
 
             // Get all current form data
@@ -188,28 +188,28 @@
             },
 
             // Update saved address display
-            updateSavedAddressDisplay: function() {
-                const displayDiv = document.getElementById('savedAddressDisplay');
-                const addressPreview = document.getElementById('addressPreview');
-                const savedAddress = localStorage.getItem('default_address');
+            // updateSavedAddressDisplay: function() {
+            //     const displayDiv = document.getElementById('savedAddressDisplay');
+            //     const addressPreview = document.getElementById('addressPreview');
+            //     const savedAddress = localStorage.getItem('default_address');
                 
-                if (savedAddress) {
-                    const addr = JSON.parse(savedAddress);
-                    displayDiv.style.display = 'block';
+            //     if (savedAddress) {
+            //         const addr = JSON.parse(savedAddress);
+            //         displayDiv.style.display = 'block';
                     
-                    addressPreview.innerHTML = `
-                        <strong>Saved Default Address:</strong><br>
-                        <strong>Street:</strong> ${addr.street}<br>
-                        <strong>Location:</strong> ${addr.barangay_text}, ${addr.municipality_text}, ${addr.province_text}, ${addr.region_text}<br>
-                        <strong>Postal Code:</strong> ${addr.postal_code}<br>
-                        <strong>Company:</strong> ${addr.company_name}<br>
-                        <strong>Billing Address:</strong> ${addr.billing_address}<br>
-                        <small style="color: #666;">Saved: ${new Date(addr.saved_at).toLocaleString()}</small>
-                    `;
-                } else {
-                    displayDiv.style.display = 'none';
-                }
-            },
+            //         addressPreview.innerHTML = `
+            //             <strong>Saved Default Address:</strong><br>
+            //             <strong>Street:</strong> ${addr.street}<br>
+            //             <strong>Location:</strong> ${addr.barangay_text}, ${addr.municipality_text}, ${addr.province_text}, ${addr.region_text}<br>
+            //             <strong>Postal Code:</strong> ${addr.postal_code}<br>
+            //             <strong>Company:</strong> ${addr.company_name}<br>
+            //             <strong>Billing Address:</strong> ${addr.billing_address}<br>
+            //             <small style="color: #666;">Saved: ${new Date(addr.saved_at).toLocaleString()}</small>
+            //         `;
+            //     } else {
+            //         displayDiv.style.display = 'none';
+            //     }
+            // },
 
             // Auto-save functionality
             checkAutoSave: function() {
@@ -307,14 +307,14 @@
         }
 
         // Add auto-save listeners to input fields
-        document.addEventListener('DOMContentLoaded', function() {
-            AddressManager.updateSavedAddressDisplay();
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     AddressManager.updateSavedAddressDisplay();
             
-            // Add change listeners for auto-save
-            const inputFields = ['postal_code', 'street', 'billing_address'];
-            inputFields.forEach(fieldId => {
-                document.getElementById(fieldId).addEventListener('input', function() {
-                    setTimeout(() => AddressManager.checkAutoSave(), 1000); // Delay to avoid too frequent saves
-                });
-            });
-        });
+        //     // Add change listeners for auto-save
+        //     const inputFields = ['postal_code', 'street', 'billing_address'];
+        //     inputFields.forEach(fieldId => {
+        //         document.getElementById(fieldId).addEventListener('input', function() {
+        //             setTimeout(() => AddressManager.checkAutoSave(), 1000); // Delay to avoid too frequent saves
+        //         });
+        //     });
+        // });

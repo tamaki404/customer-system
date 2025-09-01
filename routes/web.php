@@ -121,7 +121,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/order/view/{id}', [OrderController::class, 'orderView'])->name('order.view');
     Route::post('/order/cancel/{order_id}', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
     Route::post('/checkout', [OrderController::class, 'checkout']);
-    
+    Route::post('/customer/purchase-order/cancel', [PurchaseOrderController::class, 'cancelPOStatus'])
+        ->name('customer.po_status');
     // Product viewing
     Route::get('/product-image/{id}', [ProductController::class, 'showImage'])->name('product.image');
 
@@ -147,6 +148,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     // Customer Reports (Customer functionality)
     Route::get('/reports/customers', [ReportsController::class, 'customerReports'])->name('customer_reports');
     Route::get('/reports/customers/dateFilter', [ReportsController::class, 'customerDateFilter'])->name('customer_dateFilter');
+
+
     
     // ================================
     // ADMIN & STAFF ROUTES
