@@ -9,17 +9,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="{{ asset('css/receipts.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/receipts_now.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <title>Document</title>
+    <title>Receipts</title>
     <link rel="stylesheet" href="{{ asset('css/open-modal.css') }}">
 </head>
 <body>
 <script src="{{ asset('js/fadein.js') }}"></script>
 
-
+    {{-- modal --}}
     <div id="myModal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
@@ -41,7 +41,6 @@
                             const totalAmountInput = document.getElementById('total_amount');
                             if (form && totalAmountInput) {
                                 form.addEventListener('submit', function(e) {
-                                    // Remove all commas before submitting
                                     totalAmountInput.value = totalAmountInput.value.replace(/,/g, '');
                                 });
                             }
@@ -163,309 +162,222 @@
     </div>
 
 
-
-    <div class="receipt-wrapper fadein-animate">
-         <div class="wrapper-title" >
-            <form action="/date-search" id="searchCon" style="margin-left: 10px" class="date-search" method="GET">
-                <input type="text" style=" width: 390px; border: none;" name="search" class="search-bar" placeholder="Search receipt #, customer, amount, or date" value="{{ request('search') }}">
+    <div class="receipts-frame">
+        <div class="search-container">
+            <form action="{{ route('purchase_order') }}" id="text-search" class="date-search" method="GET">
+                <input type="text" name="search" class="search-bar"
+                    placeholder="Search receipt #, customer, amount, or date"
+                    value="{{ request('search') }}"
+                    style="outline:none;"
+                >
                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>
-            <form action="/date-search" class="date-search" id="from-to-date" method="GET">
+
+            <form action="{{ route('purchase_order') }}" class="date-search" id="from-to-date" method="GET">
                 <span>From</span>
-                <input type="date" name="from_date" class="input-date" value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
-                <span >To</span>
-                <input type="date" name="to_date" class="input-date" value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}" onchange="this.form.submit()">
+                <input type="date" name="from_date" class="input-date"
+                    value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                    onchange="this.form.submit()">
+                <span>To</span>
+                <input type="date" name="to_date" class="input-date"
+                    value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                    onchange="this.form.submit()">
             </form>
-        </div> 
+        </div>
 
-        <div class="receipt-container" style="padding: 15px">
+        <div class="receipt-title" >
+            <div class="receipt-title-button">
+                <h2>Receipts</h2>
+                @if(auth()->user()->user_type === 'Customer')
+                    <button id="openModalBtn" class="submit-ticket-btn">Submit a Receipt</button>
+                @endif
+     
+            </div>     
 
-            @php
-                $currentStatus = $status ?? request('status');
-                $baseParams = [
-                    'from_date' => request('from_date', now()->startOfMonth()->format('Y-m-d')),
-                    'to_date' => request('to_date', now()->endOfMonth()->format('Y-m-d')),
-                    'search' => request('search', '')
-                ];
-                $tabStatuses = [
-                    'All' => null,
-                    'Pending' => 'Pending',
-                    'Verified' => 'Verified',
-                    'Cancelled' => 'Cancelled',
-                    'Rejected' => 'Rejected'
-                ];
-            @endphp
-
-
-            @if($receipts->where('status', 'Verified')->count())
-                <div style="margin-bottom: 10px; font-size:16px; color: #888; flex-direction: row; display: flex; gap: 5px">
-                    Total Amount for Verified Receipts: <p style="color: orange; font-weight: bold; font-size: 18px;">₱{{ number_format($receipts->where('status', 'Verified')->sum('total_amount'), 2) }}</p>
-                    
+        </div>
+            @if(session('success'))
+                <div class="alert success" id="alert-notify"  style="padding: 10px 15px; background: #d4edda; color: #155724; border-radius: 5px; margin-bottom: 10px;" >
+                    {{ session('success') }}
                 </div>
             @endif
 
-            <!-- Pagination Info -->
-            <div style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
-                Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }} ({{ $receipts->total() }} total receipts)
+            @if($errors->any())
+                <div class="alert error" id="alert-notify" style=" display: flex; padding: 10px 15px; background: #f8d7da; color: #721c24; border-radius: 5px; margin-bottom: 10px;" >
+                    <ul style="margin: 0; padding-left: 20px;">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+
+
+        <div class="status-pagination">
+            <div class="tab-statuses">
+                @php
+                    $currentStatus = $status ?? request('status');
+                    $baseParams = [
+                        'from_date' => request('from_date', now()->startOfMonth()->format('Y-m-d')),
+                        'to_date' => request('to_date', now()->endOfMonth()->format('Y-m-d')),
+                        'search' => request('search', '')
+                    ];
+                    $tabStatuses = [
+                        'All' => null,
+                        'Pending' => 'Pending',
+                        'Verified' => 'Verified',
+                        'Cancelled' => 'Cancelled',
+                        'Rejected' => 'Rejected'
+                    ];
+                @endphp
+                @foreach($tabStatuses as $label => $value)
+                    @php
+                        $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
+                        $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
+                    @endphp
+                        <a href="{{ route('date.search', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">
+                            {{ $label }}
+                        </a>
+                @endforeach
             </div>
+            {{-- <div style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
+                Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }} ({{ $receipts->total() }} total receipts)
+            </div> --}}
 
+            @if($receipts->where('status', 'Verified')->count())
+                <div class="sum-receipts" style="margin: 0">
+                    Total Amount for Verified Receipts: <p class="sum-receipts-total" style="margin: 0">₱{{ number_format($receipts->where('status', 'Verified')->sum('total_amount'), 2) }}</p>
+                </div> 
+            @endif 
+        </div>
 
-                @isset($receipts)
-                @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
-                        <div class="status-tabs">
-                            @foreach($tabStatuses as $label => $value)
-                                @php
-                                    $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
-                                    $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
+        <div class="receipts-box">
+            <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:#f7f7fa; text-align: center;">
+                    <th style="width:5%;">#</th>
+                    <th style="width:15%;">Date</th>
+                    <th style="width:30%;">Customer</th>
+                    <th style="width:15%;">Amount</th>
+                    <th style="width:10%;">Status</th>
+                    <th style="width:15%;">Action by</th>
+                    <th style="width:10%;">Receipt</th>
+                </tr>
+            </thead>
+
+                <tbody>
+                    @forelse($receipts as $receipt)
+                        <tr style="height: 50px; text-align: center; cursor:pointer; overflow: hidden;" onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}</td>
+                            <td>{{ $receipt->store_name }}</td>
+                            <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                            <td>
+                                @php 
+                                    $statusClasses = [
+                                    'Pending' => 'status-pending',
+                                    'Verified' => 'status-verified',
+                                    'Cancelled' => 'status-cancelled',
+                                    'Rejected' => 'status-rejected',
+                                    ];
                                 @endphp
-                                <a href="{{ route('date.search', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">
-                                    {{ $label }}
-                                </a>
-                            @endforeach
-                        </div>
-                        @if($receipts->isEmpty())
-                            <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts found.</div>
-                        @else
-                            <div class="table-wrapper" style="overflow: scroll">
-                                <table style="width:100%; border-collapse:collapse;" class="receipt-table">
-                                    <thead>
-                    
-                                        <tr style="background:#f7f7fa; text-align: center; ">
-                                            <th style="width: 50px; padding: 10px;">#</th> 
-                                            <th style="width: 140px;">Date</th>
-                                            <th style="width: 200px;">Customer</th>
-                                            <th style="width: 80px;">Amount</th>
-                                            <th style="width: 80px;">Status</th>
-                                            <th style="width: 100px;">Action by</th>
-                                            <th style="width: 100px;">Receipt</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($receipts as $receipt)
-                                        
-                                            <tr style="height: 50px; text-align: center; cursor:pointer;" onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
-                                                
-                                                <td style="padding:10px 8px; font-size: 13px;">
-                                                    {{ $loop->iteration }}
-                                                </td>
-                                                <td style="padding:10px 8px; font-size: 13px;">
-                                                    {{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}
-                                                </td>
-                                                <td style="padding:10px 8px; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-                                                    {{ $receipt->store_name }}
-                                                </td>
-                                                <td style="padding:10px 8px; font-size: 13px;">
-                                                ₱{{ number_format($receipt->total_amount, 2) }}
-                                                </td>
-                                                <td>
-                                                    @php 
-                                                        $statusClasses = [
-                                                            'Pending' => 'status-pending',
-                                                            'Verified' => 'status-verified',
-                                                            'Cancelled' => 'status-cancelled',
-                                                            'Rejected' => 'status-rejected',
-                                    
-                                                        ];
-                                                    @endphp
 
-                                                    <div 
-                                                        class="{{ $statusClasses[$receipt->status] ?? 'status-default' }}">
-                                                         {{ $receipt->status }}
-                                                    </div>
-
-                                                </td>
-                                                <td style="font-size: 14px">{{ $receipt->verified_by }}</td>
-                                                <td>
-                                                    @if($receipt->receipt_image)
-                                                        @php
-                                                            $isBase64 = !empty($receipt->receipt_image_mime);
-                                                            $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;
-                                                        @endphp
-                                                        <img src="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
-                                                    @else
-                                                        N/A
-                                                    @endif
-                                                </td>
-
-
-                                            </tr>
-                                        @endforeach
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            
-                            <!-- Pagination Controls -->
-                            <div class="pagination-div" style="margin-top: 15px">
-                                @if($receipts->hasPages())
-                                    <div class="pagination-info" style="margin: 0; height:auto; margin-bottom: 10px; text-align: center;">
-                                        Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }}
-                                    </div>
-                                    
-                                    <div class="pagination-controls" style="font-size: 14px">
-                                        @if($receipts->onFirstPage())
-                                            <span>Previous</span>
-                                        @else
-                                            <a href="{{ $receipts->previousPageUrl() }}">
-                                                Previous
-                                            </a>
-                                        @endif
-                                        
-                                        @if($receipts->hasMorePages())
-                                            <a href="{{ $receipts->nextPageUrl() }}">
-                                                Next
-                                            </a>
-                                        @else
-                                            <span>Next</span>
-                                        @endif
-                                    </div>
+                                <div class="{{ $statusClasses[$receipt->status] ?? 'status-default' }}">
+                                    {{ $receipt->status }}
+                                </div>
+                            </td>
+                            <td style="font-size: 14px">{{ $receipt->verified_by }}</td>
+                            <td>
+                                @if($receipt->receipt_image)
+                                    @php
+                                        $isBase64 = !empty($receipt->receipt_image_mime);
+                                        $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;
+                                    @endphp
+                                    <img style="height: 50px" src="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
+                                    @else
+                                        N/A
                                 @endif
-                            </div>
-                        @endif
-                    @elseif(auth()->user()->user_type === 'Customer')
-                        <div class="title-wrapper">
-                            <h2 class="title" style="font-size: 25px; margin: 0">Your Receipts</h2>  
-                            <button id="openModalBtn">Submit a Receipt</button>
-                        </div>
-                        <div class="status-tabs">
-                            @foreach($tabStatuses as $label => $value)
-                                @php
-                                    $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
-                                    $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
-                                @endphp
-                                <a href="{{ route('date.search', $params) }}" class="status-tab{{ $isActive ? ' active' : '' }}">
-                                    {{ $label }}
-                                </a>
-                            @endforeach
-                        </div>
-                        @if($receipts->isEmpty())
-                            <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts found.</div>
-                        @else
-                            <div class="table-wrapper" style="height: 500px">
-                                                                 <table style="width:100%; border-collapse:collapse;" class="receipt-table">
-                                    <thead>
-                    
-                                        <tr style="background:#f7f7fa; text-align: center; ">
-                                            <th style="width: 50px; padding: 10px;">#</th> 
-                                            <th style="width: 140px;">Date</th>
-                                            <th style="width: 200px;">Receipt no.</th>
-                                            <th style="width: 80px;">Amount</th>
-                                            <th style="width: 80px;">Status</th>
-                                            <th style="width: 100px;">Action by</th>
-                                            <th style="width: 100px;">Receipt</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($receipts as $receipt)
-                                        
-                                            <tr style="height: 50px; text-align: center; cursor:pointer;" onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
-                                                
-                                                <td style="padding:10px 8px; font-size: 13px;">
-                                                    {{ $loop->iteration }}
-                                                </td>
-                                                <td style="padding:10px 8px; font-size: 13px;">
-                                                    {{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}
-                                                </td>
-                                                <td style="padding:10px 8px; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-                                                    {{ $receipt->receipt_number }}
-                                                </td>
-                                                <td style="padding:10px 8px; font-size: 13px;">
-                                                ₱{{ number_format($receipt->total_amount, 2) }}
-                                                </td>
-                                                <td>
-                                                    @php 
-                                                        $statusClasses = [
-                                                            'Pending' => 'status-pending',
-                                                            'Verified' => 'status-verified',
-                                                            'Cancelled' => 'status-cancelled',
-                                                            'Rejected' => 'status-rejected',
-                                    
-                                                        ];
-                                                    @endphp
+                            </td>
 
-                                                    <div
-                                                        class="{{ $statusClasses[$receipt->status] ?? 'status-default' }}">
-                                                         {{ $receipt->status }}
-                                                    </div>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="9" style="color: #888">No purchase orders found.</td>
+                        </tr>
+                    @endforelse
 
-                                                </td>
-                                                <td style="font-size: 13px">{{ $receipt->verified_by }}</td>
-                                                <td>
-                                                    @if($receipt->receipt_image)
-                                                        @php
-                                                            $isBase64 = !empty($receipt->receipt_image_mime);
-                                                            $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;
-                                                        @endphp
-                                                        <img src="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
-                                                    @else
-                                                        N/A
-                                                    @endif
-                                                </td>
+                </tbody>
+            </table>
 
-
-                                            </tr>
-                                        @endforeach
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <!-- Pagination Controls for Customers -->
-                            <div class="pagination-div" style="margin-top: 15px">
-                                @if($receipts->hasPages())
-                                    <div class="pagination-info" style="margin: 0; height:auto; margin-bottom: 10px; text-align: center;">
-                                        Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }}
-                                    </div>
-                                    
-                                    <div class="pagination-controls" style="font-size: 14px">
-                                        @if($receipts->onFirstPage())
-                                            <span>Previous</span>
-                                        @else
-                                            <a href="{{ $receipts->previousPageUrl() }}">
-                                                Previous
-                                            </a>
-                                        @endif
-                                        
-                                        @if($receipts->hasMorePages())
-                                            <a href="{{ $receipts->nextPageUrl() }}">
-                                                Next
-                                            </a>
-                                        @else
-                                            <span>Next</span>
-                                        @endif
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
-                    @endif
-                @else
-                    <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No receipts for this month.</div>
-                @endisset
-
-                @if(session('success'))
-                    <div class="alert success">{{ session('success') }}</div>
-                @endif
-
-                @if($errors->any())
-                    <div class="alert error">
-                        <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+        </div>
+           <div class="pagination-wrapper" style="margin-top: 10px; text-align: center; display: flex; flex-direction: row; justify-content: space-between;">
+                    {{-- page count --}}
+                @if ($receipts->total() > 0)
+                    <div style="text-align: center; font-size:14px; color: #555;">
+                        Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }}
                     </div>
                 @endif
 
+
+                @if ($receipts->hasPages())
+                    <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; ">
+
+                        {{-- previous --}}
+                        @if ($receipts->onFirstPage())
+                            <span style="color: #fb8e24; font-size: 14px; padding: 0.5rem 1rem; border: 1px solid #fb8e24; border-radius: 10px;">Previous</span>
+                        @else
+                            <a href="{{ $receipts->previousPageUrl() }}" 
+                            style="color: #fb8e24; text-decoration: none; font-size: 14px; padding: 0.5rem 1rem; border: 1px solid #fb8e24; border-radius: 10px;">
+                                Previous
+                            </a>
+                        @endif
+
+                        {{-- next --}}
+                        @if ($receipts->hasMorePages())
+                            <a href="{{ $receipts->nextPageUrl() }}" 
+                            style="color: #fb8e24; text-decoration: none; font-size: 14px; padding: 0.5rem 1rem; border: 1px solid #fb8e24; border-radius: 10px;">
+                                Next
+                            </a>
+                        @else
+                            <span style="color: #ccc; padding: 0.5rem 1rem; font-size: 14px; border: 1px solid #ddd; border-radius: 10px;">Next</span>
+                        @endif
+
+                    </div>
+                @endif
+
+            </div>
+
+
+
         
-        </div>
+
+
     </div>
+
+
+
+
+
+
+
+
+
+<script>
+    setTimeout(function() {
+        document.querySelectorAll('#alert-notify').forEach(flash => {
+            flash.style.transition = "opacity 0.5s ease";
+            flash.style.opacity = "0";
+            setTimeout(() => flash.remove(), 500);
+        });
+    }, 3000);
+</script>
+
+
+
+
 
 <script src="{{ asset('scripts/open-modal.js') }}"></script>
 <script src="{{ asset('js/disableBtn.js') }}"></script>
-
-
-
 
 </body>
 </html>

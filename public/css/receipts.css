@@ -4,16 +4,20 @@ body {
 }
 
 .receipt-wrapper {
+    font-family: 'Inter', sans-serif;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    align-content: start;
+    justify-content: start;
+    background-color: #f9f9f9;
+    padding: 30px;
+    gap: 10px;
     width: 97%;
     height: 97%;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     border-radius: 15px;
-    flex-direction: column;
-    text-align: left;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: auto;
 
 }
 
@@ -153,13 +157,11 @@ body {
 
 
 .receipt-wrapper .wrapper-title {
-    width: 100%;
     display: flex;
-    justify-content: left;
-    height: auto;
-    padding: 10px;
-    background-color: #fff;
     justify-content: space-between;
+    align-items: center;
+    padding: 0px;
+    background-color: transparent;
 }
 
 .wrapper-title h2 {
