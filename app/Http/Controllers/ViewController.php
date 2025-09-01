@@ -543,6 +543,7 @@ class ViewController extends Controller{
             // Recent purchase orders
             $recentPurchaseOrders = PurchaseOrder::whereBetween('created_at', [$from, $to])
                 ->orderBy('created_at', 'desc')
+                ->where('status', '!=', 'Draft')
                 ->take(10)
                 ->get();
 

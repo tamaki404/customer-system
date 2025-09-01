@@ -98,6 +98,8 @@ class ReportsController extends Controller
     $myPurchaseOrders = PurchaseOrder::where('user_id', $user->id)
         ->whereBetween('order_date', [$startDate, $endDate])
         ->orderBy('order_date', 'desc')
+        ->limit(5)
+
         ->get();
 
     $myPurchaseOrdersCount = $myPurchaseOrders->count();
