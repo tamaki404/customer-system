@@ -485,44 +485,48 @@ class ViewController extends Controller{
             $from = $request->input('from_date', Carbon::now()->startOfMonth()->toDateString());
             $to   = $request->input('to_date', Carbon::now()->endOfMonth()->toDateString());
 
+
+
             // Card counts (except today)
-            $purchaseOrdersCount = PurchaseOrder::where('status', 'pending')
+            $purchaseOrdersCount = PurchaseOrder::where('status', 'Pending')
+                ->whereDate('created_at', '!=', Carbon::today())
+                ->whereBetween('order_date', [$from, $to])
+                ->count();
+
+            $ordersCount = Orders::where('status', 'Pending')
+                ->whereDate('created_at', '!=', Carbon::today())
+                ->groupBy('orders.order_id')
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            $receiptsCount = Receipt::where('status', 'Pending')
                 ->whereDate('created_at', '!=', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
-            $ordersCount = Orders::where('status', 'pending')
-                ->whereDate('created_at', '!=', Carbon::today())
-                ->whereBetween('created_at', [$from, $to])
-                ->count();
-
-            $receiptsCount = Receipt::where('status', 'pending')
-                ->whereDate('created_at', '!=', Carbon::today())
-                ->whereBetween('created_at', [$from, $to])
-                ->count();
-
-            $usersCount = User::where('acc_status', 'pending')
+            $usersCount = User::where('acc_status', 'Pending')
                 ->whereDate('created_at', '!=', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
             // New data today
-            $newPurchaseOrdersCount = PurchaseOrder::where('status', 'pending')
+            $newPurchaseOrdersCount = PurchaseOrder::where('status', 'Pending')
                 ->whereDate('created_at', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
-            $newOrdersCount = Orders::where('status', 'pending')
+            $newOrdersCount = Orders::where('status', 'Pending')
+                ->whereDate('created_at', Carbon::today())
+                ->groupBy('orders.order_id')
+                ->whereBetween('created_at', [$from, $to])
+                ->count();
+
+            $newReceiptsCount = Receipt::where('status', 'Pending')
                 ->whereDate('created_at', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
-            $newReceiptsCount = Receipt::where('status', 'pending')
-                ->whereDate('created_at', Carbon::today())
-                ->whereBetween('created_at', [$from, $to])
-                ->count();
-
-            $newUsersCount = User::where('acc_status', 'pending')
+            $newUsersCount = User::where('acc_status', 'Pending')
                 ->whereDate('created_at', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
@@ -570,38 +574,39 @@ class ViewController extends Controller{
 
             $customerPendings = PurchaseOrder::where('status', 'Delivered')
                 ->where('user_id', $id)
-                ->whereDate('created_at', '!=', Carbon::today())
+                ->whereDate('delivered_at', '!=', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
             $customerOrders = Orders::where('status', 'Completed')
                 ->where('customer_id', $id)
-                ->whereDate('created_at', '!=', Carbon::today())
+                ->groupBy('orders.order_id')
+                ->whereDate('action_at', '!=', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
             $customerReceipts = Receipt::where('status', 'Verified')
                 ->where('id', $id)
-                ->whereDate('created_at', '!=', Carbon::today())
+                ->whereDate('verified_at', '!=', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
             // New data today
             $newCustomerPendings = PurchaseOrder::where('status', 'Delivered')
                 ->where('user_id', $id)
-                ->whereDate('created_at', Carbon::today())
+                ->whereDate('delivered_at', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
             $newCustomerOrders = Orders::where('status', 'Completed')
                 ->where('customer_id', $id)
-                ->whereDate('created_at', Carbon::today())
+                ->whereDate('action_at', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
             $newCustomerReceipts = Receipt::where('status', 'Verified')
                 ->where('id', $id)
-                ->whereDate('created_at', Carbon::today())
+                ->whereDate('verified_at', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
@@ -660,7 +665,7 @@ class ViewController extends Controller{
                 'recentOrder',
                 'spendingSummary',
                 'spendingLabels',
-                'spendingData'
+                'spendingData',
 
             ));
         }
