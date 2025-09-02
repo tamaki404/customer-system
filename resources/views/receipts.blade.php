@@ -252,72 +252,129 @@
         </div>
 
         <div class="receipts-box">
-            <table style="width:100%; border-collapse:collapse;">
-            <thead>
-                <tr style="background:#f7f7fa; text-align: center;">
-                    <th style="width:5%;">#</th>
-                    <th style="width:15%;">Date</th>
-                    <th style="width:30%;">Customer</th>
-                    <th style="width:15%;">Amount</th>
-                    <th style="width:10%;">Status</th>
-                    <th style="width:15%;">Action by</th>
-                    <th style="width:10%;">Receipt</th>
-                </tr>
-            </thead>
+            {{-- admin & staff --}}
+            @if(auth()->user()->user_type !== 'Customer')
+                <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr style="background:#f7f7fa; text-align: center;">
+                        <th style="width:5%;">#</th>
+                        <th style="width:15%;">Date</th>
+                        <th style="width:30%;">Customer</th>
+                        <th style="width:15%;">Amount</th>
+                        <th style="width:10%;">Status</th>
+                        <th style="width:15%;">Action by</th>
+                        <th style="width:10%;">Receipt</th>
+                    </tr>
+                </thead>
 
-                <tbody>
-                    @forelse($receipts as $receipt)
-                        <tr style="height: 50px; text-align: center; cursor:pointer; overflow: hidden;" onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}</td>
-                            <td>{{ $receipt->store_name }}</td>
-                            <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                            <td>
-                                @php 
-                                    $statusClasses = [
-                                    'Pending' => 'status-pending',
-                                    'Verified' => 'status-verified',
-                                    'Cancelled' => 'status-cancelled',
-                                    'Rejected' => 'status-rejected',
-                                    ];
-                                @endphp
-
-                                <div class="{{ $statusClasses[$receipt->status] ?? 'status-default' }}">
-                                    {{ $receipt->status }}
-                                </div>
-                            </td>
-                            <td style="font-size: 14px">{{ $receipt->verified_by }}</td>
-                            <td>
-                                @if($receipt->receipt_image)
-                                    @php
-                                        $isBase64 = !empty($receipt->receipt_image_mime);
-                                        $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;
+                    <tbody>
+                        @forelse($receipts as $receipt)
+                            <tr style="height: 50px; text-align: center; cursor:pointer; overflow: hidden;" onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}</td>
+                                <td>{{ $receipt->store_name }}</td>
+                                <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                <td>
+                                    @php 
+                                        $statusClasses = [
+                                        'Pending' => 'status-pending',
+                                        'Verified' => 'status-verified',
+                                        'Cancelled' => 'status-cancelled',
+                                        'Rejected' => 'status-rejected',
+                                        ];
                                     @endphp
-                                    <img style="height: 50px" src="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
-                                    @else
-                                        N/A
-                                @endif
-                            </td>
 
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="9" style="color: #888">No purchase orders found.</td>
-                        </tr>
-                    @endforelse
+                                    <div class="{{ $statusClasses[$receipt->status] ?? 'status-default' }}">
+                                        {{ $receipt->status }}
+                                    </div>
+                                </td>
+                                <td style="font-size: 14px">{{ $receipt->verified_by }}</td>
+                                <td>
+                                    @if($receipt->receipt_image)
+                                        @php
+                                            $isBase64 = !empty($receipt->receipt_image_mime);
+                                            $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;
+                                        @endphp
+                                        <img style="height: 50px" src="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
+                                        @else
+                                            N/A
+                                    @endif
+                                </td>
 
-                </tbody>
-            </table>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" style="color: #888">No purchase orders found.</td>
+                            </tr>
+                        @endforelse
 
+                    </tbody>
+                </table>
+
+
+            {{-- customer --}}
+            @elseif(auth()->user()->user_type === 'Customer')
+                <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr style="background:#f7f7fa; text-align: center;">
+                        <th style="width:5%;">#</th>
+                        <th style="width:15%;">Date</th>
+                        <th style="width:15%;">Amount</th>
+                        <th style="width:10%;">Status</th>
+                        <th style="width:10%;">Receipt</th>
+                    </tr>
+                </thead>
+
+                    <tbody>
+                        @forelse($receipts as $receipt)
+                            <tr style="height: 50px; text-align: center; cursor:pointer; overflow: hidden;" onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}</td>
+                                <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                <td>
+                                    @php 
+                                        $statusClasses = [
+                                        'Pending' => 'status-pending',
+                                        'Verified' => 'status-verified',
+                                        'Cancelled' => 'status-cancelled',
+                                        'Rejected' => 'status-rejected',
+                                        ];
+                                    @endphp
+
+                                    <div class="{{ $statusClasses[$receipt->status] ?? 'status-default' }}">
+                                        {{ $receipt->status }}
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($receipt->receipt_image)
+                                        @php
+                                            $isBase64 = !empty($receipt->receipt_image_mime);
+                                            $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;
+                                        @endphp
+                                        <img style="height: 50px" src="{{ $dataUri ? $dataUri : asset('images/' . $receipt->receipt_image) }}" class="receipt-thumb" alt="Receipt Image">
+                                        @else
+                                            N/A
+                                    @endif
+                                </td>
+
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" style="color: #888">No purchase orders found.</td>
+                            </tr>
+                        @endforelse
+
+                    </tbody>
+                </table>
+            @endif
         </div>
+            {{-- page count --}}
            <div class="pagination-wrapper" style="margin-top: 10px; text-align: center; display: flex; flex-direction: row; justify-content: space-between;">
-                    {{-- page count --}}
                 @if ($receipts->total() > 0)
                     <div style="text-align: center; font-size:14px; color: #555;">
                         Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }}
                     </div>
                 @endif
-
 
                 @if ($receipts->hasPages())
                     <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; ">
@@ -344,7 +401,6 @@
 
                     </div>
                 @endif
-
             </div>
 
 

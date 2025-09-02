@@ -75,23 +75,19 @@ class ReceiptController extends Controller{
         $user = auth()->user();
         $query = Receipt::with('customer');
         
-        // status filter (tabs)
         $status = $request->input('status');
         if ($status && in_array($status, ['Pending', 'Verified', 'Cancelled', 'Rejected'])) {
             $query->where('status', $status);
         }
 
-        // apply date range filter if provided
         $from_date = $request->input('from_date', now()->startOfMonth()->format('Y-m-d'));
         $to_date = $request->input('to_date', now()->endOfMonth()->format('Y-m-d'));
 
         if ($from_date && $to_date) {
-            // When viewing status-specific tabs for finalized states, use verified_at; otherwise created_at
             $dateColumn = ($status && in_array($status, ['Verified', 'Cancelled', 'Rejected'])) ? 'verified_at' : 'created_at';
             $query->whereBetween($dateColumn, [Carbon::parse($from_date)->startOfDay(), Carbon::parse($to_date)->endOfDay()]);
         }
 
-        // apply search filter if provided
         $search = $request->input('search', '');
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -108,8 +104,9 @@ class ReceiptController extends Controller{
         } else {
             $receipts = $query->where('id', $user->id)->orderBy('created_at', 'desc')->paginate(50);
         }
+
+
         
-        // append query parameters to pagination links
         $receipts->appends([
             'from_date' => $from_date,
             'to_date' => $to_date,
