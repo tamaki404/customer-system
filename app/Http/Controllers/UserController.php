@@ -289,7 +289,9 @@ public function checkUsername(Request $request)
 
     public function updateProfile(Request $request)
     {
+        try {
         $user = auth()->user();
+        
 
         if ($user->user_type === 'Customer') {
             $request->validate([
@@ -316,14 +318,16 @@ public function checkUsername(Request $request)
             $user->mobile = $request->input('mobile');
             $user->save();
         }
-        // Staff: no update allowed
 
-        return back()->with('success', 'Profile updated successfully.');
-    }
+        return redirect()->back()->with('success', 'Changes saved successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Something went wrong: '.$e->getMessage());
+        }
 
 
 }
 
+}
 
 
 

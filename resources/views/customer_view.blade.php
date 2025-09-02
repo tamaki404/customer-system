@@ -221,7 +221,7 @@
                     </table>
                     <div class="pagination-wrapper" >
                         @if ($orders->total() > 0)
-                            <div>
+                            <div style="font-size: 14px">
                                 Page {{ $orders->currentPage() }} of {{ $orders->lastPage() }}
                             </div>
                         @endif
@@ -290,7 +290,7 @@
                     </table>
                     <div class="pagination-wrapper" >
                         @if ($orders->total() > 0)
-                            <div style="height: auto">
+                            <div style="font-size: 14px">
                                 Page {{ $orders->currentPage() }} of {{ $orders->lastPage() }}
                             </div>
                         @endif
@@ -365,7 +365,7 @@
                     </table>
                     <div class="pagination-wrapper" >
                         @if ($orders->total() > 0)
-                            <div style="height: auto">
+                            <div style="font-size: 14px">
                                 Page {{ $orders->currentPage() }} of {{ $orders->lastPage() }}
                             </div>
                         @endif
@@ -396,7 +396,6 @@
     </div>
 
     <script>
-        // Auto-hide success/error messages after 5 seconds
         setTimeout(function() {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(function(alert) {
@@ -408,7 +407,6 @@
             });
         }, 5000);
 
-        // Match reports tabs behavior/design
         function switchTab(tabId) {
             const tabContents = document.querySelectorAll('.tab-content');
             tabContents.forEach(content => {

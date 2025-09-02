@@ -26,11 +26,20 @@ class PurchaseOrderController extends Controller {
 
         $query = PurchaseOrder::query();
 
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('po_number', 'like', "%{$search}%")
+                ->orWhere('receiver_name', 'like', "%{$search}%")
+                ->orWhere('company_name', 'like', "%{$search}%")
+                ->orWhere('order_date', 'like', "%{$search}%"); 
+
+            });
+        }
         if ($user->user_type !== 'Staff' && $user->user_type !== 'Admin') {
             $query->where('user_id', $user->id);
         }
 
-        if ($status && in_array($status, ['Draft', 'Pending', 'Processing', 'Partial', 'Completed', 'Cancelled'])) {
+        if ($status && in_array($status, ['Draft', 'Pending', 'Processing', 'Delivered', 'Cancelled', 'Rejected'])) {
             $query->where('status', $status);
         }
 

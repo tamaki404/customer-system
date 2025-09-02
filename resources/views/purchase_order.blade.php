@@ -51,9 +51,9 @@
                     'Draft' => 'Draft',
                     'Pending' => 'Pending',
                     'Processing' => 'Processing',
-                    'Partial' => 'Partial',
-                    'Completed' => 'Completed',
+                    'Delivered' => 'Delivered',
                     'Cancelled' => 'Cancelled',
+                    'Rejected' => 'Rejected',
                 ];
 
                 $baseParams = [

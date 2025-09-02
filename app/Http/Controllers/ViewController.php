@@ -89,8 +89,10 @@ class ViewController extends Controller{
         $customer = User::findOrFail($id);
 
         $receipts = Receipt::where('id', $id)
-            ->orderBy('created_at', 'desc')
-            ->paginate(7, ['*'], 'receipts_page');
+        ->orderBy('created_at', 'desc')
+        ->take(10)                               
+        ->paginate(2, ['*'], 'receipts_page');
+
 
         $orders = Orders::select(
                 'orders.order_id',
@@ -629,7 +631,7 @@ class ViewController extends Controller{
                 ->get();
 
             $spendingLabels = $spendingSummary->map(function ($row) {
-                $start = \Carbon\Carbon::parse($row->week_start);
+                $start = Carbon::parse($row->week_start);
                 return $start->format('M d') . ' - ' . $start->copy()->addDays(6)->format('M d');
             });
 
