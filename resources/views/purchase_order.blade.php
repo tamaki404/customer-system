@@ -27,14 +27,20 @@
             </form>
 
             <form action="{{ route('purchase_order') }}" class="date-search" id="from-to-date" method="GET">
-                <span>From</span>
-                <input type="date" name="from_date" class="input-date"
-                    value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
-                    onchange="this.form.submit()">
-                <span>To</span>
-                <input type="date" name="to_date" class="input-date"
-                    value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
-                    onchange="this.form.submit()">
+                <div>
+                    <span>From</span>
+                    <input type="date" name="from_date" class="input-date"
+                        value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                        onchange="this.form.submit()">
+                </div>
+                <div>
+                    <span>To</span>
+                    <input type="date" name="to_date" class="input-date"
+                        value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                        onchange="this.form.submit()">
+                </div>
+
+
             </form>
         </div>
 

@@ -292,34 +292,60 @@ tr{
         padding: 10px;
         margin: 0;
     }
+   
     .search-container{
-        flex-direction: column;
+        display: flex;
+        flex-wrap: wrap;
         gap: 5px;
+    }
+    .date-search .search-bar{
+        font-size: 12px;
+    }
+    #text-search{
+        width: 100%
+    }
+
+    #text-search input[type="text"] {
+        font-size: 12px;
+    }
+    .date-search div{
+        display: flex;
+        flex-direction: column;
+    }
+    .date-search div span{
+        font-size: 12px;
+    }
+    .input-date{
+        width: 30px;
         
     }
-
-    #from-to-date {
-    justify-content:center;
-    align-items: center;
-    gap: 5px;
+    .status-tabs a{
+        font-size: 12px;
     }
-    #from-to-date input{
+    
+
+    #from-to-date input[type="date"] {
+        font-size: 12px;
+    }
+
+    .date-search div input {        
         width: 130px;
+        
     }
-
-    #text-search input {
-        width: 100%;
-    }
-
-    .date-search input {
-        width: 40%;
-    }
-
 
     .purchase-list {
         height: 60%;
     }
-
+    .title-purchase h2{
+        font-size: 20px;
+        margin: 0;
+    }
+    thead tr th{
+        font-size: 12px;
+    }
+    table tbody tr td{
+        font-size: 12px;
+    }
 
 
 
