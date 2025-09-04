@@ -1,22 +1,27 @@
 
 @extends('layout')
 
-@section('content')
+@section( 'content')
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="{{ asset('css/receipts_now.css') }}">
+@push('styles')
     <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/receipts_now.css') }}">
+@endpush
+@push('scripts')
+    <link rel="stylesheet" href="{{ asset('css/open-modal.css') }}">
+    <script src="{{ asset('scripts/open-modal.js') }}"></script>
+    <script src="{{ asset('js/disableBtn.js') }}"></script>
+    <script src="{{ asset('js/receipts.js') }}"></script>
+@endpush
+@push('cdn')
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <title>Receipts</title>
-    <link rel="stylesheet" href="{{ asset('css/open-modal.css') }}">
-</head>
-<body>
+@endpush
+
+@extends('layout')
+
+@section('content')
+
 <script src="{{ asset('js/fadein.js') }}"></script>
 
     {{-- modal --}}
@@ -122,26 +127,6 @@
                             <label>Invoice Number</label>
                             <input type="text" name="invoice_number" id="invoice_number" disabled>
                         </div>
-
-                        <script>
-                            document.addEventListener('DOMContentLoaded', () => {
-                                const paymentInput = document.getElementById('payment_method');
-                                const invoiceInput = document.getElementById('invoice_number');
-
-                                function toggleInvoiceField() {
-                                    const method = paymentInput.value.trim().toLowerCase();
-                                    if (method === 'gcash' || method === 'card') {
-                                        invoiceInput.disabled = false;
-                                    } else {
-                                        invoiceInput.disabled = true;
-                                    }
-                                }
-
-                                toggleInvoiceField(); 
-                                paymentInput.addEventListener('input', toggleInvoiceField);
-                            });
-                        </script>
-
 
 
 
@@ -369,14 +354,14 @@
             @endif
         </div>
             {{-- page count --}}
-           <div class="pagination-wrapper" style="margin-top: 10px; text-align: center; display: flex; flex-direction: row; justify-content: space-between;">
-                @if ($receipts->total() > 0)
+        <div class="pagination-wrapper" style="margin-top: 10px; text-align: center; display: flex; flex-direction: row; justify-content: space-between;">
+            @if ($receipts->total() > 0)
                     <div style="text-align: center; font-size:14px; color: #555;">
                         Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }}
                     </div>
-                @endif
+            @endif
 
-                @if ($receipts->hasPages())
+            @if ($receipts->hasPages())
                     <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; ">
 
                         {{-- previous --}}
@@ -400,43 +385,10 @@
                         @endif
 
                     </div>
-                @endif
-            </div>
-
-
-
-        
-
-
+            @endif
+        </div>
     </div>
 
-
-
-
-
-
-
-
-
-<script>
-    setTimeout(function() {
-        document.querySelectorAll('#alert-notify').forEach(flash => {
-            flash.style.transition = "opacity 0.5s ease";
-            flash.style.opacity = "0";
-            setTimeout(() => flash.remove(), 500);
-        });
-    }, 3000);
-</script>
-
-
-
-
-
-<script src="{{ asset('scripts/open-modal.js') }}"></script>
-<script src="{{ asset('js/disableBtn.js') }}"></script>
-
-</body>
-</html>
 
 
 

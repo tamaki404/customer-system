@@ -260,6 +260,9 @@
     <!-- Main Content -->
     <div class="showScreen" id="showScreen">
         @yield('content')
+        @stack('styles')
+        @stack('scripts')
+        @stack('cdn')
     </div>
 
 </div>
