@@ -305,6 +305,50 @@ tr td{
 
 
 @media (max-width: 768px) {
+
+.search-container{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .date-search .search-bar{
+        font-size: 12px;
+    }
+    #text-search{
+        width: 100%
+    }
+
+    #text-search input[type="text"] {
+        font-size: 12px;
+    }
+    .date-search div{
+        display: flex;
+        flex-direction: column;
+    }
+    .date-search div span{
+        font-size: 12px;
+    }
+    .input-date{
+        width: 30px;
+        
+    }
+    .status-tabs a{
+        font-size: 12px;
+    }
+    
+
+    #from-to-date input[type="date"] {
+        font-size: 12px;
+    }
+
+    .date-search div input {        
+        width: 130px;
+        
+    }
+    .titleCount h2{
+        font-size: 20px;
+    }
+
     .wrapper-title{
         display: flex;
         flex-direction: column;
@@ -314,11 +358,7 @@ tr td{
         padding: 10px;
 
     }
-    #from-to-date{
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-    }
+
     .customersFrame {
         padding: 15px;
     }
@@ -333,14 +373,7 @@ tr td{
         padding: 8px 5px;
     }
 
-        .date-search {
-        flex-direction: row;
-        align-items: stretch;
-    }
-
-    .date-search input{
-        width: 80%;
-    }
+    
     .addStaffBtn{
         width: 20%;
     } 
@@ -371,12 +404,7 @@ tr td{
         gap: 5px;
         height: auto;
     }
-    .date-search input{
-        width: 140px;
-    }
-    .date-search span{
-        font-size: 13px;
-    }
+
 }
 
 @media (max-width: 500px) {

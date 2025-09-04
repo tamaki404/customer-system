@@ -150,14 +150,20 @@
                 </form>
 
                 <form action="{{ route('purchase_order') }}" class="date-search" id="from-to-date" method="GET">
-                    <span>From</span>
-                    <input type="date" name="from_date" class="input-date"
-                        value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
-                        onchange="this.form.submit()">
-                    <span>To</span>
-                    <input type="date" name="to_date" class="input-date"
-                        value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
-                        onchange="this.form.submit()">
+                    <div>
+                        <span>From</span>
+                        <input type="date" name="from_date" class="input-date"
+                            value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                            onchange="this.form.submit()">
+                    </div>
+                    <div>
+                        <span>To</span>
+                        <input type="date" name="to_date" class="input-date"
+                            value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                            onchange="this.form.submit()">
+                    </div>
+
+
                 </form>
             </div>
 
@@ -232,13 +238,13 @@
                     <table style="width:100%; border-collapse:collapse;">
                     <thead>
                         <tr style="background:#f7f7fa; text-align: center;">
-                            <th style="width:5%;">#</th>
-                            <th style="width:15%;">Date</th>
-                            <th style="width:30%;">Customer</th>
-                            <th style="width:15%;">Amount</th>
-                            <th style="width:10%;">Status</th>
-                            <th style="width:15%;">Action by</th>
-                            <th style="width:10%;">Receipt</th>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action by</th>
+                            <th>Receipt</th>
                         </tr>
                     </thead>
 
@@ -263,7 +269,7 @@
                                             {{ $receipt->status }}
                                         </div>
                                     </td>
-                                    <td style="font-size: 14px">{{ $receipt->verified_by }}</td>
+                                    <td>{{ $receipt->verified_by }}</td>
                                     <td>
                                         @if($receipt->receipt_image)
                                             @php
