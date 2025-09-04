@@ -13,6 +13,26 @@
     <title>Product Details</title>
 </head>
 <body>
+    <!-- confirmation modal -->
+    <div class="modal fade" id="confirmModal" style="display: none;"  tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"  style="justify-self: center; align-self: center; ">
+            <div class="modal-content" style="border-top: 4px solid #ffde59;">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="padding: 0; margin: 0;">Confirm action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" style="border: none; font-size: 14px;">
+                    Are you sure you want to commit changes?
+                </div>
+
+                <div class="modal-footer" style="padding: 5px">
+                    <button type="button" id="cancelBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirmSaveBtn" class="btn" style="background: #ffde59; font-weight: bold; font-size: 14px;">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {{-- edit product modal --}}
 <div id="modalmodifyProduct" style="display:none; position:fixed; z-index:9999; left:0; overflow: hidden; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
@@ -134,6 +154,18 @@
 </div>
 
 <div class="productDetailFrame">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show position-fixed" 
+                style="top: 20px; right: 20px; z-index: 9999; font-size: 14px; border-radius: 10px;">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show position-fixed" 
+                style="top: 20px; right: 20px; z-index: 9999; font-size: 14px; border-radius: 10px;">
+                {{ session('error') }}
+            </div>
+        @endif
     <a class="go-back-a" href="/store"><- Store</a>
         <style>
             .go-back-a{
@@ -253,6 +285,7 @@
                             @csrf
                             <input type="number" name="addedStock" min="3" placeholder="000">
                             <button type="submit" id="submitBtn" class="add-stock-btn" style="">Add stock</button>
+                            
                         </form>
                     </div>
                 </div>
@@ -264,6 +297,7 @@
 </div>
 
 <script src="{{ asset('scripts/product_view.js') }}"></script>
+<script src="{{ asset('js/confirmation-modal/product_view.js') }}"></script>
 
 </body>
 </html>

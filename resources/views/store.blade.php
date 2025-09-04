@@ -149,6 +149,8 @@
     </div>
     </div>
 
+
+
     <!-- cart modal -->
     <div id="cartModal" class="modal" style="display:none;">
         <div class="cart-content">
@@ -466,6 +468,7 @@
     <script src="{{ asset('scripts/cart.js') }}"></script>
     <script src="{{ asset('js/store-modals.js') }}"></script>
     <script src="{{ asset('js/filter-products.js') }}"></script>
+    <script src="{{ asset('js/store.js') }}"></script>
 
 </body>
 </html>
