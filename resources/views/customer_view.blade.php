@@ -124,50 +124,10 @@
 
 
                 <div class="statusButton">
-                    <!-- Account Status Display -->
-                    {{-- <div class="status-section" style="width: auto;">
-                        <span class="status-badge" style="
-                            padding: 6px 12px;
-                            border-radius: 20px;
-                            font-size: 12px;
-                            font-weight: 600;
-                            letter-spacing: 0.5px;
-                            width: 100px;
-                            align-items: center;
-                            text-align: center;
-                            @if($customer->acc_status === 'Active')
-                                background: #d4edda;
-                                color: #155724;
-                                border: 1px solid #c3e6cb;
-                            @elseif($customer->acc_status === 'accepted')
-                                background: #d1ecf1;
-                                color: #0c5460;
-                                border: 1px solid #bee5eb;
-                            @elseif($customer->acc_status === 'Suspended')
-                                background: #f8d7da;
-                                color: #721c24;
-                                border: 1px solid #f5c6cb;
-                            @else
-                                background: #fff3cd;
-                                color: #856404;
-                                border: 1px solid #ffeaa7;
-                            @endif
-                        ">
-                            {{ $customer->acc_status }}
-                        </span>
-                    </div> --}}
 
                 <!-- Action Buttons -->
                     @if(auth()->user()->user_type !== 'Customer')
                         <div class="action-buttons" style="margin-left: auto">
-                            {{-- @if($customer->acc_status !== 'Active')
-                                <form action="{{ url('/customer/activate/' . $customer->id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
-                                    @csrf
-                                    <button type="button" class="btn-confirm activate-btn" onmouseover="this.style.background='#218838'" 
-                                    onmouseout="this.style.background='#28a745'" data-action="Activate" >Activate account</button>
-                   
-                                </form>
-                            @endif --}}
 
                             @if($customer->acc_status === 'Active')
                                 <form action="{{ url('/customer/suspend/' . $customer->id) }}" method="POST" style="display: inline-block; margin-right: 10px;">

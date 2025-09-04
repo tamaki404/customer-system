@@ -15,7 +15,42 @@
 <body>
     <script src="{{ asset('js/fadein.js') }}"></script>
     
+        <!-- confirmation modal -->
+    <div class="modal fade" id="confirmModal" style="display: none;"  tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"  style="justify-self: center; align-self: center; ">
+            <div class="modal-content" style="border-top: 4px solid #ffde59;">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="padding: 0; margin: 0;">Confirm action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" style="border: none; font-size: 14px;">
+                    Are you sure you want to commit changes?
+                </div>
+
+                <div class="modal-footer" style="padding: 5px">
+                    <button type="button" id="cancelBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirmSaveBtn" class="btn" style="background: #ffde59; font-weight: bold; font-size: 14px;">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="staffFrame">
+
+        @if(session('success'))
+            <div class="alert alert-success" style="background: #d4edda; color: #155724; font-weight: normal; position: absolute; z-index: 100; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger" style="background: #f8d7da; font-weight: normal; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+                {{ session('error') }}
+            </div>
+        @endif
+
          <a class="go-back-a" href="/staffs" ><- Staffs</a>
             <style>
                 .go-back-a{
@@ -30,11 +65,7 @@
                 }
             </style>
         <div class="header">
-           
             <h2 >Staff Details</h2>
-            
-
-
         </div>
 
         
@@ -175,7 +206,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeEditModal()">&times;</span>
             <h3>Edit Profile Information</h3>
-            <form action="{{ url('/staff/update-profile/' . $staff->id) }}" id="submitForm" method="POST">
+            <form action="{{ url('/staff/update-profile/' . $staff->id) }}" id="editProfileForm" method="POST">
                 @csrf
                 <div class="form-group">
                     <label>Name:</label>
@@ -190,12 +221,16 @@
                     <input type="email" name="email" value="{{ $staff->email }}" required>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="save-btn" id="submitBtn">Save Changes</button>
-                    <button type="button" class="cancel-btn" id="submitBtn" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" style="background-color: #28a745; font-weight: normal;" class="reactivate-btn save-btn">
+                        Save changes
+                    </button>
+
+                    <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
+
 
          <!-- Change Password Modal -->
      <div id="passwordModal" class="modal">
@@ -211,8 +246,8 @@
                  </div>
                  @else
                  <div class="form-group">
-                     <p style="color: #666; font-style: italic; margin-bottom: 15px;">
-                         <i class="fas fa-info-circle"></i> As an admin, you can change this staff member's password without requiring their current password.
+                     <p style="color: #666; font-size: 14px; margin-bottom: 15px;">
+                        As an admin, you can change this staff member's password without requiring their current password.
                      </p>
                  </div>
                  @endif
@@ -255,7 +290,7 @@
                      </select>
                  </div>
                  <div class="form-actions">
-                     <button type="submit" class="status-btn"  id="submitBtn">Update Status</button>
+                     <button type="submit" class="status-btn save-btn"  id="submitBtn">Update Status</button>
                      <button type="button" class="cancel-btn" onclick="closeStatusModal()"  id="submitBtn">Cancel</button>
                  </div>
              </form>
@@ -267,11 +302,11 @@
          <div class="modal-content">
              <span class="close" onclick="closeDeactivateModal()">&times;</span>
              <h3>Deactivate Account</h3>
-             <p>Are you sure you want to deactivate this staff account? They will not be able to log in until reactivated.</p>
+             <p style="font-size: 14px">Are you sure you want to deactivate this staff account? They will not be able to log in until reactivated.</p>
              <form action="{{ url('/staff/deactivate/' . $staff->id) }}" method="POST" id="submitForm">
                  @csrf
                  <div class="form-actions">
-                     <button type="submit" class="deactivate-btn">Deactivate</button>
+                     <button type="submit" class="deactivate-btn save-btn">Deactivate</button>
                      <button type="button" class="cancel-btn" onclick="closeDeactivateModal()">Cancel</button>
                  </div>
              </form id="submitBtn">
@@ -283,7 +318,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeDeleteModal()">&times;</span>
             <h3>Delete Account</h3>
-            <p><strong>Warning:</strong> This action cannot be undone. All data associated with this account will be permanently deleted.</p>
+            <p style="font-size: 14px"><strong>Warning:</strong> This action cannot be undone. All data associated with this account will be permanently deleted.</p>
             <form action="{{ url('/staff/delete/' . $staff->id) }}" method="POST"  id="submitForm">
                 @csrf
                 @method('DELETE')
@@ -292,88 +327,17 @@
                     <input type="text" name="confirm_delete" placeholder="DELETE" required>
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="delete-btn"  id="deleteBtn">Delete Account</button>
+                    <button type="submit" class="delete-btn save-btn"  id="deleteBtn">Delete Account</button>
                     <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
-<script src="{{ asset('js/disableBtn.js') }}"></script>
-    <script>
-        // Image upload functionality
-        document.getElementById('image').addEventListener('change', function() {
-            const saveBtn = document.querySelector('.save-btn');
-            if (this.files.length > 0) {
-                saveBtn.style.display = 'inline-block';
-            } else {
-                saveBtn.style.display = 'none';
-            }
-        });
+    <script src="{{ asset('js/disableBtn.js') }}"></script>
+    <script src="{{ asset('js/customer_view.js') }}"></script>
+    <script src="{{ asset('js/confirmation-modal/staff_view.js') }}"></script>
 
-        // Modal functions
-        function openEditModal() {
-            document.getElementById('editModal').style.display = 'block';
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-
-        function openPasswordModal() {
-            document.getElementById('passwordModal').style.display = 'block';
-        }
-
-        function closePasswordModal() {
-            document.getElementById('passwordModal').style.display = 'none';
-        }
-
-                 function openStatusModal() {
-             document.getElementById('statusModal').style.display = 'block';
-         }
- 
-         function closeStatusModal() {
-             document.getElementById('statusModal').style.display = 'none';
-         }
- 
-         function openDeactivateModal() {
-             document.getElementById('deactivateModal').style.display = 'block';
-         }
- 
-         function closeDeactivateModal() {
-             document.getElementById('deactivateModal').style.display = 'none';
-         }
-
-        function openDeleteModal() {
-            document.getElementById('deleteModal').style.display = 'block';
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').style.display = 'none';
-        }
-
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        }
-
-        // Auto-hide success/error messages after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                alert.style.opacity = '0';
-                alert.style.transition = 'opacity 0.5s ease';
-                setTimeout(function() {
-                    alert.style.display = 'none';
-                }, 500);
-            });
-        }, 5000);
-    </script>
 </body>
 </html>
 
