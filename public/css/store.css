@@ -433,6 +433,10 @@ tbody td{
     background-color: none;
 }
 
+    .date-search div span{
+        font-size: 23px;
+    }
+
 @media (max-width: 768px) {
 .search-cart .date-search{
     width: 310px;
@@ -453,6 +457,58 @@ tbody td{
 .showScreen{
     margin-top: 0;
 }
+
+    .search-container{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .date-search .search-bar{
+        font-size: 12px;
+    }
+    .date-search{
+        width: 100%
+    }
+
+    .date-search input[type="text"] {
+        font-size: 12px;
+    }
+    .addStaffBtn span{
+        font-size: 12px;
+    }
+    .date-search div{
+        display: flex;
+        flex-direction: column;
+    }
+    .date-search div span{
+        font-size: 12px;
+    }
+    .input-date{
+        width: 30px;
+        
+    }
+    .status-tabs a{
+        font-size: 12px;
+    }
+    .titleCount{
+        font-size: 20px;
+    }
+        thead tr th{
+        font-size: 12px;
+    }
+    table tbody tr td{
+        font-size: 12px;
+    }
+    
+
+    #from-to-date input[type="date"] {
+        font-size: 12px;
+    }
+
+    .date-search div input {        
+        width: 130px;
+        
+    }
 
 }
 

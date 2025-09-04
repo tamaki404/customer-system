@@ -149,8 +149,6 @@
     </div>
     </div>
 
-
-
     <!-- cart modal -->
     <div id="cartModal" class="modal" style="display:none;">
         <div class="cart-content">
@@ -194,8 +192,6 @@
                     @endif
             </div>
         @endif
-
-
 
         {{-- admin and staff inventory status tabs --}}
         @if (auth()->user()->user_type !== 'Customer')
@@ -256,7 +252,7 @@
                         <button type="submit" class="search-btn" style="background-color: #fffbee; height: 100%;"><i class="fas fa-search"></i></button>
                     </form>
                     <button id="openCartBtn" class="addStaffBtn" style="background: #ffde59; width: 80px;">
-                        <span class="material-symbols-outlined" style="font-size: 23px; color: #333; font-weight: normal;">shopping_cart</span>
+                        <span class="material-symbols-outlined" style="color: #333; font-weight: normal;">shopping_cart</span>
                     </button>
                 </div>
 
