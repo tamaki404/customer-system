@@ -251,7 +251,7 @@
                          <option value="">Select Status</option>
                          <option value="active" {{ ($staff->acc_status ?? 'active') === 'active' ? 'selected' : '' }}>Active</option>
                          <option value="pending" {{ ($staff->acc_status ?? 'active') === 'pending' ? 'selected' : '' }}>Pending</option>
-                         <option value="suspended" {{ ($staff->acc_status ?? 'active') === 'suspended' ? 'selected' : '' }}>Suspended</option>
+                         <option value="Suspended" {{ ($staff->acc_status ?? 'active') === 'Suspended' ? 'selected' : '' }}>Suspended</option>
                      </select>
                  </div>
                  <div class="form-actions">

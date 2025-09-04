@@ -266,7 +266,7 @@ span .handle{
   display: inline-block;
 }
 
-.status-delivered {
+.status-completed {
   background: #e0e7ff;
   border: 1px solid #6366f1;
   color: #3730a3;

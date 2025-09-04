@@ -5,7 +5,7 @@
         @if(auth()->user()->acc_status === 'pending')
             Your account is pending approval. Please wait for an admin to accept your registration.<br>
             You will be notified once your account is activated.
-        @elseif(auth()->user()->acc_status === 'suspended')
+        @elseif(auth()->user()->acc_status === 'Suspended')
             Your account has been suspended. Please contact support or wait for further instructions.
         @endif
     </p>

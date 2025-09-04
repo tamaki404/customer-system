@@ -156,9 +156,9 @@ class ViewController extends Controller{
     public function suspendCustomer($id)
     {
         $customer = User::findOrFail($id);
-        $customer->acc_status = 'suspended';
+        $customer->acc_status = 'Suspended';
         $customer->save();
-        return redirect()->route('customer.view', $id)->with('success', 'Customer suspended successfully!');
+        return redirect()->route('customer.view', $id)->with('success', 'Customer Suspended successfully!');
     }
 
     // Staff Management Methods
@@ -257,7 +257,7 @@ class ViewController extends Controller{
         }
         
         $request->validate([
-            'acc_status' => 'required|in:active,pending,suspended',
+            'acc_status' => 'required|in:active,pending,Suspended',
         ]);
         
         $staff->update(['acc_status' => $request->acc_status]);
@@ -265,7 +265,7 @@ class ViewController extends Controller{
         $statusMessages = [
             'active' => 'Staff account activated successfully!',
             'pending' => 'Staff account set to pending status!',
-            'suspended' => 'Staff account suspended successfully!'
+            'Suspended' => 'Staff account Suspended successfully!'
         ];
         
         return redirect()->route('staff.view', $id)->with('success', $statusMessages[$request->acc_status]);
@@ -280,7 +280,7 @@ class ViewController extends Controller{
             abort(403, 'Unauthorized access');
         }
         
-        $staff->update(['acc_status' => 'suspended']);
+        $staff->update(['acc_status' => 'Suspended']);
         
         return redirect()->route('staff.view', $id)->with('success', 'Staff account deactivated successfully!');
     }

@@ -15,6 +15,28 @@
     <title>Document</title>
 </head>
 <body>
+
+        <!-- confirmation modal -->
+    <div class="modal fade" id="confirmModal" style="display: none;"  tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"  style="justify-self: center; align-self: center; ">
+            <div class="modal-content" style="border-top: 4px solid #ffde59;">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="padding: 0; margin: 0;">Confirm action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" style="border: none; font-size: 14px;">
+                    Are you sure you want to commit changes?
+                </div>
+
+                <div class="modal-footer" style="padding: 5px">
+                    <button type="button" id="cancelBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirmSaveBtn" class="btn" style="background: #ffde59; font-weight: bold; font-size: 14px;">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="customerFrame">
 
         @if(session('success'))
@@ -56,24 +78,28 @@
             </div>
             <div class="details">
                 {{-- <p class="customer-id">cID: {{ $customer->id }}</p> --}}
-                <div class="store-name">
-                        <p class="storename" style="display: flex">{{ $customer->store_name}} 
+                <div class="store-name" >
+                    <p class="storename" style="display: flex; ">{{ $customer->store_name}} 
+                        <span 
+                            style="
                             
-                            <span class="status-badge"
-                           style="
+                            margin-left: 10px;
+                            text-transform: uppercase;
+                            font-size: 14px;
+                            align-items: center;
                             @if($customer->acc_status === 'Active')
                                 color: #155724;
                             @elseif($customer->acc_status === 'accepted')
                                 color: #0c5460;
-                            @elseif($customer->acc_status === 'suspended')
+                            @elseif($customer->acc_status === 'Suspended')
                                 color: #721c24;
                             @else
                                 color: #856404;
-                            @endif "
-                            
-                            title="{{$customer->acc_status}}">
-                            ●                    
-                        </span></p>
+                            @endif 
+                            ">
+                            {{$customer->acc_status}}
+                        </span>
+                    </p>
                         
                  
                 </div>
@@ -87,10 +113,13 @@
                         <span class="material-symbols-outlined">smartphone</span>
                         {{ $customer->mobile }}
                     </p>
-                    <p>
-                        <span class="material-symbols-outlined">call</span>
-                        {{ $customer->telephone }}
-                    </p>
+                    @if ($customer->telephone)
+                        <p>
+                            <span class="material-symbols-outlined">call</span>
+                            {{ $customer->telephone }}
+                        </p>                    
+                    @endif
+
                 </div>
 
 
@@ -114,7 +143,7 @@
                                 background: #d1ecf1;
                                 color: #0c5460;
                                 border: 1px solid #bee5eb;
-                            @elseif($customer->acc_status === 'suspended')
+                            @elseif($customer->acc_status === 'Suspended')
                                 background: #f8d7da;
                                 color: #721c24;
                                 border: 1px solid #f5c6cb;
@@ -129,31 +158,31 @@
                     </div> --}}
 
                 <!-- Action Buttons -->
-                    @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff')
+                    @if(auth()->user()->user_type !== 'Customer')
                         <div class="action-buttons" style="margin-left: auto">
-                            @if($customer->acc_status !== 'Active')
+                            {{-- @if($customer->acc_status !== 'Active')
                                 <form action="{{ url('/customer/activate/' . $customer->id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
                                     @csrf
-                                    <button type="submit" class="activate-btn" onmouseover="this.style.background='#218838'" onmouseout="this.style.background='#28a745'">
-                                        Activate Account
-                                    </button>
+                                    <button type="button" class="btn-confirm activate-btn" onmouseover="this.style.background='#218838'" 
+                                    onmouseout="this.style.background='#28a745'" data-action="Activate" >Activate account</button>
+                   
                                 </form>
-                            @endif
+                            @endif --}}
 
                             @if($customer->acc_status === 'Active')
                                 <form action="{{ url('/customer/suspend/' . $customer->id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
                                     @csrf
-                                    <button type="submit" class="suspend-btn">
-                                         Suspend Account
-                                    </button>
+                                    <button type="button" class="btn-confirm suspend-btn" 
+                                    data-action="Suspend" >Suspend account</button>
+                             
                                 </form>
                             @endif
 
-                            @if($customer->acc_status === 'suspended')
+                            @if($customer->acc_status === 'Suspended')
                                 <form action="{{ url('/customer/activate/' . $customer->id) }}" method="POST" style="display: inline-block;">
                                     @csrf
-                                    <button type="submit" class="reactivate-btn">
-                                        Reactivate Account
+                                    <button type="submit" style="background-color: #28a745" class="reactivate-btn">
+                                        Reactivate account
                                     </button>
                                 </form>
                             @endif
@@ -421,6 +450,8 @@
             event.target.classList.add('active');
         }
     </script>
+    <script src="{{ asset('js/confirmation-modal/customer_view.js') }}"></script>
+
 </body>
 </html>
 
