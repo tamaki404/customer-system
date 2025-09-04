@@ -603,6 +603,7 @@ class ViewController extends Controller{
             $newCustomerOrders = Orders::where('status', 'Completed')
                 ->where('customer_id', $id)
                 ->whereDate('action_at', Carbon::today())
+                ->groupBy('order_id')
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 

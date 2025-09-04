@@ -433,7 +433,7 @@
 
                     </div>
 
-                    <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">
+                    {{-- <div class="pagination-wrapper" style="margin-top: 2rem; text-align: center;">
                         @if($products->hasPages())
                             <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
                                 @if($products->onFirstPage())
@@ -449,7 +449,7 @@
                                 @endif
                             </div>
                         @endif
-                    </div>
+                    </div> --}}
                 @else
                     <div style="text-align:center; margin:2rem 0; color:#888; font-size:1.1rem;">No products found.</div>
                 @endif
