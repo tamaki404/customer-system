@@ -11,12 +11,47 @@
     <link rel="stylesheet" href="{{ asset('css/receipts_view.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+    <link rel="stylesheet" href="{{ asset('css/confirmation-modal/receipts_view.css') }}">
     <title>Receipt Details</title>
 </head>
 <body>
     <script src="{{ asset('js/fadein.js') }}"></script>
+
+    <!-- confirmation modal -->
+    <div class="modal fade" id="confirmModal" style="display: none;"  tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"  style="justify-self: center; align-self: center; ">
+            <div class="modal-content" style="border-top: 4px solid #ffde59;">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="padding: 0; margin: 0;">Confirm action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" style="border: none; font-size: 14px;">
+                    Are you sure you want to commit changes?
+                </div>
+
+                <div class="modal-footer" style="padding: 5px">
+                    <button type="button" id="cancelBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirmSaveBtn" class="btn" style="background: #ffde59; font-weight: bold; font-size: 14px;">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="receiptFrame">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show position-fixed" 
+                style="top: 20px; right: 20px; z-index: 9999; font-size: 14px; border-radius: 10px;">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show position-fixed" 
+                style="top: 20px; right: 20px; z-index: 9999; font-size: 14px; border-radius: 10px;">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <a class="go-back-a" href="/receipts"><- Receipts</a>
         <style>
             .go-back-a{
@@ -32,7 +67,6 @@
         <span style="display: flex; width: 100%; justify-content: space-between;"><h2>Receipt #{{ $receipt->receipt_number }}</h2> <p>{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p></span>
 
         <div class="mainBlock">
-
                 <div class="receiptBlock" style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; ">
                         <tr><th>Invoice#:</th><td>{{ $receipt->invoice_number }}</td></tr>
@@ -63,33 +97,36 @@
 
 
                     <div style="display: flex; flex-direction: column; width: 100%;">
-                    <p style="font-size: 16px; font-weight: bold; margin: 0; margin-top: 10px;">Orders' note</p>
-                    <div class="notes-display">{{ $receipt->notes }}</div>
+                        <p style="font-size: 16px; font-weight: bold; margin: 0; margin-top: 10px;">Orders' note</p>
+                        <div class="notes-display">{{ $receipt->notes }}</div>
 
-                    @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
-                    <div class="actionBtn" >
-                        @if($receipt->status === 'Verified')
+                        @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
+                        <div class="actionBtn" >
+                            @if($receipt->status === 'Verified')
 
-                        @elseif($receipt->status === 'Cancelled')
+                            @elseif($receipt->status === 'Cancelled')
 
 
-                        @elseif($receipt->status=== 'Pending')
-                            <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="verifyButton">Verify</button>
-                            </form>
-                            <form  action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                <button class="cancelAction" type="submit">Cancel</button>
-                            </form>
-                            <form action="{{ url('/receipts/reject/' . $receipt->receipt_id) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                <button class="rejectAction" type="submit">Reject</button>
-                            </form>     
+                            @elseif($receipt->status=== 'Pending')
+                                <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST" class="action-form">
+                                    @csrf
+                                    <button type="button" class="verifyButton open-confirm" data-action="verify">Verify</button>
+                                </form>
+
+                                <form action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
+                                    @csrf
+                                    <button type="button" class="cancelAction open-confirm" data-action="cancel">Cancel</button>
+                                </form>
+
+                                <form action="{{ url('/receipts/reject/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
+                                    @csrf
+                                    <button type="button" class="rejectAction open-confirm" data-action="reject">Reject</button>
+                                </form>
+    
+                            @endif
+
+                        </div>
                         @endif
-
-                    </div>
-                    @endif
 
                     </div>
 
@@ -113,35 +150,15 @@
                         </a>
                         @else
                             N/A
-                        @endif
-
-                        
+                        @endif 
                 </div>
-             
-        
-
         </div>
-
-
 
     </div>
 
 
-<script>
-function formatPeso(value) {
-    value = Number(value);
-    if (value >= 1_000_000_000) return `₱${(value / 1_000_000_000).toFixed(1)}B`;
-    if (value >= 1_000_000)     return `₱${(value / 1_000_000).toFixed(1)}M`;
-    if (value >= 1_000)         return `₱${(value / 1_000).toFixed(1)}K`;
-    return `₱${value.toLocaleString()}`;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const amountEl = document.getElementById('receiptAmount');
-    const rawAmount = amountEl.dataset.amount;
-    amountEl.textContent = formatPeso(rawAmount);
-});
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/confirmation-modal/receipts_view.js') }}"></script>
 
 
 </body>

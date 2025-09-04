@@ -11,34 +11,33 @@ use App\Traits\ImageHandler;
 
 class ReceiptController extends Controller{
     use ImageHandler;
-    public function verifyReceipt($receipt_id)
+    private function updateReceiptStatus($receipt_id, $status, $message)
     {
         $receipt = Receipt::findOrFail($receipt_id);
-        $receipt->status = 'Verified';
+        $receipt->status = $status;
         $receipt->verified_by = auth()->user()->name;
         $receipt->verified_at = now();
         $receipt->save();
-        return redirect()->route('receipts.view', $receipt_id)->with('success', 'Receipt verified successfully!');
+
+        return redirect()
+            ->route('receipts.view', $receipt_id)
+            ->with('success', $message);
+    }
+
+    public function verifyReceipt($receipt_id)
+    {
+        
+        return $this->updateReceiptStatus($receipt_id, 'Verified', 'Receipt verified successfully!');
     }
 
     public function cancelReceipt($receipt_id)
     {
-        $receipt = Receipt::findOrFail($receipt_id);
-        $receipt->status = 'Cancelled';
-        $receipt->verified_by = auth()->user()->name; 
-        $receipt->verified_at = now();
-        $receipt->save();
-        return redirect()->route('receipts.view', $receipt_id)->with('success', 'Receipt cancelled successfully!');
+        return $this->updateReceiptStatus($receipt_id, 'Cancelled', 'Receipt cancelled successfully!');
     }
 
     public function rejectReceipt($receipt_id)
     {
-        $receipt = Receipt::findOrFail($receipt_id);
-        $receipt->status = 'Rejected';
-        $receipt->verified_by = auth()->user()->name;
-        $receipt->verified_at = now();
-        $receipt->save();
-        return redirect()->route('receipts.view', $receipt_id)->with('success', 'Receipt rejected successfully!');
+        return $this->updateReceiptStatus($receipt_id, 'Rejected', 'Receipt rejected successfully!');
     }
 
 

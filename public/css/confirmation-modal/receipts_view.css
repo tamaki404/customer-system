@@ -1,0 +1,56 @@
+        #confirmModal{
+            width: 100%;
+            height: 100%;
+            background: #33333369;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            position: fixed;
+        }
+        #confirmModal .modal-dialog{
+            height: auto;
+            width: auto;
+            background-color: transparent;
+        }
+        #confirmModal .modal-dialog .modal-content{
+            height: 200px;
+            width: auto;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+            gap: 5px;
+        }
+        #confirmModal .modal-dialog .modal-content .modal-header{
+            height: auto;
+            width: auto;
+            gap: 5px;
+            display: flex;
+            justify-content: space-between
+        }
+        #confirmModal .modal-dialog .modal-content .modal-header button{
+            font-size: 15px
+
+        }
+        #confirmModal .modal-dialog .modal-content .modal-header .modal-title{
+            font-size: 17px;
+            color: #333;
+            font-weight: bold
+        }
+        #confirmModal .modal-dialog .modal-content .modal-body{
+            height: auto;
+            margin: 0
+        }
+        #confirmModal .modal-dialog .modal-content .modal-footer{
+            height: auto;
+            margin: 0;
+            font-size: 15px;
+            gap: 5px;
+        }
+        #confirmModal .modal-dialog .modal-content .modal-footer button{
+            border-radius: 10px;
+            box-shadow: rgb(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+            font-size: 14px;
+
+
+        }

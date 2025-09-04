@@ -10,7 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/confirmation-modal.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/confirmation-modal/profile.css') }}">
 
 </head>
 <body>
@@ -162,10 +162,7 @@
                             <label>Username</label>
                             <input type="text" name="username" value="{{ auth()->user()->username }}"  style=" width:200px;" disabled>
                         </div>
-                        <div class="form-group">
-                            <label>Company</label>
-                            <input type="text" style="company" name="company" value="{{ auth()->user()->store_name }}"  style=" width:400px;">
-                        </div>
+          
                         <div class="form-group">
                             <label>Email</label>
                             <input type="email" name="email"  value="{{ auth()->user()->email }}" placeholder="Working email address"  style=" width:240px;" disabled>
@@ -199,7 +196,7 @@
 </html>
 
 <script src="{{ asset('js/disableBtn.js') }}"></script>
-<script src="{{ asset('js/confirmation-modal.js') }}"></script>
+<script src="{{ asset('js/confirmation-modal/profile.js') }}"></script>
 
 
 

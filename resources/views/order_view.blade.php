@@ -9,11 +9,47 @@
     <link rel="stylesheet" href="{{ asset('css/order_view.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/confirmation-modal/receipts_view.css') }}">
+
     <title>Order View</title>
 </head>
 <body>
-     
+         <!-- confirmation modal -->
+    <div class="modal fade" id="confirmModal" style="display: none;"  tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"  style="justify-self: center; align-self: center; ">
+            <div class="modal-content" style="border-top: 4px solid #ffde59;">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="padding: 0; margin: 0;">Confirm action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" style="border: none; font-size: 14px;">
+                    Are you sure you want to commit changes?
+                </div>
+
+                <div class="modal-footer" style="padding: 5px">
+                    <button type="button" id="cancelBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="confirmSaveBtn" class="btn" style="background: #ffde59; font-weight: bold; font-size: 14px;">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="ordersFrame">
+
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show position-fixed" 
+                style="top: 20px; right: 20px; z-index: 9999; font-size: 14px; border-radius: 10px;">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show position-fixed" 
+                style="top: 20px; right: 20px; z-index: 9999; font-size: 14px; border-radius: 10px;">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <a href="{{ route('orders') }}"><- Orders list</a>
         <span class="customer-details">
             <p class="order-num">Order#: {{ $orderItems->first()->order_id }}</p>
@@ -79,12 +115,12 @@
 
                         <form class="status-action" action="{{ url('/order/mark-done/' .$orderItems->first()->order_id) }}" method="POST" style="display:inline-block;">
                             @csrf
-                            <button type="submit" class="markAsDone" style="width: 150px;">Mark as done</button>
+                            <button type="button" class="btn-confirm markAsDone" data-action="Mark as done" style="width: 150px;">Mark as done</button>
                             <input type="hidden" name="action_by" value="{{ auth()->user()->name }}">
                         </form>
                         <form class="status-action"  action="{{ url('/order/reject/' .$orderItems->first()->order_id) }}" method="POST" style="display:inline-block;">
                             @csrf
-                            <button type="submit" class="reject" style="width: 100px;">Cancel</button>
+                            <button type="button" class="btn-confirm reject" data-action="Cancel" style="width: 100px;">Cancel</button>
                             <input type="hidden" name="action_by" value="{{ auth()->user()->name }}">
 
                         </form>                    
@@ -97,13 +133,13 @@
                     @elseif ($orderItems->first()->status === 'Pending')
                         <form class="status-action"   action="{{ url('/order/accept/' .$orderItems->first()->order_id) }}" method="POST" style="display:inline-block;">
                             @csrf
-                            <button type="submit" class="process" style="width: 100px;">Process</button>
+                            <button type="button" class="btn-confirm process" data-action="Process" style="width: 100px;">Process</button>
                             <input type="hidden" name="action_by" value="{{ auth()->user()->name }}">
 
                        </form> 
                         <form class="status-action"  action="{{ url('/order/reject/' .$orderItems->first()->order_id) }}" method="POST" style="display:inline-block;">
                             @csrf
-                            <button type="submit" class="reject" style="width: 100px;">Cancel</button>
+                            <button type="button" class="btn-confirm reject" data-action="Cancel" style="width: 100px;">Cancel</button>
                             <input type="hidden" name="action_by" value="{{ auth()->user()->name }}">
 
                         </form>                  
@@ -121,12 +157,11 @@
             </div>
 
         </div>
-        
-
     </div>
 
 
 
+<script src="{{ asset('js/confirmation-modal/order_view.js') }}"></script>
 
     
     
