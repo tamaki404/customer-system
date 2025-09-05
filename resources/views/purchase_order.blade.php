@@ -108,7 +108,7 @@
                             onclick="window.location='{{ route('purchase_order.view', $order->po_number) }}'">
 
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $order->order_date->format('Y-m-d') }}</td>
+                            <td>{{ \Carbon\Carbon::parse( $order->order_date)->format('j F, Y') }}</td>
                             <td>{{ $order->po_number }}</td>
                             @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff' )
                               <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $order->user->store_name }}</td>
