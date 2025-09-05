@@ -69,52 +69,56 @@ class ReceiptController extends Controller{
         return view('receipts_view', compact('receipt'));
     }
 
-    public function showUserReceipts(Request $request)
-    {
-        $user = auth()->user();
-        $query = Receipt::with('customer');
-        
-        $status = $request->input('status');
-        if ($status && in_array($status, ['Pending', 'Verified', 'Cancelled', 'Rejected'])) {
-            $query->where('status', $status);
-        }
+public function showUserReceipts(Request $request)
+{
+    $user = auth()->user();
+    $query = Receipt::with('customer');
 
-        $from_date = $request->input('from_date', now()->startOfMonth()->format('Y-m-d'));
-        $to_date = $request->input('to_date', now()->endOfMonth()->format('Y-m-d'));
+    $from_date = $request->input('from_date', now()->startOfMonth()->format('Y-m-d'));
+    $to_date   = $request->input('to_date', now()->endOfMonth()->format('Y-m-d'));
 
-        if ($from_date && $to_date) {
-            $dateColumn = ($status && in_array($status, ['Verified', 'Cancelled', 'Rejected'])) ? 'verified_at' : 'created_at';
-            $query->whereBetween($dateColumn, [Carbon::parse($from_date)->startOfDay(), Carbon::parse($to_date)->endOfDay()]);
-        }
-
-        $search = $request->input('search', '');
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('receipt_number', 'like', "%$search%")
-                  ->orWhere('store_name', 'like', "%$search%")
-                  ->orWhere('total_amount', 'like', "%$search%")
-                  ->orWhere('purchase_date', 'like', "%$search%")
-                  ->orWhere('status', 'like', "%$search%");
-            });
-        }
-        
-        if ($user->user_type === 'Staff' || $user->user_type === 'Admin') {
-            $receipts = $query->orderBy('created_at', 'desc')->paginate(50);
-        } else {
-            $receipts = $query->where('id', $user->id)->orderBy('created_at', 'desc')->paginate(50);
-        }
-
-
-        
-        $receipts->appends([
-            'from_date' => $from_date,
-            'to_date' => $to_date,
-            'search' => $search,
-            'status' => $status
-        ]);
-        
-        return view('receipts', compact('receipts', 'user', 'from_date', 'to_date', 'search', 'status'));
+    $status = $request->input('status');
+    if ($status && in_array($status, ['Pending', 'Verified', 'Cancelled', 'Rejected'])) {
+        $query->where('status', $status);
     }
+
+    if ($from_date && $to_date) {
+        $dateColumn = ($status && in_array($status, ['Verified', 'Cancelled', 'Rejected']))
+            ? 'verified_at'
+            : 'created_at';
+
+        $query->whereBetween($dateColumn, [
+            Carbon::parse($from_date)->startOfDay(),
+            Carbon::parse($to_date)->endOfDay()
+        ]);
+    }
+
+    $search = $request->input('search', '');
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('receipt_number', 'like', "%$search%")
+              ->orWhere('store_name', 'like', "%$search%")
+              ->orWhere('total_amount', 'like', "%$search%")
+              ->orWhere('purchase_date', 'like', "%$search%")
+              ->orWhere('status', 'like', "%$search%");
+        });
+    }
+
+    if ($user->user_type === 'Customer') {
+        $query->where('user_id', $user->id);
+    }
+
+    $receipts = $query->orderBy('created_at', 'desc')->paginate(50);
+
+    $receipts->appends([
+        'from_date' => $from_date,
+        'to_date'   => $to_date,
+        'search'    => $search,
+        'status'    => $status,
+    ]);
+
+    return view('receipts', compact('receipts', 'user', 'from_date', 'to_date', 'search', 'status'));
+}
 
 
 

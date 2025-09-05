@@ -50,16 +50,6 @@ class PurchaseOrderController extends Controller {
             ]);
         }
 
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('po_number', 'like', "%$search%")
-                ->orWhere('company_name', 'like', "%$search%")
-                ->orWhere('subtotal', 'like', "%$search%")
-                ->orWhere('order_date', 'like', "%$search%");
-            });
-        }
-
         $purchaseOrders = $query
             ->where('status', '!=', 'Draft')  
             ->orderBy('order_date', 'desc')

@@ -532,8 +532,7 @@
         display: grid;
         grid-template-columns: repeat(2, 1fr);
     }
-    .status-cards-list .status-card{
-    }
+
     .purchase-order-chart{
         width: 100%;
         display: flex;
@@ -576,6 +575,15 @@
     }
     .date-results-label strong{
         font-size: 14px; color: #333;
+    }
+    .recent-orders-list{
+        width: 200px;
+        overflow: hidden;
+        font-size: 12px;
+    }
+    .order-row p, 
+    .order-row span{
+        font-size: 12px;
     }
     
 

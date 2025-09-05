@@ -145,7 +145,7 @@
 
         <div class="receipts-frame">
             <div class="search-container">
-                <form action="{{ route('purchase_order') }}" id="text-search" class="date-search" method="GET">
+                <form action="{{ route('receipts') }}" id="text-search" class="date-search" method="GET">
                     <input type="text" name="search" class="search-bar"
                         placeholder="Search receipt #, customer, amount, or date"
                         value="{{ request('search') }}"
@@ -154,7 +154,7 @@
                     <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
                 </form>
 
-                <form action="{{ route('purchase_order') }}" class="date-search" id="from-to-date" method="GET">
+                <form action="{{ route('receipts') }}" class="date-search" id="from-to-date" method="GET">
                     <div>
                         <span>From</span>
                         <input type="date" name="from_date" class="input-date"
@@ -257,7 +257,7 @@
                             @forelse($receipts as $receipt)
                                 <tr style="height: 50px; text-align: center; cursor:pointer; overflow: hidden;" onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($receipt->created_at)->format('j F, Y') }}</td>
                                     <td style="padding:10px 8px; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{ $receipt->store_name }}</td>
                                     <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
                                     <td>
