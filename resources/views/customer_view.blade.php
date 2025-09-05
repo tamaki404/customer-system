@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('css/customer_view.css') }}">
     <link rel="stylesheet" href="{{ asset('css/reporting.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 <body>
@@ -258,7 +259,6 @@
                         <div class="orders-week">
                             <canvas id="ordersChart" height="300px" style=""></canvas>
 
-                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                             <script>
                                 const ctx = document.getElementById('ordersChart').getContext('2d');
 
@@ -299,17 +299,18 @@
                                 });
                             </script>
 
-
-
-
+                        </div>
+                        
                     </div>
+
                     {{-- top product --}}
                     <br>
-                    <p class="stats-title">Top product</p>
-                    <div class="top-product">
-                        <div class="product">
-
-                        </div>
+                    <p class="stats-title">Top 3 Products</p>
+                        <ul>
+                            @foreach($topProducts as $product)
+                                <li>{{ $product->product_name }} - {{ $product->total_quantity }} pcs</li>
+                            @endforeach
+                        </ul>
 
                     </div>
 

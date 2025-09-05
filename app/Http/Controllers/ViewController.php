@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
+
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Receipt;
@@ -188,6 +190,42 @@ class ViewController extends Controller{
                 $data[] = $row->total_orders;
             }
 
+            $orderStatusCounts = Orders::select('status', DB::raw('COUNT(*) as total'))
+                ->where('customer_id', $id)
+                ->groupBy('status')
+                ->whereBetween('created_at', [
+                    Carbon::parse($from)->startOfDay(),
+                    Carbon::parse($to)->endOfDay()
+                ])
+                ->pluck('total', 'status');
+
+            $totalOrders = $orderStatusCounts->sum();
+
+            $statusPercentages = $orderStatusCounts->map(function($count) use ($totalOrders) {
+                return $totalOrders > 0 ? round(($count / $totalOrders) * 100, 2) : 0;
+            });
+
+            $topProducts = PurchaseOrderItem::select(
+                    'products.id as product_id',
+                    'products.name as product_name',
+                    DB::raw('SUM(purchase_order_items.quantity) as total_quantity')
+                )
+                ->join('purchase_orders', 'purchase_orders.po_number', '=', 'purchase_order_items.po_id')
+                ->join('products', 'products.id', '=', 'purchase_order_items.product_id')
+                ->where('purchase_orders.user_id', $id)
+                ->whereBetween('purchase_orders.created_at', [ 
+                    Carbon::parse($from)->startOfDay(),
+                    Carbon::parse($to)->endOfDay()
+                ])
+                ->where('purchase_orders.status', 'Delivered')
+                ->groupBy('products.id', 'products.name')
+                ->orderByDesc('total_quantity')
+                ->take(3)
+                ->get();
+
+
+
+
 
         return view('customer_view', compact(
             'customer',
@@ -204,7 +242,9 @@ class ViewController extends Controller{
                'averageSpend',
                'lifetimeValue',
                 'labels',
-                'data'
+                'data',
+                'statusPercentages',
+                'topProducts'
         ));
     }
 
