@@ -143,19 +143,19 @@ class ViewController extends Controller{
                     ])
                 ->count();    
                 
-            $totalSpent = PurchaseOrder::where('customer_id', $customer->id)
-                ->where('status', 'Completed')
-                ->sum('total_amount');
+            $totalSpent = PurchaseOrder::where('user_id', $id)
+                ->where('status', 'Delivered')
+                ->sum('grand_total');
 
             // highest single purchase
-            $highestPurchase = PurchaseOrder::where('customer_id', $customer->id)
-                ->where('status', 'Completed')
-                ->max('total_amount');
+            $highestPurchase = PurchaseOrder::where('user_id', $id)
+                ->where('status', 'Delivered')
+                ->max('grand_total');
 
             // average spend per order
-            $averageSpend = PurchaseOrder::where('customer_id', $customer->id)
-                ->where('status', 'Completed')
-                ->avg('total_amount');
+            $averageSpend = PurchaseOrder::where('user_id', $id)
+                ->where('status', 'Delivered')
+                ->avg('grand_total');
 
             // lifetime value (LTV) — usually same as total spent unless you define it differently
             $lifetimeValue = $totalSpent;
@@ -170,7 +170,11 @@ class ViewController extends Controller{
                'sum_receipts',
                'sum_PO',
                'from',
-               'to'
+               'to',
+               'totalSpent',
+               'highestPurchase',
+               'averageSpend',
+               'lifetimeValue'
         ));
     }
 

@@ -233,19 +233,19 @@
                     <p class="stats-title">Spending</p>
                     <div class="summary-cards">
                         <div class="card">
-                            <h2></h2>
-                            <p>Total Amount Spent</p>
+                            <h2>₱{{number_format($totalSpent)}}<h2>
+                            <p >Total Amount Spent</p>
                         </div>
                         <div class="card">
-                            <h2></h2>
+                            <h2>₱{{number_format($highestPurchase)}}<h2>
                             <p>Highest Single Purchase Value</p>
                         </div>
                         <div class="card">
-                            <h2></h2>
+                            <h2>₱{{number_format($averageSpend)}}<h2>
                             <p>Average Spend per Order</p>
                         </div>
                         <div class="card">
-                            <h2></h2>
+                            <h2>₱{{number_format($lifetimeValue)}}<h2>
                             <p>Lifetime Value (LTV)</p>
                         </div>
                     </div>

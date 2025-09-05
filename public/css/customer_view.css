@@ -456,6 +456,7 @@ span .handle{
         justify-content: center;
         height: 100px;
         border: none;
+        gap: 5px;
         box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
     }
     .stats-title{
@@ -474,6 +475,7 @@ span .handle{
         color: #666;
         font-size: 14px;
         margin: 0;
+        font-weight: normal;
     }
 
 
