@@ -478,6 +478,24 @@ span .handle{
         font-weight: normal;
     }
 
+    .stats-charts{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    .stats-charts .orders-week{
+        width: 100%;
+        height: 300px;
+        position: relative;
+
+        
+    }
+    .orders-week canvas{
+        height: 100%;
+        width: 100%!important;
+    }
+
 
 
 

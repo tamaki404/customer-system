@@ -113,12 +113,7 @@ class ViewController extends Controller{
             ->orderBy('created_at', 'desc')
             ->paginate(7, ['*'], 'purchaseOrder_page');
 
-        // if ($from && $to) {
-        //     $query->whereBetween('order_date', [
-        //         Carbon::parse($from)->startOfDay(),
-        //         Carbon::parse($to)->endOfDay()
-        //     ]);
-        // }
+
         // stats
         //stats.sum
             $sum_PO = PurchaseOrder::where('user_id', $id)
@@ -145,20 +140,53 @@ class ViewController extends Controller{
                 
             $totalSpent = PurchaseOrder::where('user_id', $id)
                 ->where('status', 'Delivered')
+                ->whereBetween('created_at', [
+                        Carbon::parse($from)->startOfDay(),
+                        Carbon::parse($to)->endOfDay()
+                    ])
                 ->sum('grand_total');
 
             // highest single purchase
             $highestPurchase = PurchaseOrder::where('user_id', $id)
                 ->where('status', 'Delivered')
+                ->whereBetween('created_at', [
+                        Carbon::parse($from)->startOfDay(),
+                        Carbon::parse($to)->endOfDay()
+                    ])
                 ->max('grand_total');
 
             // average spend per order
             $averageSpend = PurchaseOrder::where('user_id', $id)
                 ->where('status', 'Delivered')
+                ->whereBetween('created_at', [
+                        Carbon::parse($from)->startOfDay(),
+                        Carbon::parse($to)->endOfDay()
+                    ])
                 ->avg('grand_total');
 
-            // lifetime value (LTV) — usually same as total spent unless you define it differently
+            // lifetime value (LTV)
             $lifetimeValue = $totalSpent;
+
+            $weeklyOrders = PurchaseOrder::select(
+                    DB::raw('YEARWEEK(created_at, 1) as yearweek'),
+                    DB::raw('COUNT(*) as total_orders')
+                )
+                ->where('user_id', $id)
+                ->whereBetween('created_at', [
+                    Carbon::parse($from)->startOfDay(),
+                    Carbon::parse($to)->endOfDay()
+                ])
+                ->groupBy('yearweek')
+                ->orderBy('yearweek', 'asc')
+                ->get();
+
+            $labels = [];
+            $data = [];
+
+            foreach ($weeklyOrders as $row) {
+                $labels[] = Carbon::now()->setISODate(substr($row->yearweek, 0, 4), substr($row->yearweek, 4))->startOfWeek()->format('M d');
+                $data[] = $row->total_orders;
+            }
 
 
         return view('customer_view', compact(
@@ -174,7 +202,9 @@ class ViewController extends Controller{
                'totalSpent',
                'highestPurchase',
                'averageSpend',
-               'lifetimeValue'
+               'lifetimeValue',
+                'labels',
+                'data'
         ));
     }
 

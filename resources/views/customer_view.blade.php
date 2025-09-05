@@ -255,12 +255,53 @@
                     <p class="stats-title">Charts</p>
                     <div class="stats-charts">
                         {{-- Orders status --}}
-                        <div class="orders-month">
+                        <div class="orders-week">
+                            <canvas id="ordersChart" height="300px" style=""></canvas>
 
-                        </div>
-                        <div class="order-status">
+                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                            <script>
+                                const ctx = document.getElementById('ordersChart').getContext('2d');
 
-                        </div>
+                                const ordersChart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: @json($labels),
+                                        datasets: [{
+                                            label: 'Orders per Week',
+                                            data: @json($data),
+                                            fill: true,
+                                            borderColor: '#ffde59',
+                                            backgroundColor: '#ffde5972', 
+                                            tension: 0.3,
+                                            borderWidth: 2,
+                                            pointRadius: 4,
+                                            pointHoverRadius: 6,
+                                            pointBackgroundColor: '#ffde59',
+
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        plugins: {
+                                            legend: { display: true }
+                                        },
+                                        scales: {
+                                            x: {
+                                                title: { display: true, text: 'Week' }
+                                            },
+                                            y: {
+                                                beginAtZero: true,
+                                                title: { display: true, text: 'Orders' },
+                                                ticks: { precision:0 }
+                                            }
+                                        }
+                                    }
+                                });
+                            </script>
+
+
+
+
                     </div>
                     {{-- top product --}}
                     <br>
