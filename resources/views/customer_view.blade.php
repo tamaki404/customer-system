@@ -306,13 +306,35 @@
                     {{-- top product --}}
                     <br>
                     <p class="stats-title">Top 3 Products</p>
-                        <ul>
-                            @foreach($topProducts as $product)
-                                <li>{{ $product->product_name }} - {{ $product->total_quantity }} pcs</li>
-                            @endforeach
-                        </ul>
+                    <div class="top-products">
+                        @foreach($topProducts as $product)
+                            <div class="each-item-div">
+                                @php
+                                    $isBase64 = !empty($product->image_mime);
+                                    $imgSrc = $isBase64 
+                                        ? ('data:' . $product->image_mime . ';base64,' . $product->image) 
+                                        : asset('images/' . ($product->image ?? 'default-product.png'));
+                                @endphp
 
+                                @if(!empty($product->image) && !empty($product->image_mime))
+                                    <img src="{{ $imgSrc }}" 
+                                        alt="{{ $product->product_name }}" 
+                                        style="width: 50px; height: 50px; object-fit: cover;">
+                                @else
+                                    <div class="thumb-placeholder" 
+                                        style="width: 50px; height: 50px; color:#888; font-size:13px; text-align: center; display: flex; align-items: center; justify-content: center; background: #f0f0f0; border-radius: 5px;">
+                                        No Image
+                                    </div>
+                                @endif
+
+                                <div class="item-detail">
+                                    <p class="item-name">{{ $product->product_name }}</p>
+                                    <span class="item-quantity"> × {{ $product->total_quantity }}</span>
+                                </div> 
+                            </div>
+                        @endforeach
                     </div>
+
 
                 </div>
             </div>

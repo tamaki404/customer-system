@@ -208,6 +208,9 @@ class ViewController extends Controller{
             $topProducts = PurchaseOrderItem::select(
                     'products.id as product_id',
                     'products.name as product_name',
+                    'products.image as image',
+                    'products.image_mime as image_mime',
+                    'products.price as price',
                     DB::raw('SUM(purchase_order_items.quantity) as total_quantity')
                 )
                 ->join('purchase_orders', 'purchase_orders.po_number', '=', 'purchase_order_items.po_id')
@@ -218,13 +221,10 @@ class ViewController extends Controller{
                     Carbon::parse($to)->endOfDay()
                 ])
                 ->where('purchase_orders.status', 'Delivered')
-                ->groupBy('products.id', 'products.name')
+                ->groupBy('products.id', 'products.name', 'products.image', 'products.image_mime', 'products.price')
                 ->orderByDesc('total_quantity')
                 ->take(3)
                 ->get();
-
-
-
 
 
         return view('customer_view', compact(
