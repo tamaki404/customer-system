@@ -163,7 +163,7 @@
 
         </div>
 
-        <div class="receiptsCorner" style=" overflow-y: auto;">
+        <div class="receiptsCorner" style=" overflow: auto;">
             <nav class="tab-navigation" style="height: auto">
                 <button class="tab-button active" onclick="switchTab('statisticsTab')">Statistics</button>
                 <button class="tab-button" onclick="switchTab('ordersTab')">Orders History</button>
@@ -171,30 +171,9 @@
                 <button class="tab-button" onclick="switchTab('purchaseOrderTab')">Purchase Order History</button>
 
             </nav>
-            <div class="tab-content active" id="statisticsTab" style="overflow-x:auto;  auto; height: auto; padding: 0">
-                <div class="statistics-customer">
+            <div class="tab-content active" id="statisticsTab" style="height: auto; padding: 0;  overflow: auto;">
+                <div class="statistics-customer" style="height: 100%; width: 100%; overflow-x: auto; ">
                     <div class="head">
-                        {{-- date-picker --}}
-                        {{-- <form action="" method="POST" class="date-picker">
-                            @csrf
-                            <div class="date-search">
-                                <span>From</span>
-                                <input type="date" name="from_date">
-                            </div>
-                            <div class="date-search">
-                                <span>To</span>
-                                <input type="date" name="to_date">
-                            </div>
-                        </form> --}}
-
-                        {{-- <div class="date-searched">
-                            <p>Showing results from</p>
-                            <div class="dates">
-                                <span>{{ \Carbon\Carbon::parse($from)->format('d M, Y') }}</span>
-                                <span>-</span>
-                                <span>{{ \Carbon\Carbon::parse($to)->format('d M, Y') }}</span>
-                            </div>
-                        </div> --}}
 
                         <form action="{{ route('customer.view',  ['customer_id' => $customer->id]) }}"  class="date-picker" id="from-to-date" method="GET">
                                 <div class="date-search">
