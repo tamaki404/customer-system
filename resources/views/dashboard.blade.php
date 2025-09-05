@@ -86,7 +86,7 @@
                 </div>
             </a>
             <a class="status-card" href="{{ route('receipts') }}">
-                <p class="card-title">Users</p>
+                <p class="card-title">Users (Pending)</p>
                 <div class="card-content">
                     <h1 class="card-count" id="pendingDayCount">{{$usersCount}}</h1>
                     @if($newUsersCount > 0)

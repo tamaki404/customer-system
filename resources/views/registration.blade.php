@@ -9,7 +9,27 @@
     <title>Sign Up</title>
 </head>
 <body>
+        @if(session('success'))
+            <div class="alert alert-success" style="background: #d4edda; color: #155724; position: absolute; z-index: 100; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                {{ session('success') }}
+            </div>
+        @endif
 
+        @if(session('error'))
+            <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
 <form method="POST" action="/register-user" class="logForm" id="registerForm" enctype="multipart/form-data">
     @csrf
@@ -112,7 +132,7 @@
                     </ul>
                 </div>
             @endif
-        <button type="submit" id="submitBtn">Sign Up</button>
+        <button type="submit" id="submitBtn" class="save-btn">Sign Up</button>
 
     </div>
 
@@ -129,6 +149,7 @@
 <script src="{{asset('js/register.js')}}"></script>
 <script src="{{ asset('js/disableBtn.js') }}"></script>
 <script src="{{ asset('js/registration/image.js') }}"></script>
+<script src="{{ asset('js/confirmation-modal/registration.js') }}"></script>
 
 </body>
 </html> 
