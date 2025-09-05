@@ -105,7 +105,7 @@ public function showUserReceipts(Request $request)
     }
 
     if ($user->user_type === 'Customer') {
-        $query->where('user_id', $user->id);
+        $query->where('id', $user->id);
     }
 
     $receipts = $query->orderBy('created_at', 'desc')->paginate(50);

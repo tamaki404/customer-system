@@ -5,7 +5,7 @@
     
     @push('styles')
         <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/receipts_now.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/receipts.css') }}">
         <link rel="stylesheet" href="{{ asset('css/open-modal.css') }}">
     @endpush
 
@@ -64,10 +64,6 @@
                                 <p id="file-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
                             </div>
 
-
-
-
-
                             <div>
                                 <label>Purchase Date</label>
                                 <input type="date" name="purchase_date" placeholder="e.g. 2025-07-22" required>
@@ -114,10 +110,19 @@
                             });
                             </script>
 
+
+                            <!-- Payment Method -->
                             <div>
-                                <label>Payment Method</label>
-                                <input type="text" name="payment_method" id="payment_method" placeholder="Cash / GCash / Card" required>
+                                <label for="payment_method">Payment method</label> 
+                                <select class="unit" name="payment_method" id="payment_method" required> 
+                                    <option value="">-- Select method --</option>
+                                    <option value="Gcash">Gcash</option> 
+                                    <option value="Paymaya">Paymaya</option> 
+                                    <option value="Cash">Cash</option>
+                                </select> 
                             </div>
+
+
 
                             <div id="invoice_section">
                                 <label>Invoice Number</label>

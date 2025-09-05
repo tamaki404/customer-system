@@ -1,9 +1,5 @@
-body {
-    background-color: #f5f7fa;
-    font-family: 'Inter', sans-serif;
-}
 
-.receipt-wrapper {
+.receipts-frame {
     font-family: 'Inter', sans-serif;
     display: flex;
     flex-direction: column;
@@ -18,13 +14,160 @@ body {
     border-radius: 15px;
     overflow-y: auto;
     overflow-x: auto;
+}
+
+
+
+/* search con */
+.search-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px;
+    background-color: transparent;
+}
+#text-search{
+    width: auto;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 5px;
+}
+#text-search input{
+    background-color: #fffbee;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    border: none;
+    color: #333;
+    width: 390px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+#text-search .search-btn{
+    padding: 10px;
+    background-color: #ffde59;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 70px;
+    height: 41px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+#text-search .search-btn:hover{
+    background-color: #ffd700;
+    transition: background-color 0.3s ease;
+
+}
+#from-to-date{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 5px;
+}
+.date-search span{
+    font-size: 14px;
+}
+.date-search input{
+    background-color: #fffbee;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    border: none;
+    color: #333;
+    width: 150px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+#searchCon .search-btn{
+    padding: 10px;
+    background-color: #ffde59;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 70px;
+    height: 41px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+#searchCon .search-btn:hover{
+    background-color: #ffd700;
+    transition: background-color 0.3s ease;
 
 }
 
-.status-tabs {
+
+/* title and button */
+
+.receipt-title{
+    gap: 5px;
     display: flex;
-    gap: 8px;
-    margin: 10px 0 20px 0;
+    flex-direction: column;
+}
+.receipt-title-button{
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+    justify-content: space-between;
+}
+
+
+
+.receipt-title-button h2{
+    font-size: 22px;
+    color: #333;
+    font-weight: bold;
+    margin: 5px; 
+
+}
+
+.submit-ticket-btn{
+    padding: 10px 20px;
+    background-color: #ffde59;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.submit-ticket-btn:hover{
+    background-color: #ffd700;
+}
+.sum-receipts{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    font-size: 15px;
+    margin: 0;
+
+}
+.sum-receipts-total{
+    font-weight: bold;
+    color: green;
+    font-size: 17px;
+}
+
+
+
+
+/* status and pagiantion */
+.status-pagination{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 3px;
+}
+
+/* status tabs */
+.tab-statuses {
+    display: flex;
+    gap: 5px;
+    margin: 5px 0 5px 0;
     flex-wrap: wrap;
 }
 
@@ -46,151 +189,17 @@ body {
     border-color: #ffd54f;
 }
 
-.status-tab.active {
+.status-tabactive {
     background: #ffde59;
     border-color: #ffd54f;
     box-shadow: rgba(255, 222, 89, 0.3) 0 2px 8px;
 }
 
 
-
-.receipt-container {
-    background: #fff;
-    padding: 40px;
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-    overflow-x: auto;
+/* table */
 
 
-}
-
-:focus {
-    outline: none;
-}
-
-.date-search {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    gap: 5px;
-    overflow: hidden;
-    width: auto;
-    height: 100%;
-
-
-
-}
-
-.date-search span {
-    font-size: 14px;
-}
-
-.input-date {
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-    border-radius: 10px;
-    padding: 10px;
-    background-color: #fff;
-    border: none;
-}
-
-.search-btn i {
-    font-size: 16px;
-}
-
-.searchCon {
-    height: 100%;
-    background-color: pink;
-}
-
-.date-search input[type="month"] {
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 14px;
-    margin-right: 10px;
-    color: #333;
-
-}
-
-
-.date-search input {
-    background-color: #fffbee;
-    padding: 10px;
-    border-radius: 10px;
-    font-size: 14px;
-}
-
-.date-search button {
-    padding: 10px;
-    background-color: #ffde59;
-    color: #333;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    width: 70px;
-    height: 41px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-}
-
-.date-search button:hover {
-    background-color: #ffd700;
-}
-
-
-.date-search p {
-    margin: 0;
-    font-size: 14px;
-    color: black;
-}
-
-.date-search input {
-    border-radius: 10px;
-    font-size: 14px;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-
-}
-
-
-.receipt-wrapper .wrapper-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0px;
-    background-color: transparent;
-}
-
-.wrapper-title h2 {
-    color: black;
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-    margin-left: 50px;
-}
-
-.wrapper-title form {
-    display: flex;
-    align-items: center;
-    margin-right: 50px;
-    width: 100%;
-}
-
-
-.title {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #ffde59;
-    margin-bottom: 20px;
-}
-
-.table-wrapper {
-    height: auto;
-    overflow-y: auto;
-    padding: 5px;
+.receipts-box{
     height: 80%;
     overflow-y: scroll;
     width: 100%;
@@ -199,58 +208,103 @@ body {
     width: 100%;
     box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px 0, rgba(0, 0, 0, 0.08) 0 0 0 1px;
     border-radius: 10px;
-
+    padding: 5px;
 }
 
-.receipt-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-    height: auto;
+table {
+    table-layout: fixed;
 }
 
-.receipt-table th,
-.receipt-table td {
-    padding: 12px 14px;
-    border-bottom: 1px solid #e0e0e0;
-    text-align: left;
+table thead{
+    background-color: #f1f1f1;
+    color: #333;
 }
 
-.receipt-table tr:hover {
-    background-color: #f9f9f9;
-    cursor: pointer;
+thead tr{
+    justify-content: space-evenly;
 }
 
-.receipt-thumb {
-    max-width: 50px;
-    max-height: 50px;
-    border-radius: 6px;
-    object-fit: cover;
-    border: 1px solid #ccc;
+
+tbody tr:hover {
+    background-color: #f1f1f1;
 }
 
-.status {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: capitalize;
-    display: inline-block;
+tr th{
+    font-weight: normal;
+    font-size: 13px;
+    color: #888;
+}
+tr td{
+    border-bottom: #8888882b solid 0.1px;
+    padding:10px 8px;
+    font-size: 13px;
 }
 
-.status.pending {
-    background-color: #fff3cd;
-    color: #856404;
+tr{
+    height: 60px;
+    text-align: center; 
+    cursor:pointer;
 }
 
-.status.approved {
-    background-color: #d4edda;
-    color: #155724;
+
+.status-pending {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #b45309;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
 }
 
-.status.rejected {
-    background-color: #f8d7da;
-    color: #721c24;
+
+
+.status-rejected {
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-verified {
+  background: #e0e7ff;
+  border: 1px solid #6366f1;
+  color: #3730a3;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-cancelled {
+  background: #f3f4f6;
+  border: 1px solid #6b7280;
+  color: #374151;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+
+
+#alert-notify{
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 14px;
+        z-index: 9999;
+        position: fixed;
+        top: 50px;
+        left: 50%;
+        width: 90%;
+        transform: translateX(-50%);
+        max-width: 800px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+         position: fixed; 
+
 }
 
 .alert {
@@ -258,17 +312,12 @@ body {
     margin: 16px 0;
     border-radius: 8px;
     font-size: 0.95rem;
+        z-index: 9999;
+
 }
 
-.alert.success {
-    background-color: #d4edda;
-    color: #155724;
-}
 
-.alert.error {
-    background-color: #f8d7da;
-    color: #721c24;
-}
+
 
 .form-section {
     margin-top: 40px;
@@ -354,255 +403,98 @@ body {
     margin-bottom: 20px;
 }
 
+
 .date-filter-form input[type="date"],
 .date-filter-form button {
     margin-left: 10px;
     padding: 5px 10px;
 }
 
-.title-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+
+#payment_method {
     width: 100%;
-}
-
-.title-wrapper button {
-    background-color: #ffde59;
-    color: #333;
-    border: none;
-    padding: 10px 20px;
+    padding: 10px 14px;
+    border: 1px solid #cfd8dc;
     border-radius: 6px;
+    font-size: 13px;
+    background: #f7f9fa;
+    transition: border 0.2s;
+    margin-bottom: 6px;
+    outline: none;
+    color: #333;
     cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-    transition: background-color 0.3s;
 }
 
-.title-wrapper button:hover {
-    background-color: #ffd700;
-}
-
-
-table {
-    table-layout: fixed;
-}
-
-
-
-tbody tr:hover {
-    background-color: #f1f1f1;
-}
-
-tr th{
-    font-weight: normal;
-    font-size: 14px;
-    color: #888;
-}
-tr td{
-    border-bottom: #8888882b solid 0.1px;
-}
-
-
-
-.status-pending {
-  background: #fef3c7;
-  border: 1px solid #f59e0b;
-  color: #b45309;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-weight: 500;
-  font-size: 13px;
-  display: inline-block;
-}
-
-.status-verified {
-  background: #dcfce7;
-  border: 1px solid #22c55e;
-  color: #166534;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-weight: 500;
-  font-size: 13px;
-  display: inline-block;
-}
-
-.status-cancelled {
-  background: #f3f4f6;
-  border: 1px solid #6b7280;
-  color: #374151;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-weight: 500;
-  font-size: 13px;
-  display: inline-block;
-}
-
-.status-rejected {
-  background: #fee2e2;
-  border: 1px solid #ef4444;
-  color: #991b1b;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-weight: 500;
-  font-size: 13px;
-  display: inline-block;
-}
-
-.status-default {
-  background: #f9fafb;
-  border: 1px solid #d1d5db;
-  color: #374151;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-weight: 500;
-  font-size: 13px;
-  display: inline-block;
-}
-
-
-.status-default {
-    color: #757575;
-}
-
-
-.submit-btn:hover {
-    background: #0d47a1;
-
-    .receipt-container {
-        padding: 18px 6px;
-        max-width: 98vw;
+@media screen and (max-width: 768px) {
+    .search-container{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
     }
-
-    .form-section {
-        padding: 18px 6px;
-        max-width: 98vw;
+    .date-search .search-bar{
+        font-size: 12px;
     }
-
-    background-color: #0d47a1;
-}
-
-@media (max-width: 768px) {
-    .receipt-container {
-        padding: 24px;
+    #text-search{
+        width: 100%
     }
-
-    .form-grid {
+    .date-search{
+        justify-content: space-evenly;
+    }
+    #text-search input[type="text"] {
+        font-size: 12px;
+    }
+    .date-search div{
+        display: flex;
         flex-direction: column;
     }
-
-    .title-wrapper .title{
+    .date-search div span{
+        font-size: 12px;
+    }
+    .receipt-title-button h2{
         font-size: 20px;
-    }
-
-    #openModalBtn{
-        font-size: 13px;
-    }
-
-    .receipt-table th,
-    .receipt-table td {
-        font-size: 0.85rem;
-    }
-    .wrapper-title{
-        display: flex;
-        flex-direction: column;
-        height: auto;
-    }
-    .wrapper-title form{
-        height: auto;
-        width: 100%;
-    }
-    #from-to-date{
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-    }
-      #from-to-date input{
-        width: 140px;
-      }
-
-      #searchCon{
         margin: 0;
-        width: 330px;
-        margin-bottom: 10px;
-      }
-
-          .date-search{
-        width: 95%;
     }
-    .titleCount h2{
-        font-size: 25px;
-    }
-    .titleCount p{
-        font-size: 15px;
-    }
-    .mainFrame .showScreen {
-        width: 100%;
-        padding: 10px;
-        margin-top: 0;
-    }
-
-    .orderFrame{
-        padding: 10px;
-    }
-
-    .wrapper-title{
+    .status-pagination{
+        display: flex;
         flex-direction: column;
         gap: 5px;
-        height: auto;
     }
-    .date-search input{
-        width: 140px;
+    .input-date{
+        width: 30px;
+        
     }
-    .date-search span{
-        font-size: 13px;
+    .tab-statuses a{
+        font-size: 12px;
     }
-}
 
-/* Pagination Styles */
-.pagination-wrapper {
-    margin-top: 2rem;
-    text-align: center;
-}
+    #from-to-date input[type="date"] {
+        font-size: 12px;
+    }
 
-.pagination-info {
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: 500;
-}
+    .date-search input {        
+        width: 130px;
+        
+    }
+    .sum-receipts{
+        font-size: 12px;
+    }
+    thead tr th{
+        font-size: 12px;
+    }
+    table tbody tr td{
+        font-size: 12px;
+    }
+    .receipts-box{
+        overflow: auto;
+        height: 80%;
+        overflow-y: auto;
+        width: 100%;
+        box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px 0, rgba(0, 0, 0, 0.08) 0 0 0 1px;
+        border-radius: 10px;
+        background: #fff;
+    }
+    table thead tr th{
+        width: 100px;
+    }
 
-.pagination-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-}
-
-.pagination-controls a {
-    color: #1976d2;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid #1976d2;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-.pagination-controls a:hover {
-    background-color: #1976d2;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-controls span {
-    color: #ccc;
-    cursor: not-allowed;
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-weight: 500;
 }
