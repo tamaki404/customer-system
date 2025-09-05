@@ -47,14 +47,17 @@ body {
     display: flex;
     flex-direction: row;
     padding: 25px;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
 }
 
 .customerDetails .image{
     height: 100%;
-    width: 20%;
+    width: 15%;
     display: flex;
     border-radius: 25px;
     overflow: hidden;
+    
 }
 
 .image img{
@@ -117,8 +120,33 @@ body {
     display: flex;
     flex-direction: row;
 }
+.store-name{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: space-between;
+}
+.storename .status{
+    font-size: 14px;
+}
+.store-name .customer-id{
+    font-size: 14px;
+
+}
+.storename{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+.joined-date{
+    font-size: 13px;
+    margin: 0;
+    color: #666;
+}
+
 .details .store-name p{
-    font-size: 25px;
+    font-size: 20px;
     font-weight: bold;
     color: #333;
     margin: 0;
@@ -136,6 +164,13 @@ body {
     flex-direction: row;
     width: auto;
     gap: 5px;
+}
+.details{
+    gap: 0;
+    align-items: start;
+    height: 100%;
+    padding: 0;
+    width: 80%;
 }
 
 span p{
@@ -198,6 +233,7 @@ span .handle{
             padding: 0;
 
         } */
+
 
 
 
@@ -332,22 +368,26 @@ span .handle{
 
     /* Mobile-friendly customer details */
     @media (max-width: 768px) {
+
+        .customerFrame h2{
+            font-size: 20px;
+        }
         .customerFrame .customerDetails {
             width: 100%;
-            height: auto;
-            padding: 30px;
-        }
-         .customerFrame {
-            padding: 5px;
-            
-        }
-        .customerDetails{
+            height: 230px;
+            padding: 10px;
+            flex-wrap: wrap;
             flex-direction: row;
+            display: flex;
+            gap: 1px;
+           
         }
+
+
         .customerDetails .image{
             overflow: hidden;
-            height: 100px;
-            width: 100px;
+            height: 50px;
+            width: 50px;
             border-radius: 50%;
 
 
@@ -364,22 +404,43 @@ span .handle{
         }
 
         .details{
+            width: 79%;            
             flex-direction: column;
-            flex-wrap: wrap;
-            width: 65%;
+            height: 100%;
+            padding: 0;
+        }
+        .details span{
+            display: contents;
+        }
+        .username .handle{
+            font-size: 11px;
+        }
+        .store-name .customer-id{
+            font-size: 10px;
+            margin-bottom: 5px;
+            margin: 0;
         }
     
         .username{
             flex-direction: row;
             margin: 0;
             flex-wrap: wrap;
+            font-size: 9px;
         }
         .username p{
-            font-size: 14px;
+            font-size: 12px;
         }
-        .details .store-name p {
-            font-size: 20px;
 
+        .storename .name{
+            font-size: 16px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+
+        }
+        .store-name{
+            gap: 0;
+            margin: 0;
         }
         .statusButton{
             flex-direction: column;
@@ -391,8 +452,6 @@ span .handle{
         .store-name{
             display: flex;
             flex-direction: row;
-            gap: 10px;
-            flex-wrap: wrap;
         }
         .store-name.status-badge{
             width: auto;
@@ -402,25 +461,66 @@ span .handle{
         .action-buttons{
             margin: 0;
         }
+        .details .store-name p {
+            margin: 0;
+                        text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
 
         .action-buttons form button{
             font-size: 12px !important;
         }
+        p .joined-p{
+            font-size: 12px;
+        }
+        .storename .status{
+            font-size: 12px;
+            margin: 0;
+        }
+
 
         .details .joined-p{
             font-size: 9px;
             margin: 0;
             color: #888;
         }
+        .customer-contacts{
+            gap: 0;
+            margin-top: 0;
+        }
         .customer-contacts span {
-            font-size: 16px;
+            font-size: 12px;
+            margin: 0;
+        }
+        .customer-contacts p {
+            font-size: 11px;
+            margin: 0;
+        }
+        .btn-confirm{
+            font-size: 12px;
         }
 
-
-    .tab-content table th,
-    .tab-content table td {
-        font-size: 12px;
-        padding: 8px 5px;
-    }
-
+        .tab-content table th,
+        .tab-content table td {
+            font-size: 12px;
+            padding: 8px 5px;
+        }
+        .activate-btn, .suspend-btn, .reactivate-btn {
+            background: #28a74691;
+            color: white;
+            padding: 5px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+            font-size: 11px;
+            float: left;
+        }
+        .statusButton{
+            align-items: start;
+            display: block;
+            padding: 0;
+        }
     }

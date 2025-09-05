@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="{{ asset('css/reporting.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <title>Document</title>
 </head>
 <body>
 
@@ -79,27 +78,29 @@
             <div class="details">
                 {{-- <p class="customer-id">cID: {{ $customer->id }}</p> --}}
                 <div class="store-name" >
-                    <p class="storename" style="display: flex; ">{{ $customer->store_name}} 
-                        <span 
+                    <p class="storename">
+                        <span class="name" title="{{ $customer->store_name}} ">{{ $customer->store_name}} </span>
+                        <span class="status"
                             style="
-                            
-                            margin-left: 10px;
-                            text-transform: uppercase;
-                            font-size: 14px;
-                            align-items: center;
-                            @if($customer->acc_status === 'Active')
-                                color: #155724;
-                            @elseif($customer->acc_status === 'accepted')
-                                color: #0c5460;
-                            @elseif($customer->acc_status === 'Suspended')
-                                color: #721c24;
-                            @else
-                                color: #856404;
-                            @endif 
+                                text-transform: uppercase;
+                                margin: 0;
+                                
+                                align-items: center;
+                                @if($customer->acc_status === 'Active')
+                                    color: #155724;
+                                @elseif($customer->acc_status === 'accepted')
+                                    color: #0c5460;
+                                @elseif($customer->acc_status === 'Suspended')
+                                    color: #721c24;
+                                @else
+                                    color: #856404;
+                                @endif 
                             ">
                             {{$customer->acc_status}}
                         </span>
                     </p>
+
+                    <span class="customer-id" style="color:#f8912a">{{$customer->id}}</span>
                         
                  
                 </div>
@@ -151,7 +152,7 @@
                 </div>
 
 
-                <p style="font-size: 14px;" class="joined-p"><i class="far fa-clock"></i> Joined on {{ $customer->created_at -> format('F Y')}}</p>
+                <p class="joined-date"><i class="far fa-clock"></i> Joined on {{ $customer->created_at -> format('F Y')}}</p>
             </div>
 
         </div>
