@@ -123,6 +123,8 @@
                     <button type="button" class="upload-btn" onclick="document.getElementById('image').click()">
                         <i class="fas fa-camera"></i> Change Image
                     </button>
+                    <p id="file-error" style="color: red; display: none; margin: 0; font-size: 12px; margin: 0;"></p>
+
                     <button type="submit" id="submitBtn" class="save-btn" style="display: none;">Use this Image</button>
                 </form>
                 @endif
@@ -337,6 +339,7 @@
     <script src="{{ asset('js/disableBtn.js') }}"></script>
     <script src="{{ asset('js/customer_view.js') }}"></script>
     <script src="{{ asset('js/confirmation-modal/staff_view.js') }}"></script>
+    <script src="{{ asset('js/staffs/image.js') }}"></script>
 
 </body>
 </html>
