@@ -151,13 +151,13 @@
 .each-item-div{
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
     padding: 10px;
     width: 300px;
     gap: 10px;
 }
+
 .each-item-div img{
     width: 300px;
     height: 300px;
@@ -168,9 +168,15 @@
 
 .item-detail{
     gap: 5px;
+        text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 .item-detail p{
     margin: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 .items-list{
     display: flex;
@@ -184,6 +190,9 @@
     font-size: 15px;
     color: #333;
     margin: 2px;
+    text-overflow: ellipsis;
+    white-space: wrap;
+    overflow: hidden;
 }
 .item-price-quan{
     display: flex;
@@ -379,6 +388,7 @@
 @media (max-width: 768px) {
     .purchase-order-bg {
         padding: 15px;
+        gap: 0;
     }
 
     .items-list{
@@ -398,6 +408,16 @@
     .each-item-div{
         width: 300px;
         min-width: 300px;
+    }
+    .item-name{
+        font-size: 14px;
+        color: #333;
+
+    }
+    .item-total-price{
+        font-size: 14px;
+        margin: 2px;
+
     }
 }
 
