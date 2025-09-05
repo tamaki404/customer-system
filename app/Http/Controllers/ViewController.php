@@ -87,8 +87,11 @@ class ViewController extends Controller{
     public function viewCustomer($id)
     {
         $customer = User::findOrFail($id);
+        $from = request('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $to = request('to_date', now()->endOfMonth()->format('Y-m-d'));
 
-        $receipts = Receipt::where('id', $id)
+        
+        $receipts = Receipt::where( 'id', $id)
         ->orderBy('created_at', 'desc')
         ->take(10)                               
         ->paginate(2, ['*'], 'receipts_page');
@@ -110,8 +113,65 @@ class ViewController extends Controller{
             ->orderBy('created_at', 'desc')
             ->paginate(7, ['*'], 'purchaseOrder_page');
 
+        // if ($from && $to) {
+        //     $query->whereBetween('order_date', [
+        //         Carbon::parse($from)->startOfDay(),
+        //         Carbon::parse($to)->endOfDay()
+        //     ]);
+        // }
+        // stats
+        //stats.sum
+            $sum_PO = PurchaseOrder::where('user_id', $id)
+                ->where('status', 'Delivered')
+                ->whereBetween('created_at', [
+                        Carbon::parse($from)->startOfDay(),
+                        Carbon::parse($to)->endOfDay()
+                    ])
+                ->count();
+             $sum_receipts = Receipt::where('id', $id)
+                ->where('status', 'Verified')
+                ->whereBetween('created_at', [
+                        Carbon::parse($from)->startOfDay(),
+                        Carbon::parse($to)->endOfDay()
+                    ])
+                ->count();               
+            $sum_orders = Orders::where('customer_id', $id)
+                ->where('status', 'Completed')
+                ->whereBetween('created_at', [
+                        Carbon::parse($from)->startOfDay(),
+                        Carbon::parse($to)->endOfDay()
+                    ])
+                ->count();    
+                
+            $totalSpent = PurchaseOrder::where('customer_id', $customer->id)
+                ->where('status', 'Completed')
+                ->sum('total_amount');
 
-        return view('customer_view', compact('customer', 'receipts', 'orders', 'purchaseOrders'));
+            // highest single purchase
+            $highestPurchase = PurchaseOrder::where('customer_id', $customer->id)
+                ->where('status', 'Completed')
+                ->max('total_amount');
+
+            // average spend per order
+            $averageSpend = PurchaseOrder::where('customer_id', $customer->id)
+                ->where('status', 'Completed')
+                ->avg('total_amount');
+
+            // lifetime value (LTV) — usually same as total spent unless you define it differently
+            $lifetimeValue = $totalSpent;
+
+
+        return view('customer_view', compact(
+            'customer',
+             'receipts',
+              'orders',
+               'purchaseOrders',
+               'sum_orders',
+               'sum_receipts',
+               'sum_PO',
+               'from',
+               'to'
+        ));
     }
 
 

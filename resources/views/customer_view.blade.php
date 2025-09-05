@@ -125,8 +125,7 @@
 
 
                 <div class="statusButton">
-
-                <!-- Action Buttons -->
+                    <!-- Action Buttons -->
                     @if(auth()->user()->user_type !== 'Customer')
                         <div class="action-buttons" style="margin-left: auto">
 
@@ -137,20 +136,26 @@
                                     data-action="Suspend" >Suspend account</button>
                              
                                 </form>
-                            @endif
-
-                            @if($customer->acc_status === 'Suspended')
+                            @elseif($customer->acc_status === 'Suspended')
                                 <form action="{{ url('/customer/activate/' . $customer->id) }}" method="POST" style="display: inline-block;">
                                     @csrf
                                     <button type="submit" style="background-color: #28a745" class="reactivate-btn">
-                                        Reactivate account
+                                        Restore account
+                                    </button>
+                                </form>
+                            @elseif($customer->acc_status === 'Pending')
+                                <form action="{{ url('/customer/activate/' . $customer->id) }}" method="POST" style="display: inline-block;">
+                                    @csrf
+                                    <button type="submit" style="background-color: #28a745" class="reactivate-btn">
+                                        Activate account
                                     </button>
                                 </form>
                             @endif
+
+
                         </div>
                     @endif
                 </div>
-
 
                 <p class="joined-date"><i class="far fa-clock"></i> Joined on {{ $customer->created_at -> format('F Y')}}</p>
             </div>
@@ -159,13 +164,117 @@
 
         <div class="receiptsCorner" style=" overflow-y: auto;">
             <nav class="tab-navigation" style="height: auto">
-                <button class="tab-button active" onclick="switchTab('ordersTab')">Orders History</button>
+                <button class="tab-button active" onclick="switchTab('statisticsTab')">Statistics</button>
+                <button class="tab-button" onclick="switchTab('ordersTab')">Orders History</button>
                 <button class="tab-button" onclick="switchTab('receiptsTab')">Receipts History</button>
                 <button class="tab-button" onclick="switchTab('purchaseOrderTab')">Purchase Order History</button>
 
             </nav>
+            <div class="tab-content active" id="statisticsTab" style="overflow-x:auto;  auto; height: auto; padding: 0">
+                <div class="statistics-customer">
+                    <div class="head">
+                        {{-- date-picker --}}
+                        {{-- <form action="" method="POST" class="date-picker">
+                            @csrf
+                            <div class="date-search">
+                                <span>From</span>
+                                <input type="date" name="from_date">
+                            </div>
+                            <div class="date-search">
+                                <span>To</span>
+                                <input type="date" name="to_date">
+                            </div>
+                        </form> --}}
 
-            <div class="tab-content active" id="ordersTab" style="overflow-x:auto; padding: 0">
+                        {{-- <div class="date-searched">
+                            <p>Showing results from</p>
+                            <div class="dates">
+                                <span>{{ \Carbon\Carbon::parse($from)->format('d M, Y') }}</span>
+                                <span>-</span>
+                                <span>{{ \Carbon\Carbon::parse($to)->format('d M, Y') }}</span>
+                            </div>
+                        </div> --}}
+
+                        <form action="{{ route('customer.view',  ['customer_id' => $customer->id]) }}"  class="date-picker" id="from-to-date" method="GET">
+                                <div class="date-search">
+                                    <span>From</span>
+                                    <input type="date" name="from_date" 
+                                        value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                                        onchange="this.form.submit()">
+                                </div>
+                                <div class="date-search">
+                                    <span>To</span>
+                                    <input type="date" name="to_date"
+                                        value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                                        onchange="this.form.submit()">
+                                </div>
+                        </form>
+                    </div>
+
+                    {{-- summary total cards --}}
+                    <p class="stats-title">Summary</p>
+                    <div class="summary-cards">
+                        <div class="card">
+                            <h2>{{$sum_PO}}</h2>
+                            <p>Total purchase orders</p>
+                        </div>
+                        <div class="card">
+                            <h2>{{$sum_receipts}}</h2>
+                            <p>Total receipts</p>
+                        </div>
+                        <div class="card">
+                            <h2>{{$sum_orders}}</h2>
+                            <p>Total orders</p>
+                        </div>
+                    </div>
+
+                    {{-- spending value --}}
+                    <br>
+                    <p class="stats-title">Spending</p>
+                    <div class="summary-cards">
+                        <div class="card">
+                            <h2></h2>
+                            <p>Total Amount Spent</p>
+                        </div>
+                        <div class="card">
+                            <h2></h2>
+                            <p>Highest Single Purchase Value</p>
+                        </div>
+                        <div class="card">
+                            <h2></h2>
+                            <p>Average Spend per Order</p>
+                        </div>
+                        <div class="card">
+                            <h2></h2>
+                            <p>Lifetime Value (LTV)</p>
+                        </div>
+                    </div>
+
+                    {{-- chart --}}
+                    <br>
+                    <p class="stats-title">Charts</p>
+                    <div class="stats-charts">
+                        {{-- Orders status --}}
+                        <div class="orders-month">
+
+                        </div>
+                        <div class="order-status">
+
+                        </div>
+                    </div>
+                    {{-- top product --}}
+                    <br>
+                    <p class="stats-title">Top product</p>
+                    <div class="top-product">
+                        <div class="product">
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="tab-content" id="ordersTab" style="overflow-x:auto; padding: 0">
                 @if(isset($orders) && count($orders) > 0)
                     <table  style="overflow-x:auto; overflow-y: auto; ">
                         <thead>
@@ -235,10 +344,6 @@
                 @else
                     <div class="no-receipts">No orders found for this customer.</div>
                 @endif
-
-
-
-                
             </div>
 
             <div class="tab-content" id="receiptsTab" style="overflow-x:auto;  auto; height: auto; padding: 0">
