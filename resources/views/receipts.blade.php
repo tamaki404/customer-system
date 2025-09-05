@@ -91,25 +91,6 @@
                                 </div>
                             </div>
 
-                            <script>
-                            document.addEventListener('DOMContentLoaded', () => {
-                                const input = document.getElementById('total_amount');
-
-                                input.addEventListener('input', () => {
-                                    let rawValue = input.value.replace(/[^0-9.]/g, '');
-                                    const parts = rawValue.split('.');
-                                    
-                                    let formatted = Number(parts[0]).toLocaleString('en-US');
-                                    
-                                    if (parts.length > 1) {
-                                        formatted += '.' + parts[1].slice(0, 2);
-                                    }
-
-                                    input.value = formatted;
-                                });
-                            });
-                            </script>
-
 
                             <!-- Payment Method -->
                             <div>
@@ -231,9 +212,6 @@
                             </a>
                     @endforeach
                 </div>
-                {{-- <div style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">
-                    Page {{ $receipts->currentPage() }} of {{ $receipts->lastPage() }} ({{ $receipts->total() }} total receipts)
-                </div> --}}
 
                 @if($receipts->where('status', 'Verified')->count())
                     <div class="sum-receipts" style="margin: 0">
@@ -403,6 +381,4 @@
         <script src="{{ asset('js/disableBtn.js') }}"></script>
         <script src="{{ asset('js/receipts.js') }}"></script>
         <script src="{{ asset('js/receipts/image.js') }}"></script>
-
-
     @endpush

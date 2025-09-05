@@ -77,7 +77,8 @@
             <div class="form-group">
                 <p>Company image</p>
                 <input type="file" name="image" id="companyImage" accept="image/*" required>
-                <small id="company-image-feedback" style="color:red; display:block; min-height:1.2em;"></small>
+                <small id="company-image-feedback" style="color:red; display:block; "></small>
+                <p id="file-error" style="color: red; display: none; margin: 0; font-size: 12px; margin: 0;"></p>
             </div>
 
             <div class="form-group">
@@ -113,10 +114,6 @@
             @endif
         <button type="submit" id="submitBtn">Sign Up</button>
 
-
-       
-
-
     </div>
 
 
@@ -131,6 +128,7 @@
 
 <script src="{{asset('js/register.js')}}"></script>
 <script src="{{ asset('js/disableBtn.js') }}"></script>
+<script src="{{ asset('js/registration/image.js') }}"></script>
 
 </body>
 </html> 

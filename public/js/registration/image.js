@@ -1,4 +1,4 @@
-const fileInput = document.getElementById('receipt_image');
+const fileInput = document.getElementById('companyImage');
 const errorMsg = document.getElementById('file-error');
 
 fileInput.addEventListener('change', function() {

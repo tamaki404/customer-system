@@ -9,6 +9,20 @@ setTimeout(function () {
 document.addEventListener('DOMContentLoaded', () => {
     const paymentInput = document.getElementById('payment_method');
     const invoiceInput = document.getElementById('invoice_number');
+    const input = document.getElementById('total_amount');
+
+    input.addEventListener('input', () => {
+    let rawValue = input.value.replace(/[^0-9.]/g, '');
+    const parts = rawValue.split('.');
+                                    
+    let formatted = Number(parts[0]).toLocaleString('en-US');
+                                    
+        if (parts.length > 1) {
+            formatted += '.' + parts[1].slice(0, 2);
+        }
+        input.value = formatted;
+    });
+
 
     function toggleInvoiceField() {
         const method = paymentInput.value.trim().toLowerCase();
@@ -26,3 +40,4 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleInvoiceField(); 
     paymentInput.addEventListener('change', toggleInvoiceField);
 });
+              
