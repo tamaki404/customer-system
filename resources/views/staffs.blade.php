@@ -58,6 +58,7 @@
                         <label>Image</label>
                         <input type="file" name="image" id="image" ...>
                         <span id="image-error" class="error-message"></span>
+                        <p id="file-error" style="color: red; display: none; margin: 0; font-size: 12px; margin: 0;"></p>
                     </div>
 
 
@@ -183,6 +184,7 @@
 
 <script src="{{ asset('scripts/open-modal.js') }}"></script>
 <script src="{{ asset('js/disableBtn.js') }}"></script>
+<script src="{{ asset('js/staffs/image.js') }}"></script>
 
 
 
