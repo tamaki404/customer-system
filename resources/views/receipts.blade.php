@@ -18,127 +18,125 @@
 
         {{-- modal --}}
         <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            @if(auth()->user()->user_type === 'Customer')
-                <div class="form-section">
-                    <h3 class="form-title" style="margin: 1px">Submit New Receipt</h3>
-                    <p>Please upload your receipt below. Ensure all information is accurate before submission.</p>
-                    <form action="/submit-receipt" id="submitForm" class="receipt-form" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="form-grid">
-                            <input type="hidden" name="id" value="{{ auth()->user()->id }}">
-                            <input type="hidden" name="status" value="Pending">
-                            <input type="hidden" name="verified_by">
-                            <input type="hidden" name="verified_at">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                @if(auth()->user()->user_type === 'Customer')
+                    <div class="form-section">
+                        <h3 class="form-title" style="margin: 1px">Submit New Receipt</h3>
+                        <p>Please upload your receipt below. Ensure all information is accurate before submission.</p>
+                        <form action="/submit-receipt" id="submitForm" class="receipt-form" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="form-grid">
+                                <input type="hidden" name="id" value="{{ auth()->user()->id }}">
+                                <input type="hidden" name="status" value="Pending">
+                                <input type="hidden" name="verified_by">
+                                <input type="hidden" name="verified_at">
 
-                            <script>
-                            document.addEventListener('DOMContentLoaded', () => {
-                                const form = document.querySelector('.receipt-form');
-                                const totalAmountInput = document.getElementById('total_amount');
-                                if (form && totalAmountInput) {
-                                    form.addEventListener('submit', function(e) {
-                                        totalAmountInput.value = totalAmountInput.value.replace(/,/g, '');
-                                    });
-                                }
-                            });
-                            </script>
+                                <script>
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    const form = document.querySelector('.receipt-form');
+                                    const totalAmountInput = document.getElementById('total_amount');
+                                    if (form && totalAmountInput) {
+                                        form.addEventListener('submit', function(e) {
+                                            totalAmountInput.value = totalAmountInput.value.replace(/,/g, '');
+                                        });
+                                    }
+                                });
+                                </script>
 
-                            <div style="display: none">
-                                <label>Store Name</label>
-                                <input type="text" name="store_name" value="{{ auth()->user()->store_name }}" placeholder="Store name" hidden>
-                            </div>
-
-                            <div style="display: none">
-                                <label>Username</label>
-                                <input type="text" name="username" value="{{ auth()->user()->username }}" hidden>
-                            </div>
-
-
-
-                            
-                            <div>
-                                <label>P.O number</label>
-                                <input type="text" name="po_number" id="po_number" required>
-                                <p id="number-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
-                            </div>
-
-
-                            <div>
-                                <label>Receipt Number</label>
-                                <input type="text" name="receipt_number" required>
-                                <p id="number-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
-                            </div>
-
-
-                            <div>
-                                <label>Upload Receipt</label>
-                                <input type="file" name="receipt_image" id="receipt_image" accept="image/*" required>
-                                <p id="file-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
-                            </div>
-
-                            <div>
-                                <label>Purchase Date</label>
-                                <input type="date" name="purchase_date" placeholder="e.g. 2025-07-22" required>
-                            </div>
-
-                            <div>
-                                <label>Total Amount</label>
-                                <div style="position: relative;">
-                                    <span style="
-                                        position: absolute;
-                                        top: 50%;
-                                        left: 10px;
-                                        transform: translateY(-50%);
-                                        font-weight: bold;
-                                        color: #444;
-                                    ">₱</span>
-                                    <input 
-                                        type="text" 
-                                        name="total_amount" 
-                                        id="total_amount"
-                                        placeholder="0.00"
-                                        required
-                                        style="padding-left: 25px;"
-                                    >
+                                <div style="display: none">
+                                    <label>Store Name</label>
+                                    <input type="text" name="store_name" value="{{ auth()->user()->store_name }}" placeholder="Store name" hidden>
                                 </div>
+
+                                <div style="display: none">
+                                    <label>Username</label>
+                                    <input type="text" name="username" value="{{ auth()->user()->username }}" hidden>
+                                </div>
+
+
+
+                                
+                                <div>
+                                    <label>P.O number</label>
+                                    <input type="text" name="po_number" id="po_number" required>
+                                    <p id="number-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
+                                </div>
+
+
+                                <div>
+                                    <label>Receipt Number</label>
+                                    <input type="text" name="receipt_number" required>
+                                    <p id="number-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
+                                </div>
+
+
+                                <div>
+                                    <label>Upload Receipt</label>
+                                    <input type="file" name="receipt_image" id="receipt_image" accept="image/*" required>
+                                    <p id="file-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
+                                </div>
+
+                                <div>
+                                    <label>Purchase Date</label>
+                                    <input type="date" name="purchase_date" placeholder="e.g. 2025-07-22" required>
+                                </div>
+
+                                <div>
+                                    <label>Total Amount</label>
+                                    <div style="position: relative;">
+                                        <span style="
+                                            position: absolute;
+                                            top: 50%;
+                                            left: 10px;
+                                            transform: translateY(-50%);
+                                            font-weight: bold;
+                                            color: #444;
+                                        ">₱</span>
+                                        <input 
+                                            type="text" 
+                                            name="total_amount" 
+                                            id="total_amount"
+                                            placeholder="0.00"
+                                            required
+                                            style="padding-left: 25px;"
+                                        >
+                                    </div>
+                                </div>
+
+
+                                <!-- Payment Method -->
+                                <div>
+                                    <label for="payment_method">Payment method</label> 
+                                    <select class="unit" name="payment_method" id="payment_method" required> 
+                                        <option value="">-- Select method --</option>
+                                        <option value="Gcash">Gcash</option> 
+                                        <option value="Paymaya">Paymaya</option> 
+                                        <option value="Cash">Cash</option>
+                                    </select> 
+                                </div>
+
+
+
+                                <div id="invoice_section">
+                                    <label>Invoice Number</label>
+                                    <input type="text" name="invoice_number" id="invoice_number" disabled>
+                                </div>
+
+
+
+                                <div class="full">
+                                    <label>Orders</label>
+                                    <textarea name="notes" rows="10"  rows="5" cols="30"placeholder="You can list your orders here"></textarea>
+                                </div>
+
                             </div>
 
-
-                            <!-- Payment Method -->
-                            <div>
-                                <label for="payment_method">Payment method</label> 
-                                <select class="unit" name="payment_method" id="payment_method" required> 
-                                    <option value="">-- Select method --</option>
-                                    <option value="Gcash">Gcash</option> 
-                                    <option value="Paymaya">Paymaya</option> 
-                                    <option value="Cash">Cash</option>
-                                </select> 
-                            </div>
-
-
-
-                            <div id="invoice_section">
-                                <label>Invoice Number</label>
-                                <input type="text" name="invoice_number" id="invoice_number" disabled>
-                            </div>
-
-
-
-                            <div class="full">
-                                <label>Orders</label>
-                                <textarea name="notes" rows="10"  rows="5" cols="30"placeholder="You can list your orders here"></textarea>
-                            </div>
-
-                        </div>
-
-                        <button type="submit" class="submit-btn" id="submitBtn" style="color: #333; font-size: 15px;">Submit Receipt</button>
-                    </form>
-                </div>
-            @endif
-
-            
-        </div>
+                            <button type="submit" class="submit-btn" id="submitBtn" style="color: #333; font-size: 15px;">Submit Receipt</button>
+                        </form>
+                    </div>
+                @endif
+            </div>
         </div>
 
 
@@ -257,7 +255,7 @@
                                     <td>{{ \Carbon\Carbon::parse($receipt->created_at)->format('j F, Y') }}</td>
                                     <td style="padding:10px 8px; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{ $receipt->store_name }}</td>
                                     <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                    <td>{{$receipt->purchaseOrder->payment_status }}</td>
+                                    <td>{{ $receipt->purchaseOrder->payment_status ?? '' }}</td>
                                     <td>
                                         @php 
                                             $statusClasses = [

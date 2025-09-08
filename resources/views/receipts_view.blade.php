@@ -38,6 +38,66 @@
         </div>
     </div>
 
+    {{-- file an action modal --}}
+    <div class="modal" id="fileActionModal" style="display: none;"  tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"  style="justify-self: center; align-self: center; ">
+            <div class="modal-content" style="border-top: 4px solid #ffde59;">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="padding: 0; margin: 0; font-size: 15px; font-weight: bold;">File an action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" style="border: none; font-size: 14px; gap: 6px">
+                <form action="{{ route('receipts.payment_status', $receipt->po_number) }}" method="POST">
+                    @csrf
+                    <div class="form-row">
+                        <label for="payment_status">Is the payment fully settled?</label>
+                        <select name="payment_status" id="payment_status" required>
+                            <option value="Paid">Yes - fully paid</option>
+                            <option value="Partially">No - partially paid</option>
+                            <option value="Rejected" style="color: red; font-weight: bold;">No - reject</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row" id="messAddInput">
+                        <label for="payment-notes">Any notes to add? (optional)</label>
+                        <p>*Write your message briefly yet precisely below</p>
+                        <input type="text" name="payment_notes" id="payment-notes" placeholder="">
+                    </div>
+
+                    <div class="form-row" id="rejectPaymentInput" style="display: none;">
+                        <label for="reject-details">Is there any problem with the receipt image attached?</label>
+                        <p>*Kindly specify below the error you noticed</p>
+                        <input 
+                            type="text" 
+                            name="payment_reject_details" 
+                            id="reject-details" 
+                            minlength="3" 
+                            maxlength="100" 
+                            placeholder="e.g., blurry, missing, wrong file, mismatched details"
+                        >
+                    </div>
+
+                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+
+                    <div class="modal-footer" style="padding: 5px; margin-top: 5px;">
+                        <button type="submit" id="confirmFileBtn" value="Submit" class="btn" style="background: #ffde59; font-size: 14px;">
+                            Confirm this receipt
+                        </button>
+                        <button type="button" id="cancelBtn" class="btn btn-secondary" style="font-size: 14px;" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
     <div class="receiptFrame">
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show position-fixed" 
@@ -76,7 +136,8 @@
                         </td></tr>
                                                                     
 
-                        <tr><th>Purchase Date:</th><td>{{ $receipt->purchase_date ? \Carbon\Carbon::parse($receipt->purchase_date)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
+                        <tr><th>Purchase date:</th><td>{{ $receipt->purchase_date ? \Carbon\Carbon::parse($receipt->purchase_date)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
+                        <tr><th>Payment status</th><td>{{ $receipt->purchaseOrder->payment_status}}</td></tr>
                         <tr>
                         <th>Status:</th>
                                 <td style="color:
@@ -101,31 +162,33 @@
                         <div class="notes-display">{{ $receipt->notes }}</div>
 
                         @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
-                        <div class="actionBtn" >
-                            @if($receipt->status === 'Verified')
+                            {{-- <div class="actionBtn" >
+                                <p>Receipt status</p>
+                                @if($receipt->status === 'Verified')
 
-                            @elseif($receipt->status === 'Cancelled')
+                                @elseif($receipt->status === 'Cancelled')
 
 
-                            @elseif($receipt->status=== 'Pending')
-                                <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST" class="action-form">
-                                    @csrf
-                                    <button type="button" class="verifyButton open-confirm" data-action="verify">Verify</button>
-                                </form>
+                                @elseif($receipt->status=== 'Pending')
+                                    <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST" class="action-form">
+                                        @csrf
+                                        <button type="button" class="verifyButton open-confirm" data-action="verify">Verify</button>
+                                    </form>
 
-                                <form action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
-                                    @csrf
-                                    <button type="button" class="cancelAction open-confirm" data-action="cancel">Cancel</button>
-                                </form>
+                                    <form action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
+                                        @csrf
+                                        <button type="button" class="cancelAction open-confirm" data-action="cancel">Cancel</button>
+                                    </form>
 
-                                <form action="{{ url('/receipts/reject/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
-                                    @csrf
-                                    <button type="button" class="rejectAction open-confirm" data-action="reject">Reject</button>
-                                </form>
-    
-                            @endif
+                                    <form action="{{ url('/receipts/reject/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
+                                        @csrf
+                                        <button type="button" class="rejectAction open-confirm" data-action="reject">Reject</button>
+                                    </form>
+        
+                                @endif
 
-                        </div>
+                            </div> --}}
+                            <button class="open-modify-modal">File an action</button>
                         @endif
 
                     </div>
@@ -159,6 +222,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('js/confirmation-modal/receipts_view.js') }}"></script>
+<script src="{{ asset('js/modal/file_action.js') }}"></script>
+<script src="{{ asset('js/receipts_view/file_an_action.js') }}"></script>
 
 
 </body>

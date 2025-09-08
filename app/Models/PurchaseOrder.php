@@ -36,7 +36,10 @@ class PurchaseOrder extends Model
         'cancelled_user_type',
         // Unpaid, Partially Paid, Paid, Refunded
         'payment_status',
-        'receipt_no'
+        'payment_notes',
+        'payment_reject_details',
+        'payment_at',
+
 
     ];
 

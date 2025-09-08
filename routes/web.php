@@ -169,6 +169,9 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/receipts/verify/{receipt_id}', [ReceiptController::class, 'verifyReceipt'])->name('receipts.verify');
         Route::post('/receipts/cancel/{receipt_id}', [ReceiptController::class, 'cancelReceipt'])->name('receipts.cancel');
         Route::post('/receipts/reject/{receipt_id}', [ReceiptController::class, 'rejectReceipt'])->name('receipts.reject');
+
+        Route::post('/receipts/payment-status/{po_number}', [ReceiptController::class, 'filePayment'])->name('receipts.payment_status');
+
         
         // Customer Management
         Route::get('/customers', [ViewController::class, 'showCustomers'])->name('customers');

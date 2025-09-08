@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\PurchaseOrder;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +41,34 @@ class ReceiptController extends Controller{
         return $this->updateReceiptStatus($receipt_id, 'Rejected', 'Receipt rejected successfully!');
     }
 
+public function filePayment($po_number, Request $request)
+{
+    $po = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
 
+    $validated = $request->validate([
+        'payment_status'          => 'required|string|in:Paid,Partially,Rejected',
+        'payment_notes'           => 'nullable|string|max:255',
+        'payment_reject_details'  => 'nullable|string|max:255',
+    ]);
+
+    $status = $validated['payment_status'];
+
+    $po->payment_status = $status;
+    $po->payment_at = now();
+    // $po->user_id = $validated['user_id'] ?? auth()->id();
+
+    $po->payment_notes = $validated['payment_notes'] ?? null;
+
+    if ($status === "Rejected") {
+        $po->payment_reject_details = $validated['payment_reject_details'] ?? null;
+    } else {
+        $po->payment_reject_details = null; 
+    }
+
+    $po->save();
+
+    return redirect()->back()->with('success', 'Receipt submitted successfully!');
+}
 
 
     public function index(Request $request)
