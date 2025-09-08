@@ -69,69 +69,80 @@ class ReceiptController extends Controller{
         return view('receipts_view', compact('receipt'));
     }
 
-public function showUserReceipts(Request $request)
-{
-    $user = auth()->user();
-    $query = Receipt::with('customer');
+    public function showUserReceipts(Request $request)
+    {
+        $user = auth()->user();
+        $query = Receipt::with('customer');
 
-    $from_date = $request->input('from_date', now()->startOfMonth()->format('Y-m-d'));
-    $to_date   = $request->input('to_date', now()->endOfMonth()->format('Y-m-d'));
+        $from_date = $request->input('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $to_date   = $request->input('to_date', now()->endOfMonth()->format('Y-m-d'));
 
-    $status = $request->input('status');
-    if ($status && in_array($status, ['Pending', 'Verified', 'Cancelled', 'Rejected'])) {
-        $query->where('status', $status);
-    }
+        $status = $request->input('status');
+        if ($status && in_array($status, ['Pending', 'Verified', 'Cancelled', 'Rejected'])) {
+            $query->where('status', $status);
+        }
 
-    if ($from_date && $to_date) {
-        $dateColumn = ($status && in_array($status, ['Verified', 'Cancelled', 'Rejected']))
-            ? 'verified_at'
-            : 'created_at';
+        if ($from_date && $to_date) {
+            $dateColumn = ($status && in_array($status, ['Verified', 'Cancelled', 'Rejected']))
+                ? 'verified_at'
+                : 'created_at';
 
-        $query->whereBetween($dateColumn, [
-            Carbon::parse($from_date)->startOfDay(),
-            Carbon::parse($to_date)->endOfDay()
+            $query->whereBetween($dateColumn, [
+                Carbon::parse($from_date)->startOfDay(),
+                Carbon::parse($to_date)->endOfDay()
+            ]);
+        }
+
+        $search = $request->input('search', '');
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('receipt_number', 'like', "%$search%")
+                ->orWhere('store_name', 'like', "%$search%")
+                ->orWhere('total_amount', 'like', "%$search%")
+                ->orWhere('purchase_date', 'like', "%$search%")
+                ->orWhere('status', 'like', "%$search%");
+            });
+        }
+
+        if ($user->user_type === 'Customer') {
+            $query->where('id', $user->id);
+        }
+
+        $receipts = $query->orderBy('created_at', 'desc')->paginate(50);
+
+        $receipts->appends([
+            'from_date' => $from_date,
+            'to_date'   => $to_date,
+            'search'    => $search,
+            'status'    => $status,
         ]);
+
+        return view('receipts', compact('receipts', 'user', 'from_date', 'to_date', 'search', 'status'));
     }
 
-    $search = $request->input('search', '');
-    if ($search) {
-        $query->where(function ($q) use ($search) {
-            $q->where('receipt_number', 'like', "%$search%")
-              ->orWhere('store_name', 'like', "%$search%")
-              ->orWhere('total_amount', 'like', "%$search%")
-              ->orWhere('purchase_date', 'like', "%$search%")
-              ->orWhere('status', 'like', "%$search%");
-        });
+
+
+    public function checkPONumber(Request $request)
+    {
+    $exists = \DB::table('purchase_orders')
+        ->where('po_number', $request->po_number)
+        ->where('user_id', auth()->id())
+        ->exists();
+
+    return response()->json(['valid' => $exists]);
     }
-
-    if ($user->user_type === 'Customer') {
-        $query->where('id', $user->id);
-    }
-
-    $receipts = $query->orderBy('created_at', 'desc')->paginate(50);
-
-    $receipts->appends([
-        'from_date' => $from_date,
-        'to_date'   => $to_date,
-        'search'    => $search,
-        'status'    => $status,
-    ]);
-
-    return view('receipts', compact('receipts', 'user', 'from_date', 'to_date', 'search', 'status'));
-}
-
-
 
     public function submitReceipt(Request $request)
     {
         $validated = $request->validate([
-            'receipt_image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'purchase_date' => 'required|date',
-            'store_name' => 'required|string|max:255',
-            'total_amount' => 'required|numeric',
-            'invoice_number' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
-            'receipt_number' => 'required|string',
+            'receipt_image'   => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'purchase_date'   => 'required|date',
+            'store_name'      => 'required|string|max:255',
+            'total_amount'    => 'required|numeric',
+            'invoice_number'  => 'nullable|string|max:255',
+            'notes'           => 'nullable|string',
+            'receipt_number'  => 'required|string',
+            'po_number'       => 'required|string|max:255',
         ]);
 
         if ($request->hasFile('receipt_image')) {
@@ -140,10 +151,32 @@ public function showUserReceipts(Request $request)
             $validated['receipt_image'] = $base64Image;
             $validated['receipt_image_mime'] = $mimeType;
         }
-        
 
-        // Server-side enforced fields
-        $validated['id'] = Auth::id();
+        $request->validate([
+            'po_number' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $exists = \DB::table('purchase_orders')
+                        ->where('po_number', $value)
+                        ->where('user_id', auth()->id())
+                        ->exists();
+
+                    if (! $exists) {
+                        $fail('This P.O number does not exist in your records.');
+                    }
+                },
+            ],
+        ]);
+
+        \DB::table('purchase_orders')
+            ->where('po_number', $validated['po_number'])
+            ->where('user_id', auth()->id())
+            ->update([
+                'payment_status' => 'Processing',
+                'updated_at' => now(),
+            ]);
+
+        $validated['id'] = Auth::id();  
         $validated['status'] = 'Pending';
         unset($validated['verified_by'], $validated['verified_at']);
 
@@ -151,6 +184,7 @@ public function showUserReceipts(Request $request)
 
         return redirect()->back()->with('success', 'Receipt submitted successfully!');
     }
+
 
     public function getReceiptImage($receipt_id)
     {

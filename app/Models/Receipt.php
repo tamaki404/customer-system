@@ -25,6 +25,7 @@ class Receipt extends Model
         'verified_by',
         'verified_at',
         'id',
+        'po_number',
     ];
 
     protected $primaryKey = 'receipt_id';
@@ -32,6 +33,11 @@ class Receipt extends Model
     public function customer()
     {
     return $this->belongsTo(User::class, 'id', 'id');
+    }
+
+    public function purchaseOrder()
+    {
+    return $this->belongsTo(PurchaseOrder::class, 'po_number', 'po_number');
     }
 
     public function verifier()

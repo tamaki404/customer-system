@@ -144,7 +144,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/receipt_image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
     Route::post('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');
     Route::get('/date-search', [ReceiptController::class, 'dateSearch'])->name('date.search');
-    
+    Route::get('/check-po-number', [ReceiptController::class, 'checkPONumber']);
+
     // Customer Reports (Customer functionality)
     Route::get('/reports/customers', [ReportsController::class, 'customerReports'])->name('customer_reports');
     Route::get('/reports/customers/dateFilter', [ReportsController::class, 'customerDateFilter'])->name('customer_dateFilter');

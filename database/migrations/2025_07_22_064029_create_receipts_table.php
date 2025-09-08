@@ -25,6 +25,7 @@ return new class extends Migration
             $table->date('verified_at')->nullable();
             $table->string('receipt_number')->nullable();
             $table->string('id');
+            $table->string('po_number');
         });
     }
 

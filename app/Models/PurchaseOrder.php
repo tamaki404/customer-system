@@ -34,6 +34,10 @@ class PurchaseOrder extends Model
         'cancelled_by',
         'cancelled_at',
         'cancelled_user_type',
+        // Unpaid, Partially Paid, Paid, Refunded
+        'payment_status',
+        'receipt_no'
+
     ];
 
     protected $casts = [
@@ -47,7 +51,6 @@ class PurchaseOrder extends Model
         'delivered_at' => 'datetime',  
         'unit_price' => 'decimal:2',
         'total_price' => 'decimal:2',
-    
         'quantity' => 'integer',
     ];
 

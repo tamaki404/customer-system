@@ -54,10 +54,23 @@
                                 <input type="text" name="username" value="{{ auth()->user()->username }}" hidden>
                             </div>
 
+
+
+                            
+                            <div>
+                                <label>P.O number</label>
+                                <input type="text" name="po_number" id="po_number" required>
+                                <p id="number-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
+                            </div>
+
+
                             <div>
                                 <label>Receipt Number</label>
                                 <input type="text" name="receipt_number" required>
+                                <p id="number-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
                             </div>
+
+
                             <div>
                                 <label>Upload Receipt</label>
                                 <input type="file" name="receipt_image" id="receipt_image" accept="image/*" required>
@@ -230,6 +243,7 @@
                             <th>Date</th>
                             <th>Customer</th>
                             <th>Amount</th>
+                            <th>Payment</th>
                             <th>Status</th>
                             <th>Action by</th>
                             <th>Receipt</th>
@@ -243,6 +257,7 @@
                                     <td>{{ \Carbon\Carbon::parse($receipt->created_at)->format('j F, Y') }}</td>
                                     <td style="padding:10px 8px; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">{{ $receipt->store_name }}</td>
                                     <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                    <td>{{$receipt->purchaseOrder->payment_status }}</td>
                                     <td>
                                         @php 
                                             $statusClasses = [
@@ -289,6 +304,7 @@
                             <th style="width:5%;">#</th>
                             <th style="width:15%;">Date</th>
                             <th style="width:15%;">Amount</th>
+                            <th style="width:10%;">Payment</th>
                             <th style="width:10%;">Status</th>
                             <th style="width:10%;">Receipt</th>
                         </tr>
@@ -300,6 +316,7 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}</td>
                                     <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
+                                    <td>{{ $receipt->purchaseOrder->payment_status ?? '' }}</td>
                                     <td>
                                         @php 
                                             $statusClasses = [
@@ -381,4 +398,23 @@
         <script src="{{ asset('js/disableBtn.js') }}"></script>
         <script src="{{ asset('js/receipts.js') }}"></script>
         <script src="{{ asset('js/receipts/image.js') }}"></script>
+
+
+        <script>
+            document.getElementById('po_number').addEventListener('blur', function() {
+                let poNumber = this.value;
+
+                fetch(`/check-po-number?po_number=${poNumber}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let errorEl = document.getElementById('number-error');
+                        if (!data.valid) {
+                            errorEl.innerText = "This P.O number does not exist in your records.";
+                            errorEl.style.display = "block";
+                        } else {
+                            errorEl.style.display = "none";
+                        }
+                    });
+            });
+        </script>
     @endpush

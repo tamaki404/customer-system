@@ -158,7 +158,7 @@
                     <div class="shipper-details">
                         <p class="recipient-title">Bill & Address</p>
                         <div class="shipper-name-address">
-                            <p class="company-name"> ₱ {{$po->grand_total}}</p>
+                            <p class="company-name"> ₱ {{$po->grand_total}} <span class="payment_status">({{$po->payment_status}})</span></p>
                             <p class="ship-detail" style="white-space:normal; word-wrap:break-word;">
                                 {{ $po->billing_address }},
                                 
@@ -200,7 +200,7 @@
                         </div>
                     </div>
                     <div class="shipper-details">
-                        <p class="recipient-title">Purchase Order</p>
+                        <p class="recipient-title">P.O number</p>
                         <div class="shipper-name-address">
                             <p class="company-name">{{$po->po_number}}</p>
                             <button style="margin-top: 5px" class="viewPO-btn" onclick="window.location='{{ route('purchase_order.create', $po->po_number) }}'">

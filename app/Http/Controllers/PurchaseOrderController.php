@@ -407,6 +407,7 @@ class PurchaseOrderController extends Controller {
             'grand_total'     => $grandTotal,
             'status'          => $status,
             'order_date'      => Carbon::now(),
+            'payment_status' => 'Unpaid'
         ]);
 
     

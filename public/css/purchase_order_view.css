@@ -105,6 +105,11 @@
 
 }
 
+.payment_status{
+    font-size: 13px;
+    color: #666;
+}
+
 .shipper-name-address .company-name{
     font-size: 15px;
     color: #333;

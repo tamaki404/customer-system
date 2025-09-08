@@ -40,6 +40,10 @@ class CreatePurchaseOrdersTable extends Migration
             $table->timestamp('cancelled_at', 26)->nullable();
             $table->string('cancelled_by', 26)->nullable();
             $table->string('cancelled_user_type', 26)->nullable();
+
+            $table->string('receipt_no', 255)->nullable();
+            $table->string('payment_status', length: 255)->nullable();
+
             
             $table->timestamps();
 
