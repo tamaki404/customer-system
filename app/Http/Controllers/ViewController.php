@@ -774,9 +774,28 @@ class ViewController extends Controller{
 
 
 
+
+            // UNDER CONSTRUCTION
+            $poNumbers = PurchaseOrder::where('user_id', $id)->pluck('po_number');
+            $paidPartials = Receipt::join('purchase_orders', 'purchase_orders.po_number', '=', 'receipts.po_number')
+                ->where('purchase_orders.user_id', $id) 
+                ->whereIn('receipts.po_number', $poNumbers)
+                // ->whereIn('purchase_orders.payment_status', ['Partially', 'Paid']) 
+                ->where('receipts.status', 'Verified')
+                ->sum('receipts.total_amount');
+
+
+
             $outstandingBalance = PurchaseOrder::where('user_id', $id)
-                ->whereIn('payment_status', ['Partially', 'Unpaid'])
+                ->whereIn('payment_status', ['Unpaid', 'Processing'])
                 ->sum('grand_total');
+
+            $balance = $outstandingBalance - $paidPartials;
+
+
+
+
+
 
 
 
@@ -807,7 +826,7 @@ class ViewController extends Controller{
                 'spendingSummary',
                 'spendingLabels',
                 'spendingData',
-                'outstandingBalance'
+                'balance',
 
             ));
         }

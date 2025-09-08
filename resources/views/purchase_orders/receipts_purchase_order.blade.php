@@ -1,6 +1,14 @@
+
 @foreach ( $receipts as $receipt )
-    <div class="receipt-block">
-        <p>Receipt generated on {{$receipt->created_at}}</p>
-        <p>Receipt processed on {{$receipt->->payment_at}}</p>
-    </div>
+    @if ($receipt->purchaseOrder->status !== 'Unpaid')
+        <div class="receipt-block">
+            <p>{{ $loop->iteration }}</p>
+            <p>Status: {{$receipt->purchaseOrder->payment_status}}</p>
+            <p>Receipt generated on {{\Carbon\Carbon::parse ($receipt->created_at) ->format('F j, Y, g:i A')}} </p>
+            <p>Receipt processed on {{\Carbon\Carbon::parse ($receipt->payment_at) ->format('F j, Y, g:i A')}} </p>
+            <p>amount paid: ₱{{ number_format($receipt->total_amount, 2) }}</p>
+        </div>
+    @endif
+
+    <br>
 @endforeach
