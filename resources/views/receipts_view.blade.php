@@ -128,6 +128,48 @@
 
         <div class="mainBlock">
                 <div class="receiptBlock" style="overflow-x:auto;">
+                    @if(auth()->user()->user_type !== 'Customer')
+                        <button class="open-modify-modal" style="">File an action</button>
+                    @endif
+                   <div class="payment-notes">
+                        @if($receipt->purchaseOrder->payment_status==="Rejected")
+
+                            <div class="rejected-note">
+                                <p class="head-note" style="display: flex; flex-direction: row; justify-content: space-between; margin: 0;">
+                                    <span class="payment-title" style="font-weight: bold; color: #333; font-size: 15px;">Your receipt has been rejected</span>
+                                    <span>{{\Carbon\Carbon::parse ($receipt->purchaseOrder->payment_at) ->format('F j, Y, g:i A')}}</span>
+                                </p>
+                                @if ($receipt->purchaseOrder->payment_reject_details > 0)
+                                    <p style="margin: 5px; font-size: 14px;">Note: {{$receipt->purchaseOrder->payment_reject_details}}</p>
+                                @endif
+                            </div>
+                        @elseif($receipt->purchaseOrder->payment_status==="Paid")
+
+                            <div class="paid-note">
+                                <p class="head-note" style="display: flex; flex-direction: row; justify-content: space-between; margin: 0;">
+                                    <span class="payment-title" style="font-weight: bold; color: #333; font-size: 15px;">Full payment received</span>
+                                    <span>{{\Carbon\Carbon::parse ($receipt->purchaseOrder->payment_at) ->format('F j, Y, g:i A')}}</span>
+                                </p>
+                                @if ($receipt->purchaseOrder->payment_notes > 0)
+                                    <p style="margin: 5px; font-size: 14px;">Note: {{$receipt->purchaseOrder->payment_notes}}</p>
+                                @endif
+                            </div>
+
+
+                        @elseif($receipt->purchaseOrder->payment_status==="Partially")
+                            <div class="partial-note">
+                                <p class="head-note" style="display: flex; flex-direction: row; justify-content: space-between; margin: 0;">
+                                    <span class="payment-title" style="font-weight: bold; color: #333; font-size: 15px;">Partial payment received</span>
+                                    <span style="font-size: 14px">{{\Carbon\Carbon::parse ($receipt->purchaseOrder->payment_at) ->format('F j, Y, g:i A')}}</span>
+                                </p>
+                                @if ($receipt->purchaseOrder->payment_notes > 0)
+                                    <p style="margin: 5px; font-size: 14px;">Note: {{$receipt->purchaseOrder->payment_notes}}</p>
+                                @endif
+                            </div>
+
+                        @endif
+
+                   </div>
                     <table style="width:100%; border-collapse:collapse; ">
                         <tr><th>Invoice#:</th><td>{{ $receipt->invoice_number }}</td></tr>
                         <tr><th>Store:</th><td style="font-size: 20px; font-weight: bold;">{{ $receipt->customer ? $receipt->customer->store_name : 'N/A' }}</td></tr>
@@ -157,41 +199,45 @@
                    </table>
 
 
-                    <div style="display: flex; flex-direction: column; width: 100%;">
-                        <p style="font-size: 16px; font-weight: bold; margin: 0; margin-top: 10px;">Orders' note</p>
-                        <div class="notes-display">{{ $receipt->notes }}</div>
-
-                        @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
-                            {{-- <div class="actionBtn" >
-                                <p>Receipt status</p>
-                                @if($receipt->status === 'Verified')
-
-                                @elseif($receipt->status === 'Cancelled')
 
 
-                                @elseif($receipt->status=== 'Pending')
-                                    <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST" class="action-form">
-                                        @csrf
-                                        <button type="button" class="verifyButton open-confirm" data-action="verify">Verify</button>
-                                    </form>
 
-                                    <form action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
-                                        @csrf
-                                        <button type="button" class="cancelAction open-confirm" data-action="cancel">Cancel</button>
-                                    </form>
+                    @if ($receipt->notes > 0)
+                        <div style="display: flex; flex-direction: column; width: 100%;">
+                            <p style="font-size: 16px; font-weight: bold; margin: 0; margin-top: 10px;">Orders' note</p>
+                            <div class="notes-display">{{ $receipt->notes }}</div>
 
-                                    <form action="{{ url('/receipts/reject/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
-                                        @csrf
-                                        <button type="button" class="rejectAction open-confirm" data-action="reject">Reject</button>
-                                    </form>
-        
-                                @endif
+                            @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
+                                {{-- <div class="actionBtn" >
+                                    <p>Receipt status</p>
+                                    @if($receipt->status === 'Verified')
 
-                            </div> --}}
-                            <button class="open-modify-modal">File an action</button>
-                        @endif
+                                    @elseif($receipt->status === 'Cancelled')
 
-                    </div>
+
+                                    @elseif($receipt->status=== 'Pending')
+                                        <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST" class="action-form">
+                                            @csrf
+                                            <button type="button" class="verifyButton open-confirm" data-action="verify">Verify</button>
+                                        </form>
+
+                                        <form action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
+                                            @csrf
+                                            <button type="button" class="cancelAction open-confirm" data-action="cancel">Cancel</button>
+                                        </form>
+
+                                        <form action="{{ url('/receipts/reject/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
+                                            @csrf
+                                            <button type="button" class="rejectAction open-confirm" data-action="reject">Reject</button>
+                                        </form>
+            
+                                    @endif
+
+                                </div> --}}
+                            @endif
+
+                        </div>
+                    @endif
 
 
                 </div>
@@ -200,6 +246,7 @@
                 <div class="imageBlock">
                         @if($receipt->receipt_image)
                         <p>Receipt Image</p>
+                        
                         @php
                             $isBase64 = !empty($receipt->receipt_image_mime);
                             $dataUri = $isBase64 ? ('data:' . $receipt->receipt_image_mime . ';base64,' . $receipt->receipt_image) : null;

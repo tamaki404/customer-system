@@ -307,15 +307,88 @@
 }
 
 
+/* payment notes */
+.payment-notes{
+
+    min-width: 300px;
+    width: 100%;
+}
+.rejected-note{
+    background-color: #ffe5e5;
+    border: solid 2px #ff4c4c;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    border-radius: 10px;
+    padding: 10px;
+    height: auto;
+        display: flex;
 
 
+}
+.rejected-note .title{
+    font-weight: bold;
+    color: #e71a2b;
+    font-size: 15px;
+}
+.rejected-note p,
+.paid-note p{
+    font-weight: normal;
+    color: #333;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+}
 
 
+.paid-note{
+    background-color: #e6ffe5;
+    border: solid 2px #4cff73;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    border-radius: 10px;
+    padding: 10px;
+    height: auto;
+        display: flex;
 
 
+}
+.paid-note .title{
+    font-weight: bold;
+    color: #1ae721;
+    font-size: 15px;
+}
+.partial-note{
+    background-color: #fff4e5;
+    border: solid 2px #ffc94c;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    border-radius: 10px;
+    padding: 10px;
+    height: auto;
+        display: flex;
 
 
+}
 
+.open-modify-modal{
+    background-color: rgb(255, 222, 89);
+    color: rgb(51, 51, 51);
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 10px 20px;
+    border-width: initial;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    float: right;
+    margin: 5px;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
