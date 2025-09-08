@@ -774,6 +774,10 @@ class ViewController extends Controller{
 
 
 
+            $outstandingBalance = PurchaseOrder::where('user_id', $id)
+                ->whereIn('payment_status', ['Partially', 'Unpaid'])
+                ->sum('grand_total');
+
 
 
 
@@ -803,6 +807,7 @@ class ViewController extends Controller{
                 'spendingSummary',
                 'spendingLabels',
                 'spendingData',
+                'outstandingBalance'
 
             ));
         }

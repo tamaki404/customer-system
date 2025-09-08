@@ -389,9 +389,18 @@
     float: right;
     margin: 5px;
 }
+.open-modify-modal:hover{
+    background-color: rgb(228, 197, 69);
+
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
+        .mainFrame .showScreen {
+        width: 100%;
+        padding: 20px;
+        margin-top: 0px;
+        }
     .receiptFrame {
         padding: 10px;
         overflow-x: auto;
