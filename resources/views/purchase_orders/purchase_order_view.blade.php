@@ -111,6 +111,11 @@
                     <p style="font-size: 16px">{{$po->order->order_id}}</p>
                 </div>
 
+
+                @if ($po->payment_status !== "Unpaid")
+                    <button onclick="window.location='{{ url('/purchase_orders/receipts/' . $po->po_number) }}'">View receipts</button>
+                @endif
+
                 {{-- <span class="status-text">{{$po->status}}</span> --}}
             </div>
 

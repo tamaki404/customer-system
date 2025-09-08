@@ -227,7 +227,7 @@
                 <p class="card-title">Outstanding balance</p>
                 <div class="card-content">
                     @if($outstandingBalance > 0)
-                        <h1 class="card-count" id="pendingDayCount">₱{{$outstandingBalance}}</h1>
+                        <h1 class="card-count" id="pendingDayCount">₱{{$outstandingBalance}}</h1>                     
                     @else
                         <p style="font-size: 14px">Your payments are updated</p>
                     @endif   

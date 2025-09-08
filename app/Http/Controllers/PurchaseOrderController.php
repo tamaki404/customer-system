@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\Receipt;
 use App\Models\Invoice;
 use App\Models\Orders;
 use Carbon\Traits\Timestamp;
@@ -59,6 +60,18 @@ class PurchaseOrderController extends Controller {
 
         return view('purchase_order', compact('user', 'purchaseOrders', 'search', 'from', 'to', 'status'));
     }
+
+
+        
+    public function purchaseReceipts($po_number)
+    {
+        $user = auth()->user();
+
+        $receipts = Receipt::where('po_number', $po_number)->get();
+
+        return view('purchase_orders/receipts_purchase_order', compact('user', 'receipts'));
+    }
+
 
     
     public function cancelOrder($order_id)

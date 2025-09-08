@@ -26,6 +26,7 @@ class Receipt extends Model
         'verified_at',
         'id',
         'po_number',
+        'payment_at',
     ];
 
     protected $primaryKey = 'receipt_id';

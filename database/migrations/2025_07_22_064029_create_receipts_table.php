@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('receipt_number')->nullable();
             $table->string('id');
             $table->string('po_number');
+            $table->timestamp('payment_at')->nullable();
         });
     }
 

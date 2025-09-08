@@ -110,6 +110,10 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/provinces/{province}/municipalities', [AddressController::class, 'municipalities'])->name('address.municipalities');
     Route::get('/municipalities/{municipality}/barangays', [AddressController::class, 'barangays'])->name('address.barangays');
     
+
+    Route::get('/purchase_orders/receipts/{po_number}', [PurchaseOrderController::class, 'purchaseReceipts']);
+
+
     // ================================
     // CUSTOMER SPECIFIC ROUTES
     // ================================

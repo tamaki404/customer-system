@@ -55,14 +55,12 @@
                                 </div>
 
 
-
-                                
                                 <div>
                                     <label>P.O number</label>
                                     <input type="text" name="po_number" id="po_number" required>
                                     <p id="number-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
+                                    <p  style="margin: 0; font-size: 12px; display: block; flex-direction: row; gap: 5px; width: 100%;"  id="grand-total-con">Available balance: <span id="grand-total" style="color: green; display: none; margin: 0; font-size: 12px;"></span></p>
                                 </div>
-
 
                                 <div>
                                     <label>Receipt Number</label>
@@ -301,6 +299,7 @@
                         <tr style="background:#f7f7fa; text-align: center;">
                             <th style="width:5%;">#</th>
                             <th style="width:15%;">Date</th>
+                            <th style="width:15%;">PO number</th>
                             <th style="width:15%;">Amount</th>
                             <th style="width:10%;">Payment</th>
                             <th style="width:10%;">Status</th>
@@ -313,6 +312,7 @@
                                 <tr style="height: 50px; text-align: center; cursor:pointer; overflow: hidden;" onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}</td>
+                                    <td>{{$receipt->purchaseOrder->po_number}}</td>
                                     <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
                                     <td>{{ $receipt->purchaseOrder->payment_status ?? '' }}</td>
                                     <td>
@@ -406,13 +406,26 @@
                     .then(response => response.json())
                     .then(data => {
                         let errorEl = document.getElementById('number-error');
+                        let totalEl = document.getElementById('grand-total');
+                        let totalElCon = document.getElementById('grand-total-con');
+
                         if (!data.valid) {
-                            errorEl.innerText = "This P.O number does not exist in your records.";
+                            errorEl.innerText = data.message;
                             errorEl.style.display = "block";
+                            totalElCon.style.display = "none";
+                            totalEl.style.display = "none";
+                            totalEl.innerText = "";
                         } else {
                             errorEl.style.display = "none";
+                            totalElCon.style.display = "block";
+                            totalEl.innerText = `${data.grand_total}`;
+                            totalEl.style.display = "block";
                         }
+                    })
+                    .catch(err => {
+                        console.error(err);
                     });
             });
+
         </script>
     @endpush

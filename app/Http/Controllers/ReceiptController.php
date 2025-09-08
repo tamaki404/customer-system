@@ -12,38 +12,39 @@ use App\Traits\ImageHandler;
 
 class ReceiptController extends Controller{
     use ImageHandler;
-    private function updateReceiptStatus($receipt_id, $status, $message)
-    {
-        $receipt = Receipt::findOrFail($receipt_id);
-        $receipt->status = $status;
-        $receipt->verified_by = auth()->user()->name;
-        $receipt->verified_at = now();
-        $receipt->save();
+    // private function updateReceiptStatus($receipt_id, $status, $message)
+    // {
+    //     $receipt = Receipt::findOrFail(id: $receipt_id);
+    //     $receipt->status = $status;
+    //     $receipt->verified_by = auth()->user()->name;
+    //     $receipt->verified_at = now();
+    //     $receipt->save();
 
-        return redirect()
-            ->route('receipts.view', $receipt_id)
-            ->with('success', $message);
-    }
+    //     return redirect()
+    //         ->route('receipts.view', $receipt_id)
+    //         ->with('success', $message);
+    // }
 
-    public function verifyReceipt($receipt_id)
-    {
+    // public function verifyReceipt($receipt_id)
+    // {
         
-        return $this->updateReceiptStatus($receipt_id, 'Verified', 'Receipt verified successfully!');
-    }
+    //     return $this->updateReceiptStatus($receipt_id, 'Verified', 'Receipt verified successfully!');
+    // }
 
-    public function cancelReceipt($receipt_id)
-    {
-        return $this->updateReceiptStatus($receipt_id, 'Cancelled', 'Receipt cancelled successfully!');
-    }
+    // public function cancelReceipt($receipt_id)
+    // {
+    //     return $this->updateReceiptStatus($receipt_id, 'Cancelled', 'Receipt cancelled successfully!');
+    // }
 
-    public function rejectReceipt($receipt_id)
-    {
-        return $this->updateReceiptStatus($receipt_id, 'Rejected', 'Receipt rejected successfully!');
-    }
+    // public function rejectReceipt($receipt_id)
+    // {
+    //     return $this->updateReceiptStatus($receipt_id, 'Rejected', 'Receipt rejected successfully!');
+    // }
 
 public function filePayment($po_number, Request $request)
 {
     $po = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
+    $receipt = Receipt::where('po_number', $po_number)->firstOrFail();
 
     $validated = $request->validate([
         'payment_status'          => 'required|string|in:Paid,Partially,Rejected',
@@ -66,6 +67,8 @@ public function filePayment($po_number, Request $request)
     }
 
     $po->save();
+    
+    $receipt->update(['payment_at' => now()]);
 
     return redirect()->back()->with('success', 'Receipt submitted successfully!');
 }
@@ -152,13 +155,24 @@ public function filePayment($po_number, Request $request)
 
     public function checkPONumber(Request $request)
     {
-    $exists = \DB::table('purchase_orders')
-        ->where('po_number', $request->po_number)
-        ->where('user_id', auth()->id())
-        ->exists();
+        $po = \DB::table('purchase_orders')
+            ->where('po_number', $request->po_number)
+            ->where('user_id', auth()->id())
+            ->first();
 
-    return response()->json(['valid' => $exists]);
+        if ($po) {
+            return response()->json([
+                'valid' => true,
+                'grand_total' => $po->grand_total,
+            ]);
+        }
+
+        return response()->json([
+            'valid' => false,
+            'message' => 'This P.O number does not exist in your records.',
+        ]);
     }
+
 
     public function submitReceipt(Request $request)
     {
