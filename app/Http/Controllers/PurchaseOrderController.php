@@ -17,49 +17,56 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 class PurchaseOrderController extends Controller {
-    public function purchaseOrder()
-    {
-        $user = auth()->user();
-        $search = request('search');
-        $from = request('from_date', now()->startOfMonth()->format('Y-m-d'));
-        $to = request('to_date', now()->endOfMonth()->format('Y-m-d'));
-        $status = request('status');
+public function purchaseOrder()
+{
+    $user = auth()->user();
+    $search = request('search');
+    $from = request('from_date', now()->startOfMonth()->format('Y-m-d'));
+    $to = request('to_date', now()->endOfMonth()->format('Y-m-d'));
+    $status = request('status');
 
-        $query = PurchaseOrder::query();
+    $query = PurchaseOrder::query();
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('po_number', 'like', "%{$search}%")
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('po_number', 'like', "%{$search}%")
                 ->orWhere('receiver_name', 'like', "%{$search}%")
                 ->orWhere('company_name', 'like', "%{$search}%")
                 ->orWhere('order_date', 'like', "%{$search}%"); 
-
-            });
-        }
-        if ($user->user_type !== 'Staff' && $user->user_type !== 'Admin') {
-            $query->where('user_id', $user->id);
-        }
-
-        if ($status && in_array($status, ['Draft', 'Pending', 'Processing', 'Delivered', 'Cancelled', 'Rejected'])) {
-            $query->where('status', $status);
-        }
-
-        if ($from && $to) {
-            $query->whereBetween('order_date', [
-                Carbon::parse($from)->startOfDay(),
-                Carbon::parse($to)->endOfDay()
-            ]);
-        }
-
-        $purchaseOrders = $query
-            ->where('status', '!=', 'Draft')  
-            ->orderBy('order_date', 'desc')
-            ->paginate(50);
-
-
-
-        return view('purchase_order', compact('user', 'purchaseOrders', 'search', 'from', 'to', 'status'));
+        });
     }
+
+    if ($user->user_type !== 'Staff' && $user->user_type !== 'Admin') {
+        $query->where('user_id', $user->id);
+    }
+
+    if ($status && in_array($status, ['Draft', 'Pending', 'Processing', 'Delivered', 'Cancelled', 'Rejected'])) {
+        $query->where('status', $status);
+    }
+
+    if ($from && $to) {
+        $query->whereBetween('order_date', [
+            Carbon::parse($from)->startOfDay(),
+            Carbon::parse($to)->endOfDay()
+        ]);
+    }
+
+    $purchaseOrders = $query
+        ->where('status', '!=', 'Draft')  
+        ->orderBy('order_date', 'desc')
+        ->paginate(50);
+
+    foreach ($purchaseOrders as $po) {
+        $paidAmount = Receipt::where('po_number', $po->po_number)
+            ->where('status', 'Verified') 
+            ->sum('total_amount');
+
+        $po->remaining_balance = max($po->grand_total - $paidAmount, 0); 
+    }
+
+
+    return view('purchase_order', compact('user', 'purchaseOrders', 'search', 'from', 'to', 'status'));
+}
 
 
         
@@ -88,7 +95,6 @@ class PurchaseOrderController extends Controller {
             // Get all order items for this order
             $orderItems = Orders::where('order_id', $order_id)->get();
             
-            // Restore product quantities
             foreach ($orderItems as $orderItem) {
                 $product = Product::find($orderItem->product_id);
                 if ($product) {

@@ -48,48 +48,49 @@
                 </div>
 
                 <div class="modal-body" style="border: none; font-size: 14px; gap: 6px">
-                <form action="{{ route('receipts.payment_status', $receipt->po_number) }}" method="POST">
+              <form action="{{ route('receipts.receipt_status', $receipt->po_number) }}" method="POST">
                     @csrf
                     <div class="form-row">
-                        <label for="payment_status">Is the payment fully settled?</label>
-                        <select name="payment_status" id="payment_status" required>
-                            <option value="Paid">Yes - fully paid</option>
-                            <option value="Partially">No - partially paid</option>
-                            <option value="Rejected" style="color: red; font-weight: bold;">No - reject</option>
+                        <label for="status">Do you want to accept this receipt?</label>
+                        <select name="status" id="status" required onchange="toggleRejectInput()">
+                            <option value="">-- Select Action --</option>
+                            <option value="Verified">Yes - Verify Receipt</option>
+                            <option value="Rejected" style="color: red; font-weight: bold;">No - Reject Receipt</option>
                         </select>
                     </div>
 
                     <div class="form-row" id="messAddInput">
                         <label for="payment-notes">Any notes to add? (optional)</label>
                         <p>*Write your message briefly yet precisely below</p>
-                        <input type="text" name="payment_notes" id="payment-notes" placeholder="">
+                        <input type="text" name="additional_note" id="payment-notes" placeholder="" maxlength="255">
                     </div>
 
                     <div class="form-row" id="rejectPaymentInput" style="display: none;">
                         <label for="reject-details">Is there any problem with the receipt image attached?</label>
                         <p>*Kindly specify below the error you noticed</p>
                         <input 
-                            type="text" 
-                            name="payment_reject_details" 
-                            id="reject-details" 
-                            minlength="3" 
-                            maxlength="100" 
+                            type="text"
+                            name="rejected_note"
+                            id="reject-details"
+                            minlength="3"
+                            maxlength="255"
                             placeholder="e.g., blurry, missing, wrong file, mismatched details"
                         >
                     </div>
 
-                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                    <input type="hidden" name="action_by" value="{{ auth()->id() }}">
+                    <input type="text" name="receipt_id" value="{{ $receipt->receipt_id }}">
+
 
                     <div class="modal-footer" style="padding: 5px; margin-top: 5px;">
-                        <button type="submit" id="confirmFileBtn" value="Submit" class="btn" style="background: #ffde59; font-size: 14px;">
-                            Confirm this receipt
+                        <button type="submit" id="confirmFileBtn" class="btn" style="background: #ffde59; font-size: 14px;">
+                            <span id="submitBtnText">Confirm Action</span>
                         </button>
                         <button type="button" id="cancelBtn" class="btn btn-secondary" style="font-size: 14px;" data-bs-dismiss="modal">
                             Cancel
                         </button>
                     </div>
                 </form>
-
                 </div>
 
 

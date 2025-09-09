@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Model;
  
 
 class Receipt extends Model
-    // If you ever use Receipt::find($id), and $id is a string ULID, you may want to set these:
-    // public $incrementing = false;
-    // protected $keyType = 'string';
+
 {
     use HasFactory;
     protected $table = 'receipts';
@@ -22,11 +20,13 @@ class Receipt extends Model
         'notes',
         'receipt_number',
         'status',
-        'verified_by',
-        'verified_at',
         'id',
         'po_number',
         'payment_at',
+        'rejected_note',
+        'additional_note',
+        'action_by',
+        'action_at'
     ];
 
     protected $primaryKey = 'receipt_id';

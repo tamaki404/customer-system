@@ -41,37 +41,71 @@ class ReceiptController extends Controller{
     //     return $this->updateReceiptStatus($receipt_id, 'Rejected', 'Receipt rejected successfully!');
     // }
 
-public function filePayment($po_number, Request $request)
+// UPDATED PHP CONTROLLER METHOD
+public function fileReceipt($po_number, Request $request) 
 {
-    $po = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
-    $receipt = Receipt::where('po_number', $po_number)->firstOrFail();
-
     $validated = $request->validate([
-        'payment_status'          => 'required|string|in:Paid,Partially,Rejected',
-        'payment_notes'           => 'nullable|string|max:255',
-        'payment_reject_details'  => 'nullable|string|max:255',
+        'receipt_id'             => 'required|integer|exists:receipts,receipt_id',
+        'status'         => 'required|string|in:Verified,Rejected',
+        'action_by'      => 'nullable|string',
+        'action_at'      => 'nullable|string',
+        'additional_note'=> 'nullable|string|max:255',
+        'rejected_note'  => 'nullable|string|max:255',
     ]);
 
-    $status = $validated['payment_status'];
+    $po = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
+    $receipt = Receipt::where('receipt_id', $validated['receipt_id'])
+        ->where('po_number', $po_number)
+        ->firstOrFail();
 
-    $po->payment_status = $status;
-    $po->payment_at = now();
-    // $po->user_id = $validated['user_id'] ?? auth()->id();
+    $status = $validated['status'];
+    $user   = $validated['action_by'];
 
-    $po->payment_notes = $validated['payment_notes'] ?? null;
+    $receiptUpdateData = [
+        'status'          => $status,
+        'action_at'       => now(),
+        'action_by'       => $user,
+        'additional_note' => $validated['additional_note'] ?? null,
+        'rejected_note'   => $status === 'Rejected' 
+                                ? ($validated['rejected_note'] ?? null)
+                                : null,
+    ];
 
-    if ($status === "Rejected") {
-        $po->payment_reject_details = $validated['payment_reject_details'] ?? null;
-    } else {
-        $po->payment_reject_details = null; 
+    
+
+    $receipt->update($receiptUpdateData);
+
+    $this->updatePurchaseOrderPaymentStatus($po);
+
+    $message = $status === 'Verified' 
+        ? 'Receipt verified and PO payment status updated successfully!' 
+        : 'Receipt rejected and PO payment status recalculated successfully!';
+
+    return redirect()->back()->with('success', $message);
+}
+
+
+private function updatePurchaseOrderPaymentStatus($po)
+{
+    $totalPaid = Receipt::where('po_number', $po->po_number)
+        ->where('status', 'Verified')
+        ->sum('total_amount');
+
+    if ($totalPaid == 0) {
+        $po->payment_status = 'Pending';
+    } elseif ($totalPaid < $po->grand_total) {
+        $po->payment_status = 'Partially Settled';
+    } elseif ($totalPaid == $po->grand_total) {
+        $po->payment_status = 'Fully Paid';
+    } elseif ($totalPaid > $po->grand_total) {
+        $po->payment_status = 'Overpaid';
     }
 
     $po->save();
     
-    $receipt->update(['payment_at' => now()]);
-
-    return redirect()->back()->with('success', 'Receipt submitted successfully!');
+    return $po->payment_status;
 }
+
 
 
     public function index(Request $request)
@@ -174,58 +208,51 @@ public function filePayment($po_number, Request $request)
     }
 
 
-    public function submitReceipt(Request $request)
-    {
-        $validated = $request->validate([
-            'receipt_image'   => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'purchase_date'   => 'required|date',
-            'store_name'      => 'required|string|max:255',
-            'total_amount'    => 'required|numeric',
-            'invoice_number'  => 'nullable|string|max:255',
-            'notes'           => 'nullable|string',
-            'receipt_number'  => 'required|string',
-            'po_number'       => 'required|string|max:255',
-        ]);
+public function submitReceipt(Request $request)
+{
+    $validated = $request->validate([
+        'receipt_image'   => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'purchase_date'   => 'required|date',
+        'store_name'      => 'required|string|max:255',
+        'total_amount'    => 'required|numeric',
+        'invoice_number'  => 'nullable|string|max:255',
+        'notes'           => 'nullable|string',
+        'receipt_number'  => 'required|string',
+        'po_number'       => 'required|string|max:255',
+    ]);
 
-        if ($request->hasFile('receipt_image')) {
-            $imageFile = $request->file('receipt_image');
-            [$base64Image, $mimeType] = $this->convertImageToBase64($imageFile);
-            $validated['receipt_image'] = $base64Image;
-            $validated['receipt_image_mime'] = $mimeType;
-        }
-
-        $request->validate([
-            'po_number' => [
-                'required',
-                function ($attribute, $value, $fail) {
-                    $exists = \DB::table('purchase_orders')
-                        ->where('po_number', $value)
-                        ->where('user_id', auth()->id())
-                        ->exists();
-
-                    if (! $exists) {
-                        $fail('This P.O number does not exist in your records.');
-                    }
-                },
-            ],
-        ]);
-
-        \DB::table('purchase_orders')
-            ->where('po_number', $validated['po_number'])
-            ->where('user_id', auth()->id())
-            ->update([
-                'payment_status' => 'Processing',
-                'updated_at' => now(),
-            ]);
-
-        $validated['id'] = Auth::id();  
-        $validated['status'] = 'Pending';
-        unset($validated['verified_by'], $validated['verified_at']);
-
-        Receipt::create($validated);
-
-        return redirect()->back()->with('success', 'Receipt submitted successfully!');
+    if ($request->hasFile('receipt_image')) {
+        $imageFile = $request->file('receipt_image');
+        [$base64Image, $mimeType] = $this->convertImageToBase64($imageFile);
+        $validated['receipt_image'] = $base64Image;
+        $validated['receipt_image_mime'] = $mimeType;
     }
+
+    $request->validate([
+        'po_number' => [
+            'required',
+            function ($attribute, $value, $fail) {
+                $exists = \DB::table('purchase_orders')
+                    ->where('po_number', $value)
+                    ->where('user_id', auth()->id())
+                    ->exists();
+
+                if (! $exists) {
+                    $fail('This P.O number does not exist in your records.');
+                }
+            },
+        ],
+    ]);
+
+    // ✅ Only create the receipt, don’t update PO payment_status here
+    $validated['id'] = Auth::id();  
+    $validated['status'] = 'Pending';
+    unset($validated['verified_by'], $validated['verified_at']);
+
+    Receipt::create($validated);
+
+    return redirect()->back()->with('success', 'Receipt submitted successfully!');
+}
 
 
     public function getReceiptImage($receipt_id)

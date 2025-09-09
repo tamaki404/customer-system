@@ -99,6 +99,8 @@
                         <th style="width: 50px;">Quantity</th>
                         <th style="width: 100px;">Subtotal</th>
                         <th style="width: 70px;">Payment</th>
+                        <th style="width: 70px;">Remaining balance</th>
+
                         <th style="width: 100px;">Status</th>
                         <th style="width: 120px;">Actions</th>
                     </tr>
@@ -118,6 +120,8 @@
                             <td>x{{ $order->items->sum('quantity') }}</td>                            
                             <td>₱{{ number_format($order->subtotal, 2) }}</td>
                             <td>{{$order->payment_status}}</td>
+                            <td>₱{{ number_format($order->remaining_balance, 2) }}</td>
+
                             <td class="order-actions">
                                 @php 
                                     $dateToShow = $order->action_at ?? $order->created_at;

@@ -21,12 +21,13 @@ return new class extends Migration
             $table->string('invoice_number')->nullable();
             $table->text('notes')->nullable();
             $table->string('status')->default('Pending');
-            $table->string('verified_by')->nullable();
-            $table->date('verified_at')->nullable();
             $table->string('receipt_number')->nullable();
             $table->string('id');
             $table->string('po_number');
-            $table->timestamp('payment_at')->nullable();
+            $table->string('action_by')->nullable();
+            $table->date('action_at')->nullable();
+            $table->string('rejected_note')->nullable();
+            $table->string('additional_note')->nullable();
         });
     }
 
