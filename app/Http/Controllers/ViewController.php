@@ -723,7 +723,7 @@ class ViewController extends Controller{
 
             $customerReceipts = Receipt::where('status', 'Verified')
                 ->where('id', $id)
-                ->whereDate('verified_at', '!=', Carbon::today())
+                ->whereDate('action_at', '!=', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
@@ -743,7 +743,7 @@ class ViewController extends Controller{
 
             $newCustomerReceipts = Receipt::where('status', 'Verified')
                 ->where('id', $id)
-                ->whereDate('verified_at', Carbon::today())
+                ->whereDate('action_at', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
@@ -775,24 +775,21 @@ class ViewController extends Controller{
 
 
 
-            // UNDER CONSTRUCTION
-            $poNumbers = PurchaseOrder::where('user_id', $id)->pluck('po_number');
-            $paidPartials = Receipt::join('purchase_orders', 'purchase_orders.po_number', '=', 'receipts.po_number')
-                ->where('purchase_orders.user_id', $id) 
-                ->whereIn('receipts.po_number', $poNumbers)
-                // ->whereIn('purchase_orders.payment_status', ['Partially', 'Paid']) 
-                ->where('receipts.status', 'Verified')
-                ->sum('receipts.total_amount');
+            // Get all POs for this user that are not fully settled
+            $purchaseOrders = PurchaseOrder::where('user_id', $id)
+                ->whereIn('payment_status', ['Unpaid', 'Processing', 'Partially Settled'])
+                ->get();
 
+            $totalBalance = 0;
 
+            foreach ($purchaseOrders as $po) {
+                $paidAmount = Receipt::where('po_number', $po->po_number)
+                    ->where('status', 'Verified')
+                    ->sum('total_amount');
 
-            $outstandingBalance = PurchaseOrder::where('user_id', $id)
-                ->whereIn('payment_status', ['Unpaid', 'Processing'])
-                ->sum('grand_total');
-
-            $balance = $outstandingBalance - $paidPartials;
-
-
+                $balance = max($po->grand_total - $paidAmount, 0);
+                $totalBalance += $balance;
+            }
 
 
 
@@ -826,7 +823,7 @@ class ViewController extends Controller{
                 'spendingSummary',
                 'spendingLabels',
                 'spendingData',
-                'balance',
+                'totalBalance',
 
             ));
         }

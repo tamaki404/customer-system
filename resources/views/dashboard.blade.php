@@ -226,7 +226,7 @@
             <a class="status-card">
                 <p class="card-title">Outstanding balance</p>
                 <div class="card-content">
-                        <h1 class="card-count" id="pendingDayCount">₱{{$balance}}</h1>      
+                        <h1 class="card-count" id="pendingDayCount">₱{{ number_format($totalBalance, 2) }}</h1>      
                       
                 </div>
             </a>
