@@ -195,17 +195,41 @@ private function updatePurchaseOrderPaymentStatus($po)
             ->first();
 
         if ($po) {
+            $paidAmount = \DB::table('receipts')
+                ->where('po_number', $po->po_number)
+                ->where('status', 'Verified')
+                ->sum('total_amount');
+
+            $balance = max($po->grand_total - $paidAmount, 0);
+
+            if ($paidAmount == 0) {
+                $status = 'Unpaid';
+            } elseif ($paidAmount < $po->grand_total) {
+                $status = 'Partially Paid';
+            } elseif ($paidAmount == $po->grand_total) {
+                $status = 'Fully Paid';
+            } else {
+                $status = 'Overpaid';
+            }
+
+            // ✅ Can submit only if not fully paid or overpaid
+            $canSubmit = in_array($status, ['Unpaid', 'Partially Paid', 'Processing']);
+
             return response()->json([
-                'valid' => true,
+                'valid'       => true,
                 'grand_total' => $po->grand_total,
+                'balance'     => $balance,
+                'status'      => $status,
+                'can_submit'  => $canSubmit,
             ]);
         }
 
         return response()->json([
-            'valid' => false,
+            'valid'   => false,
             'message' => 'This P.O number does not exist in your records.',
         ]);
     }
+
 
 
 public function submitReceipt(Request $request)

@@ -130,7 +130,12 @@
 
                             </div>
 
-                            <button type="submit" class="submit-btn" id="submitBtn" style="color: #333; font-size: 15px;">Submit Receipt</button>
+                            <button type="submit" class="submit-btn" id="submitBtn" 
+                                    style="color: #333; font-size: 15px; display: none;">
+                                Submit Receipt
+                            </button>
+
+
                         </form>
                     </div>
                 @endif
@@ -399,33 +404,46 @@
 
 
         <script>
-            document.getElementById('po_number').addEventListener('blur', function() {
-                let poNumber = this.value;
+document.getElementById('po_number').addEventListener('blur', function() {
+    let poNumber = this.value;
 
-                fetch(`/check-po-number?po_number=${poNumber}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        let errorEl = document.getElementById('number-error');
-                        let totalEl = document.getElementById('grand-total');
-                        let totalElCon = document.getElementById('grand-total-con');
+    fetch(`/check-po-number?po_number=${poNumber}`)
+        .then(response => response.json())
+        .then(data => {
+            let errorEl = document.getElementById('number-error');
+            let totalEl = document.getElementById('grand-total');
+            let totalElCon = document.getElementById('grand-total-con');
+            let submitBtn = document.getElementById('submitBtn');
 
-                        if (!data.valid) {
-                            errorEl.innerText = data.message;
-                            errorEl.style.display = "block";
-                            totalElCon.style.display = "none";
-                            totalEl.style.display = "none";
-                            totalEl.innerText = "";
-                        } else {
-                            errorEl.style.display = "none";
-                            totalElCon.style.display = "block";
-                            totalEl.innerText = `${data.grand_total}`;
-                            totalEl.style.display = "block";
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                    });
-            });
+            if (!data.valid) {
+                errorEl.innerText = data.message;
+                errorEl.style.display = "block";
+                totalElCon.style.display = "none";
+                totalEl.innerText = "";
+                submitBtn.style.display = "none"; // hide when invalid
+            } else {
+                errorEl.style.display = "none";
+                totalElCon.style.display = "block";
+
+                if (data.status === "Fully Paid") {
+                    totalEl.innerText = `✅ Fully Paid`;
+                } else {
+                    totalEl.innerText = `₱${parseFloat(data.balance).toLocaleString('en-PH', { 
+                        minimumFractionDigits: 2, 
+                        maximumFractionDigits: 2 
+                    })}`;
+                }
+                totalEl.style.display = "inline";
+
+
+
+                submitBtn.style.display = data.can_submit ? "block" : "none";
+            }
+        })
+        .catch(err => {
+            console.error(err);
+        });
+});
 
         </script>
     @endpush
