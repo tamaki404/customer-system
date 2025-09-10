@@ -228,19 +228,117 @@ body {
 
 }
 
+
+/* image change */
+   .profile-image-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 120px;
+    height: 120px;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #e4c64c;
+}
+
+.edit-avatar-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #fff;
+    border: none;
+    border-radius: 9999%;
+    padding: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background 0.2s;
+    height: 40px;
+    width: 40px;
+    align-items: center;
+}
+
+.edit-avatar-btn:hover {
+    background: #f0f0f0;
+}
+
+.edit-avatar-btn .material-symbols-outlined {
+    font-size: 20px;
+    color: #333;
+}
+
+/* Action buttons */
+.avatar-actions {
+    position: absolute;
+    bottom: -45px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.avatar-btn {
+    padding: 5px 10px;
+    font-size: 0.85em;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #007bff;
+    color: #fff;
+}
+
+.avatar-btn.cancel {
+    background: #dc3545;
+}
+
+
+
+
+
+
+
+
+
 @media (max-width: 768px) {
-    .form-row {
-        flex-direction: column;
-    }
+   .form-row {
+    display: flex;
+    flex-direction: column;
+}
 
-    .profile-card {
-        padding: 30px 20px;
-    }
+.profile-card {
+    padding: 30px 20px;
+}
 
-    .avatar {
-        width: 60px;
-        height: 60px;
-    }
+.profile-image-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.profile-image-wrapper .avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+
+.edit-avatar-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
 }
 
 @keyframes fadeIn {

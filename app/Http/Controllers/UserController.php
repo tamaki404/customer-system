@@ -14,65 +14,77 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller 
 {
 
-//email verification
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|min:4|max:15|unique:users,username',
+            'email' => 'required|email|max:255|unique:users,email',
+            'mobile' => 'nullable|digits:11|starts_with:09',
+            'telephone' => 'nullable|regex:/^0\d{1,3}-\d{6,7}$/',
+            'address' => 'required|string|max:255',
+            'password' => 'required|string|min:8|max:100|confirmed',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120', 
+            'user_type' => 'required|string',
+            'store_name' => 'required|string|max:255',
+            'acc_status' => 'required|string|max:255',
+            'action_by' => 'nullable|string|max:255',
+        ]);
 
+        if ($request->hasFile('image')) {
+            $imageData = file_get_contents($request->file('image')->getRealPath());
+            $validated['image'] = base64_encode($imageData);
+            $validated['image_mime'] = $request->file('image')->getMimeType();
+        } else {
+            $defaultImagePath = public_path('assets/default/store-default.jpg');
+            $imageData = file_get_contents($defaultImagePath);
+            $validated['image'] = base64_encode($imageData);
+            $validated['image_mime'] = mime_content_type($defaultImagePath);
+        }
 
+        $user = User::create([
+            'name' => $validated['name'],
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'mobile' => $validated['mobile'],
+            'telephone' => $validated['telephone'],
+            'address' => $validated['address'],
+            'password' => Hash::make($validated['password']),
+            'image' => $validated['image'],
+            'image_mime' => $validated['image_mime'],
+            'user_type' => $validated['user_type'],
+            'store_name' => $validated['store_name'],
+            'acc_status' => 'Pending',
+            'action_by' => $validated['action_by'],
+            'email_verified_at' => null,
+        ]);
 
+        $tokenRecord = EmailVerificationToken::createToken($validated['email']);
+        $token = $tokenRecord->token;
 
+        Mail::to($user->email)->send(new EmailVerification($user, $token));
 
-
-public function register(Request $request)
-{
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'username' => 'required|string|min:4|max:15|unique:users,username',
-        'email' => 'required|email|max:255|unique:users,email',
-        'mobile' => 'nullable|digits:11|starts_with:09',
-        'telephone' => 'nullable|regex:/^0\d{1,3}-\d{6,7}$/',
-        'address' => 'required|string|max:255',
-        'password' => 'required|string|min:8|max:100|confirmed',
-        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120', 
-        'user_type' => 'required|string',
-        'store_name' => 'required|string|max:255',
-        'acc_status' => 'required|string|max:255',
-        'action_by' => 'nullable|string|max:255',
-    ]);
-
-    if ($request->hasFile('image')) {
-        $imageData = file_get_contents($request->file('image')->getRealPath());
-        $validated['image'] = base64_encode($imageData);
-        $validated['image_mime'] = $request->file('image')->getMimeType();
-    } else {
-        $defaultImagePath = public_path('assets/default/store-default.jpg');
-        $imageData = file_get_contents($defaultImagePath);
-        $validated['image'] = base64_encode($imageData);
-        $validated['image_mime'] = mime_content_type($defaultImagePath);
+        return redirect('/login')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
     }
 
-    $user = User::create([
-        'name' => $validated['name'],
-        'username' => $validated['username'],
-        'email' => $validated['email'],
-        'mobile' => $validated['mobile'],
-        'telephone' => $validated['telephone'],
-        'address' => $validated['address'],
-        'password' => Hash::make($validated['password']),
-        'image' => $validated['image'],
-        'image_mime' => $validated['image_mime'],
-        'user_type' => $validated['user_type'],
-        'store_name' => $validated['store_name'],
-        'acc_status' => 'Pending',
-        'action_by' => $validated['action_by'],
-        'email_verified_at' => null,
-    ]);
 
-    $tokenRecord = EmailVerificationToken::createToken($validated['email']);
-    $token = $tokenRecord->token;
+    public function updateImage(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:users,id',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
 
-    Mail::to($user->email)->send(new EmailVerification($user, $token));
+        $user = User::findOrFail($request->id);
 
-    return redirect('/login')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
-}
+        $imageData = file_get_contents($request->file('image')->getRealPath());
+        $user->image = base64_encode($imageData);
+        $user->image_mime = $request->file('image')->getMimeType();
+
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profile image updated successfully!');
+    }
 
 
        public function verifyEmail($token)

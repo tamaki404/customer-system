@@ -53,11 +53,39 @@
 
         <div class="profile-card" style="overflow-x: auto">
             <div class="profile-header">
+
                 @php
                     $isBase64 = !empty(auth()->user()->image_mime);
-                    $imgSrc = $isBase64 ? ('data:' . auth()->user()->image_mime . ';base64,' . auth()->user()->image) : asset('images/' . (auth()->user()->image ?? 'default-avatar.png'));
+                    $imgSrc = $isBase64 
+                        ? ('data:' . auth()->user()->image_mime . ';base64,' . auth()->user()->image) 
+                        : asset('images/' . (auth()->user()->image ?? 'default-avatar.png'));
                 @endphp
-                <img src="{{ $imgSrc }}" class="avatar" alt="Avatar">
+
+                <form action="{{ url('/update-image') }}" method="POST" id="customer_edit" class="profile-image-wrapper" enctype="multipart/form-data">
+                    @csrf
+                    <img src="{{ $imgSrc }}" class="avatar" alt="Avatar" id="profileImagePreview">
+                    <input type="hidden" name="id" value="{{ auth()->user()->id }}">
+
+                    <input type="file" id="profileImageInput" name="image" accept="image/*" hidden>
+
+                    <button type="button" class="edit-avatar-btn" id="editAvatarBtn">
+                        <span class="material-symbols-outlined">edit</span>
+                    </button>
+
+                    <div class="avatar-actions" id="avatarActions" style="display: none;">
+                        <button type="submit" class="avatar-btn" id="saveImageBtn">Save</button>
+                        <button type="button" class="avatar-btn cancel" id="cancelImageBtn">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                </form>
+
+
+
+
+
+
+
                 <div class="profile-info">
                     <h2 class="profile-store" style="color: #333">{{ auth()->user()->store_name }}</h2>
                     @if (auth()->user()->user_type === 'Staff')
@@ -197,8 +225,11 @@
 
 <script src="{{ asset('js/disableBtn.js') }}"></script>
 <script src="{{ asset('js/confirmation-modal/profile.js') }}"></script>
+<script src="{{ asset('js/change/company_image.js') }}"></script>
 
 
 
 
 @endsection
+
+

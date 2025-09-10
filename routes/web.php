@@ -98,7 +98,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         return view('profile');
     })->name('profile');
     Route::post('/edit-profile', [UserController::class, 'updateProfile']);
-    
+    Route::post('/update-image', [UserController::class, 'updateImage']);
+
     // Tickets management (All users)
     Route::get('/tickets', [TicketController::class, 'showTickets'])->name('tickets');
     Route::post('/submit-ticket', [TicketController::class, 'submitTicket']);
