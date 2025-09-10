@@ -771,7 +771,6 @@ class ViewController extends Controller{
 
 
 
-            // Get all POs for this user that are not fully settled
             $purchaseOrders = PurchaseOrder::where('user_id', $id)
                 ->whereIn('payment_status', ['Unpaid', 'Processing', 'Partially Settled'])
                 ->get();
@@ -780,13 +779,13 @@ class ViewController extends Controller{
 
             foreach ($purchaseOrders as $po) {
                 $paidAmount = Receipt::where('po_number', $po->po_number)
-                    ->where('status', 'Verified')
-                    ->where('status', '!==', 'Rejected')
+                    ->where('status', 'Verified') // ignore rejected receipts
                     ->sum('total_amount');
 
                 $balance = max($po->grand_total - $paidAmount, 0);
                 $totalBalance += $balance;
             }
+
 
 
 

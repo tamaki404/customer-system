@@ -90,7 +90,7 @@ private function updatePurchaseOrderPaymentStatus($po)
         ->sum('total_amount');
 
     if ($totalPaid == 0) {
-        $po->payment_status = 'Pending';
+        $po->payment_status = 'Processing';
     } elseif ($totalPaid < $po->grand_total) {
         $po->payment_status = 'Partially Settled';
     } elseif ($totalPaid == $po->grand_total) {
