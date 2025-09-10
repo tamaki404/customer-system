@@ -1,0 +1,8 @@
+
+    const form = document.getElementById('orderForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', function(e) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Processing...';
+    });

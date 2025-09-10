@@ -85,33 +85,24 @@ public function fileReceipt($po_number, Request $request)
 
 private function updatePurchaseOrderPaymentStatus($po)
 {
-    $hasRejected = Receipt::where('po_number', $po->po_number)
-        ->where('status', 'Rejected')
-        ->exists();
+    $totalPaid = Receipt::where('po_number', $po->po_number)
+        ->where('status', 'Verified')
+        ->sum('total_amount');
 
-    if ($hasRejected) {
-        $po->payment_status = 'Rejected Payment';
-    } else {
-        $totalPaid = Receipt::where('po_number', $po->po_number)
-            ->where('status', 'Verified')
-            ->sum('total_amount');
-
-        if ($totalPaid == 0) {
-            $po->payment_status = 'Pending';
-        } elseif ($totalPaid < $po->grand_total) {
-            $po->payment_status = 'Partially Settled';
-        } elseif ($totalPaid == $po->grand_total) {
-            $po->payment_status = 'Fully Paid';
-        } elseif ($totalPaid > $po->grand_total) {
-            $po->payment_status = 'Overpaid';
-        }
+    if ($totalPaid == 0) {
+        $po->payment_status = 'Pending';
+    } elseif ($totalPaid < $po->grand_total) {
+        $po->payment_status = 'Partially Settled';
+    } elseif ($totalPaid == $po->grand_total) {
+        $po->payment_status = 'Fully Paid';
+    } elseif ($totalPaid > $po->grand_total) {
+        $po->payment_status = 'Overpaid';
     }
 
     $po->save();
-
+    
     return $po->payment_status;
 }
-
 
 
 
