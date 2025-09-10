@@ -66,7 +66,7 @@
                     <img src="{{ $imgSrc }}" class="avatar" alt="Avatar" id="profileImagePreview">
                     <input type="hidden" name="id" value="{{ auth()->user()->id }}">
 
-                    <input type="file" id="profileImageInput" name="image" accept="image/*" hidden>
+                    <input type="file" id="companyImage" name="image" accept="image/*" hidden>
 
                     <button type="button" class="edit-avatar-btn" id="editAvatarBtn">
                         <span class="material-symbols-outlined">edit</span>
@@ -78,6 +78,8 @@
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
+                    <p id="file-error" style="color: red; display: none; margin: 0; font-size: 12px; margin: 0;"></p>
+
                 </form>
 
 
@@ -96,7 +98,6 @@
                     <p style="font-size: 12px; margin: 0; color: #888;">ID: {{ auth()->user()->id }}</p>
                 </div>
             </div>
-            <script src="{{ asset('js/fadein.js') }}"></script>
             <div class="profile-body" style="height: auto">
                 @if(auth()->user()->user_type === 'Customer')
                 <p class="info-help">Your company’s information is required to ensure accurate identification and processing of transactions.</p>
@@ -225,7 +226,8 @@
 
 <script src="{{ asset('js/disableBtn.js') }}"></script>
 <script src="{{ asset('js/confirmation-modal/profile.js') }}"></script>
-<script src="{{ asset('js/change/company_image.js') }}"></script>
+<script src="{{ asset('js/profile/2mb.js') }}"></script>
+<script src="{{ asset('js/fadein.js') }}"></script>
 
 
 
