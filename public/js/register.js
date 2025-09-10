@@ -146,6 +146,7 @@ companyImageInput.addEventListener('change', function () {
 });
 
 // main form submit handler
+// main form submit handler
 form.addEventListener('submit', function (e) {
     let hasErrors = false;
     let errorMessages = [];
@@ -191,13 +192,7 @@ form.addEventListener('submit', function (e) {
         }
     });
 
-    // image is required
-    if (!companyImageInput.files[0]) {
-        companyImageFeedback.textContent = "Company image is required.";
-        companyImageFeedback.style.color = "red";
-        hasErrors = true;
-        errorMessages.push('Image required');
-    }
+    // ✅ no need to check if image is required anymore
 
     // if anything failed, stop form from submitting
     if (hasErrors) {
@@ -209,6 +204,7 @@ form.addEventListener('submit', function (e) {
     // otherwise everything's good
     return true;
 });
+
 
 // make sure image validity is updated on page load (in case file is preloaded)
 document.addEventListener('DOMContentLoaded', function() {

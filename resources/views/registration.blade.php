@@ -95,8 +95,8 @@
 
         <div class="form-cluster">
             <div class="form-group">
-                <p>Company image</p>
-                <input type="file" name="image" id="companyImage" accept="image/*" required>
+                <p>Company image (Optional)</p>
+                <input type="file" name="image" id="companyImage" accept="image/*">
                 <small id="company-image-feedback" style="color:red; display:block; "></small>
                 <p id="file-error" style="color: red; display: none; margin: 0; font-size: 12px; margin: 0;"></p>
             </div>
