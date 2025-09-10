@@ -45,7 +45,7 @@
                     @endif
 
                     @if(session('success'))
-                            <p>{{ session('success') }}</p>
+                            <p style="color: green">{{ session('success') }}</p>
                     @endif
 
                 </div>
@@ -56,7 +56,7 @@
                 
             </form>
 
-            
+
 
             <span>Doesn't have an ccount? <a href="/register-view">Create account</a></span>
 
