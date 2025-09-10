@@ -286,15 +286,22 @@ body {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    background: #007bff;
-    color: #fff;
+    background: #ffde59;
+    color: #333;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 .avatar-btn.cancel {
     background: #dc3545;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
-
+.avatar-actions button,
+.avatar-actions button span{
+    font-size: 14px;
+    font-weight: bold;
+    
+}
 
 
 
@@ -337,6 +344,9 @@ body {
     border: none;
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.profile-body .info-box p{
+    font-size: 12px;
 }
 
 }
