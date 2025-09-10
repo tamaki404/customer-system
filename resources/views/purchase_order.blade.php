@@ -60,6 +60,10 @@
                     'Delivered' => 'Delivered',
                     'Cancelled' => 'Cancelled',
                     'Rejected' => 'Rejected',
+                    'Unpaid' => 'Unpaid',
+                    'Partially Settled' => 'Partially Settled',
+                    'Fully Paid' => 'Fully Paid',
+
                 ];
 
                 $baseParams = [
