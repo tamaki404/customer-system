@@ -83,7 +83,6 @@
 
                 @else
                 @endif
-                <input type="hidden" name="status" value="">
                 <input type="hidden" name="po_id" value="{{ $po->id }}">
                 <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
             @endif
@@ -94,13 +93,12 @@
 
             @if(auth()->user()->user_type === 'Customer')
                 @if($po->status === 'Pending')
-                <input type="hidden" name="status" value="Cancelled">
-                <button type="button" class="btn btn-danger btn-confirm" data-action="Cancelled">Cancel</button>
+                    <input type="hidden" name="status" value="Cancelled">
+                    <button type="button" class="btn btn-danger btn-confirm" value="Cancelled" data-action="Cancelled">Cancel</button>
                 @endif
             @endif
             
-            <input type="hidden" name="status" value="">
-            <input type="hidden" name="po_id" value="{{ $po->id }}">
+            <input type="hidden" name="po_number" value="{{ $po->po_number }}">
             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
             <input type="hidden" name="user_type" value="{{ auth()->user()->user_type }}">
         </form>

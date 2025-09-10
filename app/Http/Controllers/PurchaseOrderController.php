@@ -614,38 +614,41 @@ public function purchaseOrder()
         return back()->with('success', "Purchase order has been {$status}.");
     }
 
-    public function cancelPOStatus(Request $request)
-    {
-        $po = PurchaseOrder::findOrFail($request->po_id);
-        $status = $request->input('status'); 
-        $user = $request->input('user_id');
-        $user_type = $request->input('user_type');
-
-        $po->status = $status;
-
-        if (in_array($status, ['Cancelled', 'Rejected'])) {
-            $purchaseOrderItems = PurchaseOrderItem::where('po_id', $po->id)->get();
-
-            foreach ($purchaseOrderItems as $item) {
-                $product = Product::find($item->product_id);
-                if ($product) {
-                    $product->quantity += $item->quantity;
-                    $product->save();
-                }
+public function cancelPOStatus(Request $request)
+{
+    $po = PurchaseOrder::where('po_number', $request->po_number)->firstOrFail();
+    $status = $request->input('status');
+    
+    $user = $request->input('user_id');
+    $user_type = $request->input('user_type');
+    
+    if (in_array($po->status, ['Cancelled', 'Rejected'])) {
+        return back()->with('error', 'Purchase order is already cancelled/rejected.');
+    }
+    
+    $po->status = $status;
+    
+    if (in_array($status, ['Cancelled', 'Rejected'])) {
+        $purchaseOrderItems = PurchaseOrderItem::where('po_id', $po->po_number)->get();
+        
+        foreach ($purchaseOrderItems as $item) {
+            $product = Product::find($item->product_id);
+            if ($product) {
+                $product->quantity += $item->quantity;
+                $product->save();
             }
         }
-
-      
-        if ($status === "Cancelled") {
-            $po->cancelled_at = now(); 
-            $po->cancelled_by = $user;
-            $po->cancelled_user_type= $user_type;
-        } 
-
-
-        $po->save();
-        return back()->with('success', 'Purchase order saved successfully.');
-
     }
+    
+    // Set cancelled metadata
+    if ($status === "Cancelled") {
+        $po->cancelled_at = now();
+        $po->cancelled_by = $user;
+        $po->cancelled_user_type = $user_type;
+    }
+    
+    $po->save();
+    return back()->with('success', 'Purchase order saved successfully.');
+}
      
 }
