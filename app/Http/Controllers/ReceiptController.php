@@ -224,7 +224,6 @@ private function updatePurchaseOrderPaymentStatus($po)
                 $status = 'Overpaid';
             }
 
-            // ✅ Can submit only if not fully paid or overpaid
             $canSubmit = in_array($status, ['Unpaid', 'Partially Paid', 'Processing']);
 
             return response()->json([
@@ -242,53 +241,65 @@ private function updatePurchaseOrderPaymentStatus($po)
         ]);
     }
 
+    private function randomBase36String($length = 5)
+    {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randomString = '';
 
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, strlen($characters) - 1)];
+        }
 
-public function submitReceipt(Request $request)
-{
-    $validated = $request->validate([
-        'receipt_image'   => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-        'purchase_date'   => 'required|date',
-        'store_name'      => 'required|string|max:255',
-        'total_amount'    => 'required|numeric',
-        'invoice_number'  => 'nullable|string|max:255',
-        'notes'           => 'nullable|string',
-        'receipt_number'  => 'required|string',
-        'po_number'       => 'required|string|max:255',
-    ]);
-
-    if ($request->hasFile('receipt_image')) {
-        $imageFile = $request->file('receipt_image');
-        [$base64Image, $mimeType] = $this->convertImageToBase64($imageFile);
-        $validated['receipt_image'] = $base64Image;
-        $validated['receipt_image_mime'] = $mimeType;
+        return $randomString;
     }
 
-    $request->validate([
-        'po_number' => [
-            'required',
-            function ($attribute, $value, $fail) {
-                $exists = \DB::table('purchase_orders')
-                    ->where('po_number', $value)
-                    ->where('user_id', auth()->id())
-                    ->exists();
+    public function submitReceipt(Request $request)
+    {
+        $validated = $request->validate([
+            'receipt_image'   => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'purchase_date'   => 'required|date',
+            'store_name'      => 'required|string|max:255',
+            'total_amount'    => 'required|numeric',
+            'invoice_number'  => 'nullable|string|max:255',
+            'notes'           => 'nullable|string',
+            'receipt_number'  => 'required|string',
+            'po_number'       => 'required|string|max:255',
+        ]);
 
-                if (! $exists) {
-                    $fail('This P.O number does not exist in your records.');
-                }
-            },
-        ],
-    ]);
+        if ($request->hasFile('receipt_image')) {
+            $imageFile = $request->file('receipt_image');
+            [$base64Image, $mimeType] = $this->convertImageToBase64($imageFile);
+            $validated['receipt_image'] = $base64Image;
+            $validated['receipt_image_mime'] = $mimeType;
+        }
+        
+        $date = date('Ymd');
 
-    // ✅ Only create the receipt, don’t update PO payment_status here
-    $validated['id'] = Auth::id();  
-    $validated['status'] = 'Pending';
-    unset($validated['verified_by'], $validated['verified_at']);
+        $request->validate([
+            'po_number' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $exists = \DB::table('purchase_orders')
+                        ->where('po_number', $value)
+                        ->where('user_id', auth()->id())
+                        ->exists();
 
-    Receipt::create($validated);
+                    if (! $exists) {
+                        $fail('This P.O number does not exist in your records.');
+                    }
+                },
+            ],
+        ]);
 
-    return redirect()->back()->with('success', 'Receipt submitted successfully!');
-}
+        $validated['receipt_id'] = 'RCPT-' . $date . '-' . $this->randomBase36String(5);  
+        $validated['id'] = Auth::id();  
+        $validated['status'] = 'Pending';
+        unset($validated['verified_by'], $validated['verified_at']);
+
+        Receipt::create($validated);
+
+        return redirect()->back()->with('success', 'Receipt submitted successfully!');
+    }
 
 
     public function getReceiptImage($receipt_id)

@@ -11,6 +11,8 @@ class Receipt extends Model
     use HasFactory;
     protected $table = 'receipts';
     protected $fillable = [
+        'receipt_id',
+
         'receipt_image',
         'receipt_image_mime',
         'purchase_date',
@@ -26,10 +28,13 @@ class Receipt extends Model
         'rejected_note',
         'additional_note',
         'action_by',
-        'action_at'
+        'action_at',
     ];
 
     protected $primaryKey = 'receipt_id';
+    protected $keyType = 'string';
+    public $incrementing = false; // very important!
+
     // Relationships
     public function customer()
     {

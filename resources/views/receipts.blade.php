@@ -299,15 +299,15 @@
 
                 {{-- customer --}}
                 @elseif(auth()->user()->user_type === 'Customer')
-                    <table style="width:100%; border-collapse:collapse;">
+                    <table style="width:100%; border-collapse:collapse; ">
                     <thead>
                         <tr style="background:#f7f7fa; text-align: center;">
-                            <th style="width:5%;">#</th>
-                            <th style="width:15%;">Date</th>
-                            <th style="width:15%;">PO number</th>
-                            <th style="width:15%;">Amount</th>
-                            <th style="width:10%;">Status</th>
-                            <th style="width:10%;">Receipt</th>
+                            <th>#</th>
+                            <th >Date</th>
+                            <th >PO number</th>
+                            <th >Amount</th>
+                            <th>Status</th>
+                            <th >Receipt</th>
                         </tr>
                     </thead>
 

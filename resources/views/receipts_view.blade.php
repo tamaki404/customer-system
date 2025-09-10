@@ -127,7 +127,7 @@
         </style>
         
         <span style="display: flex; width: 100%; justify-content: space-between;"><h2>Receipt #{{ $receipt->receipt_number }} <span></span> </h2> <p>{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p></span>
-
+        <span style="font-size: 13px; margin: 0;">Receipt ID: {{$receipt->receipt_id }}</span>
         <div class="mainBlock">
 
                 <div class="receiptBlock" style="overflow-x:auto;">

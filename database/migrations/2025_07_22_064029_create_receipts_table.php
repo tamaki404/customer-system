@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('receipts', function (Blueprint $table) {
-            $table->bigIncrements('receipt_id');
+            $table->string('receipt_id')->unique();
             $table->timestamps();
             $table->string('receipt_image')->nullable();
             $table->date('purchase_date');
