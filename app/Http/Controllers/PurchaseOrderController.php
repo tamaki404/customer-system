@@ -32,7 +32,9 @@ public function purchaseOrder()
             $q->where('po_number', 'like', "%{$search}%")
                 ->orWhere('receiver_name', 'like', "%{$search}%")
                 ->orWhere('company_name', 'like', "%{$search}%")
-                ->orWhere('order_date', 'like', "%{$search}%"); 
+                ->orWhere('order_date', 'like', "%{$search}%")
+                ->orWhere('payment_status', 'like', "%{$search}%"); 
+
         });
     }
 
