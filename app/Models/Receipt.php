@@ -41,9 +41,9 @@ class Receipt extends Model
     return $this->belongsTo(PurchaseOrder::class, 'po_number', 'po_number');
     }
 
-    public function verifier()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'verified_by');
+        return $this->belongsTo(User::class, 'action_by');
     }
 }
 

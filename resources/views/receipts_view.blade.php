@@ -125,7 +125,8 @@
                 color: #cd741c;
             }
         </style>
-        <span style="display: flex; width: 100%; justify-content: space-between;"><h2>Receipt #{{ $receipt->receipt_number }}</h2> <p>{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p></span>
+        
+        <span style="display: flex; width: 100%; justify-content: space-between;"><h2>Receipt #{{ $receipt->receipt_number }} <span></span> </h2> <p>{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p></span>
 
         <div class="mainBlock">
                 <div class="receiptBlock" style="overflow-x:auto;">
@@ -172,16 +173,6 @@
 
                    </div>
                     <table style="width:100%; border-collapse:collapse; ">
-                        <tr><th>Invoice#:</th><td>{{ $receipt->invoice_number }}</td></tr>
-                        <tr><th>Store:</th><td style="font-size: 20px; font-weight: bold;">{{ $receipt->customer ? $receipt->customer->store_name : 'N/A' }}</td></tr>
-                        <tr><th>Representative:</th><td>{{ $receipt->customer ? $receipt->customer->name : 'N/A' }}</td></tr>
-                        <tr><th>Amount:</th>  <td style="color: green">₱{{ number_format($receipt->total_amount, 2) }}</td></tr>
-                        </td></tr>
-                                                                    
-
-                        <tr><th>Purchase date:</th><td>{{ $receipt->purchase_date ? \Carbon\Carbon::parse($receipt->purchase_date)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
-                        <tr><th>Payment status</th><td>{{ $receipt->purchaseOrder->payment_status}}</td></tr>
-                        <tr>
                         <th>Status:</th>
                                 <td style="color:
                                     @if($receipt->status === 'Verified') green
@@ -192,10 +183,34 @@
                                     @endif
                                 ;">{{ $receipt->status }}</td>
                         </tr>
-                            @if($receipt->verified_by !== NULL)
-                                <tr><th>Action By:</th><td>{{ $receipt->verified_by ?? 'N/A' }}</td></tr>
-                                <tr><th>Action At:</th><td>    {{ $receipt->verified_at ? \Carbon\Carbon::parse($receipt->verified_at)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
-                            @endif
+                        <tr><th>Invoice#:</th><td>{{ $receipt->invoice_number }}</td></tr>
+                        <tr><th>Store:</th><td style="font-size: 20px; font-weight: bold;">{{ $receipt->customer ? $receipt->customer->store_name : 'N/A' }}</td></tr>
+                        <tr><th>Representative:</th><td>{{ $receipt->customer ? $receipt->customer->name : 'N/A' }}</td></tr>
+                        <tr><th>Amount:</th>  <td style="color: green">₱{{ number_format($receipt->total_amount, 2) }}</td></tr>
+                        </td></tr>
+                                                                    
+
+                        <tr><th>Purchase date:</th><td>{{ $receipt->purchase_date ? \Carbon\Carbon::parse($receipt->purchase_date)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
+
+                        <tr><th>PO  number</th><td>{{ $receipt->po_number}}</td></tr>
+                        <tr><th>Payment status</th><td>{{ $receipt->purchaseOrder->payment_status}}</td></tr>
+                        @if ($receipt->purchaseOrder->payment_status === 'Partially Settled')
+                            <tr>
+                                <th>
+
+                                </th>
+                                <td>
+
+                                </td>
+                            </tr>
+                        @elseif ($receipt->purchaseOrder->payment_status === 'Fully Paid' && !empty($receipt->additional_note))
+
+
+                        @elseif ($receipt->purchaseOrder->payment_status === 'Rejected' && !empty($receipt->additional_note))
+
+
+                        @endif
+
 
                    </table>
 
@@ -206,37 +221,7 @@
                     @if ($receipt->notes > 0)
                         <div style="display: flex; flex-direction: column; width: 100%;">
                             <p style="font-size: 16px; font-weight: bold; margin: 0; margin-top: 10px;">Orders' note</p>
-                            <div class="notes-display">{{ $receipt->notes }}</div>
-
-                            @if(auth()->user()->user_type === 'Staff' || auth()->user()->user_type === 'Admin')
-                                {{-- <div class="actionBtn" >
-                                    <p>Receipt status</p>
-                                    @if($receipt->status === 'Verified')
-
-                                    @elseif($receipt->status === 'Cancelled')
-
-
-                                    @elseif($receipt->status=== 'Pending')
-                                        <form action="{{ url('/receipts/verify/' . $receipt->receipt_id) }}" method="POST" class="action-form">
-                                            @csrf
-                                            <button type="button" class="verifyButton open-confirm" data-action="verify">Verify</button>
-                                        </form>
-
-                                        <form action="{{ url('/receipts/cancel/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
-                                            @csrf
-                                            <button type="button" class="cancelAction open-confirm" data-action="cancel">Cancel</button>
-                                        </form>
-
-                                        <form action="{{ url('/receipts/reject/' . $receipt->receipt_id) }}" method="POST" class="action-form" style="display:inline-block;">
-                                            @csrf
-                                            <button type="button" class="rejectAction open-confirm" data-action="reject">Reject</button>
-                                        </form>
-            
-                                    @endif
-
-                                </div> --}}
-                            @endif
-
+                            <div class="notes-display">{{ $receipt->notes }}</div>                        
                         </div>
                     @endif
 

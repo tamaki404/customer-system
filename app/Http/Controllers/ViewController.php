@@ -704,10 +704,6 @@ class ViewController extends Controller{
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
-
-
-   
-
             $customerPendings = PurchaseOrder::where('status', 'Delivered')
                 ->where('user_id', $id)
                 ->whereDate('delivered_at', '!=', Carbon::today())

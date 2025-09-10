@@ -306,7 +306,6 @@
                             <th style="width:15%;">Date</th>
                             <th style="width:15%;">PO number</th>
                             <th style="width:15%;">Amount</th>
-                            <th style="width:10%;">Payment</th>
                             <th style="width:10%;">Status</th>
                             <th style="width:10%;">Receipt</th>
                         </tr>
@@ -319,7 +318,6 @@
                                     <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}</td>
                                     <td>{{$receipt->purchaseOrder->po_number}}</td>
                                     <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
-                                    <td>{{ $receipt->purchaseOrder->payment_status ?? '' }}</td>
                                     <td>
                                         @php 
                                             $statusClasses = [
