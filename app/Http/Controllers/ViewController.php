@@ -781,6 +781,7 @@ class ViewController extends Controller{
             foreach ($purchaseOrders as $po) {
                 $paidAmount = Receipt::where('po_number', $po->po_number)
                     ->where('status', 'Verified')
+                    ->where('status', '!==', 'Rejected')
                     ->sum('total_amount');
 
                 $balance = max($po->grand_total - $paidAmount, 0);
