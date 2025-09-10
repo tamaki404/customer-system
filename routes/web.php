@@ -154,6 +154,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/reports/customers', [ReportsController::class, 'customerReports'])->name('customer_reports');
     Route::get('/reports/customers/dateFilter', [ReportsController::class, 'customerDateFilter'])->name('customer_dateFilter');
 
+    Route::post('/receipt/cancel/{receipt_id}', [ReceiptController::class, 'cancelReceipt'])->name('receipt.cancel');
 
     
     // ================================

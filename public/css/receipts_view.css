@@ -43,6 +43,23 @@
 
 }
 
+.cancel-receipt {
+    border-radius: 10px;
+    font-size: 14px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 10px;
+    width: 100px;
+    background-color: #e6231b;
+    color: #fff;
+    transition: background-color 0.3s, transform 0.2s; 
+}
+
+.cancel-receipt:hover {
+    background-color: #c41b17; 
+    cursor: pointer;
+}
+
 .actionBtn{
     display: flex;
     flex-direction: row;

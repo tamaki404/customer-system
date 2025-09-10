@@ -129,9 +129,21 @@
         <span style="display: flex; width: 100%; justify-content: space-between;"><h2>Receipt #{{ $receipt->receipt_number }} <span></span> </h2> <p>{{ $receipt->created_at -> format ('F j, Y, g: i A') }}</p></span>
 
         <div class="mainBlock">
+
                 <div class="receiptBlock" style="overflow-x:auto;">
                     @if(auth()->user()->user_type !== 'Customer')
                         <button class="open-modify-modal" style="">File an action</button>
+                    @elseif(auth()->user()->user_type === 'Customer')
+                        @if ($receipt->status === 'Pending')
+                            <form id="cancel-status-form" action="{{ route('receipt.cancel', $receipt->receipt_id) }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="status" value="Cancelled">
+                                <button type="button" class="cancel-receipt open-confirm">
+                                    Cancel
+                                </button>
+                            </form>
+                        @endif
+
                     @endif
                    <div class="payment-notes">
                         @if($receipt->purchaseOrder->payment_status==="Rejected")
@@ -173,6 +185,8 @@
 
                    </div>
                     <table style="width:100%; border-collapse:collapse; ">
+
+
                         <th>Status:</th>
                                 <td style="color:
                                     @if($receipt->status === 'Verified') green

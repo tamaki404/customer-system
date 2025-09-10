@@ -82,6 +82,20 @@ public function fileReceipt($po_number, Request $request)
     return redirect()->back()->with('success', $message);
 }
 
+public function cancelReceipt($receipt_id, Request $request) 
+{
+    $receipt = Receipt::where('receipt_id', $receipt_id)->firstOrFail();
+    $validated = $request->validate([
+        'status' => 'required|string',
+    ]);
+    $status = $validated['status'];
+    $receipt->update([
+        'status' => $status,
+    ]);
+    $message = 'Receipt has been cancelled successfully.';
+    return redirect()->back()->with('success', $message);
+}
+
 
 private function updatePurchaseOrderPaymentStatus($po)
 {

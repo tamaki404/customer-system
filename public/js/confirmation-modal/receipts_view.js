@@ -2,7 +2,7 @@
 
     document.querySelectorAll('.open-confirm').forEach(button => {
         button.addEventListener('click', function () {
-            confirmAction = this.closest('form'); 
+        confirmAction = this.closest('form') || document.getElementById('cancel-status-form');
             let modalEl = document.getElementById('confirmModal');
             let modal = new bootstrap.Modal(modalEl);
             modal.show();
