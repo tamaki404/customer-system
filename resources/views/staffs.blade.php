@@ -109,6 +109,7 @@
     <div class="titleCount"> 
         <h2>Staffs List</h2> 
 
+
     </div>
     
     <!-- Pagination Info -->
@@ -136,7 +137,11 @@
                 @endif
             </div>
             <div class="staff-info">
-                <div class="staff-name" title="{{ $user->name }}">{{ $user->name }}</div>
+                @if (auth()->user()->id === $user->id)
+                    <div class="staff-name" title="{{ $user->name }}">You</div>
+                @else
+                    <div class="staff-name" title="{{ $user->name }}">{{ $user->name }}</div>
+                @endif
                 {{-- <div class="staff-sub">ID: {{ $user->id }}</div> --}}
                 <div class="staff-email">{{$user->email}}</div>
                 <div class="staff-sub">{{ $user->user_type }}</div>

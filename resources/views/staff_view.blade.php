@@ -65,7 +65,12 @@
                 }
             </style>
         <div class="header">
-            <h2 >Staff Details</h2>
+            @if (auth()->user()->id === $staff->id)
+                <h2>Your details</h2>
+            @else
+                <h2 >Staff Details</h2>
+
+            @endif
         </div>
 
         
