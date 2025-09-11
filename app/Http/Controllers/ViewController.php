@@ -78,11 +78,33 @@ class ViewController extends Controller{
             ->withMax('orders as lastOrder', 'created_at')
             ->paginate(25);
 
+        $activatedCustomers =  User::where('acc_status', 'Active')
+                ->where('user_type', 'Customer')
+                ->whereDate('created_at', '!==', Carbon::today())
+                ->count();
+        $newCustomers =  User::where('acc_status', 'Active')
+                ->where('user_type', 'Customer')
+                ->whereDate('created_at', Carbon::today())
+                ->count();
+        $pendingCustomers =  User::where('acc_status', 'Pending')
+                ->where('user_type', 'Customer')
+                ->whereDate('created_at', '!==', Carbon::today())
+                ->count();
+        $newPending =  User::where('acc_status', 'Pending')
+                ->where('user_type', 'Customer')
+                ->whereDate('created_at', Carbon::today())
+                ->count();
+        $suspendedCustomers =  User::where('acc_status', 'Suspended')
+                ->where('user_type', 'Customer')
+                ->count();
+
+
         $verifiedCustomersCount = User::where('user_type', 'Customer')
             ->where('acc_status', 'accepted')
             ->count();
 
-        return view('customers', compact('users', 'verifiedCustomersCount', 'search'));
+        return view('customers', compact('users', 'verifiedCustomersCount', 'search'
+    , 'activatedCustomers', 'newCustomers', 'pendingCustomers', 'newPending', 'suspendedCustomers'));
     }
 
 

@@ -18,20 +18,51 @@
 
 <div class="customersFrame" style="">
 
+        <div class="title-search" style="align-content: center">
+            <h2 style="margin: 0;">Customers</h2> 
 
-    <form method="GET" action="" class="date-search">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by ID, Store Name, Status, Username">
-        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
-    </form>
+            <form method="GET" action="" class="date-search">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by ID, Store Name, Status, Username">
+                <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+            </form>
 
-    <div class="titleCount"> 
-        <h2>Customers</h2> 
-    </div>
+        </div>
+
+            <section class="status-cards-list" style="margin: 5px">
+            <a class="status-card">
+                <p class="card-title">Activated</p>
+                <div class="card-content">
+                    <h1 class="card-count" id="pendingDayCount">{{$activatedCustomers}}</h1>
+                    @if ($newCustomers >0)
+                        <span class="card-add-count">{{$newCustomers}}</span>
+                    @endif
+                </div>
+            </a>
+
+            <a class="status-card">
+                <p class="card-title">Pending</p>
+                <div class="card-content">
+                    <h1 class="card-count" id="pendingDayCount">{{$pendingCustomers}}</h1>
+                    @if ($pendingCustomers >0)
+                        <span class="card-add-count">{{$newPending}}</span>
+                    @endif
+                </div>
+            </a>
+            <a class="status-card">
+                <p class="card-title">Suspended</p>
+                <div class="card-content">
+                    <h1 class="card-count" id="pendingDayCount">{{$suspendedCustomers}}</h1>
+                 
+                </div>
+            </a>
+        </section>
     
     <!-- Pagination Info -->
-    <div style="margin-bottom: 1rem; font-size: 15px; color: #666;" class="page-count">
+    <div style="font-size: 14px; color: #666;" class="page-count">
         Page {{ $users->currentPage() }} of {{ $users->lastPage() }} ({{ $users->total() }} total customers)
     </div>
+    
+
     <div class="customerList" style="padding: 15px;">
         @if(isset($users) && count($users) > 0)
 

@@ -12,7 +12,14 @@
     border-radius: 15px;
 
 }
-
+            .title-search{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                flex: 1;
+                gap: 3px;
+                flex-wrap: wrap;
+            }
 .customersFrame table tr {
     cursor: pointer;
 }
@@ -228,6 +235,71 @@ tr td{
     font-weight: bold;
     
 }
+
+
+
+/* cards list */
+
+.status-cards-list{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: auto;
+    height: auto;
+    gap: 10px;
+}
+.status-card{
+    flex: 1;      
+    border-radius: 15px;
+    height: 100px;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    color: #333;
+}
+
+.status-card:is(:hover, :focus) {
+  box-shadow: 0px 8px 10px 1px rgba(0, 0, 0, 0.2);
+  transform: translateY(-8px);
+}
+.status-card .card-title{
+    font-size: 14px;
+    color: #666;
+
+}
+.status-card .card-content{
+    display: flex;
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: start;
+    padding: 10px;
+}
+.card-content h1,
+.card-content span{
+    margin: 0;
+    color: #333;
+}
+.card-content h1{
+    font-weight: bold;
+    font-size: 30px;
+}
+.card-content span{
+    color: #f8912a;
+    font-size: 19px;
+}
+.card-add-count{
+    font-size: 15px;
+}
+
+
+
+
+
+
 
 
 

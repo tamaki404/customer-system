@@ -100,12 +100,6 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::post('/edit-profile', [UserController::class, 'updateProfile']);
     Route::post('/update-image', [UserController::class, 'updateImage']);
 
-    // Tickets management (All users)
-    Route::get('/tickets', [TicketController::class, 'showTickets'])->name('tickets');
-    Route::post('/submit-ticket', [TicketController::class, 'submitTicket']);
-    Route::get('/specTicket/{ticketID}', [TicketController::class, 'specTicket'])->name('specTicket');
-    Route::put('/tickets/update/{ticketID}', [TicketController::class, 'ticketsUpdate'])->name('tickets.update');
-    
     // Address lookups (All users)
     Route::get('/regions/{region}/provinces', [AddressController::class, 'provinces'])->name('address.provinces');
     Route::get('/provinces/{province}/municipalities', [AddressController::class, 'municipalities'])->name('address.municipalities');
