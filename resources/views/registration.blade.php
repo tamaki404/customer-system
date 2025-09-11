@@ -102,15 +102,16 @@
 
         </div>
 
-            @if ($errors->any())
-                <div style="color: red; margin-bottom: 10px;">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+        @if ($errors->any())
+            <div style="color: red; margin-bottom: 10px;">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <button type="submit" id="submitBtn" class="save-btn">Sign Up</button>
 
     </div>

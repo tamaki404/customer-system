@@ -20,7 +20,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|min:4|max:15|unique:users,username',
             'email' => 'required|email|max:255|unique:users,email',
-            'mobile' => 'nullable|digits:11|starts_with:09',
+            'mobile' => 'nullable|digits:11|starts_with:09|unique:users,mobile',
             'telephone' => 'nullable|regex:/^0\d{1,3}-\d{6,7}$/',
             'address' => 'required|string|max:255',
             'password' => 'required|string|min:8|max:100|confirmed',

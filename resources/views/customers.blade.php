@@ -22,7 +22,7 @@
             <h2 style="margin: 0;">Customers</h2> 
 
             <form method="GET" action="" class="date-search">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by ID, Store Name, Status, Username">
+                <input type="text" style="outline:none;" name="search" value="{{ request('search') }}" placeholder="Search by ID, Store Name, Status, Username">
                 <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
             </form>
 
@@ -35,7 +35,7 @@
             <div class="card-content">
                 <h1 class="card-count">{{$activatedCustomers}}</h1>
                 @if ($newCustomers > 0)
-                    <span class="card-add-count">{{$newCustomers}}</span>
+                    <span class="card-add-count">+{{$newCustomers}}</span>
                 @endif
             </div>
         </a>
@@ -46,7 +46,7 @@
             <div class="card-content">
                 <h1 class="card-count">{{$pendingCustomers}}</h1>
                 @if ($pendingCustomers > 0)
-                    <span class="card-add-count">{{$newPending}}</span>
+                    <span class="card-add-count">+{{$newPending}}</span>
                 @endif
             </div>
         </a>

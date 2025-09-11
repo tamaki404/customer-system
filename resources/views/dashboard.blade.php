@@ -57,7 +57,7 @@
         @endif
 
         <section class="status-cards-list">
-            <a class="status-card" href="{{ route('receipts') }}">
+            <a class="status-card" href="{{ route('purchase_order') }}">
                 <p class="card-title">Purchase orders</p>
                 <div class="card-content">
                     <h1 class="card-count" id="pendingDayCount">{{$purchaseOrdersCount}}</h1>
@@ -67,7 +67,7 @@
                 </div>
             </a>
 
-            <a class="status-card" href="{{ route('receipts') }}">
+            <a class="status-card" href="{{ route('orders') }}">
                 <p class="card-title">Orders</p>
                 <div class="card-content">
                     <h1 class="card-count" id="pendingDayCount">{{$ordersCount}}</h1>
@@ -85,7 +85,7 @@
                     @endif                
                 </div>
             </a>
-            <a class="status-card" href="{{ route('receipts') }}">
+            <a class="status-card" href="{{ route('customers') }}">
                 <p class="card-title">Customers</p>
                 <div class="card-content">
                     <h1 class="card-count" id="pendingDayCount">{{$usersCount}}</h1>
