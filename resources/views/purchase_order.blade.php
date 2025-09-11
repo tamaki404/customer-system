@@ -94,19 +94,18 @@
             <table style="width:100%; border-collapse:collapse;" class="orders-table">
                 <thead style="background-color: #f9f9f9;">
                     <tr style="background:#f7f7fa; text-align: center;">
-                        <th style="width: 50px; padding: 10px;">#</th>
-                        <th style="width: 100px;">Order Date</th>
-                        <th style="width: 140px;">PO Number</th>
+                        <th>#</th>
+                        <th>Order Date</th>
+                        <th>PO Number</th>
                         @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff' )
-                            <th style="width: 150px;">Company</th>
+                            <th style="">Company</th>
                         @endif
-                        <th style="width: 50px;">Quantity</th>
-                        <th style="width: 100px;">Subtotal</th>
-                        <th style="width: 70px;">Payment</th>
-                        <th style="width: 70px;">Remaining balance</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th >Payment</th>
+                        <th>Remaining balance</th>
 
-                        <th style="width: 100px;">Status</th>
-                        <th style="width: 120px;">Actions</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -146,14 +145,7 @@
 
 
                             </td>
-                            <td>
-                                <a href="" style="text-decoration: none; text-align: align; display: flex; gap: 5px; justify-content: center;">
-                                    <span style="font-size: 17px;" class="material-symbols-outlined">download</span>
-                                    <span>Purchase Order</span>
-                                </a>
-                                {{-- <a href="{{ route('purchase_order.show', $order->id) }}" class="btn-action">View</a>
-                                <a href="{{ route('purchase_order.edit', $order->id) }}" class="btn-action">Edit</a> --}}
-                            </td>
+                        
                         </tr>
                     @empty
                         <tr>

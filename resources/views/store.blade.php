@@ -96,7 +96,7 @@
                             <select name="category" id="category" required>
                                 <option value="">-- Select Category --</option>
                                 <option value="Eggs">Eggs</option>
-                                <option value=">Whole Chickens">Whole Chickens</option>
+                                <option value="Whole Chickens">Whole Chickens</option>
                                 <option value="Meat & Poultry Cuts">Meat & Poultry Cuts</option>
                                 <option value="Processed">Processed</option>
                                 <option value="Ready Ulam">Ready Ulam</option>
