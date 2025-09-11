@@ -17,74 +17,103 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 class PurchaseOrderController extends Controller {
-public function purchaseOrder()
-{
-    $user = auth()->user();
-    $search = request('search');
-    $from = request('from_date', now()->startOfMonth()->format('Y-m-d'));
-    $to = request('to_date', now()->endOfMonth()->format('Y-m-d'));
-    $filterStatus = request('status'); // Can be status or payment_status
 
-    $query = PurchaseOrder::query();
+    public function purchaseOrder()
+    {
+        $user = auth()->user();
+        $search = request('search');
+        $from = request('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $to = request('to_date', now()->endOfMonth()->format('Y-m-d'));
+        $filterStatus = request('status');
 
-    // Search filter
-    if ($search) {
-        $query->where(function ($q) use ($search) {
-            $q->where('po_number', 'like', "%{$search}%")
-              ->orWhere('receiver_name', 'like', "%{$search}%")
-              ->orWhere('company_name', 'like', "%{$search}%")
-              ->orWhere('order_date', 'like', "%{$search}%")
-              ->orWhere('payment_status', 'like', "%{$search}%");
-        });
+        $baseQuery = PurchaseOrder::query();
+
+        if ($search) {
+            $baseQuery->where(function ($q) use ($search) {
+                $q->where('po_number', 'like', "%{$search}%")
+                ->orWhere('receiver_name', 'like', "%{$search}%")
+                ->orWhere('company_name', 'like', "%{$search}%")
+                ->orWhere('order_date', 'like', "%{$search}%")
+                ->orWhere('payment_status', 'like', "%{$search}%");
+            });
+        }
+
+        if (!in_array($user->user_type, ['Staff', 'Admin'])) {
+            $baseQuery->where('user_id', $user->id);
+        }
+
+        if ($from && $to) {
+            $baseQuery->whereBetween('order_date', [
+                Carbon::parse($from)->startOfDay(),
+                Carbon::parse($to)->endOfDay()
+            ]);
+        }
+
+        $statusCounts = [];
+        $tabStatuses = [
+            'All' => null,
+            'Draft' => 'Draft',
+            'Pending' => 'Pending',
+            'Processing' => 'Processing',
+            'Delivered' => 'Delivered',
+            'Cancelled' => 'Cancelled',
+            'Rejected' => 'Rejected',
+            'Unpaid' => 'Unpaid',
+            'Partially Settled' => 'Partially Settled',
+            'Fully Paid' => 'Fully Paid',
+        ];
+
+        $statusCounts['All'] = (clone $baseQuery)->where('status', '!=', 'Draft')->count();
+
+        foreach ($tabStatuses as $label => $value) {
+            if ($value !== null) {
+                $countQuery = clone $baseQuery;
+                $countQuery->where(function ($q) use ($value) {
+                    $q->where('status', $value)->orWhere('payment_status', $value);
+                });
+                
+                if ($value !== 'Draft') {
+                    $countQuery->where('status', '!=', 'Draft');
+                }
+                
+                $statusCounts[$label] = $countQuery->count();
+            }
+        }
+
+        $query = clone $baseQuery;
+
+        if ($filterStatus) {
+            $query->where(function ($q) use ($filterStatus) {
+                $q->where('status', $filterStatus)
+                ->orWhere('payment_status', $filterStatus);
+            });
+        }
+
+        if ($filterStatus !== 'Draft') {
+            $query->where('status', '!=', 'Draft');
+        }
+
+        $purchaseOrders = $query->orderBy('order_date', 'desc')->paginate(50);
+
+        // calculate remaining balance for each PO (only Verified receipts count)
+        foreach ($purchaseOrders as $po) {
+            $paidAmount = Receipt::where('po_number', $po->po_number)
+                ->where('status', 'Verified')
+                ->sum('total_amount') ?? 0;
+            $po->remaining_balance = max($po->grand_total - $paidAmount, 0);
+        }
+
+        return view('purchase_order', compact(
+            'user',
+            'purchaseOrders',
+            'search',
+            'from',
+            'to',
+            'filterStatus',
+            'statusCounts' 
+        ));
     }
-
-    // User filter (non-admin/staff only see their POs)
-    if (!in_array($user->user_type, ['Staff', 'Admin'])) {
-        $query->where('user_id', $user->id);
-    }
-
-    // Filter by status or payment_status
-    if ($filterStatus) {
-        $query->where(function ($q) use ($filterStatus) {
-            $q->where('status', $filterStatus)
-              ->orWhere('payment_status', $filterStatus);
-        });
-    }
-
-    // Date range filter
-    if ($from && $to) {
-        $query->whereBetween('order_date', [
-            Carbon::parse($from)->startOfDay(),
-            Carbon::parse($to)->endOfDay()
-        ]);
-    }
-
-    // Exclude drafts from listing
-    $query->where('status', '!=', 'Draft');
-
-    // Fetch paginated results
-    $purchaseOrders = $query->orderBy('order_date', 'desc')->paginate(50);
-
-    // Calculate remaining balance for each PO (only Verified receipts count)
-    foreach ($purchaseOrders as $po) {
-        $paidAmount = Receipt::where('po_number', $po->po_number)
-            ->where('status', 'Verified')
-            ->sum('total_amount') ?? 0;
-
-        $po->remaining_balance = max($po->grand_total - $paidAmount, 0);
-    }
-
-    return view('purchase_order', compact(
-        'user', 
-        'purchaseOrders', 
-        'search', 
-        'from', 
-        'to', 
-        'filterStatus' // pass to view to highlight the selected tab
-    ));
-}
-
-        
+            
     public function purchaseReceipts($po_number)
     {
         $user = auth()->user();
@@ -107,7 +136,6 @@ public function purchaseOrder()
         try {
             DB::beginTransaction();
             
-            // Get all order items for this order
             $orderItems = Orders::where('order_id', $order_id)->get();
             
             foreach ($orderItems as $orderItem) {
@@ -118,7 +146,6 @@ public function purchaseOrder()
                 }
             }
             
-            // Update order status
             Orders::where('order_id', $order_id)->update([
                 'status' => 'Cancelled',
                 'action_at' => now(),
