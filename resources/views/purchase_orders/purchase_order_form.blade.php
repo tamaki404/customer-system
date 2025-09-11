@@ -147,19 +147,13 @@
     </div>
 
 
-    <a class="download-purchase-order"  onclick="window.print()">
+    <a class="download-purchase-order" onclick="downloadPDF()">
         <span class="material-symbols-outlined">download</span>
-         Download PDF
+        Download PDF
     </a>
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentDate = new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long', 
-                day: 'numeric'
-            });
-            
-        });
-    </script>
+
+
+<script src="{{ asset('js/purchase_order/download_pdf_btn.js') }}"></script>
+
 </body>
 </html>
