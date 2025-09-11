@@ -28,34 +28,39 @@
 
         </div>
 
-            <section class="status-cards-list" style="margin: 5px">
-            <a class="status-card">
-                <p class="card-title">Activated</p>
-                <div class="card-content">
-                    <h1 class="card-count" id="pendingDayCount">{{$activatedCustomers}}</h1>
-                    @if ($newCustomers >0)
-                        <span class="card-add-count">{{$newCustomers}}</span>
-                    @endif
-                </div>
-            </a>
+    <section class="status-cards-list" style="margin: 5px">
+        <a class="status-card {{ $status === 'Active' ? 'active' : '' }}" 
+        href="{{ route('customers', ['status' => 'Active']) }}">
+            <p class="card-title">Activated</p>
+            <div class="card-content">
+                <h1 class="card-count">{{$activatedCustomers}}</h1>
+                @if ($newCustomers > 0)
+                    <span class="card-add-count">{{$newCustomers}}</span>
+                @endif
+            </div>
+        </a>
 
-            <a class="status-card">
-                <p class="card-title">Pending</p>
-                <div class="card-content">
-                    <h1 class="card-count" id="pendingDayCount">{{$pendingCustomers}}</h1>
-                    @if ($pendingCustomers >0)
-                        <span class="card-add-count">{{$newPending}}</span>
-                    @endif
-                </div>
-            </a>
-            <a class="status-card">
-                <p class="card-title">Suspended</p>
-                <div class="card-content">
-                    <h1 class="card-count" id="pendingDayCount">{{$suspendedCustomers}}</h1>
-                 
-                </div>
-            </a>
-        </section>
+        <a class="status-card {{ $status === 'Pending' ? 'active' : '' }}" 
+        href="{{ route('customers', ['status' => 'Pending']) }}">
+            <p class="card-title">Pending</p>
+            <div class="card-content">
+                <h1 class="card-count">{{$pendingCustomers}}</h1>
+                @if ($pendingCustomers > 0)
+                    <span class="card-add-count">{{$newPending}}</span>
+                @endif
+            </div>
+        </a>
+
+        <a class="status-card {{ $status === 'Suspended' ? 'active' : '' }}" 
+        href="{{ route('customers', ['status' => 'Suspended']) }}">
+            <p class="card-title">Suspended</p>
+            <div class="card-content">
+                <h1 class="card-count">{{$suspendedCustomers}}</h1>
+            </div>
+        </a>
+    </section>
+
+
     
     <!-- Pagination Info -->
     <div style="font-size: 14px; color: #666;" class="page-count">
@@ -63,7 +68,7 @@
     </div>
     
 
-    <div class="customerList" style="padding: 15px;">
+    <div class="customerList" style="padding: 15px; display: flex; justify-content: center; align-items: start;">
         @if(isset($users) && count($users) > 0)
 
         <table style="width:100%; border-collapse:collapse;">
@@ -156,7 +161,7 @@
             @endif
         </div>
         @else
-            <p>No customers found.</p>
+            <p style="font-size:14px; margin-top: 50px; color: #666;">No customers found.</p>
         @endif
     </div>
 

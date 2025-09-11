@@ -52,60 +52,76 @@ class ViewController extends Controller{
         return view('staffs', compact('users', 'user', 'search'));
     }
 
-    public function showCustomers()
-    {
-        $search = request('search');
+public function showCustomers()
+{
+    $search = request('search');
+    $status = request('status'); 
 
-        $users = User::where('user_type', 'Customer')
-            ->when($search, function ($query, $search) {
-                $query->where(function($q) use ($search) {
-                    $q->where('id', 'like', "%$search%")
-                    ->orWhere('store_name', 'like', "%$search%")
-                    ->orWhere('acc_status', 'like', "%$search%")
-                    ->orWhere('username', 'like', "%$search%");
-                });
-            })
-            ->withCount([
-                'orders as orderCount' => function ($q) {
-                    $q->where('status', 'Completed');
-                }
-            ])
-            ->withSum([
-                'orders as totalOrders' => function ($q) {
-                    $q->where('status', 'Completed');
-                }
-            ], 'total_price') 
-            ->withMax('orders as lastOrder', 'created_at')
-            ->paginate(25);
+    $users = User::where('user_type', 'Customer')
+        ->when($search, function ($query, $search) {
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'like', "%$search%")
+                  ->orWhere('store_name', 'like', "%$search%")
+                  ->orWhere('acc_status', 'like', "%$search%")
+                  ->orWhere('username', 'like', "%$search%");
+            });
+        })
+        ->when($status, function ($query, $status) {
+            $query->where('acc_status', $status);
+        })
+        ->withCount([
+            'orders as orderCount' => function ($q) {
+                $q->where('status', 'Completed');
+            }
+        ])
+        ->withSum([
+            'orders as totalOrders' => function ($q) {
+                $q->where('status', 'Completed');
+            }
+        ], 'total_price') 
+        ->withMax('orders as lastOrder', 'created_at')
+        ->paginate(25);
 
-        $activatedCustomers =  User::where('acc_status', 'Active')
-                ->where('user_type', 'Customer')
-                ->whereDate('created_at', '!==', Carbon::today())
-                ->count();
-        $newCustomers =  User::where('acc_status', 'Active')
-                ->where('user_type', 'Customer')
-                ->whereDate('created_at', Carbon::today())
-                ->count();
-        $pendingCustomers =  User::where('acc_status', 'Pending')
-                ->where('user_type', 'Customer')
-                ->whereDate('created_at', '!==', Carbon::today())
-                ->count();
-        $newPending =  User::where('acc_status', 'Pending')
-                ->where('user_type', 'Customer')
-                ->whereDate('created_at', Carbon::today())
-                ->count();
-        $suspendedCustomers =  User::where('acc_status', 'Suspended')
-                ->where('user_type', 'Customer')
-                ->count();
+    $activatedCustomers = User::where('acc_status', 'Active')
+        ->where('user_type', 'Customer')
+        ->whereDate('created_at', '!=', Carbon::today())
+        ->count();
 
+    $newCustomers = User::where('acc_status', 'Active')
+        ->where('user_type', 'Customer')
+        ->whereDate('created_at', Carbon::today())
+        ->count();
 
-        $verifiedCustomersCount = User::where('user_type', 'Customer')
-            ->where('acc_status', 'accepted')
-            ->count();
+    $pendingCustomers = User::where('acc_status', 'Pending')
+        ->where('user_type', 'Customer')
+        ->whereDate('created_at', '!=', Carbon::today())
+        ->count();
 
-        return view('customers', compact('users', 'verifiedCustomersCount', 'search'
-    , 'activatedCustomers', 'newCustomers', 'pendingCustomers', 'newPending', 'suspendedCustomers'));
-    }
+    $newPending = User::where('acc_status', 'Pending')
+        ->where('user_type', 'Customer')
+        ->whereDate('created_at', Carbon::today())
+        ->count();
+
+    $suspendedCustomers = User::where('acc_status', 'Suspended')
+        ->where('user_type', 'Customer')
+        ->count();
+
+    $verifiedCustomersCount = User::where('user_type', 'Customer')
+        ->where('acc_status', 'accepted')
+        ->count();
+
+    return view('customers', compact(
+        'users',
+        'verifiedCustomersCount',
+        'search',
+        'status', 
+        'activatedCustomers',
+        'newCustomers',
+        'pendingCustomers',
+        'newPending',
+        'suspendedCustomers'
+    ));
+}
 
 
     public function viewCustomer($id)

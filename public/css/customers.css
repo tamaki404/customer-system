@@ -294,7 +294,11 @@ tr td{
 .card-add-count{
     font-size: 15px;
 }
-
+.status-card.active {
+    border: 2px solid #ffde59;
+    background: #ffde5931;
+    font-weight: bold;
+}
 
 
 

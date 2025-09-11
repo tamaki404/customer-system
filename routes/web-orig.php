@@ -129,12 +129,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 
     });
     
-    // Tickets management
-    Route::get('/tickets', [TicketController::class, 'showTickets'])->name('tickets');
-    Route::post('/submit-ticket', [TicketController::class, 'submitTicket']);
-    Route::get('/specTicket/{ticketID}', [TicketController::class, 'specTicket'])->name('specTicket');
-    Route::put('/tickets/update/{ticketID}', [TicketController::class, 'ticketsUpdate'])->name('tickets.update');
-    
+
     // Staff management (Admin only)
     Route::middleware(['check.role:Admin'])->group(function () {
         Route::get('/staffs', [ViewController::class, 'showStaffs'])->name('staffs');
