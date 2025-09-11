@@ -42,14 +42,7 @@
         </div>
         <div class="form-body" style="padding: 10px">
             <div class="shipping-info">
-                <div class="vendor">
-                    <h3>Vendor Information</h3>
-                    <p>Sunny & Scramble</p>
-                    <p>123 Sunny Street Sunnyville, 1860</p>
-                    <p><strong>Sales person:</strong> Lisa Hanabishi</p>
-                    <p><strong>Phone:</strong> (555) 987-6543</p>
-                    <p><strong>Email:</strong> lisa.hanabishi@abcsupplies.com</p>
-                </div>
+              
                 <div class="customer">
                     <h3>Customer Information</h3>
                     <p>{{$order->company_name}}</p>
@@ -67,7 +60,7 @@
             </div>
 
             <div class="shipping-type">
-                <h3>Shipping Type</h3>
+                <h3 style="margin-top: 10px">Shipping Type</h3>
                 <table>
                     <thead>
                         <tr>
@@ -89,7 +82,7 @@
             </div>
 
             <div class="items">
-                <h3>Items</h3>
+                <h3 style="margin-top: 10px">Items</h3>
                 <table>
                     <thead>
                         <tr>
@@ -97,22 +90,18 @@
                             <th>Product no.</th>
                             <th>Product Name</th>
                             <th>Unit</th>
-                            <th>Quantity</th>
                             <th>Rate</th>
-                            <th>Discount</th>
                             <th>Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($ordersItem as $item)
                         <tr>
-                            <td>1</td>
-                            <td>{{$item->product_id}}</td>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{$item->product->product_id}}</td>
                             <td>{{$item->product->name}}</td>
                             <td>{{$item->product->unit}}</td>
-                            <td>{{$item->quantity}}</td>
                             <td>&#8369;{{ number_format($item->unit_price, 2) }}</td>
-                            <td></td>
                             <td>&#8369;{{ number_format($item->total_price, 2) }}</td>
                         
                         </tr>
@@ -128,18 +117,8 @@
                 
 
                 <table style="width: 300px; margin-left: auto; border-collapse: collapse; font-size: 14px;">
-                    <tr>
-                        <td style="padding: 6px; border: 1px solid #ccc;">Subtotal</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">&#8369;{{ number_format($order->subtotal, 2) }}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 6px; border: 1px solid #ccc;">Tax</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">{{$order->tax_amount}}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 6px; border: 1px solid #ccc;">Discount</td>
-                        <td style="padding: 6px; border: 1px solid #ccc; text-align: right;"></td>
-                    </tr>
+              
+              
                     <tr>
                         <td style="padding: 6px; border: 1px solid #ccc; font-weight: bold;">Total</td>
                         <td style="padding: 6px; border: 1px solid #ccc; text-align: right; font-weight: bold;">&#8369;{{ number_format($order->grand_total, 2) }}</td>
@@ -148,13 +127,16 @@
             </div>
 
             <div class="notes-signatory">
-                <div class="notes">
-                    <h3>Additional Notes</h3>
-                    <p type="text" name="notes" style="white-space: wrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; ">{{$order->order_notes}}</p>
-                </div>
+                @if ($order->order_notes > 0)
+                    <div class="notes">
+                        <h3>Remarks</h3>
+                        <p type="text" name="notes" style="white-space: wrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; ">{{$order->order_notes}}</p>
+                    </div>
+                @endif
+
                 <div class="signatory">
-                    <h3>Authorized by</h3>
-                    <p type="text" style="font-size: 13px;" name="authorized_by">{{$order->receiver_name}}</p></p>
+                    <h3 style="margin: 0">Authorized by</h3>
+                    <p type="text" style="font-size: 13px; margin-top: 10px;" name="authorized_by">{{$order->receiver_name}}</p></p>
                     <p style="font-size: 12px; color: #666;">Name with signature of Authorized person</p>
                 </div>
             </div>

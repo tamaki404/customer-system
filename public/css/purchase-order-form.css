@@ -25,13 +25,12 @@
         }
         h2 {
             text-align: right;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             color: #333;
             font-weight: normal;
-            font-size: 30px;
+            font-size: 25px;
         }
-        .header, .shipping-info, .shipping-type, .items, .notes-signatory {
-        }
+       
         .header {
             display: flex;
             justify-content: space-between;
@@ -67,24 +66,35 @@
         }
         .shipping-info div h3 {
             margin-top: 0;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: normal;
             color: #333;
             font-weight: bold;
 
 
         }
-   
-        /* .shipping-info div h3{
-            background-color: #ffde59;
-            padding: 5px;
-        } */
+        
+        .shipping-type h3,
+        .items h3{
+            margin-top: 5px;
+            margin: 0;
+        }
 
+
+        .customer p{
+            margin: 1px;
+
+        }
+        .customer h3{
+            margin-bottom: 10px;
+        }
+   
+   
         .vendor p{
-            font-size: 14px;
+            font-size: 13px;
         }
         .customer p{
-            font-size: 14px;
+            font-size: 13px;
         }
 
         table {
@@ -94,22 +104,23 @@
         }
         table, th, td {
             border: 1px solid #ccc;
+            font-size: 13px;
             
         }
         th {
             background: #ffde59;
             text-align: left;
             padding: 8px;
-            font-size: 15px;
+            font-size: 13px;
         }
         td {
             padding: 8px;
-            font-size: 14px;
+            font-size: 13px;
         }
         .totals {
             text-align: right;
             margin-top: 15px;
-            font-size: 14px;
+            font-size: 13px;
         }
         .totals p {
             margin: 4px 0;
@@ -122,6 +133,9 @@
         .notes, .signatory {
             flex: 1;
         }
+        .signatory p{
+            margin: 0;
+        }
         input[type="text"] {
             width: 100%;
             padding: 6px;
@@ -130,8 +144,8 @@
             font-size: 14px;
         }
 
-                    .go-back-a{
-                font-size: 15px;
+            .go-back-a{
+                font-size: 13px;
                 color: #f8912a;
                 text-decoration: none;
                 width: auto;
@@ -142,7 +156,7 @@
             .download-purchase-order{
                 padding: 7px;
                 border-radius: 10px;
-                font-size: 14px;
+                font-size: 13px;
                 color: #fff;
                 width: 100px;
                 border: none;
