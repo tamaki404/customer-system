@@ -186,9 +186,9 @@
                     <tbody>
                         @if(isset($myPurchaseOrders) && $myPurchaseOrders->count() > 0)
                             @foreach($myPurchaseOrders as $po)
-                                <tr style="cursor: pointer"  onclick="window.location='{{ url('/purchase_order/view/' . $po->po_number) }}'">                                    
+                                <tr style="cursor: pointer"  onclick="window.location='{{ url('/purchase_order/view/' . $po->po_id) }}'">                                    
                                     <td>
-                                        <strong>{{ $po->po_number }}</strong>
+                                        <strong>{{ $po->po_id }}</strong>
                                         <br>
                                         <small style="color: #666;">{{ $po->receiver_name }}</small>
                                     </td>

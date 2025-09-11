@@ -11,7 +11,7 @@ class PurchaseOrder extends Model
 
     protected $fillable = [
         'user_id',
-        'po_number',
+        'po_id',
         'receiver_name',
         'receiver_mobile',
         'company_name',
@@ -63,7 +63,7 @@ class PurchaseOrder extends Model
     }
     public function order()
     {
-        return $this->hasOne(Orders::class, 'po_id', 'po_number');
+        return $this->hasOne(Orders::class, 'po_id', 'po_id');
     }
 
     public function product(){
@@ -79,13 +79,13 @@ class PurchaseOrder extends Model
 
         public function items()
     {
-        return $this->hasMany(PurchaseOrderItem::class, 'po_id', 'po_number');
+        return $this->hasMany(PurchaseOrderItem::class, 'po_id', 'po_id');
     }
 
 
     public function orderItems()
 {
-    return $this->hasMany(PurchaseOrderItem::class, 'po_id', 'po_number');
+    return $this->hasMany(PurchaseOrderItem::class, 'po_id', 'po_id');
 }
 
 

@@ -65,7 +65,7 @@
         </style>
 
         <span style="flex-direction: row; display: flex; flex-wrap: wrap; justify-content: space-between;">
-            <h2 style="font-size: 25px; font-weight: bold; color: #333;">Order details</h2> 
+            <h2 style="font-size: 25px; margin: 0; font-weight: bold; color: #333;">Order details</h2> 
 
         </span>
  
@@ -98,7 +98,7 @@
                 @endif
             @endif
             
-            <input type="hidden" name="po_number" value="{{ $po->po_number }}">
+            <input type="hidden" name="po_id" value="{{ $po->po_id }}">
             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
             <input type="hidden" name="user_type" value="{{ auth()->user()->user_type }}">
         </form>
@@ -111,7 +111,7 @@
 
 
                 @if ($po->payment_status !== "Unpaid")
-                    <button onclick="window.location='{{ url('/purchase_orders/receipts/' . $po->po_number) }}'">View receipts</button>
+                    <button onclick="window.location='{{ url('/purchase_orders/receipts/' . $po->po_id) }}'">View receipts</button>
                 @endif
 
                 {{-- <span class="status-text">{{$po->status}}</span> --}}
@@ -205,8 +205,8 @@
                     <div class="shipper-details">
                         <p class="recipient-title">P.O number</p>
                         <div class="shipper-name-address">
-                            <p class="company-name">{{$po->po_number}}</p>
-                            <button style="margin-top: 5px" class="viewPO-btn" onclick="window.location='{{ route('purchase_order.create', $po->po_number) }}'">
+                            <p class="company-name">{{$po->po_id}}</p>
+                            <button style="margin-top: 5px" class="viewPO-btn" onclick="window.location='{{ route('purchase_order.create', $po->po_id) }}'">
                                 <span class="material-symbols-outlined">description</span>
                                 Purchase order
                             </button>
@@ -350,7 +350,7 @@
                 </div>
 
                 @if ($po->status==="Delivered")
-                    <button  class="invoice-btn" onclick="window.location='{{ route('invoice.view', $po->po_number) }}'">
+                    <button  class="invoice-btn" onclick="window.location='{{ route('invoice.view', $po->po_id) }}'">
                         <span class="material-symbols-outlined">description</span>
                         Invoice
                     </button>           

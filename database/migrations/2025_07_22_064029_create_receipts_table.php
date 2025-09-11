@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('status')->default('Pending');
             $table->string('receipt_number')->nullable();
             $table->string('id');
-            $table->string('po_number');
+            $table->string('po_id');
             $table->string('action_by')->nullable();
             $table->date('action_at')->nullable();
             $table->string('rejected_note')->nullable();

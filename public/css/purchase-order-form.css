@@ -46,11 +46,11 @@
         }
         .address p {
             margin: 2px 0;
-            font-size: 14px;
+            font-size: 13px;
         }
         .order-info p {
             margin: 4px 0;
-            font-size: 14px;
+            font-size: 13px;
         }
         .shipping-info {
             display: flex;

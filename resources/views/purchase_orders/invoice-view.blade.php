@@ -9,7 +9,7 @@
 </head>
 <body style="display: flex; flex-direction: column; flex-wrap: wrap;">
 
-    <a class="go-back-a" href="{{ route('purchase_order.view', $invoice->purchaseOrder->po_number) }}">
+    <a class="go-back-a" href="{{ route('purchase_order.view', $invoice->purchaseOrder->po_id) }}">
          <- Back to Order
     </a>
 

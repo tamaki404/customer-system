@@ -42,7 +42,7 @@ class ReceiptController extends Controller{
     // }
 
 // UPDATED PHP CONTROLLER METHOD
-public function fileReceipt($po_number, Request $request) 
+public function fileReceipt($po_id, Request $request) 
 {
     $validated = $request->validate([
         'receipt_id'             => 'required|integer|exists:receipts,receipt_id',
@@ -53,9 +53,9 @@ public function fileReceipt($po_number, Request $request)
         'rejected_note'  => 'nullable|string|max:255',
     ]);
 
-    $po = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
+    $po = PurchaseOrder::where('po_id', $po_id)->firstOrFail();
     $receipt = Receipt::where('receipt_id', $validated['receipt_id'])
-        ->where('po_number', $po_number)
+        ->where('po_id', $po_id)
         ->firstOrFail();
 
     $status = $validated['status'];
@@ -99,7 +99,7 @@ public function cancelReceipt($receipt_id, Request $request)
 
 private function updatePurchaseOrderPaymentStatus($po)
 {
-    $totalPaid = Receipt::where('po_number', $po->po_number)
+    $totalPaid = Receipt::where('po_id', $po->po_id)
         ->where('status', 'Verified')
         ->sum('total_amount');
 
@@ -202,13 +202,13 @@ private function updatePurchaseOrderPaymentStatus($po)
     public function checkPONumber(Request $request)
     {
         $po = \DB::table('purchase_orders')
-            ->where('po_number', $request->po_number)
+            ->where('po_id', $request->po_id)
             ->where('user_id', auth()->id())
             ->first();
 
         if ($po) {
             $paidAmount = \DB::table('receipts')
-                ->where('po_number', $po->po_number)
+                ->where('po_id', $po->po_id)
                 ->where('status', 'Verified')
                 ->sum('total_amount');
 
@@ -263,7 +263,7 @@ private function updatePurchaseOrderPaymentStatus($po)
             'invoice_number'  => 'nullable|string|max:255',
             'notes'           => 'nullable|string',
             'receipt_number'  => 'required|string',
-            'po_number'       => 'required|string|max:255',
+            'po_id'       => 'required|string|max:255',
         ]);
 
         if ($request->hasFile('receipt_image')) {
@@ -276,11 +276,11 @@ private function updatePurchaseOrderPaymentStatus($po)
         $date = date('Ymd');
 
         $request->validate([
-            'po_number' => [
+            'po_id' => [
                 'required',
                 function ($attribute, $value, $fail) {
                     $exists = \DB::table('purchase_orders')
-                        ->where('po_number', $value)
+                        ->where('po_id', $value)
                         ->where('user_id', auth()->id())
                         ->exists();
 

@@ -251,7 +251,7 @@ public function showCustomers()
                     'products.price as price',
                     DB::raw('SUM(purchase_order_items.quantity) as total_quantity')
                 )
-                ->join('purchase_orders', 'purchase_orders.po_number', '=', 'purchase_order_items.po_id')
+                ->join('purchase_orders', 'purchase_orders.po_id', '=', 'purchase_order_items.po_id')
                 ->join('products', 'products.id', '=', 'purchase_order_items.product_id')
                 ->where('purchase_orders.user_id', $id)
                 ->whereBetween('purchase_orders.created_at', [ 
@@ -815,7 +815,7 @@ public function showCustomers()
             $totalBalance = 0;
 
             foreach ($purchaseOrders as $po) {
-                $paidAmount = Receipt::where('po_number', $po->po_number)
+                $paidAmount = Receipt::where('po_id', $po->po_id)
                     ->where('status', 'Verified') // ignore rejected receipts
                     ->sum('total_amount');
 

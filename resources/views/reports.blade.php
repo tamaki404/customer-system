@@ -527,8 +527,8 @@
                     <tbody>
                         @if(isset($topPurchaseOrders))
                             @foreach($topPurchaseOrders as $po)
-                                <tr style="cursor: pointer"  onclick="window.location='{{ url('/purchase_order/view/' . $po->po_number) }}'">
-                                    <td>{{ $po->po_number }}</td>
+                                <tr style="cursor: pointer"  onclick="window.location='{{ url('/purchase_order/view/' . $po->po_id) }}'">
+                                    <td>{{ $po->po_id }}</td>
                                     <td>{{ $po->company_name }}</td>
                                     <td>{{ $po->receiver_name }}</td>
                                     <td>₱{{ number_format($po->grand_total, 2) }}</td>

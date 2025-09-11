@@ -30,7 +30,7 @@ class PurchaseOrderController extends Controller {
 
         if ($search) {
             $baseQuery->where(function ($q) use ($search) {
-                $q->where('po_number', 'like', "%{$search}%")
+                $q->where('po_id', 'like', "%{$search}%")
                 ->orWhere('receiver_name', 'like', "%{$search}%")
                 ->orWhere('company_name', 'like', "%{$search}%")
                 ->orWhere('order_date', 'like', "%{$search}%")
@@ -97,7 +97,7 @@ class PurchaseOrderController extends Controller {
 
         // calculate remaining balance for each PO (only Verified receipts count)
         foreach ($purchaseOrders as $po) {
-            $paidAmount = Receipt::where('po_number', $po->po_number)
+            $paidAmount = Receipt::where('po_id', $po->po_id)
                 ->where('status', 'Verified')
                 ->sum('total_amount') ?? 0;
             $po->remaining_balance = max($po->grand_total - $paidAmount, 0);
@@ -114,11 +114,11 @@ class PurchaseOrderController extends Controller {
         ));
     }
             
-    public function purchaseReceipts($po_number)
+    public function purchaseReceipts($po_id)
     {
         $user = auth()->user();
 
-        $receipts = Receipt::where('po_number', $po_number)->get();
+        $receipts = Receipt::where('po_id', $po_id)->get();
 
         return view('purchase_orders/receipts_purchase_order', compact('user', 'receipts'));
     }
@@ -183,41 +183,41 @@ class PurchaseOrderController extends Controller {
 
 
 
-    public function purchaseOrderForm($po_number)
+    public function purchaseOrderForm($po_id)
     {
         $user = auth()->user();
-        $order = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
+        $order = PurchaseOrder::where('po_id', $po_id)->firstOrFail();
 
-        $ordersItem = PurchaseOrderItem::where('po_id', $po_number)
+        $ordersItem = PurchaseOrderItem::where('po_id', $po_id)
             ->orderBy('created_at', 'desc') 
             ->get();
 
         return view('purchase_orders.purchase_order_form', compact('user', 'order', 'ordersItem'));
     }
 
-    public function invoiceView($po_number)
+    public function invoiceView($po_id)
     {
         $user = auth()->user();
-        $order = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
-        $invoice = Invoice::where('po_number', $po_number)->firstOrFail();
-        $invoiceItems = PurchaseOrderItem::where('po_id', $po_number)
+        $order = PurchaseOrder::where('po_id', $po_id)->firstOrFail();
+        $invoice = Invoice::where('po_id', $po_id)->firstOrFail();
+        $invoiceItems = PurchaseOrderItem::where('po_id', $po_id)
             ->orderBy('created_at', 'desc') 
             ->get();
 
         return view('purchase_orders.invoice-view', compact('user', 'order', 'invoiceItems', 'invoice'));
     }
 
-    public function downloadPDF($po_number)
+    public function downloadPDF($po_id)
     {
         $user = auth()->user();
-        $order = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
+        $order = PurchaseOrder::where('po_id', $po_id)->firstOrFail();
 
-        $ordersItem = PurchaseOrderItem::where('po_id', $po_number)
+        $ordersItem = PurchaseOrderItem::where('po_id', $po_id)
             ->orderBy('created_at', 'desc')
             ->get();
 
         $pdf = Pdf::loadView('purchase_orders.purchase_order_pdf', compact('user', 'order', 'ordersItem'));
-        return $pdf->download("PurchaseOrder-{$order->po_number}.pdf");
+        return $pdf->download("PurchaseOrder-{$order->po_id}.pdf");
     }
 
 
@@ -263,16 +263,16 @@ class PurchaseOrderController extends Controller {
         return $randomString;
     }
 
-    public function purchaseOrderView($po_number)
+    public function purchaseOrderView($po_id)
     {   
-        $po = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
-        $order = PurchaseOrder::where('po_number', $po_number)->firstOrFail();
+        $po = PurchaseOrder::where('po_id', $po_id)->firstOrFail();
+        $order = PurchaseOrder::where('po_id', $po_id)->firstOrFail();
 
-        $ordersItem = PurchaseOrderItem::where('po_id', $po_number)
+        $ordersItem = PurchaseOrderItem::where('po_id', $po_id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $orderCount = PurchaseOrderItem::where('po_id', $po_number)->count();
+        $orderCount = PurchaseOrderItem::where('po_id', $po_id)->count();
 
         return view('purchase_orders.purchase_order_view', compact('po','order', 'ordersItem', 'orderCount' ));
     }
@@ -336,12 +336,12 @@ class PurchaseOrderController extends Controller {
         }
 
         $date = date('Ymd');
-        $po_number = 'PO-' . $date . '-' . $this->randomBase36String(5);
+        $po_id = 'PO-' . $date . '-' . $this->randomBase36String(5);
         $status = $request->input('status', 'Pending');
 
         $po = PurchaseOrder::create([
             'user_id'         => $user->id,
-            'po_number'       => $po_number,
+            'po_id'       => $po_id,
             'receiver_name'   => $request->receiver_name,
             'receiver_mobile' => $request->receiver_mobile,
             'postal_code'     => $request->postal_code,
@@ -380,7 +380,7 @@ class PurchaseOrderController extends Controller {
 
                 // Create order record
                 Orders::create([
-                    'po_id'       => $po->po_number,
+                    'po_id'       => $po->po_id,
                     'order_id'    => $order_id,
                     'customer_id' => $user->id,
                     'product_id'  => $product->id,
@@ -392,7 +392,7 @@ class PurchaseOrderController extends Controller {
 
                 // Create purchase order item
                 PurchaseOrderItem::create([
-                    'po_id'       => $po->po_number,
+                    'po_id'       => $po->po_id,
                     'product_id'  => $item['id'],
                     'order_id'    => $order_id,
                     'quantity'    => intval($item['quantity']),
@@ -446,7 +446,7 @@ class PurchaseOrderController extends Controller {
 
     //         DB::beginTransaction();
 
-    //         $purchaseOrderItems = PurchaseOrderItem::where('po_id', $purchaseOrder->po_number)->get();
+    //         $purchaseOrderItems = PurchaseOrderItem::where('po_id', $purchaseOrder->po_id)->get();
             
     //         foreach ($purchaseOrderItems as $item) {
     //             $product = Product::find($item->product_id);
@@ -460,7 +460,7 @@ class PurchaseOrderController extends Controller {
     //         $purchaseOrder->status = 'Cancelled';
     //         $purchaseOrder->save();
 
-    //         Orders::where('po_id', $purchaseOrder->po_number)->update(['status' => 'Cancelled']);
+    //         Orders::where('po_id', $purchaseOrder->po_id)->update(['status' => 'Cancelled']);
 
     //         DB::commit();
 
@@ -506,7 +506,7 @@ class PurchaseOrderController extends Controller {
             $invoice_number = 'INV-' . $date . '-' . $this->randomBase36String(5);
 
             $invoice = new Invoice();
-            $invoice->po_number = $po->po_number; 
+            $invoice->po_id = $po->po_id; 
             $invoice->user_id = $po->user_id; 
 
             $invoice->invoice_number = $invoice_number;
@@ -535,7 +535,7 @@ class PurchaseOrderController extends Controller {
 
 public function cancelPOStatus(Request $request)
 {
-    $po = PurchaseOrder::where('po_number', $request->po_number)->firstOrFail();
+    $po = PurchaseOrder::where('po_id', $request->po_id)->firstOrFail();
     $status = $request->input('status');
     
     $user = $request->input('user_id');
@@ -548,7 +548,7 @@ public function cancelPOStatus(Request $request)
     $po->status = $status;
     
     if (in_array($status, ['Cancelled', 'Rejected'])) {
-        $purchaseOrderItems = PurchaseOrderItem::where('po_id', $po->po_number)->get();
+        $purchaseOrderItems = PurchaseOrderItem::where('po_id', $po->po_id)->get();
         
         foreach ($purchaseOrderItems as $item) {
             $product = Product::find($item->product_id);

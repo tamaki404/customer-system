@@ -10,7 +10,7 @@ class CreatePurchaseOrdersTable extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
             $table->string('user_id', 26);
-            $table->string('po_number')->unique();
+            $table->string('po_id')->unique();
             $table->string('reference_code')->nullable();
             $table->string('receiver_name');
             $table->string('receiver_mobile', 15);
@@ -45,6 +45,7 @@ class CreatePurchaseOrdersTable extends Migration
             $table->string('payment_notes',  255)->nullable();
             $table->string('payment_reject_details',  255)->nullable();
             $table->timestamp('payment_at',)->nullable();
+
 
             
             $table->timestamps();

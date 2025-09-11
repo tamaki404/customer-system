@@ -9,7 +9,7 @@ class Invoice extends Model
     protected $fillable = [
         'user_id',
         'invoice_number',
-        'po_number',
+        'po_id',
         'billing_address',
         'subtotal',
         'tax_amount',
@@ -37,11 +37,11 @@ class Invoice extends Model
 
 
     public function purchaseOrder() {
-        return $this->hasOne(PurchaseOrder::class, 'po_number', 'po_number');
+        return $this->hasOne(PurchaseOrder::class, 'po_id', 'po_id');
     }
     public function invoiceItems()
     {
-        return $this->hasMany(PurchaseOrderItem::class, 'po_number', 'po_number');
+        return $this->hasMany(PurchaseOrderItem::class, 'po_id', 'po_id');
     }
 
 }

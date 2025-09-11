@@ -106,7 +106,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/municipalities/{municipality}/barangays', [AddressController::class, 'barangays'])->name('address.barangays');
     
 
-    Route::get('/purchase_orders/receipts/{po_number}', [PurchaseOrderController::class, 'purchaseReceipts']);
+    Route::get('/purchase_orders/receipts/{po_id}', [PurchaseOrderController::class, 'purchaseReceipts']);
 
 
     // ================================
@@ -130,10 +130,10 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     // Purchase Orders (Customer functionality)
     Route::get('/purchase_order', [PurchaseOrderController::class, 'purchaseOrder'])->name('purchase_order');
     Route::post('/purchase-order/store', [PurchaseOrderController::class, 'store'])->name('purchase_orders.store');
-    Route::get('/purchase-order/create/purchase-orderForm/{po_number}', [PurchaseOrderController::class, 'purchaseOrderForm'])->name('purchase_order.create');
+    Route::get('/purchase-order/create/purchase-orderForm/{po_id}', [PurchaseOrderController::class, 'purchaseOrderForm'])->name('purchase_order.create');
     Route::get('/purchase-order/store/order', [PurchaseOrderController::class, 'storeOrderView'])->name('purchase_order.store.order');
-    Route::get('/purchase_order/view/{po_number}', [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchase_order.view');
-    Route::get('/purchase-order/{po_number}/pdf', [PurchaseOrderController::class, 'downloadPDF'])->name('purchase_order.pdf');
+    Route::get('/purchase_order/view/{po_id}', [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchase_order.view');
+    Route::get('/purchase-order/{po_id}/pdf', [PurchaseOrderController::class, 'downloadPDF'])->name('purchase_order.pdf');
     Route::get('/product-search', [PurchaseOrderController::class, 'productSearch'])->name('product-search');
     
     // Receipts (Customer functionality)
@@ -170,7 +170,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/receipts/cancel/{receipt_id}', [ReceiptController::class, 'cancelReceipt'])->name('receipts.cancel');
         Route::post('/receipts/reject/{receipt_id}', [ReceiptController::class, 'rejectReceipt'])->name('receipts.reject');
 
-        Route::post('/receipts/receipt_status/{po_number}', [ReceiptController::class, 'fileReceipt'])->name('receipts.receipt_status');
+        Route::post('/receipts/receipt_status/{po_id}', [ReceiptController::class, 'fileReceipt'])->name('receipts.receipt_status');
 
         
         // Customer Management
@@ -182,7 +182,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
             ->name('change.po_status');
 
         //po invoice
-        Route::get('/purchase-order/invoice/display/{po_number}', [PurchaseOrderController::class, 'invoiceView'])->name(name: 'invoice.view');
+        Route::get('/purchase-order/invoice/display/{po_id}', [PurchaseOrderController::class, 'invoiceView'])->name(name: 'invoice.view');
 
 
 

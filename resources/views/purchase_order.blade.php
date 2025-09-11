@@ -118,11 +118,11 @@ $currentStatus = request('status');
                 <tbody>
                     @forelse($purchaseOrders as $index => $order)
                         <tr style="height: 50px; text-align: center; cursor:pointer;" 
-                            onclick="window.location='{{ route('purchase_order.view', $order->po_number) }}'">
+                            onclick="window.location='{{ route('purchase_order.view', $order->po_id) }}'">
 
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ \Carbon\Carbon::parse( $order->order_date)->format('j F, Y') }}</td>
-                            <td>{{ $order->po_number }}</td>
+                            <td>{{ $order->po_id }}</td>
                             @if(auth()->user()->user_type === 'Admin' || auth()->user()->user_type === 'Staff' )
                               <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $order->user->store_name }}</td>
                             @endif

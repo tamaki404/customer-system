@@ -9,12 +9,8 @@
     <title>Purchase Order</title>
 </head>
 <body style="display: flex; flex-direction: column; flex-wrap: wrap;">
-{{--<a href="{{ route('purchase_order.pdf', $order->po_number) }}" 
-        class="btn btn-primary" target="_blank">
-        Download PDF
-    </a> --}}
 
-    <a class="go-back-a" href="{{ route('purchase_order.view', $order->po_number) }}">
+    <a class="go-back-a" href="{{ route('purchase_order.view', $order->po_id) }}">
          <- Order details
     </a>
 
@@ -25,7 +21,6 @@
                 <div class="sunny-info">
                     
                     <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="">
-                    {{-- <img src="{{ public_path('assets/sunnyLogo1.png') }}" style="width:120px;"> --}}
 
                     <div class="address">
                         <p><strong>Sunny & Scramble</strong></p>
@@ -34,12 +29,13 @@
                     </div>
                 </div>
                 <div class="order-info">
-                    <p><strong>Purchase ID:</strong> {{$order->po_number}}</p>
+                    <p><strong>Purchase ID:</strong> {{$order->po_id}}</p>
                     <p><strong>Date:</strong> {{$order->created_at->format('d F Y h:i A')}}</p>
                     <p><strong>Status:</strong> {{$order->status}}</p>
                 </div>
             </div>
         </div>
+        
         <div class="form-body" style="padding: 10px">
             <div class="shipping-info">
               

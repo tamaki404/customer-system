@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('user_id', 26);
             $table->string('invoice_number')->unique();
-            $table->string('po_number')->nullable();
+            $table->string('po_id')->nullable();
             $table->text('billing_address');
             $table->decimal('subtotal', 10, 2);
             $table->decimal('tax_amount', 10, 2)->default(0);

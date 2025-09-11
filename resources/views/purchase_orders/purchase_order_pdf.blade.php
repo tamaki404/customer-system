@@ -200,7 +200,7 @@
                     </div>
                 </div>
                 <div class="order-info">
-                    <p><strong>Purchase ID:</strong> {{$order->po_number}}</p>
+                    <p><strong>Purchase ID:</strong> {{$order->po_id}}</p>
                     <p><strong>Date:</strong> {{$order->created_at->format('d F Y h:i A')}}</p>
                     <p><strong>Status:</strong> {{$order->status}}</p>
                 </div>

@@ -113,10 +113,10 @@
                     @if ($recentPurchaseOrders->count() > 0)
                         @foreach($recentPurchaseOrders as $order)
 
-                            <a class="order-row" href="{{ route('purchase_order.view', $order->po_number) }}">
+                            <a class="order-row" href="{{ route('purchase_order.view', $order->po_id) }}">
                                 <p>
                                     <span class="company">{{$order->user->store_name}}</span>
-                                    <span class="po-id">{{$order->po_number}}</span>
+                                    <span class="po-id">{{$order->po_id}}</span>
                                 </p>
                                 <p>
                                     <span class="name">{{$order->receiver_name}}</span>
@@ -235,10 +235,10 @@
             <p class="recent-order-label">
                 <span>Recent order</span>
                 @if($recentOrder)
-                    <a style="" href="{{ route('purchase_order.view', $recentOrder->po_number) }}">View order ></a>
+                    <a style="" href="{{ route('purchase_order.view', $recentOrder->po_id) }}">View order ></a>
                     </p>
                     <p class="order-details" style="margin-bottom: 10px">
-                        <span class="po_number">{{ $recentOrder->po_number }}</span>
+                        <span class="po_id">{{ $recentOrder->po_id }}</span>
                         <span class="quan-total">
                             <span>x{{ $recentOrder->items->sum('quantity') }}</span>
                             <span style="font-weight: bold; color: green">₱{{ number_format($recentOrder->subtotal, 2) }}</span>

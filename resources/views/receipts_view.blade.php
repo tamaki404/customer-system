@@ -48,7 +48,7 @@
                 </div>
 
                 <div class="modal-body" style="border: none; font-size: 14px; gap: 6px">
-              <form action="{{ route('receipts.receipt_status', $receipt->po_number) }}" method="POST">
+              <form action="{{ route('receipts.receipt_status', $receipt->po_id) }}" method="POST">
                     @csrf
                     <div class="form-row">
                         <label for="status">Do you want to accept this receipt?</label>
@@ -206,7 +206,7 @@
 
                         <tr><th>Purchase date:</th><td>{{ $receipt->purchase_date ? \Carbon\Carbon::parse($receipt->purchase_date)->format('F j, Y, g:i A') : 'N/A' }}</td></tr>
 
-                        <tr><th>PO  number</th><td>{{ $receipt->po_number}}</td></tr>
+                        <tr><th>PO  number</th><td>{{ $receipt->po_id}}</td></tr>
                         <tr><th>Payment status</th><td>{{ $receipt->purchaseOrder->payment_status}}</td></tr>
                         @if ($receipt->purchaseOrder->payment_status === 'Partially Settled')
                             <tr>

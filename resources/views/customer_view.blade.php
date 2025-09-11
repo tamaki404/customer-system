@@ -468,9 +468,9 @@
                         </thead>
                         <tbody>
                             @foreach($purchaseOrders as $purchase)
-                                <tr onclick="window.location='{{ route('purchase_order.view', $purchase->po_number) }}'">
+                                <tr onclick="window.location='{{ route('purchase_order.view', $purchase->po_id) }}'">
 
-                                    <td >{{ $purchase->po_number }}</td>
+                                    <td >{{ $purchase->po_id }}</td>
                                     <td>{{ $purchase->created_at->format('F j, Y') }}</td>
                                     <td>x{{ $purchase->items->sum('quantity') }}</td>                            
 

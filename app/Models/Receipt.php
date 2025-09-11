@@ -23,7 +23,7 @@ class Receipt extends Model
         'receipt_number',
         'status',
         'id',
-        'po_number',
+        'po_id',
         'payment_at',
         'rejected_note',
         'additional_note',
@@ -43,7 +43,7 @@ class Receipt extends Model
 
     public function purchaseOrder()
     {
-    return $this->belongsTo(PurchaseOrder::class, 'po_number', 'po_number');
+    return $this->belongsTo(PurchaseOrder::class, 'po_id', 'po_id');
     }
 
     public function user()

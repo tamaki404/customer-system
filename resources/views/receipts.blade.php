@@ -57,7 +57,7 @@
 
                                 <div>
                                     <label>P.O number</label>
-                                    <input type="text" name="po_number" id="po_number" required>
+                                    <input type="text" name="po_id" id="po_id" required>
                                     <p id="number-error" style="color: red; display: none; margin: 0; font-size: 12px;"></p>
                                     <p  style="margin: 0; font-size: 12px; display: block; flex-direction: row; gap: 5px; width: 100%;"  id="grand-total-con">Available balance: <span id="grand-total" style="color: green; display: none; margin: 0; font-size: 12px;"></span></p>
                                 </div>
@@ -316,7 +316,7 @@
                                 <tr style="height: 50px; text-align: center; cursor:pointer; overflow: hidden;" onclick="window.location='{{ url('/receipts_view/' . $receipt->receipt_id) }}'">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ \Carbon\Carbon::parse($receipt->purchase_date)->format('j F, Y') }}</td>
-                                    <td>{{$receipt->purchaseOrder->po_number}}</td>
+                                    <td>{{$receipt->purchaseOrder->po_id}}</td>
                                     <td>₱{{ number_format($receipt->total_amount, 2) }}</td>
                                     <td>
                                         @php 
@@ -402,10 +402,10 @@
 
 
         <script>
-document.getElementById('po_number').addEventListener('blur', function() {
+document.getElementById('po_id').addEventListener('blur', function() {
     let poNumber = this.value;
 
-    fetch(`/check-po-number?po_number=${poNumber}`)
+    fetch(`/check-po-number?po_id=${poNumber}`)
         .then(response => response.json())
         .then(data => {
             let errorEl = document.getElementById('number-error');
