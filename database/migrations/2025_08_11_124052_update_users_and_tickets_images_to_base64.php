@@ -10,7 +10,7 @@ return new class extends Migration
     {
         // Users: store avatar/company image as base64 and mime
         Schema::table('users', function (Blueprint $table) {
-            $table->longText('image')->nullable()->change();
+            $table->mediumBlob('image')->nullable()->change();
             if (!Schema::hasColumn('users', 'image_mime')) {
                 $table->string('image_mime')->nullable()->after('image');
             }

@@ -80,6 +80,7 @@
                     <th style="width: 80px;">No. of Orders</th>
                     <th style="width: 150px;">Total Orders</th>
                     <th style="width: 120px; ">Status</th>
+                    <th style="width: 100px; ">Email Verified?</th>
                     <th style="width: 140px;">Last Order</th>
                 </tr>
                 
@@ -124,8 +125,21 @@
                                 {{ $user->acc_status }}
                             </span>
                         </td>
+                        <td style="padding:10px 8px; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                            @if (!is_null($user->email_verified_at))
+                                <span>Yes</span>
+                            @else
+                                <span style="color: #aaa">No</span>
+                            @endif
+
+                        </td>
                         <td style="padding:10px 8px; font-size: 13px;">
-                            {{ $user->lastOrder ? \Carbon\Carbon::parse($user->lastOrder)->format('F j, Y') : 'No orders' }}
+                            @if ($user->lastOrder)
+                                <span>{{ \Carbon\Carbon::parse($user->lastOrder)->format('F j, Y') }}</span>
+                            @else
+                                <span style="color: #aaa"></span>
+                            @endif
+
                         </td>
                                          
                     </tr>

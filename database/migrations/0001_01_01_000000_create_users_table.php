@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('telephone')->nullable();
             $table->string('address')->nullable();
             $table->longText('password');
-            $table->string('image')->nullable();
+            $table->mediumBlob('image')->nullable();
             $table->string('user_type');
             $table->string('acc_status');
             $table->string('action_by')->nullable();

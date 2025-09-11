@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->binary('image')->nullable();
+            $table->mediumBlob('image')->nullable();
             $table->string('image_mime')->nullable();
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
