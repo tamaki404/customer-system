@@ -278,8 +278,7 @@ class PurchaseOrderController extends Controller {
     }
 
 
-    public function store(Request $request)
-    {
+    public function store(Request $request){
     $user = auth()->user();
 
     $request->validate([

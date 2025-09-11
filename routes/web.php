@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrderReceiptController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\TicketController;
 use App\Models\Orders;
@@ -141,6 +142,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/receipts_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipts.view');
     Route::get('/receipt_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipt_view');
     Route::get('/receipt_image/{receipt_id}', [ReceiptController::class, 'getReceiptImage'])->name('receipt.image');
+    Route::post('/receipt/cancel/{receipt_id}', [ReceiptController::class, 'cancelReceipt'])->name('receipt.cancel');
     Route::post('/submit-receipt', [ReceiptController::class, 'submitReceipt'])->name('submit.receipt');
     Route::get('/date-search', [ReceiptController::class, 'dateSearch'])->name('date.search');
     Route::get('/check-po-number', [ReceiptController::class, 'checkPONumber']);
@@ -149,7 +151,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/reports/customers', [ReportsController::class, 'customerReports'])->name('customer_reports');
     Route::get('/reports/customers/dateFilter', [ReportsController::class, 'customerDateFilter'])->name('customer_dateFilter');
 
-    Route::post('/receipt/cancel/{receipt_id}', [ReceiptController::class, 'cancelReceipt'])->name('receipt.cancel');
+
+    Route::get('/purchase_order/order/receive', [OrderReceiptController::class, 'receivedOrder'])->name('customer.received');
 
     
     // ================================

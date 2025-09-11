@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_receipt', function (Blueprint $table) {
+        Schema::create('order_receipts', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string('or_id')->nullable();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_receipt');
+        Schema::dropIfExists('order_receipts');
     }
 };

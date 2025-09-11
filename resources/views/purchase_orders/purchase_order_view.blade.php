@@ -37,6 +37,42 @@
         </div>
     </div>
 
+
+        <!-- order feedback modal -->
+    <div class="modal fade" id="feedbackModal" style="display: none;"  tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"  style="justify-self: center; align-self: center; ">
+            <form class="modal-content" action="{{ route('customer.received') }}"  style="border-top: 4px solid #ffde59;">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" style="padding: 0; margin: 0; font-size: 16px; font-weight: bold;"> Have you received your order? </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" style="border: none; font-size: 14px;">
+
+                    <p class="note">Note: You cannot report any issues once this order is marked as received.</p>
+                    <div>
+                        <label for="feedback-div">Help us be better! Write us down a review! (Optional)</label>
+                        <textarea type="text" name="feedback" id="feedback-div" maxlength="255"></textarea>
+                    </div>
+
+                    <input type="hidden" name="po_id" value="{{$po->po_id}}">
+                    <input type="hidden" name="status" value="Received">
+                    <input type="hidden" name="label" value="Success">
+
+                </div>
+                
+
+                <div class="modal-footer feedback-footer" style="padding: 5px">
+                    <button type="button" id="cancelBtn" class="btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="submit-btn btn">Yes, thankyou!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
     <div class="purchase-order-bg">
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show position-fixed" 
@@ -66,27 +102,45 @@
 
         <span style="flex-direction: row; display: flex; flex-wrap: wrap; justify-content: space-between;">
             <h2 style="font-size: 25px; margin: 0; font-weight: bold; color: #333;">Order details</h2> 
-
         </span>
- 
-        <form class="order-actions" action="{{ route('change.po_status') }}" method="POST">
-            @csrf
-            @if(auth()->user()->user_type !== 'Customer')
 
-                @if($po->status === "Pending")
-                    <button type="button" class="btn btn-success btn-confirm" data-action="Accepted">Accept</button>
-                    <button type="button" class="btn btn-warning btn-confirm" data-action="Rejected">Reject</button>
-                    <button type="button" class="btn btn-danger btn-confirm" data-action="Cancelled">Cancel</button>
+        @if (auth()->user()->user_type === 'Customer' && $po->orderReceipt->status === "Received")
+            <p style="font-size: 14px; color: #888;">You have already confirmed this order</p>
+        @endif
 
-                @elseif($po->status === "Accepted")
-                    <button type="button" class="btn btn-primary btn-confirm" data-action="Delivered">Mark as Delivered</button>
+        @if(auth()->user()->user_type !== 'Customer')
+            <form class="order-actions" action="{{ route('change.po_status') }}" method="POST">
+                @csrf
 
-                @else
-                @endif
-                <input type="hidden" name="po_id" value="{{ $po->id }}">
-                <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
-            @endif
-        </form>
+                    @if($po->status === "Pending")
+                        <button type="button" class="btn btn-success btn-confirm" data-action="Accepted">Accept</button>
+                        <button type="button" class="btn btn-warning btn-confirm" data-action="Rejected">Reject</button>
+                        <button type="button" class="btn btn-danger btn-confirm" data-action="Cancelled">Cancel</button>
+
+                    @elseif($po->status === "Accepted")
+                        <button type="button" class="btn btn-primary btn-confirm" data-action="Delivered">Mark as Delivered</button>
+
+                    @else
+                    @endif
+                    <input type="hidden" name="po_id" value="{{ $po->id }}">
+                    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+
+
+            </form>
+
+        {{-- order customer feedback --}}
+        @elseif(auth()->user()->user_type === 'Customer' && $po->status === "Delivered" && $po->orderReceipt->status !== "Received")
+            <div class="feedback-div">
+                <button type="button" class="feedback-btn btn btn-success" data-bs-toggle="modal" data-bs-target="#feedbackModal" data-action="received">Order received</button>
+                <button type="button" class="feedback-btn btn-danger  btn-confirm" data-action="Report">
+                    <span class="material-symbols-outlined"> exclamation </span>                    
+                    Report a problem
+                </button>
+            </div>
+        @endif
+
+
+
 
         <form class="order-actions" action="{{ route('customer.po_status') }}" method="POST">
             @csrf
@@ -365,6 +419,7 @@
     </div>
 
 <script src="{{ asset('js/confirmation-modal/purchase_order_view.js') }}"></script>
+<script src="{{ asset('js/feedback-modal/purchase_order.js') }}"></script>
 
 </body>
 </html>

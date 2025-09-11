@@ -387,8 +387,72 @@
 }
 
 
+/* customer feedback  */
+            .feedback-div{
+                display: flex;
+                flex-direction: row;
+                width: auto;
+                gap: 10px;
+            }
+            .feedback-btn{
+                font-size: 14px;
+                font-weight: normal;
+                padding: 10px 14px;
+                width: auto;
+                border-radius: 10px;
+                box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+                border: none;
+                align-items: center;
+                display: flex;
+                gap: 5px;
+                justify-content: center;
+            }
+            .feedback-div .btn-success{
+                color: #fff;
+                background-color: #28a745;
+            }
+            .feedback-div .btn-danger{
+                color: #33333373;
+                background-color: #fbcc7b77;
+            }
+            .feedback-div .btn-danger span{
+                font-size: 15px;
+            }
+            .feedback-div .btn-success:hover{
+                color: #fff;
+                background-color: #1f9039;
+            }
+            .feedback-div .btn-danger:hover{
+                color: #333;
+                background-color: #fbcb7b;
+            }
+            #feedback-div{
+                border-radius: 6px;
+                font-size: 13px;
+                border: 1px solid #cfd8dc;
+                padding: 10px 14px;
+                background: #f7f9fa;
+                outline: none;
+                width: 100%;
+            }
+            .feedback-footer .submit-btn{
+                font-size: 14px;
+                background-color: #ffde59;
+                box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+                border: 1px solid #dcbd43;
 
-
+            }
+            .feedback-footer #cancelBtn{
+                background: grey;
+                font-size: 14px;
+                color: #fff;
+                box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+            }
+            .modal-body .note{
+                font-size: 13px;
+                color: #333;
+                font-weight: bold;
+            }
 
 @media (max-width: 768px) {
     .purchase-order-bg {
