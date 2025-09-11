@@ -104,8 +104,8 @@
             <h2 style="font-size: 25px; margin: 0; font-weight: bold; color: #333;">Order details</h2> 
         </span>
 
-        @if (auth()->user()->user_type === 'Customer' && $po->orderReceipt->status === "Received")
-            <p style="font-size: 14px; color: #888;">You have already confirmed this order</p>
+        @if (auth()->user()->user_type === 'Customer' && ($po->orderReceipt->status  ?? null) === 'Received' && $po->status === 'Delivered')
+            <p style="font-size: 14px; color: #888;">You have successfully confirmed this order.</p>
         @endif
 
         @if(auth()->user()->user_type !== 'Customer')
@@ -129,7 +129,11 @@
             </form>
 
         {{-- order customer feedback --}}
-        @elseif(auth()->user()->user_type === 'Customer' && $po->status === "Delivered" && $po->orderReceipt->status !== "Received")
+        @elseif(
+            auth()->user()->user_type === 'Customer' 
+            && $po->status === "Delivered" 
+            && (($po->orderReceipt->status ?? null) !== "Received")
+        )
             <div class="feedback-div">
                 <button type="button" class="feedback-btn btn btn-success" data-bs-toggle="modal" data-bs-target="#feedbackModal" data-action="received">Order received</button>
                 <button type="button" class="feedback-btn btn-danger  btn-confirm" data-action="Report">
@@ -145,11 +149,9 @@
         <form class="order-actions" action="{{ route('customer.po_status') }}" method="POST">
             @csrf
 
-            @if(auth()->user()->user_type === 'Customer')
-                @if($po->status === 'Pending')
+            @if(auth()->user()->user_type === 'Customer' && $po->status === 'Pending')
                     <input type="hidden" name="status" value="Cancelled">
                     <button type="button" class="btn btn-danger btn-confirm" value="Cancelled" data-action="Cancelled">Cancel</button>
-                @endif
             @endif
             
             <input type="hidden" name="po_id" value="{{ $po->po_id }}">
