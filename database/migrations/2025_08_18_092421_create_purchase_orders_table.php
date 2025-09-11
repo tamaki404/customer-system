@@ -33,13 +33,13 @@ class CreatePurchaseOrdersTable extends Migration
             $table->timestamp('order_date');
 
             $table->timestamp('approved_at')->nullable();
-            $table->string('approved_by', 26)->nullable();
+            $table->string('approved_by')->nullable();
             $table->timestamp('delivered_at')->nullable();
             $table->timestamp('rejected_at')->nullable();
-            $table->string('rejected_by', 26)->nullable();
-            $table->timestamp('cancelled_at', 26)->nullable();
-            $table->string('cancelled_by', 26)->nullable();
-            $table->string('cancelled_user_type', 26)->nullable();
+            $table->string('rejected_by')->nullable();
+            $table->timestamp('cancelled_at')->nullable();
+            $table->string('cancelled_by')->nullable();
+            $table->string('cancelled_user_type')->nullable();
 
             $table->string('payment_status',  255)->nullable();
             $table->string('payment_notes',  255)->nullable();

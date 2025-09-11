@@ -28,6 +28,8 @@ return new class extends Migration
             $table->date('action_at')->nullable();
             $table->string('rejected_note')->nullable();
             $table->string('additional_note')->nullable();
+            $table->timestamp('verified_at')->nullable()->change();
+
         });
     }
 

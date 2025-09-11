@@ -640,8 +640,8 @@ class ViewController extends Controller{
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
-            $usersCount = User::where('acc_status', 'Pending')
-                ->whereDate('created_at', '!=', Carbon::today())
+            $usersCount = User::where('acc_status', 'Active')
+                ->where('user_type', 'Customer')
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
@@ -663,7 +663,6 @@ class ViewController extends Controller{
                 ->count();
 
             $newUsersCount = User::where('acc_status', 'Pending')
-                ->whereDate('created_at', Carbon::today())
                 ->whereBetween('created_at', [$from, $to])
                 ->count();
 
