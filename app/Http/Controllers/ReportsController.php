@@ -180,7 +180,7 @@ private function getCustomerAnalytics($startDate, $endDate)
         ->whereBetween('created_at', [$startDate, $endDate])
         ->count();
 
-    // New users in selected date range (changed from "this month" to selected range)
+    // New users in selected date range
     $newThisMonth = User::where('acc_status', 'Active')
         ->where('user_type', 'Customer')
         ->whereBetween('created_at', [$startDate, $endDate])
@@ -191,16 +191,39 @@ private function getCustomerAnalytics($startDate, $endDate)
         ->whereBetween('created_at', [$startDate, $endDate])
         ->count();
 
-    // Customers list with date filtering
-    $customers = User::where('user_type', 'Customer')
-        ->whereBetween('created_at', [$startDate, $endDate])
+    // Customer activity metrics from POs and Receipts
+    $customerActivity = DB::table('users as u')
+        ->leftJoin('purchase_orders as po', function($join) use ($startDate, $endDate) {
+            $join->on('po.user_id', '=', 'u.id')
+                 ->whereBetween('po.order_date', [$startDate, $endDate]);
+        })
+        ->leftJoin('receipts as r', function($join) use ($startDate, $endDate) {
+            $join->on('r.po_id', '=', 'po.po_id')
+                 ->whereBetween('r.created_at', [$startDate, $endDate]);
+        })
+        ->where('u.user_type', 'Customer')
+        ->groupBy('u.id', 'u.store_name', 'u.email', 'u.mobile', 'u.telephone', 'u.address', 'u.name', 'u.created_at', 'u.acc_status')
+        ->select(
+            'u.id', 'u.store_name', 'u.email', 'u.mobile', 'u.telephone', 'u.address', 'u.name', 'u.created_at', 'u.acc_status',
+            DB::raw('COUNT(DISTINCT po.po_id) as po_count'),
+            DB::raw('COALESCE(SUM(po.grand_total), 0) as po_value'),
+            DB::raw("COALESCE(SUM(CASE WHEN r.status = 'Verified' THEN r.total_amount ELSE 0 END), 0) as collections"),
+            DB::raw("COALESCE(MAX(po.order_date), NULL) as last_po_date"),
+            DB::raw("COALESCE(MAX(r.created_at), NULL) as last_receipt_date")
+        )
         ->get();
+
+    // Outstanding per customer
+    $customerActivity = $customerActivity->map(function($c) {
+        $c->outstanding = max(($c->po_value ?? 0) - ($c->collections ?? 0), 0);
+        return $c;
+    });
 
     return [
         'totalUsers' => $totalUsers,
         'newThisMonth' => $newThisMonth,
         'pendingUsers' => $pendingUsers,
-        'customers' => $customers
+        'customers' => $customerActivity
     ];
 }
 
@@ -299,68 +322,92 @@ private function getProductAnalytics($startDate, $endDate)
 
 private function getSalesAnalytics($startDate = null, $endDate = null)
 {
-    // Fallback: if no dates, default to last 2 months before current month
+    // Default range if not provided
     if (!$startDate || !$endDate) {
-        $endDate = Carbon::now()->startOfMonth()->subMonth(); // last month
-        $startDate = (clone $endDate)->subMonths(1);          // 2 months before
-    } else {
-        $startDate = Carbon::parse($startDate)->startOfMonth();
-        $endDate = Carbon::parse($endDate)->endOfMonth();
+        $endDate = Carbon::now()->endOfMonth();
+        $startDate = (clone $endDate)->subMonths(1)->startOfMonth();
     }
 
-    // Build base orders query
-    $ordersQuery = Orders::whereBetween('created_at', [$startDate, $endDate]);
+    $startDate = Carbon::parse($startDate)->startOfDay();
+    $endDate = Carbon::parse($endDate)->endOfDay();
 
-    $totalSales = (clone $ordersQuery)->where('status', 'Completed')->sum('total_price');
-    $completedOrdersCount = (clone $ordersQuery)->where('status', 'Completed')->count();
+    // Sales KPIs from Purchase Orders and Verified Receipts
+    $poQuery = PurchaseOrder::whereBetween('order_date', [$startDate, $endDate]);
+    $totalPOValue = (clone $poQuery)->sum('grand_total');
+    $deliveredPOs = (clone $poQuery)->where('status', 'Delivered')->count();
+    $poCountAll = (clone $poQuery)->count();
+    $averagePOValue = $poCountAll > 0 ? $totalPOValue / $poCountAll : 0;
 
-    $averageOrderValue = $completedOrdersCount > 0 
-        ? $totalSales / $completedOrdersCount 
-        : 0;
-
-    // Payment success rate
-    $successfulPayments = Orders::whereBetween('created_at', [$startDate, $endDate])
-        ->where('status', 'Completed')
-        ->distinct('order_id')
-        ->count('order_id');
-
-    $totalPaymentAttempts = Orders::whereBetween('created_at', [$startDate, $endDate])
-        ->whereIn('status', ['Completed', 'Rejected', 'Pending', 'Processing'])
-        ->distinct('order_id')
-        ->count('order_id');
-
-    $paymentSuccessRate = $totalPaymentAttempts > 0
-        ? round(($successfulPayments / $totalPaymentAttempts) * 100, 2)
-        : 0;
-
-    // Monthly sales from DB
-    $monthlySales = Orders::selectRaw('MONTH(created_at) as month, SUM(total_price) as total')
-        ->where('status', 'Completed')
+    $verifiedCollections = Receipt::where('status', 'Verified')
         ->whereBetween('created_at', [$startDate, $endDate])
-        ->groupBy('month')
-        ->pluck('total', 'month');
+        ->sum('total_amount');
 
-    // Generate full month range (fill gaps with 0)
-    $monthsRange = [];
+    $collectionRate = $totalPOValue > 0 ? round(($verifiedCollections / $totalPOValue) * 100, 2) : 0;
+
+    // Monthly series: PO value vs Collections
+    $monthlyPO = DB::table('purchase_orders')
+        ->selectRaw('DATE_FORMAT(order_date, "%Y-%m") as ym, SUM(grand_total) as total')
+        ->whereBetween('order_date', [$startDate, $endDate])
+        ->groupBy('ym')
+        ->pluck('total', 'ym');
+
+    $monthlyCollections = DB::table('receipts')
+        ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as ym, SUM(total_amount) as total')
+        ->where('status', 'Verified')
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->groupBy('ym')
+        ->pluck('total', 'ym');
+
+    $labels = [];
+    $monthlyPOValues = [];
+    $monthlyCollectionValues = [];
     $period = new DatePeriod(
-        new DateTime($startDate->format('Y-m-01')),
+        new DateTime(Carbon::parse($startDate)->format('Y-m-01')),
         new DateInterval('P1M'),
-        (new DateTime($endDate->format('Y-m-01')))->modify('+1 month')
+        (new DateTime(Carbon::parse($endDate)->format('Y-m-01')))->modify('+1 month')
     );
-
     foreach ($period as $dt) {
-        $monthNum = (int) $dt->format('n');
-        $monthsRange[$dt->format('F')] = $monthlySales[$monthNum] ?? 0;
+        $ym = $dt->format('Y-m');
+        $labels[] = $dt->format('M Y');
+        $monthlyPOValues[] = (float) ($monthlyPO[$ym] ?? 0);
+        $monthlyCollectionValues[] = (float) ($monthlyCollections[$ym] ?? 0);
     }
+
+    // Top customers
+    $topCustomersByPO = DB::table('purchase_orders as po')
+        ->join('users as u', 'u.id', '=', 'po.user_id')
+        ->whereBetween('po.order_date', [$startDate, $endDate])
+        ->select('u.id', 'u.store_name', DB::raw('SUM(po.grand_total) as total_value'), DB::raw('COUNT(*) as pos'))
+        ->groupBy('u.id', 'u.store_name')
+        ->orderByDesc('total_value')
+        ->limit(10)
+        ->get();
+
+    $topCustomersByCollections = DB::table('receipts as r')
+        ->join('purchase_orders as po', 'po.po_id', '=', 'r.po_id')
+        ->join('users as u', 'u.id', '=', 'po.user_id')
+        ->where('r.status', 'Verified')
+        ->whereBetween('r.created_at', [$startDate, $endDate])
+        ->select('u.id', 'u.store_name', DB::raw('SUM(r.total_amount) as collected'))
+        ->groupBy('u.id', 'u.store_name')
+        ->orderByDesc('collected')
+        ->limit(10)
+        ->get();
 
     return [
-        'totalSales' => $totalSales,
-        'completedOrdersCount' => $completedOrdersCount,
-        'averageOrderValue' => $averageOrderValue,
-        'successfulPayments' => $successfulPayments,
-        'totalPaymentAttempts' => $totalPaymentAttempts,
-        'paymentSuccessRate' => $paymentSuccessRate,
-        'monthlySales' => $monthsRange, // <-- Now has full months with zeros
+        'totalSales' => $totalPOValue,
+        'completedOrdersCount' => $deliveredPOs,
+        'averageOrderValue' => $averagePOValue,
+        'successfulPayments' => 0,
+        'totalPaymentAttempts' => 0,
+        'paymentSuccessRate' => $collectionRate,
+        'monthlySales' => array_combine($labels, $monthlyCollectionValues),
+        'monthlyPOValues' => $monthlyPOValues,
+        'monthlyCollectionValues' => $monthlyCollectionValues,
+        'monthlyLabels' => $labels,
+        'verifiedCollections' => $verifiedCollections,
+        'topCustomersByPO' => $topCustomersByPO,
+        'topCustomersByCollections' => $topCustomersByCollections,
     ];
 }
 

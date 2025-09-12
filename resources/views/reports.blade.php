@@ -30,7 +30,7 @@
 
         {{-- Summary Tab (POs + Receipts only) --}}
         <div id="summary" class="tab-content {{ request('active_tab') == 'summary' ? 'active' : '' }}">
-            <h2>System Summary (Purchase Orders + Receipts)</h2>
+            <h2>Summary</h2>
 
             <form method="GET" action="{{ route('reports') }}" id="summaryFilterForm">
                 <input type="hidden" name="active_tab" value="summary">
@@ -101,6 +101,80 @@
                     <div class="stat-value">{{ $overpaidCount }}</div>
                     <div class="stat-label">POs Overpaid</div>
                 </div>
+            </div>
+
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Monthly PO Value vs Collections</p>
+            <div class="chart-container">
+                <div style="width: 100%; margin: auto; height: 420px;">
+                    <canvas id="summaryRevenueChart"></canvas>
+                </div>
+                <script>
+                    const sctx = document.getElementById('summaryRevenueChart').getContext('2d');
+                    const summaryRevenueChart = new Chart(sctx, {
+                        type: 'bar',
+                        data: {
+                            labels: [
+                                @if(isset($monthlyLabels))
+                                    @foreach($monthlyLabels as $label)
+                                        "{{ $label }}",
+                                    @endforeach
+                                @endif
+                            ],
+                            datasets: [
+                                {
+                                    label: 'PO Value',
+                                    data: [
+                                        @if(isset($monthlyPOValues))
+                                            @foreach($monthlyPOValues as $v)
+                                                {{ $v }},
+                                            @endforeach
+                                        @endif
+                                    ],
+                                    borderColor: '#ffde59',
+                                    backgroundColor: '#ffde5972',
+                                    borderWidth: 2,
+                                },
+                                {
+                                    label: 'Collections',
+                                    type: 'line',
+                                    data: [
+                                        @if(isset($monthlyCollectionValues))
+                                            @foreach($monthlyCollectionValues as $v)
+                                                {{ $v }},
+                                            @endforeach
+                                        @endif
+                                    ],
+                                    borderColor: '#f8912a',
+                                    backgroundColor: '#f8912a33',
+                                    borderWidth: 2,
+                                    yAxisID: 'y1'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) { return '₱' + value.toLocaleString(); }
+                                    },
+                                    position: 'left'
+                                },
+                                y1: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) { return '₱' + value.toLocaleString(); }
+                                    },
+                                    position: 'right',
+                                    grid: { drawOnChartArea: false }
+                                }
+                            }
+                        }
+                    });
+                </script>
             </div>
 
             <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Top Products (by PO items)</p>
@@ -197,19 +271,23 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value">₱{{ number_format($totalSales, 2) }}</div>
-                    <div class="stat-label">Total Revenue</div>
+                    <div class="stat-label">Total PO Value</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ $completedOrdersCount }}</div>
-                    <div class="stat-label">Orders Completed</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">₱{{ number_format($averageOrderValue, 2) }}</div>
-                    <div class="stat-label">Average Order Value</div>
+                    <div class="stat-value">₱{{ number_format($verifiedCollections ?? 0, 2) }}</div>
+                    <div class="stat-label">Verified Collections</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">{{ $paymentSuccessRate }}%</div>
-                    <div class="stat-label">Payment Success Rate</div>
+                    <div class="stat-label">Collection Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ $completedOrdersCount }}</div>
+                    <div class="stat-label">Delivered POs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">₱{{ number_format($averageOrderValue, 2) }}</div>
+                    <div class="stat-label">Average PO Value</div>
                 </div>
             </div>
 
@@ -227,38 +305,111 @@
                         type: 'bar',
                         data: {
                             labels: [
-                                @foreach($monthlySales as $month => $total)
-                                    "{{ $month }}",
-                                @endforeach
-                            ],
-                            datasets: [{
-                                label: 'Monthly Revenue',
-                                data: [
-                                    @foreach($monthlySales as $total)
-                                        {{ $total }},
+                                @if(isset($monthlyLabels))
+                                    @foreach($monthlyLabels as $label)
+                                        "{{ $label }}",
                                     @endforeach
-                                ],
-                                borderColor: '#ffde59',
-                                backgroundColor: '#ffde5972',
-                                borderWidth: 2,
-                            }]
+                                @else
+                                    @foreach($monthlySales as $month => $total)
+                                        "{{ $month }}",
+                                    @endforeach
+                                @endif
+                            ],
+                            datasets: [
+                                {
+                                    label: 'PO Value',
+                                    data: [
+                                        @if(isset($monthlyPOValues))
+                                            @foreach($monthlyPOValues as $v)
+                                                {{ $v }},
+                                            @endforeach
+                                        @else
+                                            @foreach($monthlySales as $total)
+                                                {{ $total }},
+                                            @endforeach
+                                        @endif
+                                    ],
+                                    borderColor: '#ffde59',
+                                    backgroundColor: '#ffde5972',
+                                    borderWidth: 2,
+                                },
+                                {
+                                    label: 'Collections',
+                                    type: 'line',
+                                    data: [
+                                        @if(isset($monthlyCollectionValues))
+                                            @foreach($monthlyCollectionValues as $v)
+                                                {{ $v }},
+                                            @endforeach
+                                        @else
+                                            @foreach($monthlySales as $total)
+                                                {{ $total }},
+                                            @endforeach
+                                        @endif
+                                    ],
+                                    borderColor: '#f8912a',
+                                    backgroundColor: '#f8912a33',
+                                    borderWidth: 2,
+                                    yAxisID: 'y1'
+                                }
+                            ]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
                             scales: {
                                 y: {
                                     beginAtZero: true,
                                     ticks: {
-                                        callback: function(value) {
-                                            return '₱' + value.toLocaleString();
-                                        }
-                                    }
+                                        callback: function(value) { return '₱' + value.toLocaleString(); }
+                                    },
+                                    position: 'left'
+                                },
+                                y1: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) { return '₱' + value.toLocaleString(); }
+                                    },
+                                    position: 'right',
+                                    grid: { drawOnChartArea: false }
                                 }
                             }
                         }
                     });
                 </script>
+            </div>
+
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Top Customers</p>
+            <div class="chart-container" style="overflow-x: auto;">
+                <div class="data-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>POs</th>
+                                <th>Total PO Value (₱)</th>
+                                <th>Collections (₱)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $collectionsIndex = collect($topCustomersByCollections ?? [])->keyBy('id');
+                            @endphp
+                            @foreach(($topCustomersByPO ?? []) as $c)
+                                <tr style="cursor: pointer" onclick="window.location='{{ url('/customer_view/' . $c->id) }}'">
+                                    <td>{{ $c->store_name ?? 'Unknown' }}</td>
+                                    <td>{{ $c->pos ?? $c->total_pos ?? 0 }}</td>
+                                    <td>₱{{ number_format($c->total_value ?? $c->total_po_value ?? 0, 2) }}</td>
+                                    <td>₱{{ number_format(optional($collectionsIndex->get($c->id))->collected ?? 0, 2) }}</td>
+                                </tr>
+                            @endforeach
+                            @if(empty($topCustomersByPO) || count($topCustomersByPO) === 0)
+                                <tr><td colspan="4" class="text-center">No data for this period</td></tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
@@ -354,33 +505,45 @@
               
             </div>
 
-            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Customer List</p>
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Customer Activity</p>
 
             <div class="chart-container" style="overflow-x: auto;">
               <div class="data-table">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>Customer</th>
                             <th>Email</th>
                             <th>Mobile</th>
                             <th>Telephone</th>
                             <th>Location</th>
                             <th>Representative</th>
-                            <th>Registration Date</th>
-                            <th>Status</th>
+                            <th>POs</th>
+                            <th>PO Value (₱)</th>
+                            <th>Collections (₱)</th>
+                            <th>Outstanding (₱)</th>
+                            <th>Last PO</th>
+                            <th>Last Receipt</th>
+                            <th>Reg. Date</th>
+                            <th>Acc. Status</th>
                         </tr>
                     </thead>
                     <tbody>
                             @foreach ($customers as $customer)
-                                <tr>
+                                <tr style="cursor: pointer" onclick="window.location='{{ url('/customer_view/' . $customer->id) }}'">
                                     <td>{{ $customer->store_name }}</td>
                                     <td>{{ $customer->email }}</td>
                                     <td>{{ $customer->mobile}}</td>
-                                    <td>{{$customer->telephone}}</td>
-                                    <td>{{$customer->address}}</td>
-                                    <td>{{$customer->name}}</td>
-                                    <td>{{ $customer->created_at->format('F Y') }}</td>
+                                    <td>{{ $customer->telephone}}</td>
+                                    <td>{{ $customer->address}}</td>
+                                    <td>{{ $customer->name}}</td>
+                                    <td>{{ (int)($customer->po_count ?? 0) }}</td>
+                                    <td>₱{{ number_format($customer->po_value ?? 0, 2) }}</td>
+                                    <td>₱{{ number_format($customer->collections ?? 0, 2) }}</td>
+                                    <td>₱{{ number_format($customer->outstanding ?? 0, 2) }}</td>
+                                    <td>{{ optional($customer->last_po_date)->format('M d, Y') ?? '-' }}</td>
+                                    <td>{{ optional($customer->last_receipt_date)->format('M d, Y') ?? '-' }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($customer->created_at)->format('F Y') }}</td>
                                     <td>{{ $customer->acc_status }}</td>
                                 </tr>
                             @endforeach
