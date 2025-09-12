@@ -155,7 +155,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/purchase_order/order/receive', [OrderReceiptController::class, 'receivedOrder'])->name('customer.received');
     Route::get('/purchase_order/order/report', [OrderReceiptController::class, 'receivedReportOrder'])->name('customer.received-report');
 
-    
+    Route::get('/purchase_order/order/receipts/report/view/{or_id}', action: [OrderReceiptController::class, 'orderReceipt'])->name('report.view');
+
     // ================================
     // ADMIN & STAFF ROUTES
     // ================================

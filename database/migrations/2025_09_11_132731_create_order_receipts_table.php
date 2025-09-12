@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('label')->nullable();
             $table->string('status')->nullable();
             $table->string('received_at')->nullable();
+            $table->timestamp('reported_at');
+
         });
     }
 

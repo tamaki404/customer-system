@@ -106,8 +106,8 @@
                     </div>
 
                     <input type="hidden" name="po_id" value="{{$po->po_id}}">
-                    <input type="hidden" name="status" value="Reported">
-                    <input type="hidden" name="label" value="Issue reported">
+                    <input type="hidden" name="status" value="Received">
+                    <input type="hidden" name="label" value="Reported">
 
                 </div>
                 
@@ -119,14 +119,6 @@
             </form>
         </div>
     </div>
-
-    <script>
-        $('.modal form').on('submit', function (e) {
-    e.stopPropagation(); // prevents triggering other forms
-});
-
-    </script>
-
 
     <div class="purchase-order-bg">
         @if(session('success'))
@@ -159,10 +151,17 @@
             <h2 style="font-size: 25px; margin: 0; font-weight: bold; color: #333;">Order details</h2> 
         </span>
 
-        @if (auth()->user()->user_type === 'Customer' && ($po->orderReceipt->status  ?? null) === 'Received' && $po->status === 'Delivered')
+        @if (auth()->user()->user_type === 'Customer' && ($po->orderReceipt->status  ?? null) === 'Received' && ($po->orderReceipt->label  ?? null) === 'Success' && $po->status === 'Delivered')
             <p style="font-size: 14px; color: #888;">You have successfully confirmed this order.</p>
+        @elseif (auth()->user()->user_type === 'Customer' && ($po->orderReceipt->status  ?? null) === 'Received' && ($po->orderReceipt->label  ?? null) === 'Reported' && $po->status === 'Delivered')
+            <div>
+                <p style="font-size: 14px; color: #888; margin: 0;">
+                    You have reported this order
+                    <a class="see-report-link" href="{{ route('report.view', $po->orderReceipt->or_id) }}">See report</a>
+                </p>
+            </div>
+            
         @endif
-
         @if(auth()->user()->user_type !== 'Customer')
             <form class="order-actions" action="{{ route('change.po_status') }}" method="POST">
                 @csrf
@@ -183,32 +182,32 @@
 
             </form>
 
-        {{-- order customer feedback --}}
-        @elseif(
-            auth()->user()->user_type === 'Customer' 
-            && $po->status === "Delivered" 
-            && (($po->orderReceipt->status ?? null) !== "Received")
-        )
-            <div class="feedback-div">
-                <button type="button" class="feedback-btn btn btn-success" data-bs-toggle="modal" data-bs-target="#feedbackModal" data-action="received">Order received</button>
-                <button type="button" class="feedback-btn btn-danger" data-action="Report a problem" data-bs-toggle="modal" data-bs-target="#reportOrderModal">
-                    <span class="material-symbols-outlined"> exclamation </span>                    
-                    Report a problem
-                </button>
-            </div>
-        @endif
-
-
-
-
-        <form class="order-actions" action="{{ route('customer.po_status') }}" method="POST">
-            @csrf
-
-            @if(auth()->user()->user_type === 'Customer' && $po->status === 'Pending')
-                    <input type="hidden" name="status" value="Cancelled">
-                    <button type="button" class="btn btn-danger btn-confirm" value="Cancelled" data-action="Cancelled">Cancel</button>
+            {{-- order customer feedback --}}
+            @elseif(
+                auth()->user()->user_type === 'Customer' 
+                && $po->status === "Delivered" 
+                && (($po->orderReceipt->status ?? null) !== "Received")
+            )
+                <div class="feedback-div">
+                    <button type="button" class="feedback-btn btn btn-success" data-bs-toggle="modal" data-bs-target="#feedbackModal" data-action="received">Order received</button>
+                    <button type="button" class="feedback-btn btn-danger" data-action="Report a problem" data-bs-toggle="modal" data-bs-target="#reportOrderModal">
+                        <span class="material-symbols-outlined"> exclamation </span>                    
+                        Report a problem
+                    </button>
+                </div>
             @endif
-            
+
+
+
+
+            <form class="order-actions" action="{{ route('customer.po_status') }}" method="POST">
+                @csrf
+
+                @if(auth()->user()->user_type === 'Customer' && $po->status === 'Pending')
+                        <input type="hidden" name="status" value="Cancelled">
+                        <button type="button" class="btn btn-danger btn-confirm" value="Cancelled" data-action="Cancelled">Cancel</button>
+                @endif
+                
             <input type="hidden" name="po_id" value="{{ $po->po_id }}">
             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
             <input type="hidden" name="user_type" value="{{ auth()->user()->user_type }}">
@@ -225,7 +224,6 @@
                     <button onclick="window.location='{{ url('/purchase_orders/receipts/' . $po->po_id) }}'">View receipts</button>
                 @endif
 
-                {{-- <span class="status-text">{{$po->status}}</span> --}}
             </div>
 
             <div class="shipment-div">
