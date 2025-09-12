@@ -54,43 +54,43 @@
 
 
 
-        
-@php
-$tabStatuses = [
-    'All' => null,
-    'Draft' => 'Draft',
-    'Pending' => 'Pending',
-    'Processing' => 'Processing',
-    'Delivered' => 'Delivered',
-    'Cancelled' => 'Cancelled',
-    'Rejected' => 'Rejected',
-    'Unpaid' => 'Unpaid',
-    'Partially Settled' => 'Partially Settled',
-    'Fully Paid' => 'Fully Paid',
-];
-
-$baseParams = [
-    'search' => request('search', ''),
-    'from_date' => request('from_date', now()->startOfMonth()->format('Y-m-d')),
-    'to_date' => request('to_date', now()->endOfMonth()->format('Y-m-d')),
-];
-
-$currentStatus = request('status');
-@endphp
-
-<div class="status-tabs">
-    @foreach($tabStatuses as $label => $value)
+                
         @php
-            $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
-            $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
-            $count = $statusCounts[$label] ?? 0;
+        $tabStatuses = [
+            'All' => null,
+            'Draft' => 'Draft',
+            'Pending' => 'Pending',
+            'Processing' => 'Processing',
+            'Delivered' => 'Delivered',
+            'Cancelled' => 'Cancelled',
+            'Rejected' => 'Rejected',
+            'Unpaid' => 'Unpaid',
+            'Partially Settled' => 'Partially Settled',
+            'Fully Paid' => 'Fully Paid',
+        ];
+
+        $baseParams = [
+            'search' => request('search', ''),
+            'from_date' => request('from_date', now()->startOfMonth()->format('Y-m-d')),
+            'to_date' => request('to_date', now()->endOfMonth()->format('Y-m-d')),
+        ];
+
+        $currentStatus = request('status');
         @endphp
-        <a href="{{ route('purchase_order', $params) }}" 
-           class="status-tab{{ $isActive ? ' active' : '' }}">
-            {{ $label }} <span class="count">({{ $count }})</span>
-        </a>
-    @endforeach
-</div>
+
+        <div class="status-tabs">
+            @foreach($tabStatuses as $label => $value)
+                @php
+                    $params = $value ? array_merge($baseParams, ['status' => $value]) : $baseParams;
+                    $isActive = ($value === null && empty($currentStatus)) || ($value !== null && $currentStatus === $value);
+                    $count = $statusCounts[$label] ?? 0;
+                @endphp
+                <a href="{{ route('purchase_order', $params) }}" 
+                class="status-tab{{ $isActive ? ' active' : '' }}">
+                    {{ $label }} <span class="count">({{ $count }})</span>
+                </a>
+            @endforeach
+        </div>
 
 
 
@@ -149,6 +149,9 @@ $currentStatus = request('status');
                                 <span class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
                                        {{ ucfirst($order->status) }}
                                 </span>
+                                <span class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
+                                       {{ ($order->orderReceipt->status)?? null}}
+                                </span>         
 
 
                             </td>

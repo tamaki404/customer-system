@@ -1,17 +1,10 @@
 
 
 <div class="report-con">
-        <a class="go-back-a" href="/purchase_order"><- Order</a>
+        <a class="go-back-a"
+            href="{{ route('purchase_order.view', $report->po_id) }}"><- Order</a>
         <style>
-            .go-back-a{
-                font-size: 15px;
-                color: #f8912a;
-                text-decoration: none;
-                width: auto;
-            }
-            .go-back-a:hover{
-                color: #cd741c;
-            }
+
         </style>
         
         <div class="report-header">
@@ -31,6 +24,15 @@
 </div>
 
 <style>
+    .go-back-a{
+        font-size: 15px;
+        color: #f8912a;
+        text-decoration: none;
+        width: auto;
+    }
+    .go-back-a:hover{
+        color: #cd741c;
+    }
     .report-con{
         display: flex;
         flex-direction: column;

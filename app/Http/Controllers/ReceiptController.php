@@ -45,7 +45,7 @@ class ReceiptController extends Controller{
 public function fileReceipt($po_id, Request $request) 
 {
     $validated = $request->validate([
-        'receipt_id'             => 'required|integer|exists:receipts,receipt_id',
+        'receipt_id'             => 'required|string|exists:receipts,receipt_id',
         'status'         => 'required|string|in:Verified,Rejected',
         'action_by'      => 'nullable|string',
         'action_at'      => 'nullable|string',
