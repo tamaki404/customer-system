@@ -551,6 +551,39 @@
                 </table>
             </div>
             </div>
+
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Top Customers & Their Most-Bought Product</p>
+            <div class="chart-container" style="overflow-x: auto;">
+              <div class="data-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Total PO Value (₱)</th>
+                            <th>Most-Bought Product</th>
+                            <th>Quantity</th>
+                            <th>Product Revenue (₱)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php $topMost = collect($topCustomersByPO_CA ?? []); @endphp
+                        @foreach(($topMost ?? []) as $row)
+                            @php $tp = optional(($customerTopProducts ?? collect())->get($row->customer_id)); @endphp
+                            <tr style="cursor: pointer" onclick="window.location='{{ url('/customer_view/' . $row->customer_id) }}'">
+                                <td>{{ $row->store_name }}</td>
+                                <td>₱{{ number_format($row->total_po_value ?? 0, 2) }}</td>
+                                <td>{{ $tp->product_name ?? '-' }}</td>
+                                <td>{{ (int)($tp->total_quantity ?? 0) }}</td>
+                                <td>₱{{ number_format($tp->total_revenue ?? 0, 2) }}</td>
+                            </tr>
+                        @endforeach
+                        @if(empty($topCustomersByPO_CA) || count($topCustomersByPO_CA) === 0)
+                            <tr><td colspan="5" class="text-center">No data for this period</td></tr>
+                        @endif
+                    </tbody>
+                </table>
+              </div>
+            </div>
         </div>
 
         {{-- Order management tab --}}
@@ -979,49 +1012,148 @@
                     <div class="stat-label">Total Products</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ $bestSellers }}</div>
-                    <div class="stat-label">
-                        @if(request('date_range') == 'last_7_days')
-                            Best Sellers (Last 7 Days)
-                        @elseif(request('date_range') == 'last_30_days' || !request('date_range'))
-                            Best Sellers (Last 30 Days)
-                        @elseif(request('date_range') == 'last_3_months')
-                            Best Sellers (Last 3 Months)
-                        @elseif(request('date_range') == 'custom')
-                            Best Sellers (Custom Range)
-                        @else
-                            Best Sellers
-                        @endif
-                    </div>
+                    <div class="stat-value">₱{{ number_format($inventoryValuation ?? 0, 2) }}</div>
+                    <div class="stat-label">Inventory Valuation</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">{{$lowStock}}</div>
-                    <div class="stat-label">Low Stock Alert</div>
+                    <div class="stat-label">Low Stock</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">{{$outOfStock}}</div>
                     <div class="stat-label">Out Of Stock</div>
-                </div>        
+                </div>
             </div>
 
-            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Best Selling Products</p>
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Monthly Product Revenue</p>
+            <div class="chart-container">
+                <div style="width: 100%; margin: auto; height: 380px;">
+                    <canvas id="productRevenueChart"></canvas>
+                </div>
+                <script>
+                    const prCtx = document.getElementById('productRevenueChart').getContext('2d');
+                    const productRevenueChart = new Chart(prCtx, {
+                        type: 'line',
+                        data: {
+                            labels: [
+                                @if(isset($productMonthlyLabels))
+                                    @foreach($productMonthlyLabels as $label)
+                                        "{{ $label }}",
+                                    @endforeach
+                                @endif
+                            ],
+                            datasets: [{
+                                label: 'Revenue',
+                                data: [
+                                    @if(isset($productMonthlyValues))
+                                        @foreach($productMonthlyValues as $v)
+                                            {{ $v }},
+                                        @endforeach
+                                    @endif
+                                ],
+                                borderColor: '#86c942',
+                                backgroundColor: '#86c94222',
+                                borderWidth: 2,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { beginAtZero: true, ticks: { callback: (v)=>'₱'+v.toLocaleString() } }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Top Products by Revenue</p>
 
             <div class="chart-container" style="overflow-x: auto;">
               <div class="data-table">
                 <table class="table">
                     <thead>
                         <tr>
-                        <th>Product Name</th>
-                        <th>Total Quantity Sold</th>
+                        <th>Product</th>
+                        <th>Total Revenue (₱)</th>
+                        <th>Total Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach(($topByRevenue ?? []) as $product)
+                        <tr style="cursor: pointer" onclick="window.location='{{ url('/product_view/' . $product->product_id) }}'">
+                            <td>{{ $product->product_name }}</td>
+                            <td>₱{{ number_format($product->total_revenue, 2) }}</td>
+                            <td>x{{ $product->total_quantity }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Top Products by Quantity</p>
+            <div class="chart-container" style="overflow-x: auto;">
+              <div class="data-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                        <th>Product</th>
+                        <th>Total Quantity</th>
                         <th>Total Revenue (₱)</th>
                         </tr>
                     </thead>
                     <tbody>
-                    @foreach($bestSellingProducts as $product)
-                        <tr>
+                    @foreach(($topByQuantity ?? []) as $product)
+                        <tr style="cursor: pointer" onclick="window.location='{{ url('/product_view/' . $product->product_id) }}'">
                             <td>{{ $product->product_name }}</td>
                             <td>x{{ $product->total_quantity }}</td>
                             <td>₱{{ number_format($product->total_revenue, 2) }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Slow Movers</p>
+            <div class="chart-container" style="overflow-x: auto;">
+              <div class="data-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                        <th>Product</th>
+                        <th>Total Quantity (range)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach(($slowMovers ?? []) as $product)
+                        <tr style="cursor: pointer" onclick="window.location='{{ url('/product_view/' . $product->product_id) }}'">
+                            <td>{{ $product->product_name }}</td>
+                            <td>x{{ $product->total_quantity }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Zero Sales Products (in range)</p>
+            <div class="chart-container" style="overflow-x: auto;">
+              <div class="data-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                        <th>Product</th>
+                        <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach(($zeroSalesProducts ?? []) as $product)
+                        <tr style="cursor: pointer" onclick="window.location='{{ url('/product_view/' . $product->id) }}'">
+                            <td>{{ $product->name }}</td>
+                            <td>x{{ $product->quantity }}</td>
                         </tr>
                     @endforeach
                     </tbody>

@@ -219,11 +219,40 @@ private function getCustomerAnalytics($startDate, $endDate)
         return $c;
     });
 
+    // Top customers by PO value in range
+    $topCustomersByPO = DB::table('purchase_orders as po')
+        ->join('users as u', 'u.id', '=', 'po.user_id')
+        ->whereBetween('po.order_date', [$startDate, $endDate])
+        ->select('u.id as customer_id', 'u.store_name', DB::raw('SUM(po.grand_total) as total_po_value'))
+        ->groupBy('u.id', 'u.store_name')
+        ->orderByDesc('total_po_value')
+        ->limit(10)
+        ->get();
+
+    // Most-bought product per customer (by quantity) within range
+    $customerTopProductsRaw = DB::table('purchase_order_items as poi')
+        ->join('purchase_orders as po', 'po.po_id', '=', 'poi.po_id')
+        ->join('users as u', 'u.id', '=', 'po.user_id')
+        ->join('products as p', 'p.id', '=', 'poi.product_id')
+        ->whereBetween('po.order_date', [$startDate, $endDate])
+        ->where('po.status', 'Delivered')
+        ->select('u.id as customer_id', 'p.id as product_id', 'p.name as product_name',
+            DB::raw('SUM(poi.quantity) as total_quantity'),
+            DB::raw('SUM(poi.total_price) as total_revenue'))
+        ->groupBy('u.id', 'p.id', 'p.name')
+        ->get()
+        ->groupBy('customer_id')
+        ->map(function($rows) {
+            return $rows->sortByDesc('total_quantity')->first();
+        });
+
     return [
         'totalUsers' => $totalUsers,
         'newThisMonth' => $newThisMonth,
         'pendingUsers' => $pendingUsers,
-        'customers' => $customerActivity
+        'customers' => $customerActivity,
+        'topCustomersByPO' => $topCustomersByPO,
+        'customerTopProducts' => $customerTopProductsRaw
     ];
 }
 
@@ -275,45 +304,91 @@ private function getOrderAnalytics($startDate, $endDate)
 
 private function getProductAnalytics($startDate, $endDate)
 {
-    // Best selling products with date filtering
-    $bestSellingProducts = Orders::select(
-            'products.id as product_id',
-            'products.name as product_name',
-            DB::raw('SUM(orders.quantity) as total_quantity'),
-            DB::raw('SUM(orders.quantity * orders.unit_price) as total_revenue')
-        )
-        ->join('products', 'orders.product_id', '=', 'products.id')
-        ->where('orders.status', 'Completed')
-        ->whereBetween('orders.created_at', [$startDate, $endDate])
-        ->groupBy('products.id', 'products.name')
+    // Product performance based on Purchase Order Items
+    $poiQuery = DB::table('purchase_order_items as poi')
+        ->join('purchase_orders as po', 'po.po_id', '=', 'poi.po_id')
+        ->join('products as p', 'p.id', '=', 'poi.product_id')
+        ->whereBetween('po.order_date', [$startDate, $endDate])
+        ->where('po.status', 'Delivered');
+
+    $bestSellingProducts = (clone $poiQuery)
+        ->select('p.id as product_id', 'p.name as product_name',
+            DB::raw('SUM(poi.quantity) as total_quantity'),
+            DB::raw('SUM(poi.total_price) as total_revenue'))
+        ->groupBy('p.id', 'p.name')
         ->orderByDesc('total_quantity')
         ->get();
 
-    // Total products count (this might stay as total products, not date-filtered)
+    $topByRevenue = (clone $poiQuery)
+        ->select('p.id as product_id', 'p.name as product_name',
+            DB::raw('SUM(poi.total_price) as total_revenue'),
+            DB::raw('SUM(poi.quantity) as total_quantity'))
+        ->groupBy('p.id', 'p.name')
+        ->orderByDesc('total_revenue')
+        ->limit(10)
+        ->get();
+
+    $topByQuantity = (clone $poiQuery)
+        ->select('p.id as product_id', 'p.name as product_name',
+            DB::raw('SUM(poi.quantity) as total_quantity'),
+            DB::raw('SUM(poi.total_price) as total_revenue'))
+        ->groupBy('p.id', 'p.name')
+        ->orderByDesc('total_quantity')
+        ->limit(10)
+        ->get();
+
+    // Monthly product revenue (aggregate)
+    $monthlyProductRevenue = DB::table('purchase_order_items as poi')
+        ->join('purchase_orders as po', 'po.po_id', '=', 'poi.po_id')
+        ->whereBetween('po.order_date', [$startDate, $endDate])
+        ->where('po.status', 'Delivered')
+        ->selectRaw('DATE_FORMAT(po.order_date, "%Y-%m") as ym, SUM(poi.total_price) as total')
+        ->groupBy('ym')
+        ->pluck('total', 'ym');
+
+    // Fill month labels
+    $productMonthlyLabels = [];
+    $productMonthlyValues = [];
+    $period = new DatePeriod(
+        new DateTime(Carbon::parse($startDate)->format('Y-m-01')),
+        new DateInterval('P1M'),
+        (new DateTime(Carbon::parse($endDate)->format('Y-m-01')))->modify('+1 month')
+    );
+    foreach ($period as $dt) {
+        $ym = $dt->format('Y-m');
+        $productMonthlyLabels[] = $dt->format('M Y');
+        $productMonthlyValues[] = (float) ($monthlyProductRevenue[$ym] ?? 0);
+    }
+
+    // Inventory KPIs
     $productsCount = Product::count();
-
-    // Best sellers count with date filtering
-    $bestSellers = Product::select('products.id', 'products.name', DB::raw('SUM(orders.quantity) as total_sold'))
-        ->join('orders', 'orders.product_id', '=', 'products.id')
-        ->where('orders.status', 'Completed')
-        ->whereBetween('orders.created_at', [$startDate, $endDate])
-        ->groupBy('products.id', 'products.name')
-        ->orderByDesc('total_sold')
-        ->take(5) 
-        ->get()
-        ->count();
-
-    // Low stock and out of stock (these are current inventory status, not date-dependent)
-    $lowStock = Product::where('quantity', '<=', 10)
-        ->where('quantity', '>', 0)
-        ->count();
-
+    $lowStock = Product::where('quantity', '<=', 10)->where('quantity', '>', 0)->count();
     $outOfStock = Product::where('quantity', 0)->count();
+    $inventoryValuation = Product::select(DB::raw('SUM(quantity * price) as valuation'))->value('valuation') ?? 0;
+
+    // Slow movers (lowest quantity shipped in range)
+    $slowMovers = (clone $poiQuery)
+        ->select('p.id as product_id', 'p.name as product_name', DB::raw('SUM(poi.quantity) as total_quantity'))
+        ->groupBy('p.id', 'p.name')
+        ->orderBy('total_quantity', 'asc')
+        ->limit(10)
+        ->get();
+
+    // Zero sales products in range
+    $productsWithSalesIds = (clone $poiQuery)
+        ->distinct()->pluck('p.id');
+    $zeroSalesProducts = Product::whereNotIn('id', $productsWithSalesIds)->select('id', 'name', 'quantity')->limit(20)->get();
 
     return [
         'bestSellingProducts' => $bestSellingProducts,
+        'topByRevenue' => $topByRevenue,
+        'topByQuantity' => $topByQuantity,
         'productsCount' => $productsCount,
-        'bestSellers' => $bestSellers,
+        'inventoryValuation' => $inventoryValuation,
+        'productMonthlyLabels' => $productMonthlyLabels,
+        'productMonthlyValues' => $productMonthlyValues,
+        'slowMovers' => $slowMovers,
+        'zeroSalesProducts' => $zeroSalesProducts,
         'lowStock' => $lowStock,
         'outOfStock' => $outOfStock
     ];
@@ -659,6 +734,8 @@ public function reports(Request $request)
     $newThisMonth = $customerAnalytics['newThisMonth'];
     $pendingUsers = $customerAnalytics['pendingUsers'];
     $customers = $customerAnalytics['customers'];
+    $topCustomersByPO_CA = $customerAnalytics['topCustomersByPO'];
+    $customerTopProducts = $customerAnalytics['customerTopProducts'];
 
     // Extract order analytics
     $OrderscompletedOrders = $orderAnalytics['OrderscompletedOrders'];
@@ -671,8 +748,14 @@ public function reports(Request $request)
 
     // Extract product analytics
     $bestSellingProducts = $productAnalytics['bestSellingProducts'];
+    $topByRevenue = $productAnalytics['topByRevenue'];
+    $topByQuantity = $productAnalytics['topByQuantity'];
     $productsCount = $productAnalytics['productsCount'];
-    $bestSellers = $productAnalytics['bestSellers'];
+    $inventoryValuation = $productAnalytics['inventoryValuation'];
+    $productMonthlyLabels = $productAnalytics['productMonthlyLabels'];
+    $productMonthlyValues = $productAnalytics['productMonthlyValues'];
+    $slowMovers = $productAnalytics['slowMovers'];
+    $zeroSalesProducts = $productAnalytics['zeroSalesProducts'];
     $lowStock = $productAnalytics['lowStock'];
     $outOfStock = $productAnalytics['outOfStock'];
 
@@ -750,6 +833,8 @@ public function reports(Request $request)
         'newThisMonth',
         'pendingUsers',
         'customers',
+        'topCustomersByPO_CA',
+        'customerTopProducts',
         'OrderscompletedOrders',
         'OrdersprocessingOrders',
         'OrderspendingOrders',
@@ -757,9 +842,15 @@ public function reports(Request $request)
         'OrdersrejectedOrders',
         'OrdersordersCount',
         'bestSellingProducts',
+        'topByRevenue',
+        'topByQuantity',
         'productsCount',
-        'bestSellers',   
-        'lowStock',   
+        'inventoryValuation',
+        'productMonthlyLabels',
+        'productMonthlyValues',
+        'slowMovers',
+        'zeroSalesProducts',
+        'lowStock',
         'outOfStock',
         'topStores',
         'Receiptscount',
