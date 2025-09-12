@@ -18,7 +18,7 @@ use App\Models\Product;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\AddressController;
-
+use App\Http\Controllers\PurchaseOrderItemController;
 // ================================
 // PUBLIC ROUTES (No Authentication Required)
 // ================================
@@ -185,7 +185,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         //Purchase order management
         Route::post('/product_order/orders/change_status', [PurchaseOrderController::class, 'changeStatus'])
             ->name('change.po_status');
-
+        Route::post('/product_order/orders/quantity', [PurchaseOrderItemController::class, 'changeQuantity'])
+            ->name('change.quantity');
         //po invoice
         Route::get('/purchase-order/invoice/display/{po_id}', [PurchaseOrderController::class, 'invoiceView'])->name(name: 'invoice.view');
 

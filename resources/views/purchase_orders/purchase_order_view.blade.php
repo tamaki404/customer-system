@@ -122,7 +122,7 @@
     <!-- mddify quantity modal -->
     <div class="modal fade" id="modifyQuantity" style="display: none;"  tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered"  style="justify-self: center; align-self: center; ">
-            <form class="modal-content" action="{{ route('customer.received-report') }}"  style="border-top: 4px solid #ffde59;">
+            <form class="modal-content" action="{{ route('change.quantity') }}" method="POST"  style="border-top: 4px solid #ffde59;">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" style="padding: 0; margin: 0; font-size: 16px; font-weight: bold;"> Modify order quantity </h5>
@@ -133,7 +133,7 @@
 
                     <p class="note">Note: Kindly notify the supplier for any changes made</p>
 
-                    <div class="items-list">
+                    <div class="items-list modify-products-list">
                         @foreach($ordersItem as $item)
                         <div class="products-list" style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
                             <div class="each-item-div prod-item-div">
@@ -159,27 +159,30 @@
                                     <p class="item-price-quan">
                                         <span class="item-quantity"> Quantity:  {{ $item->quantity }}</span>
                                     </p>
+                                     <span class="item-quantity"> POI:  {{ $item->poi_id }}</span>
+
                                 </div>
                             </div>
                             <p>......</p>
                             <div class="new-quantity-div">
                                 <input 
                                     type="number" 
-                                    name="new_quantity" 
+                                    name="new_quantity[{{ $item->poi_id }}]" 
                                     max="{{ $item->quantity }}" 
                                     min="1" 
                                     placeholder="{{ $item->quantity }}">
+
+
                             </div>
-                                        <span class="item-quantity"> Quantity:  {{ $item->quantity }}</span>
+
+                            
 
 
                         </div>
 
+
                         @endforeach     
                     </div>
-
-
-                    <input type="hidden" name="po_id" value="{{$po->po_id}}">
 
 
                 </div>
@@ -504,7 +507,7 @@
                                 <p class="item-name">{{$item->product->name}}</p>
                                 <p class="item-price-quan">
                                     <span class="item-original-price">₱{{ number_format($item->product->price, 2) }}</span>
-                                    <span class="item-quantity"> × {{ $item->quantity }}</span>
+                                    <span class="item-quantity"> × {{ $item->quantity }} -> {{ $item->new_quantity }}</span>
                                 </p>
                                 <span class="item-total-price"> ₱ {{ number_format($item->product->price * $item->quantity, 2) }}</span>
 

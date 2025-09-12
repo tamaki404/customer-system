@@ -435,6 +435,10 @@ class PurchaseOrderController extends Controller {
     }
     }
 
+    public function modifyQuantity(){
+        
+    }
+
 
     // public function cancelPurchaseOrder(Request $request, $id)
     // {
