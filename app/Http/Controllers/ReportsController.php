@@ -543,13 +543,54 @@ private function parseDateRange(Request $request)
         $ReceiptscancelledCount = $receiptStatusCounts['Cancelled'] ?? 0;
         $ReceiptsrejectedCount  = $receiptStatusCounts['Rejected'] ?? 0;
 
-        // Total receipts in range
+        // Totals in range
         $Receiptscount = Receipt::whereBetween('created_at', [$startDate, $endDate])->count();
 
         // Monetary KPIs
         $ReceiptsverifiedAmount = Receipt::where('status', 'Verified')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('total_amount');
+
+        $averageVerifiedReceipt = $ReceiptsverifiedCount > 0
+            ? round($ReceiptsverifiedAmount / $ReceiptsverifiedCount, 2)
+            : 0;
+
+        $rejectionRate = $Receiptscount > 0
+            ? round((($ReceiptsrejectedCount) / $Receiptscount) * 100, 2)
+            : 0;
+
+        // Monthly verified collections
+        $monthlyVerified = DB::table('receipts')
+            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as ym, SUM(total_amount) as total')
+            ->where('status', 'Verified')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('ym')
+            ->pluck('total', 'ym');
+
+        $receiptMonthlyLabels = [];
+        $receiptMonthlyValues = [];
+        $period = new DatePeriod(
+            new DateTime(Carbon::parse($startDate)->format('Y-m-01')),
+            new DateInterval('P1M'),
+            (new DateTime(Carbon::parse($endDate)->format('Y-m-01')))->modify('+1 month')
+        );
+        foreach ($period as $dt) {
+            $ym = $dt->format('Y-m');
+            $receiptMonthlyLabels[] = $dt->format('M Y');
+            $receiptMonthlyValues[] = (float) ($monthlyVerified[$ym] ?? 0);
+        }
+
+        // Top customers by verified collections in range
+        $topReceiptCustomers = DB::table('receipts as r')
+            ->join('purchase_orders as po', 'po.po_id', '=', 'r.po_id')
+            ->join('users as u', 'u.id', '=', 'po.user_id')
+            ->where('r.status', 'Verified')
+            ->whereBetween('r.created_at', [$startDate, $endDate])
+            ->select('u.id', 'u.store_name', DB::raw('SUM(r.total_amount) as collected'), DB::raw('COUNT(*) as rec_count'))
+            ->groupBy('u.id', 'u.store_name')
+            ->orderByDesc('collected')
+            ->limit(10)
+            ->get();
 
         return [
             'Receiptscount' => $Receiptscount,
@@ -558,6 +599,11 @@ private function parseDateRange(Request $request)
             'ReceiptscancelledCount' => $ReceiptscancelledCount,
             'ReceiptsrejectedCount' => $ReceiptsrejectedCount,
             'ReceiptsverifiedAmount' => $ReceiptsverifiedAmount,
+            'averageVerifiedReceipt' => $averageVerifiedReceipt,
+            'rejectionRate' => $rejectionRate,
+            'receiptMonthlyLabels' => $receiptMonthlyLabels,
+            'receiptMonthlyValues' => $receiptMonthlyValues,
+            'topReceiptCustomers' => $topReceiptCustomers,
         ];
     }
 
@@ -1320,7 +1366,6 @@ public function exportReports(Request $request) {
                 'total_amount',
                 'purchase_date',
                 'status',
-                'verified_by',
                 'created_at'
             )
             ->whereBetween('created_at', [$startDate, $endDate])

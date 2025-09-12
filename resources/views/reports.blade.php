@@ -1240,6 +1240,84 @@
                     <div class="stat-value">₱{{ number_format($ReceiptsverifiedAmount, 2) }}</div>
                     <div class="stat-label">Verified Amount</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-value">₱{{ number_format($averageVerifiedReceipt ?? 0, 2) }}</div>
+                    <div class="stat-label">Avg. Verified Receipt</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ $rejectionRate ?? 0 }}%</div>
+                    <div class="stat-label">Rejection Rate</div>
+                </div>
+            </div>
+
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Monthly Verified Collections</p>
+            <div class="chart-container">
+                <div style="width: 100%; margin: auto; height: 360px;">
+                    <canvas id="receiptsChart"></canvas>
+                </div>
+                <script>
+                    const rctx = document.getElementById('receiptsChart').getContext('2d');
+                    const receiptsChart = new Chart(rctx, {
+                        type: 'line',
+                        data: {
+                            labels: [
+                                @if(isset($receiptMonthlyLabels))
+                                    @foreach($receiptMonthlyLabels as $label)
+                                        "{{ $label }}",
+                                    @endforeach
+                                @endif
+                            ],
+                            datasets: [{
+                                label: 'Verified Collections',
+                                data: [
+                                    @if(isset($receiptMonthlyValues))
+                                        @foreach($receiptMonthlyValues as $v)
+                                            {{ $v }},
+                                        @endforeach
+                                    @endif
+                                ],
+                                borderColor: '#4e73df',
+                                backgroundColor: '#4e73df22',
+                                borderWidth: 2,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { beginAtZero: true, ticks: { callback: (v)=>'₱'+v.toLocaleString() } }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+
+            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Top Customers by Verified Collections</p>
+            <div class="chart-container" style="overflow-x: auto;">
+              <div class="data-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                        <th>Customer</th>
+                        <th>Collections (₱)</th>
+                        <th>Receipts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach(($topReceiptCustomers ?? []) as $row)
+                        <tr style="cursor: pointer" onclick="window.location='{{ url('/customer_view/' . $row->id) }}'">
+                            <td>{{ $row->store_name }}</td>
+                            <td>₱{{ number_format($row->collected, 2) }}</td>
+                            <td>{{ $row->rec_count }}</td>
+                        </tr>
+                    @endforeach
+                    @if(empty($topReceiptCustomers) || count($topReceiptCustomers) === 0)
+                        <tr><td colspan="3" class="text-center">No data for this period</td></tr>
+                    @endif
+                    </tbody>
+                </table>
+            </div>
             </div>
         </div>
     </div>

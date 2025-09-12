@@ -10,17 +10,20 @@
 </head>
 <body>
 
-    
     <div class="loginPage" >
         <div class="left">
-            <img src="{{ asset('assets/sunny-chickens.jpg') }}" alt="Owner Image"  class="ownerImage">
+            <div class="carousel" aria-label="Promotional images" role="region">
+                <img src="{{ asset('assets/sunny-chickens.jpg') }}" alt="Happy chickens at the farm" class="carousel-image active">
+                <img src="{{ asset('assets/eggTray.jpg') }}" alt="Fresh egg trays" class="carousel-image">
+                <img src="{{ asset('assets/store_bg.jpg') }}" alt="Store background" class="carousel-image">
+                <button class="carousel-btn prev" aria-label="Previous slide" type="button">&#10094;</button>
+                <button class="carousel-btn next" aria-label="Next slide" type="button">&#10095;</button>
+            </div>
         </div>
         <div class="right">
             <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image">
             <h1>Welcome back👋!</h1>
             <p class="kindly-mess">Please log in to your account below</p>
-
-
 
             <form action="/login-user" method="POST" class="loginForm" autocomplete="off">
                 @csrf
@@ -56,15 +59,36 @@
                 
             </form>
 
-
-
             <span>Doesn't have an ccount? <a href="/register-view">Create account</a></span>
 
-            
         </div>
-        
     </div>
+    <script>
+        (function(){
+            var images = document.querySelectorAll('.carousel-image');
+            if(!images || images.length === 0) return;
+            var prevBtn = document.querySelector('.carousel-btn.prev');
+            var nextBtn = document.querySelector('.carousel-btn.next');
+            var currentIndex = 0;
 
+            function showSlide(index){
+                images[currentIndex].classList.remove('active');
+                currentIndex = (index + images.length) % images.length;
+                images[currentIndex].classList.add('active');
+            }
 
+            function nextSlide(){ showSlide(currentIndex + 1); }
+            function prevSlide(){ showSlide(currentIndex - 1); }
+
+            var timer = setInterval(nextSlide, 4000);
+            function resetTimer(){
+                clearInterval(timer);
+                timer = setInterval(nextSlide, 4000);
+            }
+
+            if(prevBtn){ prevBtn.addEventListener('click', function(){ prevSlide(); resetTimer(); }); }
+            if(nextBtn){ nextBtn.addEventListener('click', function(){ nextSlide(); resetTimer(); }); }
+        })();
+    </script>
 </body>
 </html>
