@@ -117,7 +117,7 @@
                               <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $order->user->store_name }}</td>
                             @endif
 
-                            <td>x{{ $order->items->sum('quantity') }}</td>                            
+                            <td>x{{ $order->total_quantity}}</td>                            
                             <td>₱{{ number_format($order->subtotal, 2) }}</td>
                             <td>{{$order->payment_status}}</td>
                             <td>₱{{ number_format($order->remaining_balance, 2) }}</td>

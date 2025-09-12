@@ -510,7 +510,13 @@
                                 <p class="item-name">{{$item->product->name}}</p>
                                 <p class="item-price-quan">
                                     <span class="item-original-price">₱{{ number_format($item->product->price, 2) }}</span>
-                                    <span class="item-quantity"> × {{ $item->quantity }} -> {{ $item->new_quantity }}</span>
+                                    <span class="item-quantity">
+                                         × {{ $item->quantity }}
+                                          @if ($item->new_quantity > 0)
+                                             -> {{ $item->new_quantity }}
+
+                                          @endif
+                                    </span>
                                 </p>
                                 <span class="item-total-price"> ₱ {{ number_format($item->product->price * $item->quantity, 2) }}</span>
 

@@ -48,6 +48,7 @@ class PurchaseOrderController extends Controller {
                 Carbon::parse($to)->endOfDay()
             ]);
         }
+        
 
         $statusCounts = [];
         $tabStatuses = [
@@ -93,7 +94,20 @@ class PurchaseOrderController extends Controller {
             $query->where('status', '!=', 'Draft');
         }
 
-        $purchaseOrders = $query->orderBy('order_date', 'desc')->paginate(50);
+        $purchaseOrders = $query
+            ->select('purchase_orders.*')
+            ->selectRaw('
+                (
+                    SELECT SUM(CASE 
+                        WHEN poi.new_quantity IS NOT NULL THEN poi.new_quantity 
+                        ELSE poi.quantity 
+                    END)
+                    FROM purchase_order_items poi
+                    WHERE poi.po_id = purchase_orders.po_id
+                ) as total_quantity
+            ')
+            ->orderBy('order_date', 'desc')
+            ->paginate(50);
 
         // calculate remaining balance for each PO (only Verified receipts count)
         foreach ($purchaseOrders as $po) {
