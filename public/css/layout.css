@@ -22,6 +22,11 @@ body .mainFrame{
 
     }
 
+/* asterisk */
+.req-asterisk{
+    color: #ea1f21;
+    margin: 0;
+}
 
 /* category styles */
 .nav-group {

@@ -454,6 +454,28 @@
                 font-weight: bold;
             }
 
+
+/* report order */
+#report-subject {
+    width: 80%;
+    padding: 10px 14px;
+    border: 1px solid #cfd8dc;
+    border-radius: 6px;
+    font-size: 13px;
+    background: #f7f9fa;
+    transition: border 0.2s;
+    margin-bottom: 6px;
+    outline: none;
+    color: #333;
+    cursor: pointer;
+}
+
+.feedback-footer .report-submit:hover{
+    background-color: #b81619;
+}
+
+
+
 @media (max-width: 768px) {
     .purchase-order-bg {
         padding: 15px;

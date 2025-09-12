@@ -55,7 +55,7 @@
 
             </div>
 
-            <div class="shipping-type">
+            {{-- <div class="shipping-type">
                 <h3 style="margin-top: 10px">Shipping Type</h3>
                 <table>
                     <thead>
@@ -75,7 +75,7 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
+            </div> --}}
 
             <div class="items">
                 <h3 style="margin-top: 10px">Items</h3>
