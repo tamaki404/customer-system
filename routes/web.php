@@ -100,6 +100,8 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     })->name('profile');
     Route::post('/edit-profile', [UserController::class, 'updateProfile']);
     Route::post('/update-image', [UserController::class, 'updateImage']);
+    Route::post('/change-password', [UserController::class, 'changePassword'])->name('password.change');
+    Route::post('/password/check-current', [UserController::class, 'checkCurrentPassword'])->name('password.checkCurrent');
 
     // Address lookups (All users)
     Route::get('/regions/{region}/provinces', [AddressController::class, 'provinces'])->name('address.provinces');

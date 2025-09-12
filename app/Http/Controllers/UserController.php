@@ -342,6 +342,51 @@ public function checkUsername(Request $request)
 
 }
 
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        // Reuse same checks as login: email verified and active status
+        if (!$user->hasVerifiedEmail()) {
+            return back()->with('error', 'Please verify your email before changing password.');
+        }
+        if (strtolower($user->acc_status) !== 'active') {
+            return back()->with('error', 'Your account is not active.');
+        }
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->with('error', 'Current password is incorrect.');
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Optionally log user out of other sessions by regenerating session
+        $request->session()->regenerate();
+
+        return back()->with('success', 'Password changed successfully.');
+    }
+
+    public function checkCurrentPassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+        ]);
+
+        $user = auth()->user();
+        $matches = Hash::check($request->current_password, $user->password);
+
+        return response()->json([
+            'valid' => $matches,
+            'message' => $matches ? '' : 'Current password is incorrect.'
+        ]);
+    }
+
 }
 
 
