@@ -165,15 +165,18 @@
                             </div>
                             <p>......</p>
                             <div class="new-quantity-div">
-                                <input 
-                                    type="number" 
-                                    name="new_quantity[{{ $item->poi_id }}]" 
-                                    max="{{ $item->quantity }}" 
-                                    min="1" 
-                                    placeholder="{{ $item->quantity }}">
-
+                                    <input 
+                                        type="number" 
+                                        name="new_quantity[{{ $item->poi_id }}]"
+                                        max="{{ $item->quantity }}"   {{-- original quantity limit --}}
+                                        min="1"
+                                        value="{{ $item->new_quantity ?? $item->quantity }}"  {{-- default to old new_quantity or original --}}
+                                        data-original-qty="{{ $item->quantity }}"
+                                    >
 
                             </div>
+
+                            <input type="hidden" name="poi_id" value="{{$item->poi_id}}">
 
                             
 

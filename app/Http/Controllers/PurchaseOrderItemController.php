@@ -14,72 +14,71 @@ public function changeQuantity(Request $request)
 {
     $request->validate([
         'new_quantity' => 'required|array|min:1',
-        'new_quantity.*' => 'required|integer|min:1'
+        'new_quantity.*' => 'nullable|integer|min:0'
     ]);
 
-    $poi_ids = array_keys($request->new_quantity);
-    
-    $orderItems = PurchaseOrderItem::whereIn('poi_id', $poi_ids)->get()->keyBy('poi_id');
-    
-    $missingItems = array_diff($poi_ids, $orderItems->keys()->toArray());
-    if (!empty($missingItems)) {
-        return back()->withErrors([
-            'error' => 'Some purchase order items were not found: ' . implode(', ', $missingItems)
-        ]);
-    }
-    
-    $rules = [];
-    $hasChanges = false;
-    
-    foreach ($request->new_quantity as $poi_id => $new_quantity) {
-        $currentItem = $orderItems[$poi_id];
-        $rules["new_quantity.$poi_id"] = "required|integer|min:1|max:{$currentItem->quantity}";
-        
-        if ($new_quantity != $currentItem->quantity) {
-            $hasChanges = true;
-        }
+    // Filter out empty/null values - only process items where user entered a value
+    $quantities = array_filter($request->new_quantity, function($value) {
+        return $value !== null && $value !== '' && is_numeric($value);
+    });
+
+    if (empty($quantities)) {
+        return back()->with('info', 'No quantities were specified for update.');
     }
 
-    if (!$hasChanges) {
-        return back()->with('info', 'No changes were made to quantities.');
-    }
+    $updatedCount = 0;
+    $errors = [];
 
-    $validated = $request->validate($rules);
-
-    DB::beginTransaction();
-    
     try {
-        $updatedCount = 0;
-        
-        foreach ($validated['new_quantity'] as $poi_id => $new_quantity) {
-            $affected = PurchaseOrderItem::where('poi_id', $poi_id)
-                ->update(['new_quantity' => $new_quantity, 'updated_at' => now()]);
-            
-            if ($affected > 0) {
-                $updatedCount++;
-            }
-        }
-        
-        DB::commit();
-        
-        if ($updatedCount > 0) {
-            return back()->with('success', "Successfully updated {$updatedCount} item quantities.");
-        } else {
-            return back()->with('warning', 'No items were updated. Please try again.');
-        }
-        
-    } catch (\Exception $e) {
-        DB::rollback();
+        DB::transaction(function () use ($quantities, &$updatedCount, &$errors) {
+            foreach ($quantities as $poi_id => $new_quantity) {
+                $currentItem = PurchaseOrderItem::where('poi_id', $poi_id)->first();
 
-        \Log::error('Failed to update quantities', [
-            'error' => $e->getMessage(),
-            'poi_ids' => $poi_ids,
-            'quantities' => $request->new_quantity
-        ]);
-        
-        return back()->with('error', 'Failed to update quantities. Please try again.');
+                if (!$currentItem) {
+                    $errors[] = "Item with POI {$poi_id} not found.";
+                    continue;
+                }
+
+                // Convert to integer for comparison
+                $new_quantity = (int) $new_quantity;
+
+                // Validate that new_quantity doesn't exceed original quantity
+                if ($new_quantity > $currentItem->quantity) {
+                    $errors[] = "New quantity ({$new_quantity}) for '{$currentItem->product->name}' cannot exceed original quantity ({$currentItem->quantity}).";
+                    continue;
+                }
+
+                // Update the new_quantity column
+                // We update even if it's the same value to ensure consistency
+                $oldNewQuantity = $currentItem->new_quantity;
+                $currentItem->update(['new_quantity' => $new_quantity]);
+                
+                // Only count as updated if the value actually changed
+                if ($oldNewQuantity != $new_quantity) {
+                    $updatedCount++;
+                }
+            }
+
+            // If there are validation errors, throw an exception to rollback
+            if (!empty($errors)) {
+                throw new \Exception('Validation failed: ' . implode(' | ', $errors));
+            }
+        });
+
+        return back()->with(
+            $updatedCount > 0 ? 'success' : 'info',
+            $updatedCount > 0 
+                ? "Successfully updated {$updatedCount} item(s) with new quantities." 
+                : 'Values processed but no changes were made (same quantities were entered).'
+        );
+
+    } catch (\Exception $e) {
+        return back()->withErrors([
+            'quantity_errors' => $errors ?: [$e->getMessage()]
+        ])->withInput();
     }
 }
+
 }
 
 
