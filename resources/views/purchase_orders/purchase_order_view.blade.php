@@ -73,7 +73,7 @@
     <!-- report order modal -->
     <div class="modal fade" id="reportOrderModal" style="display: none;"  tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered"  style="justify-self: center; align-self: center; ">
-            <form class="modal-content" action="{{ route('customer.received') }}"  style="border-top: 4px solid #ffde59;">
+            <form class="modal-content" action="{{ route('customer.received-report') }}"  style="border-top: 4px solid #ffde59;">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" style="padding: 0; margin: 0; font-size: 16px; font-weight: bold;"> What do you want to report? </h5>
@@ -82,13 +82,13 @@
 
                 <div class="modal-body" style="border: none; font-size: 14px; gap: 5px;">
 
-                    <p class="note"></p>
+                    <p class="note">Not happy with your order? Tell us what went wrong</p>
                     <div>
-                        <p style="margin: 0">
+                        <label style="margin: 0" class="report-label">
                             <span class="req-asterisk">*</span>
                             Kindly select the subject for this issue
-                        </p>
-                        <select id="report-subject" name="report-subject" id="" required>
+                        </label>
+                        <select id="report-subject" name="report_subject" id="" required>
                             <option value="Damaged item/s">Damaged item/s</option>
                             <option value="Wrong item received">Wrong item received</option>
                             <option value="Missing item">Missing item</option>
@@ -98,27 +98,34 @@
                         </select>
                     </div>
                     <div>
-                        <label for="feedback-div">
+                        <label class="report-label" for="feedback_div">
                             <span class="req-asterisk">*</span> 
                             Please specify the issue here
                         </label>
-                        <textarea type="text" name="feedback" id="feedback-div" maxlength="255" minlength="20" required></textarea>
+                        <textarea type="text" name="feedback" id="feedback_div" maxlength="255" minlength="20" required></textarea>
                     </div>
 
                     <input type="hidden" name="po_id" value="{{$po->po_id}}">
-                    <input type="hidden" name="status" value="issue">
-                    <input type="hidden" name="label" value="Failed">
+                    <input type="hidden" name="status" value="Reported">
+                    <input type="hidden" name="label" value="Issue reported">
 
                 </div>
                 
 
                 <div class="modal-footer feedback-footer" style="padding: 5px">
                     <button type="button" id="cancelBtn" class="btn" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" id="" style="background-color: #ea1f21; color: #fff; border: 1px solid #c7181b;" class="report-submit submit-btn btn">Report this</button>
+                    <button type="submit"  style="background-color: #ea1f21; color: #fff; border: 1px solid #c7181b;" class="report-submit btn">Report this</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <script>
+        $('.modal form').on('submit', function (e) {
+    e.stopPropagation(); // prevents triggering other forms
+});
+
+    </script>
 
 
     <div class="purchase-order-bg">

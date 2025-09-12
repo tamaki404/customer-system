@@ -10,6 +10,7 @@ class OrderReceipt extends Model
         'po_id',
         'or_id',
         'feedback',
+        'report_subject',
         'label',
         'status',
         'received_at',

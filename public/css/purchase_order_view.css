@@ -426,7 +426,8 @@
                 color: #333;
                 background-color: #fbcb7b;
             }
-            #feedback-div{
+            #feedback-div,
+            #feedback_div{
                 border-radius: 6px;
                 font-size: 13px;
                 border: 1px solid #cfd8dc;
@@ -472,6 +473,9 @@
 
 .feedback-footer .report-submit:hover{
     background-color: #b81619;
+}
+.report-label{
+    font-size: 14px;
 }
 
 

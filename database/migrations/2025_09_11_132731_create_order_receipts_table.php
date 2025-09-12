@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('or_id')->nullable();
             $table->string('po_id')->nullable();
             $table->string('feedback')->nullable();
+            $table->string('report_subject')->nullable();
             $table->string('label')->nullable();
             $table->string('status')->nullable();
             $table->string('received_at')->nullable();
