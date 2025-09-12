@@ -160,7 +160,15 @@
                     <a class="see-report-link" href="{{ route('report.view', $po->orderReceipt->or_id) }}">See report</a>
                 </p>
             </div>
-            
+        @elseif (auth()->user()->user_type !== 'Customer' && ($po->orderReceipt->status  ?? null) === 'Received' && ($po->orderReceipt->label  ?? null) === 'Reported' && $po->status === 'Delivered')
+            <p style="font-size: 14px; color: #888;">This order is confirmed as received..</p>
+        @elseif (auth()->user()->user_type !== 'Customer' && ($po->orderReceipt->status  ?? null) === 'Received' && ($po->orderReceipt->label  ?? null) === 'Reported' && $po->status === 'Delivered')
+            <div>
+                <p style="font-size: 14px; color: #888; margin: 0;">
+                   Customer has reported this order
+                    <a class="see-report-link" href="{{ route('report.view', $po->orderReceipt->or_id) }}">See report</a>
+                </p>
+            </div>
         @endif
         @if(auth()->user()->user_type !== 'Customer')
             <form class="order-actions" action="{{ route('change.po_status') }}" method="POST">
