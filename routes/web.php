@@ -203,6 +203,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::get('/reports/products', [ReportsController::class, 'exportProducts'])->name('reports.products');
         Route::get('/reports/orders', [ReportsController::class, 'exportOrders'])->name('reports.orders');
         Route::get('/reports/receipts', [ReportsController::class, 'exportReceipts'])->name('reports.receipts');
+        Route::get('/reports/purchase-orders/preview', [ReportsController::class, 'purchaseOrdersPreview'])->name('reports.purchase_orders.preview');
     });
     
     // ================================

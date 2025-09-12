@@ -1,0 +1,24 @@
+/* Print styles for purchase_order.blade.php to print only the orders table */
+@media print {
+    /* Hide all non-table UI on purchase order page */
+    .purchaseFrame .search-container,
+    .purchaseFrame .title-purchase,
+    .purchaseFrame .status-tabs,
+    .purchaseFrame .pagination-wrapper,
+    .purchaseFrame .report-actions,
+    .purchaseFrame nav,
+    .purchaseFrame header,
+    .purchaseFrame footer { display: none !important; }
+
+    /* Ensure only the table is visible */
+    .purchaseFrame .purchase-list { display: block !important; }
+    .purchaseFrame .orders-table { display: table !important; width: 100% !important; }
+
+    .purchaseFrame .orders-table th,
+    .purchaseFrame .orders-table td { padding: 6px 8px !important; border: 1px solid #ddd !important; font-size: 12px !important; }
+
+    /* Remove link styling */
+    a { color: #000 !important; text-decoration: none !important; }
+}
+
+

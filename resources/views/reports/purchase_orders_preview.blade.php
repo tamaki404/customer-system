@@ -34,3 +34,53 @@
 </table>
 
 
+<style>
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden; /* keeps rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Table headers */
+.table thead {
+    background-color: #f9f9f9;
+    color: #444;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.table th, 
+.table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+/* Zebra striping */
+.table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Hover effect */
+.table tbody tr:hover {
+    background-color: #f1f7ff;
+    transition: background-color 0.2s ease;
+}
+
+/* Optional: highlight first column */
+.table td:first-child {
+    font-weight: 500;
+    color: #222;
+}
+
+</style>
+
+

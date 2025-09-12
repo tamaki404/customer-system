@@ -50,6 +50,8 @@
                  <button class="create-purchase-order" onclick="location.href='/purchase-order/store/order'"><span class="material-symbols-outlined" style="font-size: 14px; font-weight: bold;">add</span> Purchase order</button>
             @endif
         </div>
+        
+        
                 
         @php
         $tabStatuses = [
@@ -119,7 +121,7 @@
 
                             <td>x{{ $order->total_quantity}}</td>                            
                             <td>₱{{ number_format($order->subtotal, 2) }}</td>
-                            <td>{{$order->payment_status}}</td>
+                            <td>{{ $order->payment_status}}</td>
                             <td>₱{{ number_format($order->remaining_balance, 2) }}</td>
 
                             <td class="order-actions">
@@ -205,6 +207,7 @@
 
             </div>
     
+
 
 
     </div>

@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ asset('css/reporting.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fadein.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/print-purchase-orders.css') }}" media="print">
     <title>Reports</title>
 </head>
 <body>
@@ -782,6 +783,7 @@
             <div class="report-actions">
                 <a href="{{ route('purchase_order') }}" class="btn">📋 View All Purchase Orders</a>
                 {{-- <a href="{{ route('reports.purchase_orders', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a> --}}
+                <button type="button" class="btn download-purchase-order" onclick="downloadPDF()">🖨️ Download PDF</button>
             </div>
 
             <!-- Display current date range -->
@@ -1244,6 +1246,7 @@
 </div>
 
 <script src="{{ asset('js/reports.js') }}"></script>
+<script src="{{ asset('js/purchase_order/download_pdf_btn.js') }}"></script>
 
 
 
