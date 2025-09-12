@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\PurchaseOrder;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\OrderReceipt;
@@ -21,6 +22,7 @@ class OrderReceiptController extends Controller
         return $randomString;
     }
     public function receivedOrder(Request $request){
+
         $request->validate([
             'feedback'   => 'nullable|string|max:255',
             'po_id'    => 'required|string|max:255|exists:purchase_orders,po_id',
@@ -31,7 +33,8 @@ class OrderReceiptController extends Controller
         $date = date('Ymd');
         $or_id = 'OR-' . $date . '-' . $this->randomBase36String(5);
 
-        $po = OrderReceipt::create([
+
+        $receipt = OrderReceipt::create([
             'feedback'        => $request->feedback,
             'po_id'           => $request->po_id,
             'status'          => $request->status,
@@ -39,6 +42,10 @@ class OrderReceiptController extends Controller
             'or_id'           => $or_id,
             'received_at'     => Carbon::now()
         ]);
+
+        
+
+
 
         return back()->with('success', 'Order has been set received successfully');
     }

@@ -44,16 +44,12 @@
             </form>
         </div>
 
-
         <div class="title-purchase">
             <h2>Purchase Order</h2>
             @if(auth()->user()->user_type === 'Customer')
                  <button class="create-purchase-order" onclick="location.href='/purchase-order/store/order'"><span class="material-symbols-outlined" style="font-size: 14px; font-weight: bold;">add</span> Purchase order</button>
             @endif
         </div>
-
-
-
                 
         @php
         $tabStatuses = [
@@ -92,11 +88,6 @@
             @endforeach
         </div>
 
-
-
-
-
-
         <div class="purchase-list">
             <table style="width:100%; border-collapse:collapse;" class="orders-table">
                 <thead style="background-color: #f9f9f9;">
@@ -111,7 +102,6 @@
                         <th>Subtotal</th>
                         <th >Payment</th>
                         <th>Remaining balance</th>
-
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -134,27 +124,35 @@
 
                             <td class="order-actions">
                                 @php 
-                                    $dateToShow = $order->action_at ?? $order->created_at;
-                                    $statusClasses = [
-                                        'Pending' => 'status-pending',
-                                        'Processing' => 'status-processing',
-                                        'Accepted' => 'status-approved',
-                                        'Rejected' => 'status-rejected',
-                                        'Delivered' => 'status-delivered',
-                                        'Cancelled' => 'status-cancelled',
-                                        'Draft' => 'status-draft',
+                                    $receiptStatus = $order->orderReceipt->status ?? null;
 
+                                    $statusClasses = [
+                                        'Pending'    => 'status-pending',
+                                        'Processing' => 'status-processing',
+                                        'Accepted'   => 'status-approved',
+                                        'Rejected'   => 'status-rejected',
+                                        'Delivered'  => 'status-delivered',
+                                        'Cancelled'  => 'status-cancelled',
+                                        'Draft'      => 'status-draft',
+                                        'Received'   => 'status-received',  
+                                        'Reported'   => 'status-reported',   
                                     ];
                                 @endphp
-                                <span class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
-                                       {{ ucfirst($order->status) }}
-                                </span>
-                                <span class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
-                                       {{ ($order->orderReceipt->status)?? null}}
-                                </span>         
 
-
+                                {{-- Case 1: Receipt exists and has status --}}
+                                @if($receiptStatus)
+                                    <span class="{{ $statusClasses[$receiptStatus] ?? 'status-default' }}">
+                                        {{ ucfirst($receiptStatus) }}
+                                    </span>
+                                
+                                {{-- Case 2: No receipt yet, show PO status --}}
+                                @else
+                                    <span class="{{ $statusClasses[$order->status] ?? 'status-default' }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                @endif
                             </td>
+
                         
                         </tr>
                     @empty

@@ -41,7 +41,6 @@
                 </ul>
             </div>
 
-            {{-- <h2>Create Order</h2> --}}
         </div>
 
         <!-- Display Validation Errors -->
@@ -54,6 +53,7 @@
                 </ul>
             </div>
         @endif
+
         <div class="date-search">
             <form class="search-form" method="GET" action="{{ route('purchase_order.store.order') }}">
                 <input type="text" name="search" style="outline:none;" value="{{ request('search') }}" placeholder="Search by Name or Product ID">
@@ -66,18 +66,13 @@
             <div class="form-container" style="overflow: hidden">
                 <!-- STEP 1: Add to cart -->
                 <section class="products step-section" data-step="1" style="z-index: 1">
-          
                     <div class="products" style="z-index: 1">
                         <div class="box-description" >
                             <div class="box-description-inner">
                                 <h2>Add to cart</h2>
                                 <p>Choose products here to add to cart</p>
                             </div>
-
-
-                      
                         </div>
-                        
 
                         <div class="products-box">
                             @if(isset($products) && count($products) > 0)
@@ -146,8 +141,6 @@
 
                 <!-- STEP 2: Edit Order -->
                 <section class="edit-order step-section" data-step="2" style="overflow: hidden">
-
-                  
                     <div class="edit-orders" >
                         <h2>Edit Order</h2>
                         <p>Review cart items, adjust quantities, or remove products.</p>
