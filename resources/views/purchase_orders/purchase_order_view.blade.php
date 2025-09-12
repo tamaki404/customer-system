@@ -65,7 +65,7 @@
 
                 <div class="modal-footer feedback-footer" style="padding: 5px">
                     <button type="button" id="cancelBtn" class="btn" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="submit-btn btn">Yes, thankyou!</button>
+                    <button type="submit" class="submit-btn btn" style="font-size: 14px">Yes, thankyou!</button>
                 </div>
             </form>
         </div>
@@ -119,7 +119,80 @@
             </form>
         </div>
     </div>
+    <!-- mddify quantity modal -->
+    <div class="modal fade" id="modifyQuantity" style="display: none;"  tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered"  style="justify-self: center; align-self: center; ">
+            <form class="modal-content" action="{{ route('customer.received-report') }}"  style="border-top: 4px solid #ffde59;">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" style="padding: 0; margin: 0; font-size: 16px; font-weight: bold;"> Modify order quantity </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
+                <div class="modal-body" style="border: none; font-size: 14px; gap: 5px;">
+
+                    <p class="note">Note: Kindly notify the supplier for any changes made</p>
+
+                    <div class="items-list">
+                        @foreach($ordersItem as $item)
+                        <div class="products-list" style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
+                            <div class="each-item-div prod-item-div">
+                                @php
+                                    $isBase64 = !empty($item->product->image_mime);
+                                    $imgSrc = $isBase64 
+                                        ? ('data:' . $item->product->image_mime . ';base64,' . $item->product->image) 
+                                        : asset('images/' . ($item->product->image ?? 'default-product.png'));
+                                @endphp
+
+                                @if(!empty($item->product->image) && !empty($item->product->image_mime))
+                                    <img src="data:{{ $item->product->image_mime }};base64,{{ $item->product->image }}" 
+                                        alt="{{ $item->product->name }}" 
+                                        style="width: 50px; height: 50px; object-fit: cover; value">
+                                @else
+                                    <div class="thumb-placeholder" 
+                                        style="width: 50px; height: 50px; color:#888; font-size:13px; text-align: center;  display: flex; align-items: center; justify-content: center; background: #f0f0f0; border-radius: 5px;">
+                                        No Image
+                                    </div>
+                                @endif
+                                <div class="item-detail">
+                                    <p class="item-name prod-name">{{$item->product->name}}</p>
+                                    <p class="item-price-quan">
+                                        <span class="item-quantity"> Quantity:  {{ $item->quantity }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <p>......</p>
+                            <div class="new-quantity-div">
+                                <input 
+                                    type="number" 
+                                    name="new_quantity" 
+                                    max="{{ $item->quantity }}" 
+                                    min="1" 
+                                    placeholder="{{ $item->quantity }}">
+                            </div>
+                                        <span class="item-quantity"> Quantity:  {{ $item->quantity }}</span>
+
+
+                        </div>
+
+                        @endforeach     
+                    </div>
+
+
+                    <input type="hidden" name="po_id" value="{{$po->po_id}}">
+
+
+                </div>
+                
+
+                <div class="modal-footer feedback-footer" style="padding: 5px">
+                    <button type="button" id="cancelBtn" class="btn" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit"  style="background-color: #ffde59; color: #333; border: 1px solid #d6b83f; font-size: 14px;" class="modify-submit btn">Submit</button>
+                 
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="purchase-order-bg">
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show position-fixed" 
@@ -171,24 +244,29 @@
             </div>
         @endif
         @if(auth()->user()->user_type !== 'Customer')
-            <form class="order-actions" action="{{ route('change.po_status') }}" method="POST">
-                @csrf
+            <div class="action-buttons" style="display: flex; flex-direction: row; justify-content: space-between;">
+                <form class="order-actions" action="{{ route('change.po_status') }}" method="POST">
+                    @csrf
 
-                    @if($po->status === "Pending")
-                        <button type="button" class="btn btn-success btn-confirm" data-action="Accepted">Accept</button>
-                        <button type="button" class="btn btn-warning btn-confirm" data-action="Rejected">Reject</button>
-                        <button type="button" class="btn btn-danger btn-confirm" data-action="Cancelled">Cancel</button>
+                        @if($po->status === "Pending")
+                            <button type="button" class="btn btn-success btn-confirm" data-action="Accepted">Accept</button>
+                            <button type="button" class="btn btn-warning btn-confirm" data-action="Rejected">Reject</button>
+                            <button type="button" class="btn btn-danger btn-confirm" data-action="Cancelled">Cancel</button>
 
-                    @elseif($po->status === "Accepted")
-                        <button type="button" class="btn btn-primary btn-confirm" data-action="Delivered">Mark as Delivered</button>
+                        @elseif($po->status === "Accepted")
+                            <button type="button" class="btn btn-primary btn-confirm" data-action="Delivered">Mark as Delivered</button>
 
-                    @else
-                    @endif
-                    <input type="hidden" name="po_id" value="{{ $po->id }}">
-                    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                        @else
+                        @endif
+                        <input type="hidden" name="po_id" value="{{ $po->id }}">
+                        <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
 
 
-            </form>
+                </form>
+
+                <button data-bs-toggle="modal" data-bs-target="#modifyQuantity">Modify quantity</button>
+            </div>
+
 
             {{-- order customer feedback --}}
             @elseif(
@@ -208,7 +286,7 @@
 
 
 
-            <form class="order-actions" action="{{ route('customer.po_status') }}" method="POST">
+        <form class="order-actions" action="{{ route('customer.po_status') }}" method="POST">
                 @csrf
 
                 @if(auth()->user()->user_type === 'Customer' && $po->status === 'Pending')

@@ -14,7 +14,9 @@ class PurchaseOrderItem extends Model
         'product_id',
         'quantity',
         'unit_price',
-        'total_price'
+        'total_price',
+        'new_quantity',
+        'poi_id'
     ];
 
     protected $casts = [

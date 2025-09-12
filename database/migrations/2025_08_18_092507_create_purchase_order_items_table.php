@@ -11,10 +11,12 @@ class CreatePurchaseOrderItemsTable extends Migration
         Schema::create('purchase_order_items', function (Blueprint $table) {
             $table->id();
             $table->string('po_id');
+            $table->string('poi_id');
             $table->string('product_id');
             $table->integer('quantity');
             $table->decimal('unit_price', 8, 2);
             $table->decimal('total_price', 10, 2);
+            $table->integer('new_quantity');
             $table->timestamps();
 
             // Add foreign key constraints separately

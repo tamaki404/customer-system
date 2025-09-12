@@ -365,7 +365,7 @@ class PurchaseOrderController extends Controller {
     
         
 
-        $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
+            $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
 
             if ($status !== 'Draft') {
             $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
@@ -389,10 +389,13 @@ class PurchaseOrderController extends Controller {
                     'status'      => $status,
                 ]);
 
+            $poi_id = 'POI-' . $date . '-' . $this->randomBase36String(5). '-' .$this->randomBase36String(5);
+
                 // Create purchase order item
                 PurchaseOrderItem::create([
                     'po_id'       => $po->po_id,
                     'product_id'  => $item['id'],
+                    'poi_id'      => $poi_id,
                     'order_id'    => $order_id,
                     'quantity'    => intval($item['quantity']),
                     'unit_price'  => floatval($item['price']),

@@ -132,7 +132,7 @@
                                     <input type="tel" name="mobile"  value="{{auth()->user()->mobile}}" style=" width:250px;">
                                 </div>
                                 <div class="form-group">
-                                    <label>Telephone</label>
+                                    <label>Telephone (Optional)</label>
                                     <input type="text" name="telephone" value="{{ auth()->user()->telephone }}"   style=" width:250px;">
                                 </div>
                             </div>
