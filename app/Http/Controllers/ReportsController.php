@@ -439,6 +439,69 @@ private function parseDateRange(Request $request)
         ];
     }
 
+    private function getPoReceiptSummary($startDate, $endDate)
+    {
+        // Totals based solely on POs and Verified receipts
+        $poQuery = PurchaseOrder::whereBetween('order_date', [$startDate, $endDate]);
+        $poCount = (clone $poQuery)->count();
+        $poDeliveredCount = (clone $poQuery)->where('status', 'Delivered')->count();
+        $poGrandTotal = (clone $poQuery)->sum('grand_total');
+
+        $verifiedReceiptsAmount = Receipt::where('status', 'Verified')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total_amount');
+
+        $outstandingBalance = max($poGrandTotal - $verifiedReceiptsAmount, 0);
+
+        // Payment status breakdown on POs
+        $paymentStatusCounts = PurchaseOrder::select('payment_status', DB::raw('COUNT(*) as count'))
+            ->whereBetween('order_date', [$startDate, $endDate])
+            ->groupBy('payment_status')
+            ->pluck('count', 'payment_status');
+
+        $fullyPaidCount = $paymentStatusCounts['Fully Paid'] ?? 0;
+        $partiallySettledCount = $paymentStatusCounts['Partially Settled'] ?? 0;
+        $processingOrUnpaidCount = ($paymentStatusCounts['Processing'] ?? 0) + ($paymentStatusCounts['Unpaid'] ?? 0);
+        $overpaidCount = $paymentStatusCounts['Overpaid'] ?? 0;
+
+        // Top products and customers from POs
+        $topPOProducts = DB::table('purchase_order_items as poi')
+            ->join('purchase_orders as po', 'po.po_id', '=', 'poi.po_id')
+            ->join('products as p', 'p.id', '=', 'poi.product_id')
+            ->whereBetween('po.order_date', [$startDate, $endDate])
+            ->where('po.status', 'Delivered')
+            ->select('p.name as product_name',
+                DB::raw('SUM(poi.quantity) as total_quantity'),
+                DB::raw('SUM(poi.total_price) as total_revenue'))
+            ->groupBy('p.id', 'p.name')
+            ->orderByDesc('total_quantity')
+            ->limit(10)
+            ->get();
+
+        $topPOCustomers = DB::table('purchase_orders as po')
+            ->join('users as u', 'u.id', '=', 'po.user_id')
+            ->whereBetween('po.order_date', [$startDate, $endDate])
+            ->select('u.id', 'u.store_name', DB::raw('SUM(po.grand_total) as total_po_value'), DB::raw('COUNT(*) as total_pos'))
+            ->groupBy('u.id', 'u.store_name')
+            ->orderByDesc('total_po_value')
+            ->limit(10)
+            ->get();
+
+        return [
+            'poCount' => $poCount,
+            'poDeliveredCount' => $poDeliveredCount,
+            'poGrandTotal' => $poGrandTotal,
+            'verifiedReceiptsAmount' => $verifiedReceiptsAmount,
+            'outstandingBalance' => $outstandingBalance,
+            'fullyPaidCount' => $fullyPaidCount,
+            'partiallySettledCount' => $partiallySettledCount,
+            'processingOrUnpaidCount' => $processingOrUnpaidCount,
+            'overpaidCount' => $overpaidCount,
+            'topPOProducts' => $topPOProducts,
+            'topPOCustomers' => $topPOCustomers,
+        ];
+    }
+
 public function reports(Request $request)
 {
     $user = auth()->user();
@@ -542,6 +605,7 @@ public function reports(Request $request)
     $productAnalytics = $this->getProductAnalytics($startDate, $endDate);
     $salesAnalytics = $this->getSalesAnalytics($startDate, $endDate);
         $receiptAnalytics = $this->getReceiptAnalytics($startDate, $endDate);
+    $poReceiptSummary = $this->getPoReceiptSummary($startDate, $endDate);
 
     // Extract customer analytics
     $totalUsers = $customerAnalytics['totalUsers'];
@@ -581,6 +645,19 @@ public function reports(Request $request)
         $ReceiptscancelledCount = $receiptAnalytics['ReceiptscancelledCount'];
         $ReceiptsrejectedCount = $receiptAnalytics['ReceiptsrejectedCount'];
         $ReceiptsverifiedAmount = $receiptAnalytics['ReceiptsverifiedAmount'];
+
+    // Extract PO/Receipt summary
+    $poCount = $poReceiptSummary['poCount'];
+    $poDeliveredCount = $poReceiptSummary['poDeliveredCount'];
+    $poGrandTotal = $poReceiptSummary['poGrandTotal'];
+    $verifiedReceiptsAmount = $poReceiptSummary['verifiedReceiptsAmount'];
+    $outstandingBalance = $poReceiptSummary['outstandingBalance'];
+    $fullyPaidCount = $poReceiptSummary['fullyPaidCount'];
+    $partiallySettledCount = $poReceiptSummary['partiallySettledCount'];
+    $processingOrUnpaidCount = $poReceiptSummary['processingOrUnpaidCount'];
+    $overpaidCount = $poReceiptSummary['overpaidCount'];
+    $topPOProducts = $poReceiptSummary['topPOProducts'];
+    $topPOCustomers = $poReceiptSummary['topPOCustomers'];
 
     //purchase order
     // Purchase Orders Statistics
@@ -653,6 +730,18 @@ public function reports(Request $request)
         'topPurchaseOrders',
         'POmonthlyData',
         'POrejectedPOs',
+        // Summary (POs + Receipts)
+        'poCount',
+        'poDeliveredCount',
+        'poGrandTotal',
+        'verifiedReceiptsAmount',
+        'outstandingBalance',
+        'fullyPaidCount',
+        'partiallySettledCount',
+        'processingOrUnpaidCount',
+        'overpaidCount',
+        'topPOProducts',
+        'topPOCustomers',
         ));
 }
 

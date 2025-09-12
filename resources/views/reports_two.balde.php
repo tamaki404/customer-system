@@ -19,8 +19,8 @@
     </div>
     <div class="report-container">
         <nav class="tab-navigation">
-            <button class="tab-button {{ request('active_tab') == 'summary' ? 'active' : '' }}" onclick="switchTab('summary')">Summary</button>
-            <button class="tab-button {{ !request('active_tab') || request('active_tab') == 'sales' ? 'active' : '' }}" onclick="switchTab('sales')">Sales & Revenue</button>
+            <button class="tab-button {{ !request('active_tab') || request('active_tab') == 'summary' ? 'active' : '' }}" onclick="switchTab('summary')">Summary</button>
+            <button class="tab-button {{ request('active_tab') == 'sales' ? 'active' : '' }}" onclick="switchTab('sales')">Sales & Revenue</button>
             <button class="tab-button {{ request('active_tab') == 'customers' ? 'active' : '' }}" onclick="switchTab('customers')">Customer Analytics</button>
             <button class="tab-button {{ request('active_tab') == 'orders' ? 'active' : '' }}" onclick="switchTab('orders')">Order Management</button>
             <button class="tab-button {{ request('active_tab') == 'purchase_orders' ? 'active' : '' }}" onclick="switchTab('purchase_orders')">Purchase Orders</button>
@@ -28,135 +28,15 @@
             <button class="tab-button {{ request('active_tab') == 'receipts' ? 'active' : '' }}" onclick="switchTab('receipts')">Receipts</button>
         </nav>
 
-        {{-- Summary Tab (POs + Receipts only) --}}
-        <div id="summary" class="tab-content {{ request('active_tab') == 'summary' ? 'active' : '' }}">
-            <h2>System Summary (Purchase Orders + Receipts)</h2>
 
-            <form method="GET" action="{{ route('reports') }}" id="summaryFilterForm">
-                <input type="hidden" name="active_tab" value="summary">
-                <div class="filters-row">
-                    <div class="filter-group">
-                        <label>Date Range</label>
-                        <select name="date_range" id="summaryDateRange" onchange="toggleCustomFields('summary')">
-                            <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
-                            <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
-                            <option value="last_3_months" {{ request('date_range') == 'last_3_months' ? 'selected' : '' }}>Last 3 months</option>
-                            <option value="custom" {{ request('date_range') == 'custom' ? 'selected' : '' }}>Custom Range</option>
-                        </select>
-                    </div>
-                    <div class="filter-group" id="summaryFromDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
-                        <label>From Date</label>
-                        <input type="date" name="from_date" value="{{ request('from_date', $startDate->format('Y-m-d')) }}">
-                    </div>
-                    <div class="filter-group" id="summaryToDateGroup" style="{{ request('date_range') == 'custom' ? '' : 'display: none;' }}">
-                        <label>To Date</label>
-                        <input type="date" name="to_date" value="{{ request('to_date', $endDate->format('Y-m-d')) }}">
-                    </div>
-                    <button type="submit" class="apply-filter">Apply Filters</button>
-                </div>
-            </form>
+        {{-- Summary Tab --}}
+        <div id="summary" class="tab-content {{ !request('active_tab') || request('active_tab') == 'summary' ? 'active' : '' }}">
+            <h2>Sales & Revenue Reports</h2>
 
-            <div class="current-period">
-                <strong>Current Period:</strong>
-                {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">{{ $poCount }}</div>
-                    <div class="stat-label">Total Purchase Orders</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ $poDeliveredCount }}</div>
-                    <div class="stat-label">Delivered Purchase Orders</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">₱{{ number_format($poGrandTotal, 2) }}</div>
-                    <div class="stat-label">PO Grand Total (in range)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">₱{{ number_format($verifiedReceiptsAmount, 2) }}</div>
-                    <div class="stat-label">Verified Receipts (payments)</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">₱{{ number_format($outstandingBalance, 2) }}</div>
-                    <div class="stat-label">Outstanding Balance</div>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">{{ $fullyPaidCount }}</div>
-                    <div class="stat-label">POs Fully Paid</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ $partiallySettledCount }}</div>
-                    <div class="stat-label">POs Partially Settled</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ $processingOrUnpaidCount }}</div>
-                    <div class="stat-label">POs Unpaid/Processing</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ $overpaidCount }}</div>
-                    <div class="stat-label">POs Overpaid</div>
-                </div>
-            </div>
-
-            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Top Products (by PO items)</p>
-            <div class="chart-container" style="overflow-x: auto;">
-                <div class="data-table">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Total Quantity</th>
-                                <th>Total Revenue (₱)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($topPOProducts as $item)
-                                <tr>
-                                    <td>{{ $item->product_name }}</td>
-                                    <td>x{{ (int)$item->total_quantity }}</td>
-                                    <td>₱{{ number_format($item->total_revenue, 2) }}</td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="3" class="text-center">No data for this period</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <p style="margin: 10px; font-size: 17px; font-weight: bold; color: #333; margin-top: 20px;">Top Customers (by PO value)</p>
-            <div class="chart-container" style="overflow-x: auto;">
-                <div class="data-table">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Customer</th>
-                                <th>POs</th>
-                                <th>Total PO Value (₱)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($topPOCustomers as $c)
-                                <tr style="cursor: pointer" onclick="window.location='{{ url('/customer_view/' . $c->id) }}'">
-                                    <td>{{ $c->store_name ?? 'Unknown' }}</td>
-                                    <td>{{ $c->total_pos }}</td>
-                                    <td>₱{{ number_format($c->total_po_value, 2) }}</td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="3" class="text-center">No data for this period</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
+
         {{-- Sales & Revenue Tab --}}
-        <div id="sales" class="tab-content {{ !request('active_tab') || request('active_tab') == 'sales' ? 'active' : '' }}">
+        <div id="sales" class="tab-content {{ request('active_tab') == 'sales' ? 'active' : '' }}">
             <h2>Sales & Revenue Reports</h2>
             
             <form method="GET" action="{{ route('reports') }}" id="salesFilterForm">
