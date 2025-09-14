@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\PurchaseOrder;
@@ -10,7 +11,8 @@ use App\Models\Product;
 use App\Traits\ImageHandler;
 
 
-class ReceiptController extends Controller{
+class ReceiptController extends Controller
+{
     use ImageHandler;
     // private function updateReceiptStatus($receipt_id, $status, $message)
     // {
@@ -27,7 +29,7 @@ class ReceiptController extends Controller{
 
     // public function verifyReceipt($receipt_id)
     // {
-        
+
     //     return $this->updateReceiptStatus($receipt_id, 'Verified', 'Receipt verified successfully!');
     // }
 
@@ -41,89 +43,89 @@ class ReceiptController extends Controller{
     //     return $this->updateReceiptStatus($receipt_id, 'Rejected', 'Receipt rejected successfully!');
     // }
 
-// UPDATED PHP CONTROLLER METHOD
-public function fileReceipt($po_id, Request $request) 
-{
-    $validated = $request->validate([
-        'receipt_id'             => 'required|string|exists:receipts,receipt_id',
-        'status'         => 'required|string|in:Verified,Rejected',
-        'action_by'      => 'nullable|string',
-        'action_at'      => 'nullable|string',
-        'additional_note'=> 'nullable|string|max:255',
-        'rejected_note'  => 'nullable|string|max:255',
-    ]);
+    // UPDATED PHP CONTROLLER METHOD
+    public function fileReceipt($po_id, Request $request)
+    {
+        $validated = $request->validate([
+            'receipt_id'             => 'required|string|exists:receipts,receipt_id',
+            'status'         => 'required|string|in:Verified,Rejected',
+            'action_by'      => 'nullable|string',
+            'action_at'      => 'nullable|string',
+            'additional_note' => 'nullable|string|max:255',
+            'rejected_note'  => 'nullable|string|max:255',
+        ]);
 
-    $po = PurchaseOrder::where('po_id', $po_id)->firstOrFail();
-    $receipt = Receipt::where('receipt_id', $validated['receipt_id'])
-        ->where('po_id', $po_id)
-        ->firstOrFail();
+        $po = PurchaseOrder::where('po_id', $po_id)->firstOrFail();
+        $receipt = Receipt::where('receipt_id', $validated['receipt_id'])
+            ->where('po_id', $po_id)
+            ->firstOrFail();
 
-    $status = $validated['status'];
-    $user   = $validated['action_by'];
+        $status = $validated['status'];
+        $user   = $validated['action_by'];
 
-    $receiptUpdateData = [
-        'status'          => $status,
-        'action_at'       => now(),
-        'action_by'       => $user,
-        'additional_note' => $validated['additional_note'] ?? null,
-        'rejected_note'   => $status === 'Rejected' 
-                                ? ($validated['rejected_note'] ?? null)
-                                : null,
-    ];
+        $receiptUpdateData = [
+            'status'          => $status,
+            'action_at'       => now(),
+            'action_by'       => $user,
+            'additional_note' => $validated['additional_note'] ?? null,
+            'rejected_note'   => $status === 'Rejected'
+                ? ($validated['rejected_note'] ?? null)
+                : null,
+        ];
 
-    $receipt->update($receiptUpdateData);
+        $receipt->update($receiptUpdateData);
 
-    $this->updatePurchaseOrderPaymentStatus($po);
+        $this->updatePurchaseOrderPaymentStatus($po);
 
-    $message = $status === 'Verified' 
-        ? 'Receipt verified and PO payment status updated successfully!' 
-        : 'Receipt rejected and PO payment status recalculated successfully!';
+        $message = $status === 'Verified'
+            ? 'Receipt verified and PO payment status updated successfully!'
+            : 'Receipt rejected and PO payment status recalculated successfully!';
 
-    return redirect()->back()->with('success', $message);
-}
-
-public function cancelReceipt($receipt_id, Request $request) 
-{
-    $receipt = Receipt::where('receipt_id', $receipt_id)->firstOrFail();
-    $validated = $request->validate([
-        'status' => 'required|string',
-    ]);
-    $status = $validated['status'];
-    $receipt->update([
-        'status' => $status,
-    ]);
-    $message = 'Receipt has been cancelled successfully.';
-    return redirect()->back()->with('success', $message);
-}
-
-
-private function updatePurchaseOrderPaymentStatus($po)
-{
-    $totalPaid = Receipt::where('po_id', $po->po_id)
-        ->where('status', 'Verified')
-        ->sum('total_amount');
-
-    if ($totalPaid == 0) {
-        $po->payment_status = 'Processing';
-    } elseif ($totalPaid < $po->grand_total) {
-        $po->payment_status = 'Partially Settled';
-    } elseif ($totalPaid == $po->grand_total) {
-        $po->payment_status = 'Fully Paid';
-    } elseif ($totalPaid > $po->grand_total) {
-        $po->payment_status = 'Overpaid';
+        return redirect()->back()->with('success', $message);
     }
 
-    $po->save();
-    
-    return $po->payment_status;
-}
+    public function cancelReceipt($receipt_id, Request $request)
+    {
+        $receipt = Receipt::where('receipt_id', $receipt_id)->firstOrFail();
+        $validated = $request->validate([
+            'status' => 'required|string',
+        ]);
+        $status = $validated['status'];
+        $receipt->update([
+            'status' => $status,
+        ]);
+        $message = 'Receipt has been cancelled successfully.';
+        return redirect()->back()->with('success', $message);
+    }
+
+
+    private function updatePurchaseOrderPaymentStatus($po)
+    {
+        $totalPaid = Receipt::where('po_id', $po->po_id)
+            ->where('status', 'Verified')
+            ->sum('total_amount');
+
+        if ($totalPaid == 0) {
+            $po->payment_status = 'Processing';
+        } elseif ($totalPaid < $po->grand_total) {
+            $po->payment_status = 'Partially Settled';
+        } elseif ($totalPaid == $po->grand_total) {
+            $po->payment_status = 'Fully Paid';
+        } elseif ($totalPaid > $po->grand_total) {
+            $po->payment_status = 'Overpaid';
+        }
+
+        $po->save();
+
+        return $po->payment_status;
+    }
 
 
 
     public function index(Request $request)
     {
-       $user = auth()->user();
-       $query = Receipt::with('customer');
+        $user = auth()->user();
+        $query = Receipt::with('customer');
 
         if ($request->filled('from_date') && $request->filled('to_date')) {
             $from = Carbon::parse($request->from_date)->startOfDay();
@@ -174,10 +176,10 @@ private function updatePurchaseOrderPaymentStatus($po)
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('receipt_number', 'like', "%$search%")
-                ->orWhere('store_name', 'like', "%$search%")
-                ->orWhere('total_amount', 'like', "%$search%")
-                ->orWhere('purchase_date', 'like', "%$search%")
-                ->orWhere('status', 'like', "%$search%");
+                    ->orWhere('store_name', 'like', "%$search%")
+                    ->orWhere('total_amount', 'like', "%$search%")
+                    ->orWhere('purchase_date', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%");
             });
         }
 
@@ -263,8 +265,10 @@ private function updatePurchaseOrderPaymentStatus($po)
             'invoice_number'  => 'nullable|string|max:255',
             'notes'           => 'nullable|string',
             'receipt_number'  => 'required|string',
-            'po_id'       => 'required|string|max:255',
+            'po_id'           => 'required|string|max:255|exists:purchase_orders,po_id',
+            'payment_method'  => 'required|string|in:Gcash,Paymaya,Cash',
         ]);
+
 
         if ($request->hasFile('receipt_image')) {
             $imageFile = $request->file('receipt_image');
@@ -272,7 +276,7 @@ private function updatePurchaseOrderPaymentStatus($po)
             $validated['receipt_image'] = $base64Image;
             $validated['receipt_image_mime'] = $mimeType;
         }
-        
+
         $date = date('Ymd');
 
         $request->validate([
@@ -291,8 +295,8 @@ private function updatePurchaseOrderPaymentStatus($po)
             ],
         ]);
 
-        $validated['receipt_id'] = 'RCPT-' . $date . '-' . $this->randomBase36String(5);  
-        $validated['id'] = Auth::id();  
+        $validated['receipt_id'] = 'RCPT-' . $date . '-' . $this->randomBase36String(5);
+        $validated['id'] = Auth::id();
         $validated['status'] = 'Pending';
         unset($validated['verified_by'], $validated['verified_at']);
 
@@ -304,7 +308,7 @@ private function updatePurchaseOrderPaymentStatus($po)
 
     public function getReceiptImage($receipt_id)
     {
-               $user = auth()->user();
+        $user = auth()->user();
 
         $receipt = Receipt::findOrFail($receipt_id);
         return view('receipt_image', compact('receipt'));
@@ -322,13 +326,12 @@ private function updatePurchaseOrderPaymentStatus($po)
         // Search filter
         $search = $request->input('search');
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('receipt_number', 'like', "%$search%")
-                  ->orWhere('store_name', 'like', "%$search%")
-                  ->orWhere('total_amount', 'like', "%$search%")
-                  ->orWhere('purchase_date', 'like', "%$search%")
-                  ->orWhere('status', 'like', "%$search%");
-
+                    ->orWhere('store_name', 'like', "%$search%")
+                    ->orWhere('total_amount', 'like', "%$search%")
+                    ->orWhere('purchase_date', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%");
             });
         }
 
@@ -349,7 +352,7 @@ private function updatePurchaseOrderPaymentStatus($po)
         } else {
             $receipts = $query->where('id', $user->id)->orderBy('created_at', 'desc')->paginate(50);
         }
-        
+
         // append query parameters to pagination links
         $receipts->appends([
             'from_date' => $from,
@@ -357,7 +360,7 @@ private function updatePurchaseOrderPaymentStatus($po)
             'search' => $search,
             'status' => $status
         ]);
-        
+
         return view('receipts', [
             'receipts' => $receipts,
             'user' => $user,
@@ -367,7 +370,4 @@ private function updatePurchaseOrderPaymentStatus($po)
             'status' => $status
         ]);
     }
-
-
-
 }

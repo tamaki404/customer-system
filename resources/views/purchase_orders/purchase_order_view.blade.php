@@ -307,7 +307,7 @@
 
 
                 @if ($po->payment_status !== "Unpaid")
-                    <button class="view-receipt-btn" onclick="window.location='{{ url('/purchase_orders/receipts/' . $po->po_id) }}'">View receipts</button>
+                    <button class="view-receipt-btn" onclick="window.location='{{ url('/purchase_orders/receipts/' . $po->po_id) }}'">View payments</button>
                 @endif
 
             </div>

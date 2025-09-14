@@ -62,11 +62,11 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 // AUTHENTICATED ROUTES (Basic Auth Required)
 // ================================
 Route::middleware(['auth'])->group(function () {
-    
+
     // Logout routes
     Route::post('/logout-user', [UserController::class, 'logout']);
     Route::get('/logout', [UserController::class, 'logout']);
-    
+
     // Email verification routes (authenticated)
     Route::get('/email/verify', [EmailVerificationController::class, 'show'])->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
@@ -85,11 +85,11 @@ Route::middleware(['auth'])->group(function () {
 // AUTHENTICATED & ACTIVE USERS (Auth + Status Check)
 // ================================
 Route::middleware(['auth', 'check.status'])->group(function () {
-    
+
     // ================================
     // GENERAL USER ROUTES (All authenticated users)
     // ================================
-    
+
     // Dashboard
     Route::get('/dashboard', [ViewController::class, 'showDashboard'])->name('dashboard');
     Route::get('/dashboard', [ViewController::class, 'dashboardData'])->name('dashboard');
@@ -107,7 +107,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     Route::get('/regions/{region}/provinces', [AddressController::class, 'provinces'])->name('address.provinces');
     Route::get('/provinces/{province}/municipalities', [AddressController::class, 'municipalities'])->name('address.municipalities');
     Route::get('/municipalities/{municipality}/barangays', [AddressController::class, 'barangays'])->name('address.barangays');
-    
+
 
     Route::get('/purchase_orders/receipts/{po_id}', [PurchaseOrderController::class, 'purchaseReceipts']);
 
@@ -115,7 +115,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     // ================================
     // CUSTOMER SPECIFIC ROUTES
     // ================================
-    
+
     // Store and Orders (Customer functionality)
     Route::get('/store', [OrderController::class, 'store'])->name('store');
     Route::get('/customer_orders', [OrderController::class, 'customerOrders'])->name('customer_orders');
@@ -132,14 +132,14 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 
     // Purchase Orders (Customer functionality)
     Route::get('/purchase_order', [PurchaseOrderController::class, 'purchaseOrder'])->name('purchase_order');
-    
+
     Route::post('/purchase-order/store', [PurchaseOrderController::class, 'store'])->name('purchase_orders.store');
     Route::get('/purchase-order/create/purchase-orderForm/{po_id}', [PurchaseOrderController::class, 'purchaseOrderForm'])->name('purchase_order.create');
     Route::get('/purchase-order/store/order', [PurchaseOrderController::class, 'storeOrderView'])->name('purchase_order.store.order');
     Route::get('/purchase_order/view/{po_id}', [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchase_order.view');
     Route::get('/purchase-order/{po_id}/pdf', [PurchaseOrderController::class, 'downloadPDF'])->name('purchase_order.pdf');
     Route::get('/product-search', [PurchaseOrderController::class, 'productSearch'])->name('product-search');
-    
+
     // Receipts (Customer functionality)
     Route::get('/receipts', [ReceiptController::class, 'showUserReceipts'])->name('receipts');
     Route::get('/receipts_view/{receipt_id}', [ReceiptController::class, 'viewReceipt'])->name('receipts.view');
@@ -164,15 +164,15 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     // ADMIN & STAFF ROUTES
     // ================================
     Route::middleware(['check.role:Admin,Staff'])->group(function () {
-        
 
-        
+
+
         // Order Management
         Route::get('/orders', [OrderController::class, 'orders'])->name('orders');
         Route::post('/order/accept/{order_id}', [OrderController::class, 'acceptOrder'])->name('orders.accept');
         Route::post('/order/mark-done/{order_id}', [OrderController::class, 'markOrderDone'])->name('orders.mark.done');
         Route::post('/order/reject/{order_id}', [OrderController::class, 'rejectOrder'])->name('orders.reject');
-        
+
         // Receipt Management
         Route::post('/receipts/verify/{receipt_id}', [ReceiptController::class, 'verifyReceipt'])->name('receipts.verify');
         Route::post('/receipts/cancel/{receipt_id}', [ReceiptController::class, 'cancelReceipt'])->name('receipts.cancel');
@@ -180,7 +180,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 
         Route::post('/receipts/receipt_status/{po_id}', [ReceiptController::class, 'fileReceipt'])->name('receipts.receipt_status');
 
-        
+
         // Customer Management
         Route::get('/customers', [ViewController::class, 'showCustomers'])->name('customers');
         Route::get('/customer_view/{customer_id}', [ViewController::class, 'viewCustomer'])->name('customer.view');
@@ -196,7 +196,7 @@ Route::middleware(['auth', 'check.status'])->group(function () {
 
 
 
-        
+
         // Reports (Admin/Staff)
         Route::get('/reports', [ReportsController::class, 'reports'])->name('reports');
         Route::get('/reports/dateFilter', [ReportsController::class, 'dateFilter'])->name('dateFilter');
@@ -208,12 +208,12 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::get('/reports/receipts', [ReportsController::class, 'exportReceipts'])->name('reports.receipts');
         Route::get('/reports/purchase-orders/preview', [ReportsController::class, 'purchaseOrdersPreview'])->name('reports.purchase_orders.preview');
     });
-    
+
     // ================================
     // ADMIN ONLY ROUTES
     // ================================
     Route::middleware(['check.role:Admin'])->group(function () {
-        
+
         // Staff management
         Route::get('/staffs', [ViewController::class, 'showStaffs'])->name('staffs');
         Route::post('/add-staff', [UserController::class, 'addStaff']);
@@ -232,11 +232,12 @@ Route::middleware(['auth', 'check.status'])->group(function () {
         Route::post('/products/{product_id}/editProduct', [ProductController::class, 'editProduct'])->name('products.editProduct');
         Route::post('/product/list/{product_id}', [ProductController::class, 'listProduct'])->name('products.list');
         Route::delete('/product/delete/{product_id}', [ProductController::class, 'deleteProduct'])->name('products.deleteProduct');
-        
+
         //Customer management
         Route::post('/customer/accept/{id}', [ViewController::class, 'acceptCustomer'])->name('customer.accept');
         Route::post('/customer/activate/{id}', [ViewController::class, 'activateCustomer'])->name('customer.activate');
         Route::post('/customer/suspend/{id}', [ViewController::class, 'suspendCustomer'])->name('customer.suspend');
-        
+
+        Route::get('/logs/index', [ViewController::class, 'index'])->name('logs.index');
     });
 });

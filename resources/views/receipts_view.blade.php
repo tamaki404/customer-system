@@ -219,6 +219,7 @@
 
                         <tr><th>PO  number</th><td>{{ $receipt->po_id}}</td></tr>
                         <tr><th>Payment status</th><td>{{ $receipt->purchaseOrder->payment_status}}</td></tr>
+                        <tr><th>Payment method</th><td>{{ $receipt->payment_method}}</td></tr>
                         @if ($receipt->purchaseOrder->payment_status === 'Partially Settled')
                             <tr>
                                 <th>

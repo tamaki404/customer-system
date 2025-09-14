@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
- 
+
 
 class Receipt extends Model
 
@@ -29,6 +30,7 @@ class Receipt extends Model
         'additional_note',
         'action_by',
         'action_at',
+        'payment_method'
     ];
 
     protected $primaryKey = 'receipt_id';
@@ -38,12 +40,12 @@ class Receipt extends Model
     // Relationships
     public function customer()
     {
-    return $this->belongsTo(User::class, 'id', 'id');
+        return $this->belongsTo(User::class, 'id', 'id');
     }
 
     public function purchaseOrder()
     {
-    return $this->belongsTo(PurchaseOrder::class, 'po_id', 'po_id');
+        return $this->belongsTo(PurchaseOrder::class, 'po_id', 'po_id');
     }
 
     public function user()
@@ -51,6 +53,3 @@ class Receipt extends Model
         return $this->belongsTo(User::class, 'action_by');
     }
 }
-
-
-?>

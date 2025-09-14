@@ -125,7 +125,7 @@
                         <p>Reports</p>
                         <div class="nav-indicator"></div>
                     </a>
-                    <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('reports') }}">
+                    <a class="nav-item{{ $currentRoute == 'logs' ? ' active' : '' }}" href="{{ route('logs.index') }}">
                         <span class="material-symbols-outlined">history</span>
 
                         <p>Logs</p>
@@ -190,7 +190,7 @@
                                 <p>Reports</p>
                                 <div class="nav-indicator"></div>
                             </a>
-                            <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('reports') }}">
+                            <a class="nav-item{{ $currentRoute == 'logs' ? ' active' : '' }}" href="{{ route('logs.index') }}">
                                 <span class="material-symbols-outlined">bar_chart</span>
                                 <p>Logs</p>
                                 <div class="nav-indicator"></div>
