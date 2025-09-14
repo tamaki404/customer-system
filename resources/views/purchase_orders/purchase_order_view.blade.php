@@ -262,7 +262,9 @@
 
                 </form>
 
-                <button data-bs-toggle="modal" data-bs-target="#modifyQuantity">Modify quantity</button>
+                @if(auth()->user()->user_type !== 'Customer' && $po->status === 'Pending')
+                    <button data-bs-toggle="modal" class="modify-quantity-btn" data-bs-target="#modifyQuantity">Modify quantity</button>
+                @endif
             </div>
 
 
