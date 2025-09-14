@@ -185,6 +185,8 @@
 
 
                         @endforeach     
+                        <input type="hidden" name="po_id" value="{{$item->po_id}}">
+
                     </div>
 
 
@@ -540,16 +542,10 @@
                 <div class="order-summmary-div">
                     <div class="summary-items">
                         <p class="total-title">Sub total</p>
-                        <p class="total-total"> ₱ {{$po->subtotal}}</p>
+                        <p class="total-total"> ₱ {{$po->grand_total}}</p>
                     </div>
-                    <div class="summary-items">
-                        <p class="total-title">Tax</p>
-                        <p class="total-total"> ₱ {{$po->tax_amount}}</p>
-                    </div>
-                    <div class="summary-items">
-                        <p class="total-title">Discount</p>
-                        <p class="total-total"> ₱ {{$po->subtotal}}</p>
-                    </div>
+              
+                 
                     <div class="summary-items" style="margin-top: 10px; background-color: #ffde59; padding: 10px; border-radius: 10px;">
                         <p class="total-title" style="color:#333; font-size:17px; font-weight: bold;">Total</p>
                         <p class="total-total" style="color:#333; font-size:17px; font-weight: bold;"> ₱ {{$po->grand_total}}</p>
