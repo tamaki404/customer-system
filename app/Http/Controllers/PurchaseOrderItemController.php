@@ -53,9 +53,15 @@ public function changeQuantity(Request $request) {
                     continue;
                 }
 
-                // Update the new_quantity column
+                // Calculate new total price
+                $newTotalPrice = $new_quantity * $currentItem->unit_price;
+
+                // Update both new_quantity and total_price
                 $oldNewQuantity = $currentItem->new_quantity;
-                $currentItem->update(['new_quantity' => $new_quantity]);
+                $currentItem->update([
+                    'new_quantity' => $new_quantity,
+                    'total_price' => $newTotalPrice
+                ]);
 
                 // Only count as updated if the value actually changed
                 if ($oldNewQuantity != $new_quantity) {
@@ -89,23 +95,12 @@ public function changeQuantity(Request $request) {
 }
 
 /**
- * Calculate and update the grand total for a purchase order based on new quantities
+ * Calculate and update the grand total for a purchase order based on updated total_price
  */
 private function updatePurchaseOrderGrandTotal($po_id) {
-    // Get all items for this purchase order
-    $orderItems = PurchaseOrderItem::where('po_id', $po_id)->get();
-    
-    $newGrandTotal = 0;
-    
-    foreach ($orderItems as $item) {
-        // Use new_quantity if it exists, otherwise use original quantity
-        $quantity = $item->new_quantity ?? $item->quantity;
-        $unitPrice = $item->unit_price;
-        
-        // Calculate subtotal for this item
-        $subtotal = $quantity * $unitPrice;
-        $newGrandTotal += $subtotal;
-    }
+    // Sum all total_price values for this purchase order
+    $newGrandTotal = PurchaseOrderItem::where('po_id', $po_id)
+                                      ->sum('total_price');
     
     // Update the purchase order's grand_total
     PurchaseOrder::where('po_id', $po_id)->update([

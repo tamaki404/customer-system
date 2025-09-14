@@ -520,7 +520,7 @@
                                           @endif
                                     </span>
                                 </p>
-                                <span class="item-total-price"> ₱ {{ number_format($item->product->price * $item->quantity, 2) }}</span>
+                                <span class="item-total-price"> ₱ {{ number_format($item->total_price, 2) }}</span>
 
 
                                 <p class="item-unit-title-value">
