@@ -25,8 +25,7 @@
                         1 => 'Add to Cart',
                         2 => 'Modify Order',
                         3 => 'Shipping Address',
-                        4 => 'Additional Info',
-                        5 => 'Order Summary',
+                        4 => 'Order Summary',
                     ];
                     $currentStep = 1;
                 @endphp
@@ -167,7 +166,7 @@
                                 </div>
                                 
                                 <div class="add-form">
-                                    <label for="region">Region</label>
+                                    <label for="region">Region<span style="color: red;">*</span></label>
                                     <select id="region" style="width: 200px" name="region">
                                         <option value="">-- Select Region --</option>
                                         @foreach($regions as $region)
@@ -177,21 +176,21 @@
                                 </div>
                                 
                                 <div class="add-form">
-                                    <label for="province">Province</label>
+                                    <label for="province">Province<span style="color: red;">*</span></label>
                                     <select id="province" style="width: 200px" name="province">
                                         <option value="">-- Select Province --</option>
                                     </select>
                                 </div>
                                 
                                 <div class="add-form">
-                                    <label for="municipality">Municipality</label>
+                                    <label for="municipality">Municipality<span style="color: red;">*</span></label>
                                     <select style="width: 220px" id="municipality" name="municipality">
                                         <option value="">-- Select City / Municipality --</option>
                                     </select>
                                 </div>
                                 
                                 <div class="add-form">
-                                    <label for="barangay">Barangay</label>
+                                    <label for="barangay">Barangay<span style="color: red;">*</span></label>
                                     <select id="barangay" style="width: 230px" name="barangay">
                                         <option value="">-- Select Barangay --</option>
                                     </select>
@@ -204,7 +203,7 @@
                                 
                                 <div class="add-form">
                                     <label for="company_name">Company Name <span style="color: red;">*</span></label>
-                                    <input type="text" name="company_name" style="width: 300px" id="company_name" required value="{{ auth()->user()->store_name ?? old('contact_phone') }}" readonly>
+                                    <input type="text" name="company_name" style="width: 300px" id="company_name" required  readonly>
                                 </div>
                                 
                                 <div class="add-form">
@@ -222,7 +221,7 @@
                                         </button>
                                         
                                         <button type="button" class="load-add-btn" onclick="loadDefaultAddress()">
-                                            📥 Load default address
+                                            📥 Use default address
                                         </button>
 
                                         
@@ -245,18 +244,25 @@
                         </form>
 
                         <div class="contact-form">
-                            <h3>Contact Information</h3>
-                            <div class="add-form">
-                                <label>Mobile <span style="color: red;">*</span></label>
-                                <input type="text" style="width: 170px" name="contact_phone" required value="{{ auth()->user()->mobile ?? old('contact_phone') }}" readonly>
+                            <h3>Receiver's information</h3>
+
+                            <div class="contact-row" style="flex:1; display:flex; gap:20px; flex-wrap:wrap; flex-directiion: row; height: auto; align-items: center;">
+                                <div class="add-form" style="width: 350px">
+                                    <label>Name <span style="color: red;">*</span></label>
+                                    <input type="text" name="receiver_name" id="receiver_name" required value="{{ old('receiver_name') }}">
+                                </div>
+                                <div class="add-form" style="width: 250px;">
+                                    <label> Mobile <span style="color: red;">*</span></label>
+                                    <input type="text" maxlength="15" id="receiver_mobile" name="receiver_mobile" required value="{{ old('receiver_mobile') }}">
+                                </div>
+
                             </div>
+                            
 
-
-                            <div class="add-form">
-                                <label>Email <span style="color: red;">*</span></label>
-                                <input type="email" style="width: 300px" name="contact_email" value="{{ auth()->user()->email }}" readonly>
+                            <div class="add-form" style="width: 600px;">
+                                <label>Notes / Special Instructions (Optional)</label>
+                                <textarea name="order_notes" rows="2" maxlength="200" style="height: 200px;">{{ old('order_notes') }}</textarea>
                             </div>
-
 
 
                         </div>
@@ -272,38 +278,9 @@
                     </div>
                 </section>
 
-                <!-- STEP 4: Additional Info -->
-                <section class="info-order step-section" data-step="4" style="display:none;"> 
 
-                    <div class="add-info">
-                        <h2>Additional Info</h2>
-                        <p>Please provide any additional information that may be relevant to your order.</p>
-
-                        <div class="add-form" style="width: 600px; margin-top: 20px; margin-bottom: 20px;">
-                            <label>Notes / Special Instructions (Optional)</label>
-                            <textarea name="order_notes" rows="2" maxlength="200" style="height: 200px;">{{ old('order_notes') }}</textarea>
-                        </div>
-
-                        <div class="add-form" style="width: 350px">
-                            <label>Receiver Name <span style="color: red;">*</span></label>
-                            <input type="text" name="receiver_name" id="receiver_name" required value="{{ old('receiver_name') }}">
-                        </div>
-                        <div class="add-form" style="width: 250px; margin-top: 20px;">
-                            <label> Mobile <span style="color: red;">*</span></label>
-                            <input type="text" maxlength="15" id="receiver_mobile" name="receiver_mobile" required value="{{ old('receiver_mobile') }}">
-                    </div>
-
-                    </div>
-
-                    <div class="step-nav">
-                        <button type="button" class="prev-btn">Previous</button>
-                        <button type="button" class="next-btn">Next</button>
-                    </div>
-
-                </section>
-
-                <!-- STEP 5: Summary -->
-                <section class="summary-order step-section" data-step="5" style="display:none;">
+                <!-- STEP 4: Summary -->
+                <section class="summary-order step-section" data-step="4" style="display:none;">
                     <div class="summary-div">
 
                         <div style="text-align: center; padding: 20px; color: #888;">

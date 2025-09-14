@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('receipts', function (Blueprint $table) {
             $table->string('receipt_id')->unique();
             $table->timestamps();
-            $table->mediumBlob('receipt_image')->nullable();
             $table->date('purchase_date');
             $table->string('store_name');
             $table->decimal('total_amount', 10, 2); 
@@ -31,6 +30,8 @@ return new class extends Migration
             $table->timestamp('verified_at')->nullable()->change();
 
         });
+        DB::statement('ALTER TABLE receipts ADD receipt_image MEDIUMBLOB NULL');
+
     }
 
     /**

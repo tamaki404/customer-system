@@ -34,7 +34,7 @@
                     <div class="form-grid">
                         <!-- Product Name -->
                         <div>
-                            <label for="name">Name</label>
+                            <label for="name"><span class="req-asterisk">*</span> Name</label>
                             <input type="text" name="name" id="name" autocomplete="name" placeholder="Product Name" maxlength="100" required>
                             @error('name')
                                 <span class="error-message">{{ $message }}</span>
@@ -43,7 +43,7 @@
 
                         <!-- Description -->
                         <div>
-                            <label for="description">Description</label>
+                            <label for="description"><span class="req-asterisk">*</span> Description</label>
                             <input type="text" name="description" id="description" placeholder="Product Description" maxlength="255" required>
                             @error('description')
                                 <span class="error-message">{{ $message }}</span>
@@ -52,7 +52,7 @@
 
                         <!-- Product ID -->
                         <div>
-                            <label for="product_id">Product ID</label>
+                            <label for="product_id"><span class="req-asterisk">*</span> Product ID</label>
                             <input type="text" name="product_id" id="product_id" placeholder="Unique Product ID" maxlength="255" required>
                             @error('product_id')
                                 <span class="error-message">{{ $message }}</span>
@@ -61,7 +61,7 @@
 
                         <!-- Quantity -->
                         <div>
-                            <label for="quantity">Quantity</label>
+                            <label for="quantity"><span class="req-asterisk">*</span> Quantity</label>
                             <input type="number" name="quantity" id="quantity" min="0" required>
                             @error('quantity')
                                 <span class="error-message">{{ $message }}</span>
@@ -70,7 +70,7 @@
 
                         <!-- Unit -->
                         <div>
-                            <label for="unit-selector">Unit</label> 
+                            <label for="unit-selector"><span class="req-asterisk">*</span> Unit</label> 
                             <select class="unit" name="unit" id="unit-selector" required> 
                                 <option value="">-- Select Unit --</option>
                                 <option value="Piece">Piece</option> 
@@ -83,7 +83,7 @@
 
                         <!-- Price -->
                         <div>
-                            <label for="price">Price</label>
+                            <label for="price"><span class="req-asterisk">*</span> Price</label>
                             <input type="number" name="price" id="price" placeholder="0.00" min="0" step="0.01" required>
                             @error('price')
                                 <span class="error-message">{{ $message }}</span>
@@ -92,7 +92,7 @@
 
                         <!-- Category -->
                         <div>
-                            <label for="category">Category</label>
+                            <label for="category"><span class="req-asterisk">*</span> Category</label>
                             <select name="category" id="category" required>
                                 <option value="">-- Select Category --</option>
                                 <option value="Eggs">Eggs</option>
@@ -108,7 +108,7 @@
 
                         <!-- Status -->
                         <div>
-                            <label for="status">Status</label>
+                            <label for="status"><span class="req-asterisk">*</span> Status</label>
                             <select name="status" id="status" required>
                                 <option value="Available">Listed</option>
                                 <option value="Unlisted">Unlisted</option>
@@ -120,7 +120,7 @@
 
                         <!-- Image -->
                         <div class="full">
-                            <label for="image">Product Image</label>
+                            <label for="image"><span class="req-asterisk">*</span> Product Image</label>
                             <input type="file" name="image" id="image" accept="image/*">
                             @error('image')
                                 <span class="error-message">{{ $message }}</span>

@@ -20,8 +20,9 @@ return new class extends Migration
             $table->string('report_subject')->nullable();
             $table->string('label')->nullable();
             $table->string('status')->nullable();
-            $table->string('received_at')->nullable();
-            $table->timestamp('reported_at');
+            $table->timestamp('received_at')->nullable();
+            $table->timestamp('reported_at')->nullable();
+
 
         });
     }

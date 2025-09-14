@@ -18,8 +18,6 @@ class PurchaseOrder extends Model
         'postal_code', 'region_id', 'province_id',
         'municipality_id', 'barangay_id', 'street',
         'billing_address',
-        'contact_phone',
-        'contact_email',
         'order_notes',
         'subtotal',
         'tax_amount',
@@ -38,6 +36,8 @@ class PurchaseOrder extends Model
         'payment_notes',
         'payment_reject_details',
         'payment_at',
+
+        
 
 
     ];

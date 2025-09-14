@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="stylesheet" href="{{ asset('css/registration.css') }}">
-
+<style>
+    .form-group p .req-asterisk{
+    color: #ea1f21;
+    margin: 0;
+}
+</style>
     <title>Sign Up</title>
 </head>
 <body>
@@ -17,20 +22,17 @@
         <h2>Create Account</h2>
         <p class="kindly-mess">Please fill out the form below to create your account</p>
         <span>Already have an account? <a href="/login">Sign In</a></span>
-
-         
-
         
         {{-- company details --}}
         <div class="form-cluster" style="margin-top: 40px;">
             <div class="form-group">
-                <p>Company name</p>
+                <p><span class="req-asterisk">*</span> Company name</p>
                 <input type="text" name="store_name" id="store_name" placeholder="" required>
                 <small id="store-name-feedback" style="color:red;"></small>
             </div>
 
             <div class="form-group">
-                <p>Address</p>
+                <p><span class="req-asterisk">*</span> Address</p>
                 <input type="text" name="address" placeholder="Barangay, City, Province" required>
                 <small id="address-feedback" style="color:red;"></small>
             </div>
@@ -39,13 +41,13 @@
         <div class="form-cluster">
 
             <div class="form-group">
-                <p>Email Address</p>
+                <p><span class="req-asterisk">*</span> Email Address</p>
                 <input type="email" name="email" placeholder="" required>
                 <small id="email-feedback" style="color:red;"></small>
             </div>
 
             <div class="form-group">
-                <p>Representative' Name</p>
+                <p><span class="req-asterisk">*</span> Representative' Name</p>
                 <input type="text" name="name" placeholder="ex: Juan DelaCruz" required>
                 <small id="name-feedback" style="color:red;"></small>
             </div>            
@@ -55,7 +57,7 @@
 
 
             <div class="form-group">
-                <p>Mobile Number</p>
+                <p><span class="req-asterisk">*</span> Mobile Number</p>
                 <input type="tel" name="mobile" 
                 placeholder="ex: 09123456789" 
                 pattern="^09\d{9}$" 
@@ -81,7 +83,7 @@
             </div>
 
             <div class="form-group">
-                <p>Username</p>
+                <p><span class="req-asterisk">*</span> Username</p>
                 <input type="text" name="username" id="username" placeholder="" maxlength="15" minlength="4" required>
                 <small id="username-feedback" style="color:red;"></small>
             </div>
@@ -90,12 +92,12 @@
 
         <div class="form-cluster">
             <div class="form-group">
-                <p>Password</p>
+                <p><span class="req-asterisk">*</span> Password</p>
                 <input type="password" name="password" id="password" placeholder="Password" required>
                 <small id="password-feedback" style="color:red;"></small>
             </div>        
             <div class="form-group">
-                <p>Confirm password</p>
+                <p><span class="req-asterisk">*</span> Confirm password</p>
                 <input type="password" name="password_confirmation" id="confirmPassword" placeholder="Confirm Password" required>
                 <small id="confirm-password-feedback" style="color:red;"></small>
             </div> 

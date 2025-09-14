@@ -11,7 +11,10 @@ body{
     justify-content: center;
     align-items: center;
 } 
-
+.req-asterisk{
+    color: #ea1f21;
+    margin: 0;
+}
  .logForm{
     width: 50%;
     height: 100%;

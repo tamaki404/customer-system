@@ -305,8 +305,6 @@ class PurchaseOrderController extends Controller {
         'barangay'        => 'required|exists:barangay,barangay_id',
         'street'          => 'required|string|max:255',
         'billing_address' => 'required',
-        'contact_phone'   => 'required',
-        'contact_email'   => 'required|email',
         'cart_data'       => 'required',
         'order_notes'     => 'nullable|string|max:500',
         'receiver_mobile' => 'required|string|max:15',
@@ -365,8 +363,7 @@ class PurchaseOrderController extends Controller {
             'street'          => $request->street,
             'company_name'    => $request->company_name,
             'billing_address' => $request->billing_address,
-            'contact_phone'   => $request->contact_phone,
-            'contact_email'   => $request->contact_email,
+
             'order_notes'     => $request->order_notes,
             'subtotal'        => $subtotal,
             'tax_amount'      => $tax,

@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->mediumBlob('image')->nullable();
             $table->string('image_mime')->nullable();
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
@@ -22,6 +21,8 @@ return new class extends Migration
             $table->string('product_id')->nullable();
             $table->string('unit')->nullable();
         });
+        DB::statement('ALTER TABLE products ADD image MEDIUMBLOB NULL');
+
     }
 
     public function down(): void

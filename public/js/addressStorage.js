@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle form submission for both buttons
     const orderForm = document.getElementById('orderForm');
-    const draftBtn = document.getElementById('draftBtn');
     const submitBtn = document.getElementById('submitBtn');
     
     // Function to prepare form data before submission
@@ -16,8 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
             orderForm.appendChild(cartInput);
         }
         
-
-
         // Add address data as hidden inputs
         addAddressDataToForm();
         
@@ -47,33 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Handle contact fields
-        const contactPhone = document.querySelector('input[name="contact_phone"]');
-        const contactEmail = document.querySelector('input[name="contact_email"]');
+        // Handle order notes textarea
         const orderNotes = document.querySelector('textarea[name="order_notes"]');
-
-        if (contactPhone) {
-            let hiddenInput = orderForm.querySelector(`input[name="contact_phone"]`);
-            if (!hiddenInput) {
-                hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'contact_phone';
-                orderForm.appendChild(hiddenInput);
-            }
-            hiddenInput.value = contactPhone.value;
-        }
-
-        if (contactEmail) {
-            let hiddenInput = orderForm.querySelector(`input[name="contact_email"]`);
-            if (!hiddenInput) {
-                hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'contact_email';
-                orderForm.appendChild(hiddenInput);
-            }
-            hiddenInput.value = contactEmail.value;
-        }
-
         if (orderNotes) {
             let hiddenInput = orderForm.querySelector(`input[name="order_notes"]`);
             if (!hiddenInput) {
@@ -128,28 +99,16 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    // Add event listeners to both submit buttons
-    if (draftBtn) {
-        draftBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (prepareFormSubmission()) {
-                // Create a hidden input for status
-                let statusInput = orderForm.querySelector('input[name="status"]');
-                if (!statusInput) {
-                    statusInput = document.createElement('input');
-                    statusInput.type = 'hidden';
-                    statusInput.name = 'status';
-                    orderForm.appendChild(statusInput);
-                }
-                statusInput.value = 'Draft';
-                orderForm.submit();
-            }
-        });
-    }
-
+    // Add event listener to submit button
     if (submitBtn) {
         submitBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            
+            // Validate required fields first
+            if (!validateRequiredFields()) {
+                return false;
+            }
+            
             if (prepareFormSubmission()) {
                 // Create a hidden input for status
                 let statusInput = orderForm.querySelector('input[name="status"]');
@@ -165,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Alternative: Handle form submit event directly
+    // Handle form submit event directly
     orderForm.addEventListener('submit', function(e) {
         // This will catch any direct form submissions
         if (!document.getElementById('cart_data') || !document.getElementById('cart_data').value) {
@@ -180,8 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Function to validate required fields before submission
 function validateRequiredFields() {
     const requiredFields = [
-        'receiver_name', 'company_name', 'street', 'billing_address',
-        'contact_phone', 'contact_email', 'receiver_mobile'
+        'receiver_name', 'company_name', 'street', 'billing_address', 'receiver_mobile'
     ];
 
     const missingFields = [];

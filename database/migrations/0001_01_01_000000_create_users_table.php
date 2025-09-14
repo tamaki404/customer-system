@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
-            $table->string('username')->unique();
+            $table->string('username')->unique();                
+            $table->string('image_mime')->nullable();
             $table->string('email')->unique();
             $table->string('mobile');
             $table->string('telephone')->nullable();
             $table->string('address')->nullable();
             $table->longText('password');
-            $table->mediumBlob('image')->nullable();
             $table->string('user_type');
             $table->string('acc_status');
             $table->string('action_by')->nullable();
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->timestamps(); 
             $table->timestamp('email_verified_at')->nullable();
         });
+        DB::statement('ALTER TABLE users ADD image MEDIUMBLOB NULL');
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
@@ -44,7 +45,7 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
-        
+
     }
 
 

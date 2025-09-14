@@ -22,8 +22,7 @@ class CreatePurchaseOrdersTable extends Migration
             $table->string('street'); 
             $table->string('company_name')->nullable();
             $table->text('billing_address');
-            $table->string('contact_phone');
-            $table->string('contact_email');
+
             $table->text('order_notes')->nullable();
             $table->string('po_attachment')->nullable(); 
             $table->decimal('subtotal', 10, 2);

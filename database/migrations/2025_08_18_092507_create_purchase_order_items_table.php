@@ -16,7 +16,7 @@ class CreatePurchaseOrderItemsTable extends Migration
             $table->integer('quantity');
             $table->decimal('unit_price', 8, 2);
             $table->decimal('total_price', 10, 2);
-            $table->integer('new_quantity');
+            $table->integer('new_quantity')->nullable();
             $table->timestamps();
 
             // Add foreign key constraints separately
