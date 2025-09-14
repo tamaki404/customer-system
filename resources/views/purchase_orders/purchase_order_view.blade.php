@@ -133,9 +133,9 @@
 
                     <p class="note">Note: Kindly notify the supplier for any changes made</p>
 
-                    <div class="items-list modify-products-list">
+                    <div class="items-list modify-products-list" style="display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 5px; margin: 0; padding: 0;">
                         @foreach($ordersItem as $item)
-                        <div class="products-list" style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
+                        <div class="products-list" style="display: flex; flex-direction: row; align-items: center; gap: 5px; margin: 0; padding: 10px; border-bottom: 1px solid #eee;">
                             <div class="each-item-div prod-item-div">
                                 @php
                                     $isBase64 = !empty($item->product->image_mime);
@@ -147,46 +147,36 @@
                                 @if(!empty($item->product->image) && !empty($item->product->image_mime))
                                     <img src="data:{{ $item->product->image_mime }};base64,{{ $item->product->image }}" 
                                         alt="{{ $item->product->name }}" 
-                                        style="width: 50px; height: 50px; object-fit: cover; value">
+                                        style="width: 50px; height: 50px; object-fit: cover;">
                                 @else
                                     <div class="thumb-placeholder" 
-                                        style="width: 50px; height: 50px; color:#888; font-size:13px; text-align: center;  display: flex; align-items: center; justify-content: center; background: #f0f0f0; border-radius: 5px;">
+                                        style="width: 50px; height: 50px; color:#888; font-size:13px; text-align: center; display: flex; align-items: center; justify-content: center; background: #f0f0f0; border-radius: 5px;">
                                         No Image
                                     </div>
                                 @endif
                                 <div class="item-detail">
                                     <p class="item-name prod-name">{{$item->product->name}}</p>
                                     <p class="item-price-quan">
-                                        <span class="item-quantity"> Quantity:  {{ $item->quantity }}</span>
+                                        <span class="item-quantity">Quantity: {{ $item->quantity }}</span>
                                     </p>
-                                     <span class="item-quantity"> POI:  {{ $item->poi_id }}</span>
-
+                                    <span class="item-quantity">POI: {{ $item->poi_id }}</span>
                                 </div>
                             </div>
                             <p>......</p>
                             <div class="new-quantity-div">
-                                    <input 
-                                        type="number" 
-                                        name="new_quantity[{{ $item->poi_id }}]"
-                                        max="{{ $item->quantity }}"   {{-- original quantity limit --}}
-                                        min="1"
-                                        value="{{ $item->new_quantity ?? $item->quantity }}"  {{-- default to old new_quantity or original --}}
-                                        data-original-qty="{{ $item->quantity }}"
-                                    >
-
+                                <input 
+                                    type="number" 
+                                    name="new_quantity[{{ $item->poi_id }}]"
+                                    max="{{ $item->quantity }}"
+                                    min="1"
+                                    value="{{ $item->new_quantity ?? $item->quantity }}"
+                                    data-original-qty="{{ $item->quantity }}"
+                                    style="width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
                             </div>
-
                             <input type="hidden" name="poi_id" value="{{$item->poi_id}}">
-
-                            
-
-
                         </div>
-
-
                         @endforeach     
                         <input type="hidden" name="po_id" value="{{$item->po_id}}">
-
                     </div>
 
 

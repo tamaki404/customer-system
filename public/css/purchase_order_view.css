@@ -190,6 +190,8 @@
     gap: 15px;
     min-width: 500px;
     width: auto;
+    align-items: center;
+    justify-content: center;
 }
 .item-name{
     font-size: 15px;
