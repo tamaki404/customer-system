@@ -28,7 +28,7 @@
             </div>
 
             <form action="{{ route('dashboard') }}" class="date-search" id="from-to-date" method="GET">
-                <p>Date picker</p>
+                <p>Date range</p>
                 <div class="from-to-picker">
                     <div class="month-div">
                         <span>From</span>
@@ -166,7 +166,7 @@
             </div>
 
             <form action="{{ route('dashboard') }}" class="date-search" id="from-to-date" method="GET">
-                <p>Date picker</p>
+                <p>Date range</p>
                 <div class="from-to-picker">
                     <div class="month-div">
                         <span>From</span>

@@ -27,7 +27,7 @@
         }
     }
 
-    // Auto-submit form when predefined date range is selected for each tab
+    // Auto-submit form when predefined Date range is selected for each tab
     document.getElementById('salesDateRange').addEventListener('change', function() {
         if (this.value !== 'custom') {
             document.getElementById('salesFilterForm').submit();

@@ -119,10 +119,16 @@
 
                 <!-- Group 4: Reports -->
                 <div class="nav-group">
-                    <div class="nav-group-title">Reports</div>
+                    <div class="nav-group-title">Reports & logs</div>
                     <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('reports') }}">
                         <span class="material-symbols-outlined">bar_chart</span>
                         <p>Reports</p>
+                        <div class="nav-indicator"></div>
+                    </a>
+                    <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('reports') }}">
+                        <span class="material-symbols-outlined">history</span>
+
+                        <p>Logs</p>
                         <div class="nav-indicator"></div>
                     </a>
                 </div>
@@ -178,10 +184,15 @@
 
                         <!-- Group 3: Reports -->
                         <div class="nav-group">
-                            <div class="nav-group-title">Reports</div>
+                            <div class="nav-group-title">Reports & Logs</div>
                             <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('reports') }}">
                                 <span class="material-symbols-outlined">bar_chart</span>
                                 <p>Reports</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                            <a class="nav-item{{ $currentRoute == 'reports' ? ' active' : '' }}" href="{{ route('reports') }}">
+                                <span class="material-symbols-outlined">bar_chart</span>
+                                <p>Logs</p>
                                 <div class="nav-indicator"></div>
                             </a>
                         </div>

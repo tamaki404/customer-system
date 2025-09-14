@@ -41,7 +41,7 @@
     <form method="GET" action="{{ route('customer_reports') }}" class="filters-row" style="margin-bottom: 10px; background:#fff;">
         <input type="hidden" name="active_tab" value="{{ $activeTab }}">
         <div class="filter-group">
-            <label>Date Range</label>
+            <label>Date range</label>
             <select name="date_range" id="myDateRange" onchange="this.form.submit()">
                 <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                 <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
@@ -380,7 +380,7 @@
         });
     }
 
-    // Handle custom date range toggle
+    // Handle custom Date range toggle
     document.getElementById('myDateRange').addEventListener('change', function() {
         const isCustom = this.value === 'custom';
         document.getElementById('fromDateGroup').style.display = isCustom ? 'block' : 'none';

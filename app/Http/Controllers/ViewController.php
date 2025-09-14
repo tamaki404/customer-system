@@ -655,7 +655,7 @@ public function showCustomers()
 
             $user = auth()->user();
             $id = $user->id;
-            // Get date range (default = this month)
+            // Get Date range (default = this month)
             $from = $request->input('from_date', Carbon::now()->startOfMonth()->toDateString());
             $to   = $request->input('to_date', Carbon::now()->endOfMonth()->toDateString());
 

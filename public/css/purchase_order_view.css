@@ -476,6 +476,25 @@
                 font-weight: bold;
             }
 
+            .view-receipt-btn{
+                font-size: 14px;
+                color: #333 !important;
+                font-weight: normal;
+                background: linear-gradient(135deg, #ffde59, #ffd54f);
+                padding: 10px 14px;
+                width: auto;
+                border-radius: 10px;
+                box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+                border: none;
+                align-items: center;
+                display: flex;
+                gap: 5px;
+                justify-content: center;
+            }
+            .view-receipt-btn:hover{
+                background-color: #796a10 !important;
+                transition: background-color 0.3s ease;
+            }
 
 /* report order */
 #report-subject {

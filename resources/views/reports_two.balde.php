@@ -43,7 +43,7 @@
                 <input type="hidden" name="active_tab" value="sales">
                 <div class="filters-row">
                     <div class="filter-group">
-                        <label>Date Range</label>
+                        <label>Date range</label>
                         <select name="date_range" id="salesDateRange" onchange="toggleCustomFields('sales')">
                             <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                             <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
@@ -68,7 +68,7 @@
                 <a href="{{ route('reports.export', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
-            <!-- Display current date range -->
+            <!-- Display current Date range -->
             <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 14px;">
                 <strong>Current Period:</strong> 
                 {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}
@@ -151,7 +151,7 @@
                 <input type="hidden" name="active_tab" value="customers">
                 <div class="filters-row">
                     <div class="filter-group">
-                        <label>Date Range</label>
+                        <label>Date range</label>
                         <select name="date_range" id="customersDateRange" onchange="toggleCustomFields('customers')">
                             <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                             <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
@@ -176,7 +176,7 @@
                 <a href="{{ route('reports.customers', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
-            <!-- Display current date range -->
+            <!-- Display current Date range -->
             <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 14px;">
                 <strong>Current Period:</strong> 
                 {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}
@@ -278,7 +278,7 @@
                 <input type="hidden" name="active_tab" value="orders">
                 <div class="filters-row">
                     <div class="filter-group">
-                        <label>Date Range</label>
+                        <label>Date range</label>
                         <select name="date_range" id="ordersDateRange" onchange="toggleCustomFields('orders')">
                             <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                             <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
@@ -303,7 +303,7 @@
                 <a href="{{ route('reports.orders', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
-            <!-- Display current date range -->
+            <!-- Display current Date range -->
             <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 14px;">
                 <strong>Current Period:</strong> 
                 {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}
@@ -442,7 +442,7 @@
                 <input type="hidden" name="active_tab" value="purchase_orders">
                 <div class="filters-row">
                     <div class="filter-group">
-                        <label>Date Range</label>
+                        <label>Date range</label>
                         <select name="date_range" id="purchaseOrdersDateRange" onchange="toggleCustomFields('purchaseOrders')">
                             <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                             <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
@@ -468,7 +468,7 @@
                 {{-- <a href="{{ route('reports.purchase_orders', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a> --}}
             </div>
 
-            <!-- Display current date range -->
+            <!-- Display current Date range -->
             <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 14px;">
                 <strong>Current Period:</strong> 
                 {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}
@@ -659,7 +659,7 @@
                 <input type="hidden" name="active_tab" value="products">
                 <div class="filters-row">
                     <div class="filter-group">
-                        <label>Date Range</label>
+                        <label>Date range</label>
                         <select name="date_range" id="productsDateRange" onchange="toggleCustomFields('products')">
                             <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                             <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>
@@ -684,7 +684,7 @@
                 <a href="{{ route('reports.products', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a>
             </div>
 
-            <!-- Display current date range -->
+            <!-- Display current Date range -->
             <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 14px;">
                 <strong>Current Period:</strong> 
                 {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}
@@ -755,7 +755,7 @@
                 <input type="hidden" name="active_tab" value="receipts">
                 <div class="filters-row">
                     <div class="filter-group">
-                        <label>Date Range</label>
+                        <label>Date range</label>
                         <select name="date_range" id="receiptsDateRange" onchange="toggleCustomFields('receipts')">
                             <option value="last_7_days" {{ request('date_range') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
                             <option value="last_30_days" {{ request('date_range') == 'last_30_days' || !request('date_range') ? 'selected' : '' }}>Last 30 days</option>

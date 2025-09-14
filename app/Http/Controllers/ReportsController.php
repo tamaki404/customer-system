@@ -180,13 +180,13 @@ private function getCustomerAnalytics($startDate, $endDate)
         ->whereBetween('created_at', [$startDate, $endDate])
         ->count();
 
-    // New users in selected date range
+    // New users in selected Date range
     $newThisMonth = User::where('acc_status', 'Active')
         ->where('user_type', 'Customer')
         ->whereBetween('created_at', [$startDate, $endDate])
         ->count();
 
-    // Pending users created in date range
+    // Pending users created in Date range
     $pendingUsers = User::where('acc_status', 'Pending')
         ->whereBetween('created_at', [$startDate, $endDate])
         ->count();
@@ -493,7 +493,7 @@ private function parseDateRange(Request $request)
     $fromDate = $request->get('from_date');
     $toDate = $request->get('to_date');
     
-    // Determine the actual date range based on selection
+    // Determine the actual Date range based on selection
     switch ($dateRange) {
         case 'last_7_days':
             $startDate = Carbon::now()->subDays(7);
@@ -532,7 +532,7 @@ private function parseDateRange(Request $request)
 
     private function getReceiptAnalytics($startDate, $endDate)
     {
-        // Receipt status counts within date range
+        // Receipt status counts within Date range
         $receiptStatusCounts = Receipt::select('status', DB::raw('COUNT(*) as count'))
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('status')
@@ -674,7 +674,7 @@ public function reports(Request $request)
 {
     $user = auth()->user();
 
-    // Parse date range
+    // Parse Date range
     $dateInfo = $this->parseDateRange($request);
     $startDate = $dateInfo['startDate'];
     $endDate = $dateInfo['endDate'];
@@ -1057,7 +1057,7 @@ public function exportCustomers(Request $request)
     //     $fromDate = $request->get('from_date');
     //     $toDate = $request->get('to_date');
         
-    //     // Always set startDate and endDate - determine the actual date range based on selection
+    //     // Always set startDate and endDate - determine the actual Date range based on selection
     //     switch ($dateRange) {
     //         case 'last_7_days':
     //             $startDate = Carbon::now()->subDays(7);
@@ -1257,7 +1257,7 @@ public function exportReports(Request $request) {
     //         $fromDate = $request->get('from_date');
     //         $toDate = $request->get('to_date');
 
-    //         // Determine date range (same logic as reports method)
+    //         // Determine Date range (same logic as reports method)
     //         switch ($dateRange) {
     //             case 'last_7_days':
     //                 $startDate = Carbon::now()->subDays(7);
@@ -1393,10 +1393,10 @@ public function purchaseOrdersPreview(Request $request)
     $startDate = $dateInfo['startDate'];
     $endDate = $dateInfo['endDate'];
     
-    // Get the date range type for display purposes
+    // Get the Date range type for display purposes
     $dateRange = $request->get('date_range', 'last_30_days');
     
-    // Generate a human-readable date range label
+    // Generate a human-readable Date range label
     $dateRangeLabel = $this->getDateRangeLabel($dateRange, $startDate, $endDate);
 
     // Fetch POs in range and compute paid/available balances from Verified receipts
@@ -1528,7 +1528,7 @@ $orders = Orders::select(
 
 
 
-    // KPIs (with date range filter)
+    // KPIs (with Date range filter)
     $ordersCount = Orders::whereBetween('created_at', [$startDate, $endDate])
         ->distinct('order_id')->count('order_id');
 

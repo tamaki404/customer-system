@@ -105,7 +105,7 @@
     
     <div class="date-range-info">
         <h3>Report Period: {{ $dateRangeLabel }}</h3>
-        <p><strong>Date Range:</strong> {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}</p>
+        <p><strong>Date range:</strong> {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}</p>
         <p><strong>Generated on:</strong> {{ now()->format('M d, Y g:i A') }}</p>
     </div>
 
