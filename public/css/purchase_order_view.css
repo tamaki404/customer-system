@@ -183,15 +183,16 @@
     white-space: nowrap;
     overflow: hidden;
 }
-.items-list{
-    display: flex;
-    flex-direction: row;
+.modal-body .items-list{
+    /* display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
     gap: 15px;
     min-width: 500px;
     width: auto;
     align-items: center;
     justify-content: center;
+    overflow: auto; */
 }
 .modify-quantity-btn{
     font-size: 14px;

@@ -20,8 +20,8 @@
     </div>
     <div class="report-container">
         <nav class="tab-navigation">
-            <button class="tab-button {{ request('active_tab') == 'summary' ? 'active' : '' }}" onclick="switchTab('summary')">Summary</button>
-            <button class="tab-button {{ !request('active_tab') || request('active_tab') == 'sales' ? 'active' : '' }}" onclick="switchTab('sales')">Sales & Revenue</button>
+            <button class="tab-button {{! request('active_tab') || request('active_tab') == 'summary' ? 'active' : '' }}" onclick="switchTab('summary')">Summary</button>
+            <button class="tab-button {{ request('active_tab') == 'sales' ? 'active' : '' }}" onclick="switchTab('sales')">Sales & Revenue</button>
             <button class="tab-button {{ request('active_tab') == 'customers' ? 'active' : '' }}" onclick="switchTab('customers')">Customer Analytics</button>
             <button class="tab-button {{ request('active_tab') == 'orders' ? 'active' : '' }}" onclick="switchTab('orders')">Order Management</button>
             <button class="tab-button {{ request('active_tab') == 'purchase_orders' ? 'active' : '' }}" onclick="switchTab('purchase_orders')">Purchase Orders</button>
@@ -30,7 +30,7 @@
         </nav>
 
         {{-- Summary Tab (POs + Receipts only) --}}
-        <div id="summary" class="tab-content {{ request('active_tab') == 'summary' ? 'active' : '' }}">
+        <div id="summary" class="tab-content {{! request('active_tab') || request('active_tab')  == 'summary' ? 'active' : '' }}">
             <h2>Summary</h2>
 
             <form method="GET" action="{{ route('reports') }}" id="summaryFilterForm">
@@ -231,7 +231,7 @@
             </div>
         </div>
         {{-- Sales & Revenue Tab --}}
-        <div id="sales" class="tab-content {{ !request('active_tab') || request('active_tab') == 'sales' ? 'active' : '' }}">
+        <div id="sales" class="tab-content {{ request('active_tab') == 'sales' ? 'active' : '' }}">
             <h2>Sales & Revenue Reports</h2>
             
             <form method="GET" action="{{ route('reports') }}" id="salesFilterForm">

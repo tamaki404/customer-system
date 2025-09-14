@@ -133,7 +133,7 @@
 
                     <p class="note">Note: Kindly notify the supplier for any changes made</p>
 
-                    <div class="items-list modify-products-list" style="display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 5px; margin: 0; padding: 0;">
+                    <div class="items-list modify-products-list" style="">
                         @foreach($ordersItem as $item)
                         <div class="products-list" style="display: flex; flex-direction: row; align-items: center; gap: 5px; margin: 0; padding: 10px; border-bottom: 1px solid #eee;">
                             <div class="each-item-div prod-item-div">
