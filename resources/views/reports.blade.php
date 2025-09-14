@@ -782,8 +782,13 @@
 
             <div class="report-actions">
                 <a href="{{ route('purchase_order') }}" class="btn">📋 View All Purchase Orders</a>
-                {{-- <a href="{{ route('reports.purchase_orders', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a> --}}
+                <!-- {{-- <a href="{{ route('reports.purchase_orders', ['type' => 'pdf'] + request()->all()) }}" class="btn">📄 Export PDF</a> --}} -->
                 <button type="button" class="btn download-purchase-order" onclick="downloadPDF()">🖨️ Download PDF</button>
+
+                <!-- Hidden inputs to store current date range -->
+                <input type="hidden" id="currentFromDate" value="{{ $startDate->format('Y-m-d') }}">
+                <input type="hidden" id="currentToDate" value="{{ $endDate->format('Y-m-d') }}">
+                <input type="hidden" id="currentDateRange" value="{{ request('date_range', 'today') }}">
             </div>
 
             <!-- Display current date range -->

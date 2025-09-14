@@ -1387,27 +1387,51 @@ public function exportReports(Request $request) {
         return $pdf->download('receipts_report_' . now()->format('Y-m-d') . '.pdf');
     }
 
-    public function purchaseOrdersPreview(Request $request)
-    {
-        $dateInfo = $this->parseDateRange($request);
-        $startDate = $dateInfo['startDate'];
-        $endDate = $dateInfo['endDate'];
+public function purchaseOrdersPreview(Request $request)
+{
+    $dateInfo = $this->parseDateRange($request);
+    $startDate = $dateInfo['startDate'];
+    $endDate = $dateInfo['endDate'];
+    
+    // Get the date range type for display purposes
+    $dateRange = $request->get('date_range', 'last_30_days');
+    
+    // Generate a human-readable date range label
+    $dateRangeLabel = $this->getDateRangeLabel($dateRange, $startDate, $endDate);
 
-        // Fetch POs in range and compute paid/available balances from Verified receipts
-        $purchaseOrders = PurchaseOrder::whereBetween('order_date', [$startDate, $endDate])
-            ->orderBy('order_date', 'desc')
-            ->get()
-            ->map(function ($po) {
-                $paid = Receipt::where('po_id', $po->po_id)
-                    ->where('status', 'Verified')
-                    ->sum('total_amount');
-                $po->paid_amount = $paid;
-                $po->available_balance = max(($po->grand_total ?? 0) - $paid, 0);
-                return $po;
-            });
+    // Fetch POs in range and compute paid/available balances from Verified receipts
+    $purchaseOrders = PurchaseOrder::whereBetween('order_date', [$startDate, $endDate])
+        ->orderBy('order_date', 'desc')
+        ->get()
+        ->map(function ($po) {
+            $paid = Receipt::where('po_id', $po->po_id)
+                ->where('status', 'Verified')
+                ->sum('total_amount');
+            $po->paid_amount = $paid;
+            $po->available_balance = max(($po->grand_total ?? 0) - $paid, 0);
+            return $po;
+        });
 
-        return view('reports.purchase_orders_preview', compact('purchaseOrders', 'startDate', 'endDate'));
+    return view('reports.purchase_orders_preview', compact('purchaseOrders', 'startDate', 'endDate', 'dateRange', 'dateRangeLabel'));
+}
+
+private function getDateRangeLabel($dateRange, $startDate, $endDate)
+{
+    switch ($dateRange) {
+        case 'last_7_days':
+            return 'Last 7 Days';
+        case 'last_30_days':
+            return 'Last 30 Days';
+        case 'last_3_months':
+            return 'Last 3 Months';
+        case 'custom':
+            return 'Custom Range';
+        default:
+            return 'Last 30 Days';
     }
+}
+
+    
     // public function exportOrders(Request $request)
     // {
     //     $startDate = $request->from_date ? Carbon::parse($request->from_date) : Carbon::now()->subDays(30);
