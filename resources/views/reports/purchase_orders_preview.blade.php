@@ -18,12 +18,7 @@
             color: #333;
         }
         
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
-        }
+
         
         .header h1 {
             margin: 0;
@@ -100,14 +95,33 @@
 </head>
 <body>
     <div class="header">
-        <h1>Purchase Orders Report</h1>
+        <div class="img-title">
+            <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image" width="100" class="ownerImage">
+                <p>
+                    <span style="font-size: 25px; font-weight: bold;">Sunny & Scramble</span>
+                    <span>558 General Luna Street, malanday San Mateo, Rizal Philippines</span>
+                </p>
+        </div>
+      
+        <p style="margin: 5px; font-size: 18px; margin-top: 20px; font-weight: bold;">PURCHASE ORDERS REPORT</p>
+        <div style="display: flex; flex-direction: row; justify-content: space-between; width: 100%;">
+            <p class="dates-summary">
+                <span>Report period: <strong>{{ $dateRangeLabel }}</strong></span>
+                <span>Date range: <strong>{{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}</strong></span>
+                <span>Genrated on: <strong>{{ now()->format('M d, Y g:i A') }}</strong></span>
+            </p>
+            @if($purchaseOrders->count() > 0)
+                <p class="total-summary">
+                    <span>Total records: <strong>{{ $purchaseOrders->count() }}</strong></span>
+                    <span>Total value: <strong>₱{{ number_format($purchaseOrders->sum('grand_total'), 2) }}</strong></span>
+                    <span>Total paid: <strong>₱{{ number_format($purchaseOrders->sum('paid_amount'), 2) }}</strong></span>
+                </p>
+            @endif
+        </div>
+
+
     </div>
     
-    <div class="date-range-info">
-        <h3>Report Period: {{ $dateRangeLabel }}</h3>
-        <p><strong>Date range:</strong> {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}</p>
-        <p><strong>Generated on:</strong> {{ now()->format('M d, Y g:i A') }}</p>
-    </div>
 
     <table class="table">
         <thead>
@@ -143,13 +157,59 @@
             @endforelse
         </tbody>
     </table>
+
+    <style>
+        .dates-summary, .total-summary{
+            display: flex;
+            flex-direction: column;
+
+
+
+        }
+        .dates-summary span{
+            font-size: 14px;
+            margin: 0;
+        }
+        .dates-summary span strong{
+            font-size: 14px;
+            margin: 0;
+        }
+        .header{
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: auto;
+            align-items: center;
+            justify-items: center;
+
+        }
+        .header .img-title{
+            display:flex;
+            flex-direction: row;
+            width: 100%;
+            height: auto;
+            gap: 10px;
+            align-content: center;
+            justify-content: center
+        }
+        .img-title img{
+            height: 50px;
+            margin: 0;
+            width: auto;
+        }
+        .img-title p{
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .img-title p span{
+            color: #333;
+            font-size: 14px;
+            margin: 0;
+        }
+    </style>
     
-    @if($purchaseOrders->count() > 0)
-    <div class="summary">
-        <p><strong>Total Records:</strong> {{ $purchaseOrders->count() }}</p>
-        <p><strong>Total Value:</strong> ₱{{ number_format($purchaseOrders->sum('grand_total'), 2) }}</p>
-        <p><strong>Total Paid:</strong> ₱{{ number_format($purchaseOrders->sum('paid_amount'), 2) }}</p>
-    </div>
-    @endif
+
 </body>
 </html>
