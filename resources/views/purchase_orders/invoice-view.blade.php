@@ -68,7 +68,6 @@
                             <th>Product Name</th>
                             <th>Unit</th>
                             <th>Quantity</th>
-                            <th>Rate</th>
                             <th>Discount</th>
                             <th>Amount</th>
                         </tr>
@@ -81,7 +80,6 @@
                             <td>{{$item->product->name}}</td>
                             <td>{{$item->product->unit}}</td>
                             <td>{{$item->quantity}}</td>
-                            <td>&#8369;{{ number_format($item->unit_price, 2) }}</td>
                             <td>{{ $item->discount ?? '—' }}</td>
                             <td>&#8369;{{ number_format($item->total_price, 2) }}</td>
                         </tr>
