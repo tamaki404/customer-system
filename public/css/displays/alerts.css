@@ -1,0 +1,30 @@
+.alert-success{
+    background-color: #d4edda; 
+    border: #299241 1px solid; 
+    height: 30px;
+    padding: 10px; 
+    border-radius: 10px; 
+    margin-bottom: 10px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 99999; 
+    position: absolute; 
+}
+.alert-success p{
+    font-size: 14px; 
+    color: #299241;
+}
+.alert-danger{
+    background-color: #f8d7da; 
+    border: #721c24 1px solid; 
+    height: auto;
+    padding: 10px; 
+    border-radius: 10px; 
+    margin-bottom: 10px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 99999; 
+    position: absolute; 
+}

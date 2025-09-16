@@ -10,3 +10,4 @@ Route::get('/', function () {
 });
 Route::get('/account/registration', [RegistrationController::class, 'showSignupForm'])->name('registration.signup');
 Route::post('/account/supplier/registration', [UserController::class, 'registerSupplier'])->name('registration.supplier.register');
+Route::post('/check-email', [UserController::class, 'checkEmail'])->name('check.email');

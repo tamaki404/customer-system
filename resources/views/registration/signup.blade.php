@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Signup</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <style>body { font-family: 'Inter', sans-serif !important; }</style>
@@ -10,6 +11,7 @@
 
     <link rel="stylesheet" href="{{ asset('css/registration/signup.css') }}">
     <link rel="stylesheet" href="{{ asset('css/links/scroll-bar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/displays/alerts.css') }}">
 
 
 
@@ -225,11 +227,19 @@
                 <div class="step2">
                     <!-- Company Details -->
                     <section class="upload-instructions">
-                        <h3>Instructions</h3>
+                        <p style="font-weight: bold;">Instructions</p>
                         <p>Upload necessary files here that are needed to confirm your identity.</p>
                         <p>Strictly 2MB max per file.</p>
                         <p>Upload scanned documents for clearer quality.</p>
                     </section>
+
+                    <style>
+                        .upload-instructions p {
+                            color: #333;
+                            font-size: 14px;
+                            margin: 2px 0;
+                        }
+                    </style>
 
 
                     <div class="file-upload-container">
@@ -296,22 +306,37 @@
 
                     </div>
 
-                    <section>
-                        <p>Account security</p>
-                        <div class="file-section">
+                    <section class="acc-security" >
+                        <p style="font-size: 15px; color: #333; font-weight: bold;">Account security</p>
+                        <div class="form-items"style="display: flex; flex-direction: column; gap: 5px ">
                             <div class="form-group">
                                 <label for="email_address"><span class="req-asterisk">*</span> Email address</label>
-                                <input type="text" name="email_address" id="email_address" required maxlength="255">
+                                <input type="text" name="email_address" id="email_address" placeholder="@gmail.com" required maxlength="255">
                             </div>
                             <div class="form-group">
                                 <label for="password"><span class="req-asterisk">*</span> Password</label>
                                 <input type="password" name="password" id="password" required minlength="8" maxlength="255">
+                     
                             </div>
+                            <div class="form-group">
+                                <label for="password_confirmation"><span class="req-asterisk">*</span> Confirm Password</label>
+                                <input type="password" name="password_confirmation" id="password_confirmation" required minlength="8" maxlength="255">
+                                <p class="error-message" id="password-match-error" style="display: none; color: #e74c3c; font-size: 12px; margin-top: 5px;"></p>
+                            </div>
+                                       <div id="password-strength" style="margin-top: 5px; font-size: 12px;">
+                                    <div style="display: flex;">
+                                        <span id="length-check" style="color: #ccc;"> 8+ characters -</span>
+                                        <span id="uppercase-check" style="color: #ccc;"> Uppercase -</span>
+                                        <span id="lowercase-check" style="color: #ccc;"> Lowercase -</span>
+                                        <span id="number-check" style="color: #ccc;"> Number -</span>
+                                        <span id="special-check" style="color: #ccc;"> Special char -</span>
+                                    </div>
+                                </div>
                         </div>
                     </section>
 
                     <!-- Agreement -->
-                    <section class="form-agreement" style="margin-top: 10px">
+                    <section class="form-agreement" style="margin-top: 50px">
                         <p class="form-name" style="margin: 0">Agreement</p>
                         <div class="form-items" style="display: flex; flex-direction: column;">
                             <p class="agreement-text" style="margin: 0; color: #333; font-size: 14px;">
@@ -332,16 +357,32 @@
 
                     <section class="register-section" style="">
                     
-                        <button type="submit" class="register-btn btn-transition" >Register account</button>
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li style="font-size: 14px;">{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
+                        <button 
+                            type="submit" 
+                            class="register-btn btn-transition" 
+                            onclick="this.disabled=true; this.form.submit();"
+                        >
+                            Register account
+                        </button>
+
+                            @if ($errors->any())
+                                <div class="alert alert-danger auto-hide">
+                                    <ul style="margin: 0; padding-left: 20px;">
+                                        @foreach ($errors->all() as $error)
+                                            <li style="font-size: 14px;">{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            @if(session('success'))
+                                <div class="alert alert-success auto-hide">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+
+
+                            
 
                     </section>
 
@@ -359,5 +400,7 @@
 
     <script src="{{ asset('js/registration/toggle-stepper.js') }}"></script>
     <script src="{{ asset('js/registration/preview-input-images.js') }}"></script>
+    <script src="{{ asset('js/registration/prevent-double-submit.js') }}"></script>
+
 </body>
 </html>

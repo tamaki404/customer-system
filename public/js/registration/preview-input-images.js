@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // Check file size (2MB limit)
+                // Check file size (2MB limit - strict)
                 if (file.size > 2 * 1024 * 1024) {
-                    errorMsg.textContent = "Each file must be less than 2MB.";
+                    errorMsg.textContent = "Each file must be exactly 2MB or less.";
                     errorMsg.style.display = "block";
                     return;
                 }
@@ -145,50 +145,131 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // Validate file size (2MB limit)
+                // Validate file size (2MB limit - strict)
                 if (file.size > 2 * 1024 * 1024) {
                     if (logoErrorMsg) {
-                        logoErrorMsg.textContent = "Company logo must be less than 2MB.";
+                        logoErrorMsg.textContent = "Company logo must be exactly 2MB or less.";
                         logoErrorMsg.style.display = "block";
                     }
                     e.target.value = "";
                     return;
                 }
                 
-                // Remove existing preview
-                const existingPreview = companyImageInput.parentElement.querySelector('.logo-preview');
-                if (existingPreview) {
-                    existingPreview.remove();
-                }
-                
-                // Show preview for company logo
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.createElement('div');
-                    preview.className = 'logo-preview';
-                    preview.style.cssText = 'margin-top: 10px;';
-                    preview.innerHTML = `
-                        <img src="${e.target.result}" alt="Company Logo Preview" style="
-                            max-width: 150px; 
-                            max-height: 150px; 
-                            border: 1px solid #ddd; 
-                            border-radius: 4px;
-                        ">
-                        <p style="font-size: 11px; color: #666; margin-top: 5px;">
-                            ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)
-                        </p>
-                    `;
-                    companyImageInput.parentElement.appendChild(preview);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                // Clear preview if no file selected
-                const existingPreview = companyImageInput.parentElement.querySelector('.logo-preview');
-                if (existingPreview) {
-                    existingPreview.remove();
-                }
+                // No preview needed for company logo
             }
         });
+    }
+
+    // Real-time email checking
+    const emailInput = document.getElementById('email_address');
+    if (emailInput) {
+        let emailTimeout;
+        emailInput.addEventListener('input', function() {
+            clearTimeout(emailTimeout);
+            const email = this.value.trim();
+            
+            if (email && email.includes('@')) {
+                emailTimeout = setTimeout(() => {
+                    fetch('/check-email', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ email: email })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const errorMsg = this.parentElement.querySelector('.error-message');
+                        if (data.exists) {
+                            if (!errorMsg) {
+                                const error = document.createElement('p');
+                                error.className = 'error-message';
+                                error.style.cssText = 'color: #e74c3c; font-size: 12px; margin-top: 5px;';
+                                this.parentElement.appendChild(error);
+                            }
+                            this.parentElement.querySelector('.error-message').textContent = 'This email address is already registered.';
+                            this.parentElement.querySelector('.error-message').style.display = 'block';
+                        } else {
+                            if (errorMsg) {
+                                errorMsg.style.display = 'none';
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error checking email:', error));
+                }, 500);
+            }
+        });
+    }
+
+    // Password strength validation
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('password_confirmation');
+    const passwordMatchError = document.getElementById('password-match-error');
+    
+    if (passwordInput) {
+        const lengthCheck = document.getElementById('length-check');
+        const uppercaseCheck = document.getElementById('uppercase-check');
+        const lowercaseCheck = document.getElementById('lowercase-check');
+        const numberCheck = document.getElementById('number-check');
+        const specialCheck = document.getElementById('special-check');
+        
+        function updatePasswordStrength() {
+            const password = passwordInput.value;
+            
+            // Length check
+            if (password.length >= 8) {
+                lengthCheck.style.color = '#28a745';
+            } else {
+                lengthCheck.style.color = '#ccc';
+            }
+            
+            // Uppercase check
+            if (/[A-Z]/.test(password)) {
+                uppercaseCheck.style.color = '#28a745';
+            } else {
+                uppercaseCheck.style.color = '#ccc';
+            }
+            
+            // Lowercase check
+            if (/[a-z]/.test(password)) {
+                lowercaseCheck.style.color = '#28a745';
+            } else {
+                lowercaseCheck.style.color = '#ccc';
+            }
+            
+            // Number check
+            if (/\d/.test(password)) {
+                numberCheck.style.color = '#28a745';
+            } else {
+                numberCheck.style.color = '#ccc';
+            }
+            
+            // Special character check
+            if (/[@$!%*?&]/.test(password)) {
+                specialCheck.style.color = '#28a745';
+            } else {
+                specialCheck.style.color = '#ccc';
+            }
+        }
+        
+        passwordInput.addEventListener('input', updatePasswordStrength);
+    }
+    
+    if (passwordInput && confirmPasswordInput && passwordMatchError) {
+        function validatePasswordMatch() {
+            if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
+                passwordMatchError.textContent = 'Passwords do not match.';
+                passwordMatchError.style.display = 'block';
+                return false;
+            } else {
+                passwordMatchError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        passwordInput.addEventListener('input', validatePasswordMatch);
+        confirmPasswordInput.addEventListener('input', validatePasswordMatch);
     }
 
     // Form submission validation
@@ -222,7 +303,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 hasErrors = true;
             }
             
-            // Check other required fields
+            // Check password confirmation
+            if (passwordInput && confirmPasswordInput) {
+                if (!validatePasswordMatch()) {
+                    hasErrors = true;
+                }
+            }
+            
+            // Check other required fields (only those with required attribute)
             const requiredInputs = document.querySelectorAll('input[required], select[required]');
             requiredInputs.forEach(input => {
                 if (input.type !== 'file' && !input.value.trim()) {

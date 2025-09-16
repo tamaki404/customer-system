@@ -11,12 +11,27 @@ use App\Models\Documents;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
 
 public function registerSupplier(Request $request)
 {
+    // Rate limiting for registration attempts
+    $key = 'registration:' . $request->ip();
+    if (RateLimiter::tooManyAttempts($key, 5)) {
+        $seconds = RateLimiter::availableIn($key);
+        return redirect()->back()->withErrors(['error' => "Too many registration attempts. Please try again in {$seconds} seconds."]);
+    }
+    
+    RateLimiter::hit($key, 300); // 5 minutes
+
+    // Additional security validation
+    $this->validateSecurity($request);
+
     // Custom validation messages
     $messages = [
         'email_address.required' => 'Email address is required.',
@@ -24,6 +39,7 @@ public function registerSupplier(Request $request)
         'email_address.unique' => 'This email address is already registered.',
         'password.required' => 'Password is required.',
         'password.min' => 'Password must be at least 8 characters long.',
+        'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
         'image.required' => 'Company image/logo is required.',
         'image.image' => 'Company logo must be an image file.',
         'image.mimes' => 'Company logo must be a JPG, JPEG, PNG, or WEBP file.',
@@ -107,7 +123,7 @@ public function registerSupplier(Request $request)
     $request->validate([
         // User
         'email_address'   => 'required|email|unique:users,email_address',
-        'password'        => 'required|string|min:8',
+        'password'        => 'required|string|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/',
         'image'           => 'required|image|mimes:jpg,jpeg,png,webp|max:2048', // 2MB limit
 
         // Supplier
@@ -313,7 +329,75 @@ public function registerSupplier(Request $request)
         \Log::error('Supplier registration error: ' . $e->getMessage());
         return redirect()->back()->withErrors(['error' => 'Registration failed. Please try again.'])->withInput();
     }
-}
+    }
+
+    public function checkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        $exists = User::where('email_address', $request->email)->exists();
+        
+        return response()->json(['exists' => $exists]);
+    }
+
+    private function validateSecurity(Request $request)
+    {
+        // Check for suspicious patterns
+        $suspiciousPatterns = [
+            '/<script/i',
+            '/javascript:/i',
+            '/on\w+\s*=/i',
+            '/<iframe/i',
+            '/<object/i',
+            '/<embed/i',
+            '/<link/i',
+            '/<meta/i',
+            '/<style/i'
+        ];
+
+        $allInputs = $request->all();
+        foreach ($allInputs as $key => $value) {
+            if (is_string($value)) {
+                foreach ($suspiciousPatterns as $pattern) {
+                    if (preg_match($pattern, $value)) {
+                        abort(400, 'Suspicious input detected. Please check your input and try again.');
+                    }
+                }
+            }
+        }
+
+        // Validate file uploads for security
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $image->getRealPath());
+            finfo_close($finfo);
+            
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!in_array($mimeType, $allowedMimes)) {
+                abort(400, 'Invalid file type detected.');
+            }
+        }
+
+        // Check for file uploads in document arrays
+        $documentArrays = ['AOL', 'COR', 'BC', 'BP', 'SP', 'EMP', 'CTC', 'PR'];
+        foreach ($documentArrays as $arrayKey) {
+            if ($request->hasFile($arrayKey)) {
+                foreach ($request->file($arrayKey) as $file) {
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mimeType = finfo_file($finfo, $file->getRealPath());
+                    finfo_close($finfo);
+                    
+                    $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+                    if (!in_array($mimeType, $allowedMimes)) {
+                        abort(400, 'Invalid file type detected in documents.');
+                    }
+                }
+            }
+        }
+    }
 
 }
 
