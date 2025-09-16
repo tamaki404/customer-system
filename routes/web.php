@@ -4,6 +4,7 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\UserController;
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/registration/signin', function () {
     return view('registration.signin');
@@ -29,6 +30,5 @@ Route::get('/login', function () {
 })->name('login');
 
 // Authenticated dashboard
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth')->name('dashboard');
+Route::get('/dashboard/view',  [DashboardController::class, 'dashboardView'])->middleware('auth')->name('dashboard.view');
+Route::get('/dashboard/layout',  [DashboardController::class, 'layoutView'])->middleware('auth')->name('dashboard.layout');

@@ -39,9 +39,7 @@
                 <div class="form-group">
                     <p>Password</p>
                     <input type="password" name="password" autocomplete="off" required>
-                    @error('password')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+           
                 </div>
 
                 <div class="error-display">

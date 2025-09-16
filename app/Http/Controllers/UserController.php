@@ -390,16 +390,21 @@ class UserController extends Controller
             return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
         }
 
-        // Ensure email verification before allowing login
+        // Enforce verified email and Active status only
         $supplier = Suppliers::where('user_id', $user->user_id)->first();
-        if ($supplier && is_null($supplier->email_verified_at)) {
-            return redirect()->route('verification.notice')->with('error', 'Please verify your email before signing in.');
+        $isVerified = $supplier && !is_null($supplier->email_verified_at);
+        $isActive = isset($user->status) && strtolower($user->status) === 'active';
+        if (!$isVerified || !$isActive) {
+            $message = !$isVerified
+                ? 'Please verify your email before signing in.'
+                : 'Your account is not active. Please contact support.';
+            return redirect()->route('signin')->with('error', $message);
         }
 
         Auth::login($user, false);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard');
+        return redirect()->route('dashboard.view');
     }
 
     public function verifyEmail(Request $request)
