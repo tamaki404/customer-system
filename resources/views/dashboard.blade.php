@@ -2,7 +2,7 @@
 
 @section('content')
    <div class="content-bg">
-            <h1 class="heading">Welcome to your dashboard</h1>
+        <h1 class="heading">Welcome to your dashboard</h1>
 
         <div class="card">
             <h3 class="heading">Account</h3>

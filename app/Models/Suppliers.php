@@ -39,4 +39,21 @@ class Suppliers extends Model
         'product_requirements',
         
         'agreement',
-    ];}
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
+    public function signatory()
+    {
+        return $this->belongsTo( Signatories::class, 'supplier_id', 'supplier_id');
+    }
+    public function representative()
+    {
+        return $this->belongsTo( Representatives::class, 'supplier_id', 'supplier_id');
+    }
+}
+
+

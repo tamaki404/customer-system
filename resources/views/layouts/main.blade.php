@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <link rel="stylesheet" href="{{ asset('css/layout/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/main.css') }}">
 
      @stack('styles')
 
@@ -49,11 +50,12 @@
 
             <!-- Side Menu -->
             <div class="sideMenu" style="gap: 0; margin: 0;">
+                @php $currentRoute = Route::currentRouteName(); @endphp
 
                 <!-- Group 1: Main Navigation -->
                 <div class="nav-group">
                     <div class="nav-group-title">Main Navigation</div>
-                    <a class="nav-item">
+                    <a class="nav-item{{ $currentRoute == 'dashboard.view' ? ' active' : '' }}" href="{{ route('dashboard.view') }}">
                         <span class="material-symbols-outlined">dashboard</span>
                         <p>Dashboard</p>
                         <div class="nav-indicator"></div>
@@ -93,7 +95,7 @@
                 <!-- Group 3: People -->
                 <div class="nav-group">
                     <div class="nav-group-title">People</div>
-                    <a class="nav-item" >
+                    <a class="nav-item{{ $currentRoute == 'customers.list' ? ' active' : '' }}" href="{{ route('customers.list') }}">
                         <span class="material-symbols-outlined">groups</span>
                         <p>Customers</p>
                         <div class="nav-indicator"></div>
