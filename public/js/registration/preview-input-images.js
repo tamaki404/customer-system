@@ -277,6 +277,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (registerForm) {
         registerForm.addEventListener('submit', function(e) {
             let hasErrors = false;
+
+            // Server-required fields list (must match server validation rules); ignore HTML required flags
+            const requiredFieldNames = [
+                // User
+                'email_address', 'password', 'password_confirmation',
+                // Supplier core
+                'company_name','home_street','home_subdivision','home_barangay','home_city',
+                'office_street','office_subdivision','office_barangay','office_city',
+                'mobile_no','telephone_no','civil_status','citizenship','payment_method',
+                'salesman_relationship','weekly_volume','date_required',
+                // Representative
+                'rep_last_name','rep_first_name','rep_relationship','rep_contact_no',
+                // Signatory
+                'signatory_last_name','signatory_first_name','signatory_relationship','signatory_contact_no',
+                // Agreement checkbox
+                'agreement'
+            ];
             
             // Check if all required file uploads have files
             const requiredFileInputs = document.querySelectorAll('.file-upload-section input[type="file"][required]');
@@ -310,10 +327,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Check other required fields (only those with required attribute)
-            const requiredInputs = document.querySelectorAll('input[required], select[required]');
-            requiredInputs.forEach(input => {
-                if (input.type !== 'file' && !input.value.trim()) {
+            // Check required fields by name list (ignoring hidden step state)
+            requiredFieldNames.forEach(name => {
+                const input = document.querySelector(`[name="${name}"]`);
+                if (!input) return;
+                const isCheckbox = input.type === 'checkbox';
+                const valueOk = isCheckbox ? input.checked : Boolean(input.value && input.value.toString().trim());
+                if (!valueOk) {
                     // Find or create error message element
                     let errorMsg = input.parentElement.querySelector('.error-message');
                     if (!errorMsg) {

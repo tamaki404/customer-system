@@ -22,3 +22,13 @@ Route::get('/email/verify/notice', function () {
 })->name('verification.notice');
 
 Route::get('/email/verify', [UserController::class, 'verifyEmail'])->name('verification.verify');
+
+// Login alias
+Route::get('/login', function () {
+    return redirect()->route('signin');
+})->name('login');
+
+// Authenticated dashboard
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware('auth')->name('dashboard');

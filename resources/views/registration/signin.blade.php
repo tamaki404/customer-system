@@ -56,6 +56,8 @@
                     @if(session('success'))
                         <p style="color: green">{{ session('success') }}</p>
                     @endif
+
+                    
                 </div>
 
                 <button type="submit">Sign in</button>

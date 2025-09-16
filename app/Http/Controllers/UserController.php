@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -364,6 +365,43 @@ class UserController extends Controller
         return response()->json(['exists' => $exists]);
     }
 
+    public function signin(Request $request)
+    {
+        // Rate limit login attempts per IP
+        $key = 'login:' . $request->ip();
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            return redirect()->back()->withErrors(['loginError' => "Too many attempts. Try again in {$seconds} seconds."])->withInput();
+        }
+        RateLimiter::hit($key, 300); // 5 minutes
+
+        $credentials = $request->validate([
+            'email_address' => 'required|email',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $user = User::where('email_address', $credentials['email_address'])->first();
+        if (!$user) {
+            return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
+        }
+
+        // Ensure password matches
+        if (!\Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password)) {
+            return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
+        }
+
+        // Ensure email verification before allowing login
+        $supplier = Suppliers::where('user_id', $user->user_id)->first();
+        if ($supplier && is_null($supplier->email_verified_at)) {
+            return redirect()->route('verification.notice')->with('error', 'Please verify your email before signing in.');
+        }
+
+        Auth::login($user, false);
+        $request->session()->regenerate();
+
+        return redirect()->route('dashboard');
+    }
+
     public function verifyEmail(Request $request)
     {
         $request->validate([
@@ -380,23 +418,22 @@ class UserController extends Controller
             ->first();
 
         if (!$record) {
-            return redirect()->route('verification.notice')->with('error', 'Invalid or expired verification link.');
+            return redirect()->route('signin')->with('error', 'Invalid or expired verification link.');
         }
 
         if ($record->expires_at && now()->greaterThan($record->expires_at)) {
-            return redirect()->route('verification.notice')->with('error', 'Verification link has expired.');
+            return redirect()->route('signin')->with('error', 'Verification link has expired.');
         }
 
         // Mark verified
         $user = User::where('user_id', $userId)->first();
         if (!$user) {
-            return redirect()->route('verification.notice')->with('error', 'User not found.');
+            return redirect()->route('signin')->with('error', 'User not found.');
         }
 
         // Mark supplier email_verified_at too if exists
         DB::transaction(function() use ($user, $userId) {
-            // If you want to track on users: add email_verified_at/status
-            // Here we update suppliers.email_verified_at since schema has it
+ 
             DB::table('suppliers')->where('user_id', $userId)->update([
                 'email_verified_at' => now(),
             ]);

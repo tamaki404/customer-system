@@ -42,10 +42,10 @@ return new class extends Migration
             $table->string('payment_method');
 
             // Business Details
-            $table->string('salesman_relationship');
-            $table->string('weekly_volume');
+            $table->string('salesman_relationship')->nullable();
+            $table->string('weekly_volume')->nullable();
             $table->string('other_products_interest')->nullable();
-            $table->date('date_required');
+            $table->date('date_required')->nullable();
             $table->string('referred_by')->nullable();
             $table->string('product_requirements')->nullable();
 
