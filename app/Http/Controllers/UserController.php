@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -320,9 +321,30 @@ class UserController extends Controller
                 }
             }
 
+            // Create and send verification token
+            $plainToken = Str::random(64);
+            DB::table('email_verification_tokens')->insert([
+                'user_id'    => $user->user_id,
+                'email'      => $user->email_address,
+                'token'      => hash('sha256', $plainToken),
+                'expires_at' => now()->addDay(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $verifyUrl = url('/email/verify?token=' . $plainToken . '&uid=' . urlencode($user->user_id));
+
+            try {
+                Mail::send('emails.verify', ['verifyUrl' => $verifyUrl], function($message) use ($user) {
+                    $message->to($user->email_address)->subject('Verify your email address');
+                });
+            } catch (\Throwable $mailErr) {
+                \Log::error('Verification email send failed: ' . $mailErr->getMessage());
+            }
+
             DB::commit();
 
-            return redirect('/signin')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
+            return redirect()->route('verification.notice')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -340,6 +362,50 @@ class UserController extends Controller
         $exists = User::where('email_address', $request->email)->exists();
         
         return response()->json(['exists' => $exists]);
+    }
+
+    public function verifyEmail(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'uid'   => 'required',
+        ]);
+
+        $hashedToken = hash('sha256', $request->query('token'));
+        $userId = $request->query('uid');
+
+        $record = DB::table('email_verification_tokens')
+            ->where('user_id', $userId)
+            ->where('token', $hashedToken)
+            ->first();
+
+        if (!$record) {
+            return redirect()->route('verification.notice')->with('error', 'Invalid or expired verification link.');
+        }
+
+        if ($record->expires_at && now()->greaterThan($record->expires_at)) {
+            return redirect()->route('verification.notice')->with('error', 'Verification link has expired.');
+        }
+
+        // Mark verified
+        $user = User::where('user_id', $userId)->first();
+        if (!$user) {
+            return redirect()->route('verification.notice')->with('error', 'User not found.');
+        }
+
+        // Mark supplier email_verified_at too if exists
+        DB::transaction(function() use ($user, $userId) {
+            // If you want to track on users: add email_verified_at/status
+            // Here we update suppliers.email_verified_at since schema has it
+            DB::table('suppliers')->where('user_id', $userId)->update([
+                'email_verified_at' => now(),
+            ]);
+
+            // Remove used tokens
+            DB::table('email_verification_tokens')->where('user_id', $userId)->delete();
+        });
+
+        return redirect()->route('signin')->with('success', 'Email verified successfully. You may now sign in.');
     }
 
     private function validateSecurity(Request $request)

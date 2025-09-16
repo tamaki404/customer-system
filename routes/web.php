@@ -15,3 +15,10 @@ Route::get('/account/registration', [RegistrationController::class, 'showSignupF
 Route::post('/account/supplier/registration', [UserController::class, 'registerSupplier'])->name('registration.supplier.register');
 Route::post('/account/signin', [UserController::class, 'signin'])->name('account.signin');
 Route::post('/check-email', [UserController::class, 'checkEmail'])->name('check.email');
+
+// Email verification
+Route::get('/email/verify/notice', function () {
+    return view('verification.notice');
+})->name('verification.notice');
+
+Route::get('/email/verify', [UserController::class, 'verifyEmail'])->name('verification.verify');
