@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Suppliers extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'supplier_id',
+        'email_verified_at',
+        'action_at',
+        'company_name',
+        'home_street',
+        'home_subdivision',
+        'home_barangay',
+        'home_city',
+        'office_street',
+        'office_subdivision',
+        'office_barangay',
+        'office_city',
+        'mobile_no',
+        'telephone_no',
+        'birthdate',
+        'valid_id_no',
+        'id_type',
+        // 'email',
+        'civil_status', 
+        'citizenship', 
+        'payment_method',
+
+        'salesman_relationship', 
+        'weekly_volume', 
+        'other_products_interest',
+        'date_required', 
+        'referred_by', 
+
+        'product_requirements',
+        
+        'agreement',
+    ];}

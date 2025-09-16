@@ -28,7 +28,7 @@
 
         <div class="form-container" style="display: flex; flex-direction: row; gap: 10px; align-items: center; justify-content: center;">
             <button class="prev-btn btn-transition" type="button"><span class="material-symbols-outlined">arrow_back_ios</span></button>
-            <form method="POST" action="/register-company" class="log-form" id="registerForm" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('registration.supplier.register') }}" class="log-form" id="registerForm" enctype="multipart/form-data">
                 @csrf
                 
                 <div class="step1">
@@ -39,24 +39,40 @@
                         <div class="form-items">
                             <div class="form-group">
                                 <label for="company-name"><span class="req-asterisk">*</span> Customer/Company name </label>
-                                <input type="text" name="company_name" id="company-name" required maxlength="255">
+                                <input type="text" style="width: 300px" name="company_name" id="company-name" required maxlength="255">
+                            </div>
+                            <div class="form-group">
+                                <label for="company-image"><span class="req-asterisk">*</span> Company image/logo </label>
+                                <input type="file" id="company-image" name="image" required accept="image/*">
+                                <p class="error-message"></p>
+
+                            </div>
+                            <!-- Home Address -->
+                            <div class="form-group">
+                                <label for="home-street"><span class="req-asterisk">*</span> Home address </label>
+                                <div id="home-address">
+                                    <input type="text" name="home_street" id="home-street" required placeholder="Street" maxlength="255">
+                                    <input type="text" name="home_subdivision" id="home-subdivision" required placeholder="Subdivision" maxlength="255">
+                                    <input type="text" name="home_barangay" id="home-barangay" required placeholder="Barangay" maxlength="255">
+                                    <input type="text" name="home_city" id="home-city" required placeholder="City" maxlength="100">
+                                </div>
                             </div>
 
                             <!-- Office Address -->
                             <div class="form-group">
-                                <label><span class="req-asterisk">*</span> Office address </label>
+                                <label for="office-street"><span class="req-asterisk">*</span> Office address </label>
                                 <div id="office-address">
-                                    <input type="text" name="street" id="street" required placeholder="Street" maxlength="255">
-                                    <input type="text" name="subdivision" id="subdivision" required placeholder="Subdivision" maxlength="255">
-                                    <input type="text" name="barangay" id="barangay" required placeholder="Barangay" maxlength="255">
-                                    <input type="text" name="city" id="city" required placeholder="City" maxlength="10">
+                                    <input type="text" name="office_street" id="office-street" required placeholder="Street" maxlength="255">
+                                    <input type="text" name="office_subdivision" id="office-subdivision" required placeholder="Subdivision" maxlength="255">
+                                    <input type="text" name="office_barangay" id="office-barangay" required placeholder="Barangay" maxlength="255">
+                                    <input type="text" name="office_city" id="office-city" required placeholder="City" maxlength="100">
                                 </div>
                             </div>
 
                             <!-- Contact & Personal Info -->
                             <div class="form-group">
                                 <label for="mobile-no"><span class="req-asterisk">*</span> Mobile No.</label>
-                                <input type="number" name="mobile_no" id="mobile-no" placeholder="ex. 09123456789" required maxlength="11">
+                                <input type="number" name="mobile_no" id="mobile-no" placeholder="ex. 09123456789" required>
                             </div>
                             <div class="form-group">
                                 <label for="telephone-no"><span class="req-asterisk">*</span> Telephone No.</label>
@@ -73,39 +89,36 @@
                             <div class="form-group">
                                 <label for="id-type">ID Type</label>
                                 <select name="id_type" id="id-type">
-                                    <option value="passport">Passport</option>
-                                    <option value="driver_license">Driver's License</option>
-                                    <option value="national_id">National ID</option>
-                                    <option value="postal_id">Postal ID</option>
-                                    <option value="philhealth_id">Philhealth ID</option>
+                                    <option value="Passport">Passport</option>
+                                    <option value="Driver's license">Driver's License</option>
+                                    <option value="National ID">National ID</option>
+                                    <option value="Postal ID">Postal ID</option>
+                                    <option value="Philhealth ID">Philhealth ID</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label for="email"><span class="req-asterisk">*</span> Email address</label>
-                                <input type="email" name="email" id="email" required maxlength="255">
-                            </div>
+                    
                             <div class="form-group">
                                 <label for="civil-status"><span class="req-asterisk">*</span> Civil status</label>
                                 <select name="civil_status" id="civil-status">
-                                    <option value="single">Single</option>
-                                    <option value="married">Married</option>
-                                    <option value="divorced">Divorced</option>
-                                    <option value="widowed">Widowed</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widowed">Widowed</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="citizenship"><span class="req-asterisk">*</span> Citizenship</label>
-                                <select name="citizenship" id="citizenship">
-                                    <option value="filipino">Filipino</option>
-                                    <option value="foreign">Foreign</option>
+                                <select name="citizenship" id="citizenship" required>
+                                    <option value="Filipino">Filipino</option>
+                                    <option value="Foreign">Foreign</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="payment_method"><span class="req-asterisk">*</span> Payment Method</label>
                                 <select name="payment_method" id="payment_method" required>
-                                    <option value="credit_card">EFT</option>
-                                    <option value="paypal">PayPal</option>
-                                    <option value="gcash">GCash</option>
+                                    <option value="Credit card">EFT</option>
+                                    <option value="Paypal">PayPal</option>
+                                    <option value="Gcash">GCash</option>
                                 </select>
                             </div>
                         </div>
@@ -116,9 +129,9 @@
                         <p class="form-name">Authorized representative</p>
                         <div class="form-items">
                             <div class="form-group">
-                                <label><span class="req-asterisk">*</span> Name</label>
-                                <div>
-                                    <input type="text" name="rep_last_name" placeholder="Last name" required maxlength="50">
+                                <label for="rep-name"><span class="req-asterisk">*</span> Name</label>
+                                <div >
+                                    <input id="rep-name" type="text" name="rep_last_name" placeholder="Last name" required maxlength="50">
                                     <input type="text" name="rep_first_name" placeholder="First name" required maxlength="50">
                                     <input type="text" name="rep_middle_name" placeholder="Middle name" maxlength="50">
                                 </div>
@@ -139,11 +152,11 @@
                         <p class="form-name">Authorized signatories</p>
                         <div class="form-items">
                             <div class="form-group">
-                                <label><span class="req-asterisk">*</span> Name</label>
+                                <label for="signatory-last-name"><span class="req-asterisk">*</span> Name</label>
                                 <div>
-                                    <input type="text" name="signatory_last_name" placeholder="Last name" required maxlength="50">
-                                    <input type="text" name="signatory_first_name" placeholder="First name" required maxlength="50">
-                                    <input type="text" name="signatory_middle_name" placeholder="Middle name" maxlength="50">
+                                    <input id="signatory-last-name" type="text" name="signatory_last_name" placeholder="Last name" required maxlength="50">
+                                    <input id="signatory-first-name" type="text" name="signatory_first_name" placeholder="First name" required maxlength="50">
+                                    <input id="signatory-middle-name" type="text" name="signatory_middle_name" placeholder="Middle name" maxlength="50">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -212,11 +225,12 @@
                 <div class="step2">
                     <!-- Company Details -->
                     <section class="upload-instructions">
-                        <label for="">Instruction</label>
-                        <span>Upload necessary files here that are needed to confirm your identity.</span>
-                        <span>Strictly 2MB max per file.</span>
-                        <span>Upload scanned documents for clearer quality.</span>
+                        <h3>Instructions</h3>
+                        <p>Upload necessary files here that are needed to confirm your identity.</p>
+                        <p>Strictly 2MB max per file.</p>
+                        <p>Upload scanned documents for clearer quality.</p>
                     </section>
+
 
                     <div class="file-upload-container">
                         <div class="file-upload-section">
@@ -272,8 +286,30 @@
                             <p class="error-message"></p>
                         </div>
 
+                        <div class="file-upload-section">
+                            <label for="product-requirements"> <span class="req-asterisk">*</span> Product requirements <span class="max-file">(max. 3 files)</span></label>
+                            <input type="file" name="PR[]" id="product-requirements" required multiple accept="image/*">
+                            <div class="file-count">0 files selected</div>
+                            <div class="image-preview-container"></div>
+                            <p class="error-message"></p>
+                        </div>
+
                     </div>
- 
+
+                    <section>
+                        <p>Account security</p>
+                        <div class="file-section">
+                            <div class="form-group">
+                                <label for="email_address"><span class="req-asterisk">*</span> Email address</label>
+                                <input type="text" name="email_address" id="email_address" required maxlength="255">
+                            </div>
+                            <div class="form-group">
+                                <label for="password"><span class="req-asterisk">*</span> Password</label>
+                                <input type="password" name="password" id="password" required minlength="8" maxlength="255">
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- Agreement -->
                     <section class="form-agreement" style="margin-top: 10px">
                         <p class="form-name" style="margin: 0">Agreement</p>
@@ -286,7 +322,7 @@
                                 I agree that my/our information will be kept confidential.
                             </p>
                             <div class="form-group" style="display: flex; flex-direction: row; align-items: center;">
-                                <input type="checkbox" name="agreement" id="agreement" required style="margin: 0">
+                                <input type="checkbox" name="agreement" id="agreement" required style="margin: 0" required>
                                 <label for="agreement" style="margin: 0">
                                     I have read and understood the above agreement, and I hereby confirm my acceptance of the terms and conditions stated.
                                 </label>

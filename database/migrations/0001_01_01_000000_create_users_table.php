@@ -13,12 +13,17 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
             $table->timestamps();
+            $table->string('user_id');
+            $table->string('email_address')->unique();
+            $table->string('password');
+            $table->string('status')->default('Pending');
+            $table->string('role');
+
+            $table->string('image_mime_type')->nullable();
+            $table->string('image_filename')->nullable();
+            $table->unsignedInteger('image_size')->nullable(); 
+
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -35,6 +40,9 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        DB::statement('ALTER TABLE users ADD image MEDIUMBLOB NULL');
+
     }
 
     /**
