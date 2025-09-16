@@ -1,8 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('registerForm');
+    if (!form) return;
     const submitBtn = form.querySelector('button[type="submit"]');
 
-    form.addEventListener('submit', function() {
+    form.addEventListener('submit', function(e) {
+        // Respect validation handlers that prevent submission
+        if (e.defaultPrevented) return;
         if (submitBtn) {
             submitBtn.disabled = true; // prevent double click
             submitBtn.innerText = "Processing..."; // optional feedback

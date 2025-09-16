@@ -23,7 +23,7 @@
             <div class="header-texts">
                 <h2>Create Account</h2>
                 <p class="kindly-mess">Please fill out the form below to create your account</p>
-                <span>Already have an account? <a class="href-link" href="/login" style="color: #f5922a">Sign In</a></span>
+                <span>Already have an account? <a class="href-link" href="{{ route('signin') }}" style="color: #f5922a">Sign In</a></span>
             </div>
 
         </div>
@@ -201,11 +201,11 @@
                         <div class="form-items">
                             <div class="form-group">
                                 <label for="salesman-relationship">How long have you known salesman?</label>
-                                <input type="text" name="salesman_relationship" id="salesman-relationship" placeholder="ex. 2 years" required maxlength="50">
+                                <input type="text" name="salesman_relationship" id="salesman-relationship" placeholder="ex. 2 years"  maxlength="50">
                             </div>
                             <div class="form-group">
                                 <label for="weekly-volume">Weekly volume (trays and/or heads)</label>
-                                <input type="text" name="weekly_volume" id="weekly-volume" placeholder="ex. 100 trays" required maxlength="50">
+                                <input type="text" name="weekly_volume" id="weekly-volume" placeholder="ex. 100 trays"  maxlength="50">
                             </div>
                             <div class="form-group">
                                 <label for="other-products-interest">Other products interest in</label>
@@ -213,7 +213,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="date-required">Date required</label>
-                                <input type="date" name="date_required" id="date-required" required>
+                                <input type="date" name="date_required" id="date-required" >
                             </div>
                             <div class="form-group">
                                 <label for="referred-by">Referred by</label>
@@ -359,8 +359,7 @@
                     
                         <button 
                             type="submit" 
-                            class="register-btn btn-transition" 
-                            onclick="this.disabled=true; this.form.submit();"
+                            class="register-btn btn-transition"
                         >
                             Register account
                         </button>

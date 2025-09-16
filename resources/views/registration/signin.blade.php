@@ -25,39 +25,42 @@
             <h1>Welcome👋!</h1>
             <p class="kindly-mess">Please log in to your account below</p>
 
-            <form action="/login-user" method="POST" class="loginForm" autocomplete="off">
+            <form action="{{ route('account.signin') }}" method="POST" class="loginForm" autocomplete="off">
                 @csrf
+                
                 <div class="form-group">
                     <p>Email address</p>
-                    <input type="text" name="username" required>
+                    <input type="email" name="email_address" value="{{ old('email_address') }}" required>
+                    @error('email_address')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
+
                 <div class="form-group">
                     <p>Password</p>
                     <input type="password" name="password" autocomplete="off" required>
+                    @error('password')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
                 </div>
-                {{-- <a href="/password/forgot">Forgot password?</a> --}}
 
-
-                <div class="error-display">     
+                <div class="error-display">
                     @if ($errors->has('loginError'))
-                            <p>{{ $errors->first('loginError') }}</p>
+                        <p>{{ $errors->first('loginError') }}</p>
                     @endif
 
                     @if(session('error'))
-                            <p>{{ session('error') }}</p>
+                        <p style="color: red">{{ session('error') }}</p>
                     @endif
 
                     @if(session('success'))
-                            <p style="color: green">{{ session('success') }}</p>
+                        <p style="color: green">{{ session('success') }}</p>
                     @endif
-
                 </div>
 
                 <button type="submit">Sign in</button>
-
-                
-                
             </form>
+
 
             <span>
                 Doesn't have an account? 
@@ -66,32 +69,8 @@
 
         </div>
     </div>
-    <script>
-        (function(){
-            var images = document.querySelectorAll('.carousel-image');
-            if(!images || images.length === 0) return;
-            var prevBtn = document.querySelector('.carousel-btn.prev');
-            var nextBtn = document.querySelector('.carousel-btn.next');
-            var currentIndex = 0;
 
-            function showSlide(index){
-                images[currentIndex].classList.remove('active');
-                currentIndex = (index + images.length) % images.length;
-                images[currentIndex].classList.add('active');
-            }
+    <script src="{{ asset('js/animations/carousel.js') }}"></script>
 
-            function nextSlide(){ showSlide(currentIndex + 1); }
-            function prevSlide(){ showSlide(currentIndex - 1); }
-
-            var timer = setInterval(nextSlide, 4000);
-            function resetTimer(){
-                clearInterval(timer);
-                timer = setInterval(nextSlide, 4000);
-            }
-
-            if(prevBtn){ prevBtn.addEventListener('click', function(){ prevSlide(); resetTimer(); }); }
-            if(nextBtn){ nextBtn.addEventListener('click', function(){ nextSlide(); resetTimer(); }); }
-        })();
-    </script>
 </body>
 </html>
