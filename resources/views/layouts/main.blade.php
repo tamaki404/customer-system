@@ -12,6 +12,10 @@
 
     <link rel="stylesheet" href="{{ asset('css/layout/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/search.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/date-range.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/pagination.css') }}">
+
 
      @stack('styles')
 

@@ -431,3 +431,101 @@ form .logoutButton:hover{
 .showScreen.expanded {
     width: 100%;
 }
+
+
+
+
+
+
+
+
+
+@media screen and (max-width: 768px) {
+    .dashBody {
+        padding: 20px;
+        width: 100%;
+        height: 90%;
+        min-height: 90vh;
+        border-radius: 20px;
+        box-shadow: none;
+    }
+    .mainFrame .showScreen {
+        width: 100%;
+        padding: 10px;
+        margin-top: 0;
+    }
+    .greet-div h1{
+        font-size: 23px;
+    }
+    .greet-div h4{
+        font-size: 17px;
+    }
+    .status-card .card-title{
+        font-size: 13px;
+    }
+    .status-card .card-count{
+        font-size: 18px;
+    }
+    .status-card .card-add-count{
+        font-size: 14px;
+    }
+    .status-cards-list{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .purchase-order-chart{
+        width: 100%;
+        display: flex;
+        overflow-y: auto;
+    }
+    #purchaseOrdersChart{
+        width: 100%;
+    }
+    .purchase-order-chart {
+        width: 100%;
+    }
+
+    .chart-wrapper {
+        width: 100%;
+        overflow-x: auto; 
+    }
+
+    .chart-wrapper canvas {
+        min-width: 600px;  
+    }
+    .date-search{
+        margin-top: 10px;
+    }
+    .date-search p{
+        font-size: 13px;
+    }
+    .month-div{
+        font-size: 12px;
+        margin-top: 5px;
+    }
+    .month-div input{
+        font-size: 12px;
+    }
+    /* date results display */
+    .date-results-label{
+        margin: 0; margin-top: 15px; font-size: 13px;        
+    }
+    .date-results-label span{
+        color: #666
+    }
+    .date-results-label strong{
+        font-size: 14px; color: #333;
+    }
+    .recent-orders-list{
+        width: 200px;
+        overflow: hidden;
+        font-size: 12px;
+    }
+    .order-row p, 
+    .order-row span{
+        font-size: 12px;
+    }
+    
+
+}

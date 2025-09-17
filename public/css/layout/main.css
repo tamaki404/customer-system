@@ -16,15 +16,23 @@
 }
 .content-header{
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     padding: 12px 0;
+    width: 100%;
     border-bottom: 1px solid #eee;
 }
-.content-header p{
+.content-header .contents-display{
+    flex-direction: row;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+
+}
+.heading{
     font-size: 22px;
     font-weight: 700;
     color: #333;
+    margin: 0;
 }
 .content-body {
     width: 100%;
