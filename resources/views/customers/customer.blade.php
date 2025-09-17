@@ -291,40 +291,49 @@
                 <div>
                     <p class="title-data">Documents</p>
                     <div class="documents-list">
-@foreach ($documents as $document)
-    @php
-        $imgSrc = $document->file
-            ? 'data:' . $document->file_mime . ';base64,' . base64_encode($document->file)
-            : asset('images/default-avatar.png');
+                        @foreach ($documents as $document)
+                            @php
+                                $imgSrc = $document->file
+                                    ? 'data:' . $document->file_mime . ';base64,' . base64_encode($document->file)
+                                    : asset('images/default-avatar.png');
 
-        // safer unique key (use id instead of type, since type might not be unique)
-        $modalId = 'documentModal' . ($document->id ?? $loop->index);
-    @endphp
+                                $modalId = 'documentModal' . ($document->id ?? $loop->index);
+                            @endphp
 
-    <div class="document-group">
-        <p>{{ $document->type }}</p>
-        <img class="supplier-image"
-             src="{{ $imgSrc }}"
-             alt="Document"
-             data-bs-toggle="modal"
-             data-bs-target="#{{ $modalId }}">
-    </div>
+                            <div class="document-group">
+                                <p>{{ $document->type }}</p>
+                                <img class="supplier-image"
+                                    src="{{ $imgSrc }}"
+                                    alt="Document"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#{{ $modalId }}">
+                            </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{ $document->type }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body text-center">
-            <img src="{{ $imgSrc }}" class="img-fluid" alt="Document Preview">
-          </div>
-        </div>
-      </div>
-    </div>
-@endforeach
+                            <!-- Modal -->
+                            <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered" style="height: 100%">
+                                    <div class="modal-content" >
+                                        <div class="modal-header">
+                                            <p class="modal-title" >{{ $document->type }}</p>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <img src="{{ $imgSrc }}" class="img-fluid" alt="Document Preview">
+                                        </div>
+                                        <div class="modal-footer">
+                                            {{-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Download</button> --}}
+                                            <button type="button" class="btn btn-primary" style="align-content: center; justify-content: center; display: flex; gap: 5px">
+                                                <span class="material-symbols-outlined" style="font-size: 17px">
+                                                    download
+                                                </span>
+                                                <span>Download</span>
+                                            </button>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
 
                     </div>
 
