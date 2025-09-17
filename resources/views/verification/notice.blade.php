@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="log-form-bg" style="display: flex; align-items: center; justify-content: center; min-height: 60vh;">
-
+        <p>Kindly check your email for account verification</p>
     </div>
 </body>
 </html>

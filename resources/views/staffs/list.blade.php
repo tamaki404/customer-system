@@ -9,8 +9,20 @@
 
     <div class="modal fade" id="add-staff-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form class="modal-content"  method="POST" action="{{ route('registration.staff.register') }}" >
+            <form class="modal-content"  method="POST" action="{{ route('registration.staff.register') }}" enctype="multipart/form-data">
                 @csrf
+                @if ($errors->any())
+                    <div class="alert alert-danger" style="margin: 10px;">
+                        <ul style="margin: 0; padding-left: 20px;">
+                            @foreach ($errors->all() as $error)
+                                <li style="font-size: 14px;">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                @if (session('success'))
+                    <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
+                @endif
             
                 <div class="modal-header">
                     <p class="modal-title" id="requestActionLabel">Add staff form</p>
@@ -42,11 +54,11 @@
                     <div class="modal-option-groups">
                         <p>Staff role</p>
                         <select name="role_type" id="">
-                            <option value="Sales representative">Sales representative</option>
-                            <option value="Procurement officer">Procurement officer</option>
-                            <option value="Warehouse staff">Warehouse staff</option>
-                            <option value="Accounting staff">Accounting staff</option>
-                            <option value="System administrator">System administrator</option>
+                            <option value="sales_representative">Sales representative</option>
+                            <option value="procurement_officer">Procurement officer</option>
+                            <option value="warehouse_staff">Warehouse staff</option>
+                            <option value="accounting_staff">Accounting staff</option>
+                            <option value="system_admin">System administrator</option>
 
                         </select>
                     </div>
@@ -54,7 +66,7 @@
                     <div class="modal-option-groups">
                         <p>Contact</p>
                         <input type="text" placeholder="Mobile no." maxlength="11" name="mobile_no" required>
-                        <input type="text" placeholder="Telephone no." maxlength="11" name="telephone_no">
+                        <input type="text" placeholder="Telephone no." maxlength="11" name="telephone_no" required>
 
                     </div>
 
@@ -64,8 +76,14 @@
                             <input type="text" name="email_address" maxlength="50" placeholder="Email address" required>
                         </div>
                         <div class="form-group">
-                            <input type="password" name="passsword" placeholder="Password" minlength="8" maxlength="20" required>
-                            <input type="password" name="confirm_password" minlength="8" maxlength="20" placeholder="Confirm password" required>
+                            <input type="password" name="password" placeholder="Password" minlength="6" required>
+                            <input type="password" name="password_confirmation" minlength="6" placeholder="Confirm password" required>
+                            <div id="staff-password-requirements" style="margin-top: 5px; font-size: 12px;">
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    <span id="staff-length-check" style="color: #ccc;"> ≥ 6 chars -</span>
+                                    <span id="staff-match-check" style="color: #ccc;"> Match confirm -</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -74,10 +92,10 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Add staff</button>
+                    <button type="submit" class="btn btn-primary" id="add-staff-submit">Add staff</button>
                 </div>
 
-                <input type="hidden" name="action_by" name="{{ auth()->user()->user_id}}">
+                <input type="hidden" name="action_by" value="{{ auth()->user()->user_id }}">
 
             
             </form>
@@ -173,3 +191,48 @@
 
    </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('add-staff-modal');
+    if (!modal) return;
+    var form = modal.querySelector('form');
+    var password = form.querySelector('input[name="password"]');
+    var confirm = form.querySelector('input[name="password_confirmation"]');
+    var submit = document.getElementById('add-staff-submit');
+
+    function strong(val){
+        return val.length > 0 && val.length <= 8 && /[A-Z]/.test(val) && /[@$!%*?&]/.test(val);
+    }
+
+    function valid(){
+        return strong(password.value) && password.value === confirm.value;
+    }
+
+    function update(){
+        if (!strong(password.value)) {
+            password.setCustomValidity('Password must be ≤ 8 chars and include at least 1 uppercase and 1 special character.');
+        } else {
+            password.setCustomValidity('');
+        }
+        if (confirm.value && password.value !== confirm.value) {
+            confirm.setCustomValidity('Passwords do not match.');
+        } else {
+            confirm.setCustomValidity('');
+        }
+        if (submit) submit.disabled = !valid();
+
+        var len = document.getElementById('staff-length-check');
+        var match = document.getElementById('staff-match-check');
+        if (len) len.style.color = (password.value.length >= 6) ? '#27ae60' : '#ccc';
+        if (match) match.style.color = (password.value && confirm.value && password.value === confirm.value) ? '#27ae60' : '#ccc';
+    }
+
+    if (password) password.addEventListener('input', update);
+    if (confirm) confirm.addEventListener('input', update);
+    if (form) form.addEventListener('submit', function(e){ if (!valid()) { e.preventDefault(); update(); } });
+    update();
+});
+</script>
+@endpush

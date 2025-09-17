@@ -127,7 +127,7 @@ class UserController extends Controller
         $request->validate([
             // User
             'email_address'   => 'required|email|unique:users,email_address',
-            'password'        => 'required|string|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/',
+            'password'        => 'required|string|confirmed|min:6',
             'image'           => 'required|image|mimes:jpg,jpeg,png,webp|max:2048', // 2MB limit
 
             // Supplier
@@ -145,9 +145,9 @@ class UserController extends Controller
             'civil_status'    => 'required|string',
             'citizenship'     => 'required|string',
             'payment_method'  => 'required|string',
-            'salesman_relationship' => 'required|string',
-            'weekly_volume'   => 'required|string',
-            'date_required'   => 'required|date',
+            'salesman_relationship' => 'nullable|string',
+            'weekly_volume'   => 'nullable|string',
+            'date_required'   => 'nullable|date',
             'agreement'       => 'required|accepted',
 
             // Optional fields validation
@@ -232,6 +232,7 @@ class UserController extends Controller
                 'email_address' => $request->email_address,
                 'password' => $request->password,
                 'role'          => 'Supplier',
+                'role_type'     => 'supplier',
                 'image'         => $imageBlob,
                 'image_mime_type' => $imageMimeType,
                 'image_filename' => $imageFilename,
@@ -363,10 +364,8 @@ class UserController extends Controller
             'password' => [
                 'required',
                 'string',
-                'min:8',
-                'max:20',
+                'min:6',
                 'confirmed',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/'
             ],
             'mobile_no'       => 'required|string|max:11',
             'telephone_no'    => 'required|string|max:11',
@@ -374,7 +373,7 @@ class UserController extends Controller
             'lastname'   => 'required|string|max:50',
             'firstname'  => 'required|string|max:50',
             'middlename' => 'nullable|string|max:50',
-            'action_by' => 'required|users,user_id',
+            'action_by' => 'required|exists:users,user_id',
             'role_type'  => 'required|string|in:sales_representative,procurement_officer,warehouse_staff,accounting_staff,system_admin',
         ]);
 
@@ -415,7 +414,7 @@ class UserController extends Controller
                 'email_address' => $request->email_address,
                 'password' => $request->password,
                 'role'          => 'Staff',
-                'role_role_type'          => $request->role_type,
+                'role_type'          => $request->role_type,
                 'image'         => $imageBlob,
                 'image_mime_type' => $imageMimeType,
                 'image_filename' => $imageFilename,
@@ -466,7 +465,7 @@ class UserController extends Controller
 
             DB::commit();
 
-            return redirect()->route('verification.notice')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
+            return redirect()->route('customers.list');
 
         } catch (\Exception $e) {
             DB::rollBack();
