@@ -35,4 +35,8 @@ Route::get('/dashboard/view',  [DashboardController::class, 'dashboardView'])->m
 Route::get('/dashboard/layout',  [DashboardController::class, 'layoutView'])->middleware('auth')->name('dashboard.layout');
 
 
-Route::get('/customers/list',  [CustomersController::class, 'customersList'])->middleware('auth')->name('customers.list');
+
+Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
+    Route::get('/customers/list',  [CustomersController::class, 'customersList'])->name('customers.list');
+    Route::get('/customers/list/customer',  [CustomersController::class, 'customerView'])->name('customers.customer');
+});

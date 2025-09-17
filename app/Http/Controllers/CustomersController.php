@@ -30,4 +30,29 @@ class CustomersController extends Controller
             ]);
         }
 
+        public function customerView(Request $request)
+        {
+            $user = Auth::user();
+            $supplier = $user ? Suppliers::where('user_id', $user->user_id)->first() : null;
+            $documentCount = $supplier ? Documents::where('supplier_id', $supplier->supplier_id)->count() : 0;
+            
+            // Get specific customer/supplier details
+            $customerId = $request->query('id');
+            $customer = null;
+            
+            if ($customerId) {
+                $customer = Suppliers::with('user')
+                    ->where('supplier_id', $customerId)
+                    ->whereRelation('user', 'role', 'Supplier')
+                    ->first();
+            }
+
+            return view('customers.customer', [
+                'user' => $user,
+                'supplier' => $supplier,
+                'documentCount' => $documentCount,
+                'customer' => $customer,
+            ]);
+        }
+
 }

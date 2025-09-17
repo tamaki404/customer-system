@@ -57,7 +57,7 @@
                 </thead>
                 <tbody>
                     @foreach ($suppliers as $supplier)
-                        <tr>
+                        <tr onclick="window.location='{{ route('customers.customer', $supplier->supplier_id) }}'">
                             <th>{{ $loop->iteration }}</th>
                             <td>{{ $supplier->supplier_id }}</td>
                             <td>{{ $supplier->company_name }}</td>
