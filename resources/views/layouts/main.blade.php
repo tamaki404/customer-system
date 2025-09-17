@@ -108,7 +108,7 @@
                         <p>Customers</p>
                         <div class="nav-indicator"></div>
                     </a>
-                    <a class="nav-item" >
+                    <a class="nav-item{{ $currentRoute == 'staffs.list' ? ' active' : '' }}" href="{{ route('staffs.list') }}" >
                         <span class="material-symbols-outlined">supervisor_account</span>
                         <p>Staffs</p>
                         <div class="nav-indicator"></div>

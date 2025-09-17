@@ -6,6 +6,8 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomersController;
+use App\Http\Controllers\StaffsController;
+
 
 Route::get('/registration/signin', function () {
     return view('registration.signin');
@@ -39,4 +41,13 @@ Route::get('/dashboard/layout',  [DashboardController::class, 'layoutView'])->mi
 Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/customers/list',  [CustomersController::class, 'customersList'])->name('customers.list');
     Route::get('/customers/list/customer/{supplier_id}',  [CustomersController::class, 'customerView'])->name('customers.customer');
+
+    Route::get('/staffs/list',  [StaffsController::class, 'staffsList'])->name('staffs.list');
+    Route::get('/staffs/list/staff/{staff_id}',  [StaffsController::class, 'staffView'])->name('staffs.staff');
+
+});
+
+
+Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::post('/account/staff/registration', [StaffsController::class, 'registerStaff'])->name('registration.staff.register');
 });
