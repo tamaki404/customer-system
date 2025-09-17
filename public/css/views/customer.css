@@ -1,0 +1,236 @@
+.profile-upper{
+    width: 100%;
+    height: 200px;
+    border-radius: 15px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    background-color: #fff;
+}
+.profile-upper .supplier-image{
+    border-radius: 15px;
+    width: 150px;
+    height: 150px;
+    border: 3px solid #ffde59;
+}
+
+.profile-details-div{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.company-name{
+    font-size: 25px;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    margin: 0;
+}
+.company-status{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.user-status{
+    font-size: 13px;
+    color: #333;
+    border-radius: 25px;
+    border: 1px solid #333;
+    align-items: center;
+    display: flex;
+    width: 70px;
+    padding: 5px;
+    height: auto;
+    justify-content: center;
+    
+}
+.details-address {
+    display: flex;
+    flex-direction: column;
+}
+.details-address .address-div{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    margin: 0;
+    align-items: center;
+}
+
+.details-contact{
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+.details-contact p{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    margin: 0;
+    align-items: center;
+}
+.details-contact p span{
+    margin: 0;
+}
+
+.details-contact  .icon,
+.details-address .icon{
+    font-size: 16px;
+    align-items: center;
+    color: #999;
+}
+
+.details-contact span{
+    margin-left: 3px;
+    margin-right: 3px;
+}
+.div-text{
+    font-size: 14px;
+    color: #333;
+    font-weight: 300;
+}
+
+.authorized-rep,
+.signatory-rep{
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+.authorized-rep p,
+.signatory-rep p{
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+    font-weight: normal;
+
+
+}
+.authorized-staffs p{
+    margin: 0;
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+}
+.authorized-staffs{
+    gap: 10px;
+}
+
+.profile-mid{
+    padding: 10px;
+    gap: 10px;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    width: 100%;
+}
+.questions-list{
+    width: 500px;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+
+}
+.questions-list p span{
+    font-size: 13px;
+    margin: 0;
+    font-weight: normal;
+}
+.questions-list p{
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+}
+.sales-person-div{
+    width: 100%;
+    height: auto;
+    display: flex;
+    gap: 5px;
+    padding: 10px;
+    flex-direction: column;
+    background-color: #ffde59;
+    border-radius: 10px;
+}
+.sales-person img{
+    height: 60px;
+    width: 60px;
+    border-radius: 10px;
+}
+.sales-person{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+.name-title{
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    align-items: start;
+    justify-content: start;
+}
+.name-title span{
+    margin: 0;
+    font-size: 13px;
+    color: #666
+}
+.sales-title{
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+}
+
+.title-data{
+    margin: 0;
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+}
+
+.documents-list{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 5px;
+}
+.document-group{
+    height: 200px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.document-group:hover{
+    background-color: #fff;
+        transform: scale(1.1);
+
+}
+
+.document-group p{
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+.document-group img{
+    height: 80%;
+    width: 100%;
+}

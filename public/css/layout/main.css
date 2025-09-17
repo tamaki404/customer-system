@@ -4,7 +4,7 @@
     flex-direction: column;
     align-content: start;
     justify-content: start;
-    background-color: #f9f9f9;
+    background-color: #f2f2f2;
     padding: 60px;
     gap: 10px;
     width: 97%;
@@ -79,4 +79,35 @@ tbody td, tbody th {
 
 tr {
     height: auto; 
+}
+
+
+
+
+.contents-display p{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+.contents-display p a{
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: normal;
+    color: #888;
+}
+.contents-display p a:hover{
+    color: #666;
+    font-weight: bold;
+}
+.content-header .title-actions{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.content-header .heading{
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
 }

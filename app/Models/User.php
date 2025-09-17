@@ -39,6 +39,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
+        public function supplier()
+    {
+        return $this->belongsTo(Suppliers::class, 'user_id', 'user_id');
+    }
+
+
     /**
      * Get the attributes that should be cast.
      *

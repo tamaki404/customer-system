@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="{{ asset('css/layout/search.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/date-range.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/pagination.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/modal.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/btn-hover.css') }}">
+
 
 
      @stack('styles')
@@ -41,14 +44,15 @@
 
                     </div>
                     <div class="nameFrame">
-                        @if(auth()->user()->role === 'Admin')
-                            <p class="userName">{{ $supplier->company_name }}</p>
-                        @elseif(auth()->user()->role === 'Supplier')
-                            <p class="userName">{{ $supplier->company_name }}</p>
-            
+                        @if($user->role === 'Admin')
+                            <p class="userName">{{ auth()->user()->supplier->company_name }}</p>
+                        @elseif($user->role === 'Supplier' && $supplier)
+                            <p class="userName">{{  auth()->user()->supplier->company_name }}</p>
                         @endif
-                        <p class="userTitle">{{ auth()->user()->role }}</p> 
+
+                        <p class="userTitle">{{  auth()->user()->role }}</p>
                     </div>
+
                 </div>
             </div>
 

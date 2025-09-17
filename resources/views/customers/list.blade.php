@@ -50,6 +50,7 @@
                         <th>Supplier</th>
                         <th>Representative</th>
                         <th>Email</th>
+                        <th>Role</th>
                         <th>Sales Agent</th>
                         <th>Status</th>
                         <th>Balance</th>
@@ -57,13 +58,14 @@
                 </thead>
                 <tbody>
                     @foreach ($suppliers as $supplier)
-                        <tr onclick="window.location='{{ route('customers.customer', $supplier->supplier_id) }}'">
+                        <tr onclick="window.location.href='{{ route('customers.customer', ['supplier_id' => $supplier->supplier_id]) }}'">
                             <th>{{ $loop->iteration }}</th>
                             <td>{{ $supplier->supplier_id }}</td>
                             <td>{{ $supplier->company_name }}</td>
                             <td>{{ $supplier->representative->rep_last_name }}sd</td>
-                            
                             <td>{{ $supplier->user->email_address }}</td>
+                            <td>{{ $supplier->user->role }}</td>
+
                             <td>{{ $supplier->representative->sdas ?? NULL}}</td>
 
                             <td>{{ $supplier->user->status }}</td>

@@ -14,8 +14,8 @@ class CustomersController extends Controller
         public function customersList(Request $request)
         {
             $user = Auth::user();
-            $supplier = $user ? Suppliers::where('user_id', $user->user_id)->first() : null;
-            $documentCount = $supplier ? Documents::where('supplier_id', $supplier->supplier_id)->count() : 0;
+            $supplier = Suppliers::where('user_id', $user->user_id)->first() ;
+            $documentCount = Documents::where('supplier_id', $supplier->supplier_id)->count();
             $suppliers = Suppliers::with('user')
                 ->whereRelation('user', 'role', 'Supplier')
                 ->get();
@@ -30,16 +30,21 @@ class CustomersController extends Controller
             ]);
         }
 
-        public function customerView(Request $request)
+        public function customerView($supplier_id, Request $request)
         {
             $user = Auth::user();
-            $supplier = $user ? Suppliers::where('user_id', $user->user_id)->first() : null;
-            $documentCount = $supplier ? Documents::where('supplier_id', $supplier->supplier_id)->count() : 0;
-            
-            // Get specific customer/supplier details
+
+            $supplier = Suppliers::where('supplier_id', $supplier_id)->first();
+
+            $documentCount = $supplier
+                ? Documents::where('supplier_id', $supplier->supplier_id)->count()
+                : 0;
+            $documents = Documents::where('supplier_id', $supplier_id)->get();
+
+            // optional: get specific customer
             $customerId = $request->query('id');
             $customer = null;
-            
+
             if ($customerId) {
                 $customer = Suppliers::with('user')
                     ->where('supplier_id', $customerId)
@@ -52,7 +57,10 @@ class CustomersController extends Controller
                 'supplier' => $supplier,
                 'documentCount' => $documentCount,
                 'customer' => $customer,
+                'documents' => $documents,
+
             ]);
         }
+
 
 }

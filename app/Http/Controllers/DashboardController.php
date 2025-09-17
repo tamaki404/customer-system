@@ -25,8 +25,16 @@ class DashboardController extends Controller
     public function layoutView(Request $request)
     {
         $user = Auth::user();
-        $supplier = $user ? Suppliers::where('user_id', $user->user_id)->first() : null;
-        $documentCount = $supplier ? Documents::where('supplier_id', $supplier->supplier_id)->count() : 0;
+
+        $supplier = null;
+        $documentCount = 0;
+
+        if ($user->role === 'Supplier') {
+            $supplier = Suppliers::where('user_id', $user->user_id)->first();
+            $documentCount = $supplier
+                ? Documents::where('supplier_id', $supplier->supplier_id)->count()
+                : 0;
+        }
 
         return view('layouts.main', [
             'user' => $user,
@@ -34,4 +42,5 @@ class DashboardController extends Controller
             'documentCount' => $documentCount,
         ]);
     }
+
 }

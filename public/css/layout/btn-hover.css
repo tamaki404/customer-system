@@ -1,0 +1,15 @@
+.btn-transition{
+    background-color: #ffde59; 
+    transition: background-color 0.3s ease, color 0.3s ease;
+    color: #333;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 10px;
+    min-width: 150px;
+}
+.btn-transition:hover{
+    background-color: #d7b941; 
+
+}

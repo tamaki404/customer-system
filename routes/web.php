@@ -38,5 +38,5 @@ Route::get('/dashboard/layout',  [DashboardController::class, 'layoutView'])->mi
 
 Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/customers/list',  [CustomersController::class, 'customersList'])->name('customers.list');
-    Route::get('/customers/list/customer',  [CustomersController::class, 'customerView'])->name('customers.customer');
+    Route::get('/customers/list/customer/{supplier_id}',  [CustomersController::class, 'customerView'])->name('customers.customer');
 });
