@@ -8,6 +8,8 @@ use App\Models\Representatives;
 use App\Models\Signatories;
 use App\Models\Banks;
 use App\Models\Documents;
+use App\Models\Staffs;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -354,6 +356,125 @@ class UserController extends Controller
         }
         }
 
+    public function registerStaff(Request $request){
+       
+        $request->validate([
+            'email_address' => 'required|email|unique:users,email_address|max:50',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:20',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/'
+            ],
+            'mobile_no'       => 'required|string|max:11',
+            'telephone_no'    => 'required|string|max:11',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'lastname'   => 'required|string|max:50',
+            'firstname'  => 'required|string|max:50',
+            'middlename' => 'nullable|string|max:50',
+            'action_by' => 'required|users,user_id',
+            'role_type'  => 'required|string|in:sales_representative,procurement_officer,warehouse_staff,accounting_staff,system_admin',
+        ]);
+
+
+        DB::beginTransaction();
+
+        $date = date('Ymd');
+        function randomBase36String(int $length): string {
+            $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $str = '';
+            for ($i = 0; $i < $length; $i++) {
+                $str .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            return $str;
+        }
+
+        $staff_id = 'STAFF-' . $date . '-' . randomBase36String(5);
+        $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
+        $user_id = 'USR-' . $date . '-' . randomBase36String(5);
+
+        try {
+            $imageBlob = null;
+            $imageMimeType = null;
+            $imageFilename = null;
+            $imageSize = null;
+            
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageBlob = file_get_contents($image->getRealPath());
+                $imageMimeType = $image->getMimeType();
+                $imageFilename = $image->getClientOriginalName();
+                $imageSize = $image->getSize();
+            }
+
+            // 1. Create User
+            $user = User::create([
+                'user_id'       => $user_id,
+                'email_address' => $request->email_address,
+                'password' => $request->password,
+                'role'          => 'Staff',
+                'role_role_type'          => $request->role_type,
+                'image'         => $imageBlob,
+                'image_mime_type' => $imageMimeType,
+                'image_filename' => $imageFilename,
+                'image_size'    => $imageSize,
+
+            ]);
+
+            $staff = Staffs::create([
+                'user_id'       => $user_id,
+                'staff_id'       => $staff_id,
+                'action_by'     =>  $request->action_by,
+                'log_id'     => $log_id,
+                'firstname'    => $request->firstname,
+                'lastname'    => $request->lastname,
+                'middlename'    => $request->middlename,
+                'mobile_no'    => $request->mobile_no,
+                'telephone_no'    => $request->telephone_no,
+
+            ]);
+
+            // $log = Logs::create([
+            //     'action'       => "Added staff {{$}}",
+            //     'action_at'       => today(),
+            //     'action_by' => $user_id,
+
+            // ]);
+
+            // Create and send verification token
+            $plainToken = Str::random(64);
+            DB::table('email_verification_tokens')->insert([
+                'user_id'    => $user->user_id,
+                'email'      => $user->email_address,
+                'token'      => hash('sha256', $plainToken),
+                'expires_at' => now()->addDay(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $verifyUrl = url('/email/verify?token=' . $plainToken . '&uid=' . urlencode($user->user_id));
+
+            try {
+                Mail::send('emails.verify', ['verifyUrl' => $verifyUrl], function($message) use ($user) {
+                    $message->to($user->email_address)->subject('Verify your email address');
+                });
+            } catch (\Throwable $mailErr) {
+                \Log::error('Verification email send failed: ' . $mailErr->getMessage());
+            }
+
+            DB::commit();
+
+            return redirect()->route('verification.notice')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Supplier registration error: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Registration failed. Please try again.'])->withInput();
+        }
+        }
+
     public function checkEmail(Request $request)
     {
         $request->validate([
@@ -386,7 +507,7 @@ class UserController extends Controller
         }
 
         // Ensure password matches
-        if (!\Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password)) {
+        if (!Hash::check($credentials['password'], $user->password)) {
             return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
         }
 

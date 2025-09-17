@@ -18,8 +18,6 @@ class StaffsController extends Controller
                 ->whereRelation('user', 'role', 'Staff')
                 ->get();
 
-
-
             return view('staffs.list', [
                 'user' => $user,
                 'staffs' => $staffs,
@@ -27,5 +25,5 @@ class StaffsController extends Controller
             ]);
         }
 
-        
+
 }

@@ -49,5 +49,5 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
 
 Route::middleware(['auth', 'role:Admin'])->group(function () {
-    Route::post('/account/staff/registration', [StaffsController::class, 'registerStaff'])->name('registration.staff.register');
+    Route::post('/account/staff/registration', [UserController::class, 'registerStaff'])->name('registration.staff.register');
 });

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('status')->default('Pending');
             $table->string('role');
+            $table->string('role_type');
+
 
             $table->string('image_mime_type')->nullable();
             $table->string('image_filename')->nullable();

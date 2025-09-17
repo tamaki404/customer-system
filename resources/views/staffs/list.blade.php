@@ -10,6 +10,7 @@
     <div class="modal fade" id="add-staff-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content"  method="POST" action="{{ route('registration.staff.register') }}" >
+                @csrf
             
                 <div class="modal-header">
                     <p class="modal-title" id="requestActionLabel">Add staff form</p>
@@ -25,7 +26,7 @@
 
                     <div class="modal-option-groups">
                         <p>Profile picture</p>
-                        <input type="file">
+                        <input type="file" name="image" accept="image/*" required>
 
                     </div>
 
@@ -40,24 +41,31 @@
                     </div>
                     <div class="modal-option-groups">
                         <p>Staff role</p>
-                        <select name="" id="">
-                            <option value="">Sales representative</option>
-                            <option value="">Procurement officer</option>
-                            <option value="">Warehouse staff</option>
-                            <option value="">Accounting staff</option>
-                            <option value="">System administrator</option>
+                        <select name="role_type" id="">
+                            <option value="Sales representative">Sales representative</option>
+                            <option value="Procurement officer">Procurement officer</option>
+                            <option value="Warehouse staff">Warehouse staff</option>
+                            <option value="Accounting staff">Accounting staff</option>
+                            <option value="System administrator">System administrator</option>
 
                         </select>
                     </div>
 
                     <div class="modal-option-groups">
+                        <p>Contact</p>
+                        <input type="text" placeholder="Mobile no." maxlength="11" name="mobile_no" required>
+                        <input type="text" placeholder="Telephone no." maxlength="11" name="telephone_no">
+
+                    </div>
+
+                    <div class="modal-option-groups">
                         <p>Account security</p>
                         <div class="form-group">
-                            <input type="text" name="email_address" placeholder="Email address" required>
+                            <input type="text" name="email_address" maxlength="50" placeholder="Email address" required>
                         </div>
                         <div class="form-group">
-                            <input type="password" name="passsword" placeholder="Password" minlength="8" required>
-                            <input type="password" name="confirm_password" minlength="8" placeholder="Confirm password" required>
+                            <input type="password" name="passsword" placeholder="Password" minlength="8" maxlength="20" required>
+                            <input type="password" name="confirm_password" minlength="8" maxlength="20" placeholder="Confirm password" required>
                         </div>
                     </div>
 
@@ -68,6 +76,9 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary">Add staff</button>
                 </div>
+
+                <input type="hidden" name="action_by" name="{{ auth()->user()->user_id}}">
+
             
             </form>
         </div>
