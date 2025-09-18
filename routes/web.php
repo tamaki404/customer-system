@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\StaffsController;
-use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\LogsController;
 
 
 Route::get('/registration/signin', function () {
@@ -45,8 +45,11 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/customers/list/customer/{supplier_id}',  [CustomersController::class, 'customerView'])->name('customers.customer');
     Route::get('/staffs/list',  [StaffsController::class, 'staffsList'])->name('staffs.list');
     Route::get('/staffs/list/staff/{staff_id}',  [StaffsController::class, 'staffView'])->name('staffs.staff');
+    Route::post('/supplier/confirm', [CustomersController::class, 'supplierConfirm'])->name('supplier.confirm');
 
-Route::post('/supplier/confirm', [CustomersController::class, 'supplierConfirm'])->name('supplier.confirm');
+    Route::get('/logs/list',  [LogsController::class, 'logsList'])->name('logs.list');
+
+
 });
 
 

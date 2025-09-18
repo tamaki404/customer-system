@@ -124,7 +124,7 @@
                         <p>Reports</p>
                         <div class="nav-indicator"></div>
                     </a> --}}
-                    <a class="nav-item" >
+                    <a class="nav-item{{ $currentRoute == 'logs.list' ? ' active' : '' }}" href="{{ route('logs.list') }}" >
                         <span class="material-symbols-outlined">history</span>
 
                         <p>Logs</p>

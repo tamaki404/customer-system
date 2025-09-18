@@ -125,10 +125,23 @@ class CustomersController extends Controller
                 $supplier->staff_id = $request->staff_id;
                 $supplier->save();
 
+                    $date = date('Ymd');
+                    function randomBase36String(int $length): string {
+                        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        $str = '';
+                        for ($i = 0; $i < $length; $i++) {
+                            $str .= $chars[random_int(0, strlen($chars) - 1)];
+                        }
+                        return $str;
+                    }
+
+                    $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
+
                 
                 Logs::create([
                     'user_id' => Auth::user()->user_id,
                     'action' => 'Supplier registration request',
+                    'log_id' => $log_id,
                     'description' => "Supplier {$request->supplier_id} confirmed with status '{$request->acc_status}' and assigned to staff {$request->staff_id}.",
                 ]);
 

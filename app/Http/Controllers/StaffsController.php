@@ -174,11 +174,25 @@ class StaffsController extends Controller
 
                 $userUpdated = $user->update($userUpdateData);
 
+                    $date = date('Ymd');
+                    function randomBase36String(int $length): string {
+                        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        $str = '';
+                        for ($i = 0; $i < $length; $i++) {
+                            $str .= $chars[random_int(0, strlen($chars) - 1)];
+                        }
+                        return $str;
+                    }
+
+                    $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
+
+
                 // Create audit logs if there were changes
                 if (!empty($staffChanges)) {
                     Logs::create([
                         'user_id'     => Auth::user()->user_id,
                         'action'      => 'Updated Staff Account',
+                        'log_id'      => $log_id,
                         'description' => implode("; ", $staffChanges) . " for staff_id {$staff->staff_id}",
 
                     ]);

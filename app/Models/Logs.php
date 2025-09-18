@@ -14,6 +14,7 @@ class Logs extends Model
     protected $primaryKey = 'user_id';
 
     protected $fillable = [
+        'log_id',     
         'user_id',     
         'action',      
         'description',
