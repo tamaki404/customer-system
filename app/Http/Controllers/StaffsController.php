@@ -25,5 +25,17 @@ class StaffsController extends Controller
             ]);
         }
 
+        public function staffView($staff_id, Request $request)
+        {
+            $user = Auth::user();
 
+            $staff = Staffs::where('staff_id', $staff_id)->get();
+
+            return view('staffs.staff', [
+                'user' => $user,
+                'staff' => $staff,
+
+
+            ]);
+        }
 }

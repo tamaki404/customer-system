@@ -24,6 +24,9 @@ class Staffs extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
-
+    public function supplier()
+    {
+        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+    }
 
 }

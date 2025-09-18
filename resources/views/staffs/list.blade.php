@@ -39,7 +39,7 @@
                     <div class="modal-option-groups">
                     <p>Profile picture</p>
                     <input type="file" name="image" accept="image/*" required>
-                    <p class="error-message" style="font-size: 13px"></p>
+                    <p class="error-message" style="font-size: 13px; "></p>
                     </div>
 
 
@@ -149,10 +149,10 @@
 
         </div>
 
-        <div class="content-body">
-            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                <thead style="background-color: #f9f9f9;">
-                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+        <div class="content-body" style="background: #fff">
+            <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                <thead style="background-color: #fff;">
+                    <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                         <th>#</th>
                         <th>Staff ID</th>
                         <th>Name</th>
@@ -166,9 +166,19 @@
                 <tbody>
                     @foreach ($staffs as $staff)
                         <tr onclick="window.location.href='{{ route('staffs.staff', ['staff_id' => $staff->staff_id]) }}'">
-                            <th>{{ $loop->iteration }}</th>
-                            <td>{{ $staff->firstname }}</td>
-                 
+                            <th >{{ $loop->iteration }}</th>
+                            <td>{{ $staff->staff_id }}</td>
+                            <td>
+                                {{ implode(', ', array_filter([
+                                    $staff->lastname,
+                                    $staff->firstname,
+                                    $staff->middlename
+                                ])) }}                            
+                            </td>
+                            <td>{{ $staff->user->role_type }}</td>
+                            <td>{{ $staff->user->status }}</td>
+                            <td>0</td>
+
                             <td>0.00</td>
                         </tr>
 
