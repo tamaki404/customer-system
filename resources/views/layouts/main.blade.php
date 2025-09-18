@@ -33,6 +33,7 @@
         <div class="sideAccess" id="sideAccess">
             
             <!-- Sidebar Header -->
+            <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <div class="userProfile">
                     <div class="imgFrame">
@@ -155,7 +156,15 @@
                     </div>
                 @endif
                 
-w
+                <div class="logoutFrame">
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button class="logoutButton" type="submit">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </div>
 
                 <div class="ownFrame">
                     <p>OWNED BY</p>

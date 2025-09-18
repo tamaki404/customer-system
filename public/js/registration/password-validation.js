@@ -5,35 +5,36 @@ document.addEventListener('DOMContentLoaded', function () {
     var passwordInput = document.getElementById('password');
     var confirmInput = document.getElementById('password_confirmation');
     var submitBtn = form.querySelector('button[type="submit"]');
-    var matchError = document.getElementById('password-match-error');
 
     var lengthCheck = document.getElementById('length-check');
-    var upperCheck = document.getElementById('uppercase-check');
+    var numberCheck = document.getElementById('number-check');
     var specialCheck = document.getElementById('special-check');
+    var matchCheck = document.getElementById('match-check');
 
     function evaluatePassword(value) {
         var checks = {
             length: value.length >= 6,
+            number: /\d/.test(value),
+            special: /[!@#$%^&*(),.?":{}|<>]/.test(value)
         };
 
-        if (lengthCheck) lengthCheck.style.color = checks.length ? '#27ae60' : '#ccc';
-        if (upperCheck) upperCheck.style.display = 'none';
-        if (specialCheck) specialCheck.style.display = 'none';
+        lengthCheck.style.color = checks.length ? '#27ae60' : '#ccc';
+        numberCheck.style.color = checks.number ? '#27ae60' : '#ccc';
+        specialCheck.style.color = checks.special ? '#27ae60' : '#ccc';
 
-        return checks.length;
+        return checks.length && checks.number && checks.special;
     }
 
     function evaluateMatch() {
         var ok = passwordInput.value === confirmInput.value;
+        matchCheck.style.color = ok ? '#27ae60' : '#ccc';
+
+        var matchError = document.getElementById('password-match-error');
         if (matchError) {
-            if (!ok) {
-                matchError.textContent = 'Passwords do not match.';
-                matchError.style.display = 'block';
-            } else {
-                matchError.textContent = '';
-                matchError.style.display = 'none';
-            }
+            matchError.style.display = ok ? 'none' : 'block';
+            matchError.textContent = ok ? '' : 'Passwords do not match.';
         }
+
         return ok;
     }
 
@@ -43,8 +44,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (submitBtn) submitBtn.disabled = !(strong && matches);
     }
 
-    if (passwordInput) passwordInput.addEventListener('input', updateState);
-    if (confirmInput) confirmInput.addEventListener('input', updateState);
+    passwordInput.addEventListener('input', updateState);
+    confirmInput.addEventListener('input', updateState);
 
     if (form) {
         form.addEventListener('submit', function (e) {
@@ -60,5 +61,3 @@ document.addEventListener('DOMContentLoaded', function () {
     // initialize state
     updateState();
 });
-
-

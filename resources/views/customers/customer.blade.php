@@ -140,13 +140,13 @@
                     <div class="title-actions">
                         <p class="heading">Supplier's profile</p>
 
-                        {{-- @if ($supplier->account_status->acc_status==NULL) --}}
+                        @if ($supplier->account_status->acc_status==NULL)
                             <div>
                                 <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
                             </div>
-                        {{-- @elseif($supplier->account_status->acc_status!==NULL)
+                       
                         
-                        @endif --}}
+                        @endif
 
 
                     </div>

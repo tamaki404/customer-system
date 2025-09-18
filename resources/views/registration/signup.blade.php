@@ -316,18 +316,23 @@
                             <div class="form-group">
                                 <label for="password"><span class="req-asterisk">*</span> Password</label>
                                 <input type="password" name="password" id="password" required minlength="6" maxlength="255">
-                     
                             </div>
+
                             <div class="form-group">
                                 <label for="password_confirmation"><span class="req-asterisk">*</span> Confirm Password</label>
                                 <input type="password" name="password_confirmation" id="password_confirmation" required minlength="6" maxlength="255">
                                 <p class="error-message" id="password-match-error" style="display: none; color: #e74c3c; font-size: 12px; margin-top: 5px;"></p>
                             </div>
-                                       <div id="password-strength" style="margin-top: 5px; font-size: 12px;">
-                                    <div style="display: flex;">
-                                        <span id="length-check" style="color: #ccc;"> ≥ 6 chars -</span>
-                                    </div>
+
+                            <div id="password-strength" style="margin-top: 5px; font-size: 12px;">
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    <span id="length-check" style="color: #ccc;">✓ Minimum of 6 characters</span>
+                                    <span id="number-check" style="color: #ccc;">✓ Contains a number</span>
+                                    <span id="special-check" style="color: #ccc;">✓ Contains special character</span>
+                                    <span id="match-check" style="color: #ccc;">✓ Passwords match</span>
                                 </div>
+                            </div>
+
                         </div>
                     </section>
 
