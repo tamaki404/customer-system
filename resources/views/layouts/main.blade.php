@@ -69,15 +69,15 @@
                         <p>Dashboard</p>
                         <div class="nav-indicator"></div>
                     </a>
-                    <a class="nav-item">
+                    {{-- <a class="nav-item">
                         <span class="material-symbols-outlined">person</span>
                         <p>Profile</p>
                         <div class="nav-indicator"></div>
-                    </a>
+                    </a> --}}
                 </div>
 
                 <!-- Group 2: Orders & Inventory -->
-                <div class="nav-group">
+                {{-- <div class="nav-group">
                     <div class="nav-group-title">Orders & Inventory</div>
                     <a class="nav-item">
                         <span class="material-symbols-outlined">receipt</span>
@@ -99,7 +99,7 @@
                         <p>Inventory</p>
                         <div class="nav-indicator"></div>
                     </a>
-                </div>
+                </div> --}}
 
                 <!-- Group 3: People -->
                 <div class="nav-group">
@@ -119,11 +119,11 @@
                 <!-- Group 4: Reports -->
                 <div class="nav-group">
                     <div class="nav-group-title">Reports & logs</div>
-                    <a class="nav-item">
+                    {{-- <a class="nav-item">
                         <span class="material-symbols-outlined">bar_chart</span>
                         <p>Reports</p>
                         <div class="nav-indicator"></div>
-                    </a>
+                    </a> --}}
                     <a class="nav-item" >
                         <span class="material-symbols-outlined">history</span>
 

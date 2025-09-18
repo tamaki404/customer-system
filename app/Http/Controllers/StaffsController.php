@@ -34,7 +34,9 @@ class StaffsController extends Controller
             $user = Auth::user();
 
             $staff = Staffs::where('staff_id', $staff_id)->first(); 
-            $suppliers = Suppliers::where('supplier_id', $staff->supplier_id)->get(); 
+            $suppliers = Suppliers::where('staff_id', $staff->staff_id)->get(); 
+
+
 
             // Debug: Log staff and user relationship
             if ($staff) {
