@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // function to validate required fields in current step
     function validateStep(stepIndex) {
         const step = steps[stepIndex];
-        const requiredFields = step.querySelectorAll("[required]");
+        const requiredFields = step.querySelectorAll("[required]:not(#salesman-relationship):not(#weekly-volume):not(#date-required)");
         let valid = true;
 
         requiredFields.forEach(field => {

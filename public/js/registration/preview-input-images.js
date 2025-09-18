@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'company_name','home_street','home_subdivision','home_barangay','home_city',
                 'office_street','office_subdivision','office_barangay','office_city',
                 'mobile_no','telephone_no','civil_status','citizenship','payment_method',
-                'salesman_relationship','weekly_volume','date_required',
+                
                 // Representative
                 'rep_last_name','rep_first_name','rep_relationship','rep_contact_no',
                 // Signatory

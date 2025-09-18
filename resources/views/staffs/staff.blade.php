@@ -235,111 +235,111 @@
     <script src="{{ asset('js/global/password.js') }}"></script>
     <script src="{{ asset('js/global/two_mb.js') }}"></script>
 
-    <script>
-        // Auto-hide success/error messages after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                alert.style.transition = 'opacity 0.5s';
-                alert.style.opacity = '0';
-                setTimeout(function() {
-                    alert.remove();
-                }, 500);
-            });
-        }, 5000);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form[action="{{ route('staff.modify') }}"]');
-            const passwordInput = document.querySelector('input[name="password"]');
-            const passwordConfirmationInput = document.querySelector('input[name="password_confirmation"]');
-
-            const lengthCheck  = document.getElementById('staff-length-check');
-            const numberCheck  = document.getElementById('staff-number-check');
-            const specialCheck = document.getElementById('staff-special-check');
-            const matchCheck   = document.getElementById('staff-match-check');
-
-            function validatePassword() {
-                const password = passwordInput.value;
-                const passwordConfirmation = passwordConfirmationInput.value;
-                let hasError = false;
-
-                // Length check
-                if (password && password.length < 6) {
-                    lengthCheck.style.color = '#dc3545';
-                    lengthCheck.textContent = '✗ Minimum of 6 characters';
-                    hasError = true;
-                } else if (password) {
-                    lengthCheck.style.color = '#28a745';
-                    lengthCheck.textContent = '✓ Minimum of 6 characters';
-                } else {
-                    lengthCheck.style.color = '#ccc';
-                    lengthCheck.textContent = '✓ Minimum of 6 characters';
-                }
-
-                // Number check
-                if (password && !/[0-9]/.test(password)) {
-                    numberCheck.style.color = '#dc3545';
-                    numberCheck.textContent = '✗ Contains a number';
-                    hasError = true;
-                } else if (password) {
-                    numberCheck.style.color = '#28a745';
-                    numberCheck.textContent = '✓ Contains a number';
-                } else {
-                    numberCheck.style.color = '#ccc';
-                    numberCheck.textContent = '✓ Contains a number';
-                }
-
-                // Special character check
-                if (password && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-                    specialCheck.style.color = '#dc3545';
-                    specialCheck.textContent = '✗ Contains special character';
-                    hasError = true;
-                } else if (password) {
-                    specialCheck.style.color = '#28a745';
-                    specialCheck.textContent = '✓ Contains special character';
-                } else {
-                    specialCheck.style.color = '#ccc';
-                    specialCheck.textContent = '✓ Contains special character';
-                }
-
-                // Match check
-                if (password && passwordConfirmation && password !== passwordConfirmation) {
-                    matchCheck.style.color = '#dc3545';
-                    matchCheck.textContent = '✗ Passwords do not match';
-                    hasError = true;
-                } else if (password && passwordConfirmation && password === passwordConfirmation) {
-                    matchCheck.style.color = '#28a745';
-                    matchCheck.textContent = '✓ Passwords match';
-                } else {
-                    matchCheck.style.color = '#ccc';
-                    matchCheck.textContent = '✓ Passwords match';
-                }
-
-                return !hasError;
-            }
-
-            if (passwordInput) {
-                passwordInput.addEventListener('input', validatePassword);
-                passwordInput.addEventListener('blur', validatePassword);
-            }
-            if (passwordConfirmationInput) {
-                passwordConfirmationInput.addEventListener('input', validatePassword);
-                passwordConfirmationInput.addEventListener('blur', validatePassword);
-            }
-
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    const password = passwordInput.value;
-                    const confirm  = passwordConfirmationInput.value;
-                    if (password || confirm) {
-                        if (!validatePassword()) {
-                            e.preventDefault();
-                            return false;
-                        }
-                    }
-                });
-            }
+<script>
+    // Auto-hide success/error messages after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(function() {
+                alert.remove();
+            }, 500);
         });
-    </script>
+    }, 5000);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form[action="{{ route('staff.modify') }}"]');
+        const passwordInput = document.querySelector('input[name="password"]');
+        const passwordConfirmationInput = document.querySelector('input[name="password_confirmation"]');
+
+        const lengthCheck  = document.getElementById('staff-length-check');
+        const numberCheck  = document.getElementById('staff-number-check');
+        const specialCheck = document.getElementById('staff-special-check');
+        const matchCheck   = document.getElementById('staff-match-check');
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            const passwordConfirmation = passwordConfirmationInput.value;
+            let hasError = false;
+
+            // Length check
+            if (password && password.length < 6) {
+                lengthCheck.style.color = '#dc3545';
+                lengthCheck.textContent = '✗ Minimum of 6 characters';
+                hasError = true;
+            } else if (password) {
+                lengthCheck.style.color = '#28a745';
+                lengthCheck.textContent = '✓ Minimum of 6 characters';
+            } else {
+                lengthCheck.style.color = '#ccc';
+                lengthCheck.textContent = '✓ Minimum of 6 characters';
+            }
+
+            // Number check
+            if (password && !/[0-9]/.test(password)) {
+                numberCheck.style.color = '#dc3545';
+                numberCheck.textContent = '✗ Contains a number';
+                hasError = true;
+            } else if (password) {
+                numberCheck.style.color = '#28a745';
+                numberCheck.textContent = '✓ Contains a number';
+            } else {
+                numberCheck.style.color = '#ccc';
+                numberCheck.textContent = '✓ Contains a number';
+            }
+
+            // Special character check
+            if (password && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                specialCheck.style.color = '#dc3545';
+                specialCheck.textContent = '✗ Contains special character';
+                hasError = true;
+            } else if (password) {
+                specialCheck.style.color = '#28a745';
+                specialCheck.textContent = '✓ Contains special character';
+            } else {
+                specialCheck.style.color = '#ccc';
+                specialCheck.textContent = '✓ Contains special character';
+            }
+
+            // Match check
+            if (password && passwordConfirmation && password !== passwordConfirmation) {
+                matchCheck.style.color = '#dc3545';
+                matchCheck.textContent = '✗ Passwords do not match';
+                hasError = true;
+            } else if (password && passwordConfirmation && password === passwordConfirmation) {
+                matchCheck.style.color = '#28a745';
+                matchCheck.textContent = '✓ Passwords match';
+            } else {
+                matchCheck.style.color = '#ccc';
+                matchCheck.textContent = '✓ Passwords match';
+            }
+
+            return !hasError;
+        }
+
+        if (passwordInput) {
+            passwordInput.addEventListener('input', validatePassword);
+            passwordInput.addEventListener('blur', validatePassword);
+        }
+        if (passwordConfirmationInput) {
+            passwordConfirmationInput.addEventListener('input', validatePassword);
+            passwordConfirmationInput.addEventListener('blur', validatePassword);
+        }
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const password = passwordInput.value;
+                const confirm  = passwordConfirmationInput.value;
+                if (password || confirm) {
+                    if (!validatePassword()) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+            });
+        }
+    });
+</script>
 
 @endpush
