@@ -1,13 +1,5 @@
-@foreach($logs as $log)
-    <p>{{ $log->description }} (by user {{ $log->user->user_id }})</p>
-@endforeach
 
 @extends('layouts.main')
-
-@push('styles')
-    <link rel="stylesheet" href="{{asset('css/staffs/list.css')}}">
-@endpush
-
 @section('content')
 
 
@@ -44,13 +36,7 @@
                 </form>
             </div>
 
-            <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
-                <p class="heading">Staffs list</p>
-                <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#add-staff-modal">
-                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
-                    Add staffs
-                </button>
-            </div>
+
 
         </div>
 
@@ -59,33 +45,32 @@
                 <thead style="background-color: #fff;">
                     <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                         <th>#</th>
-                        <th>Staff ID</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>No. of contacts</th>
-                        <th>Customers' balance</th>
+                        <th>Date</th>
+                        <th>Performer</th>
+                        <th>Action</th>
+                        <th>Description</th>
+                        <th>Log ID</th>
+
+
 
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($logs as $log)
-                        <tr onclick="window.location.href='{{ route('logs.log', ['staff_id' => $staff->staff_id]) }}'">
-                            <th >{{ $loop->iteration }}</th>
-                            <td>{{ $staff->staff_id }}</td>
-                            <td>
-                                {{ implode(', ', array_filter([
-                                    $staff->lastname,
-                                    $staff->firstname,
-                                    $staff->middlename
-                                ])) }}                            
-                            </td>
-                            <td>{{ $staff->user->role_type }}</td>
-                            <td>{{ $staff->user->status }}</td>
-                            <td>0</td>
+                        {{-- <tr onclick="window.location.href='{{ route('logs.log', ['staff_id' => $staff->staff_id]) }}'"> --}}
+                        <tr >
+                            <th>{{ $loop->iteration }}</th>
+                            <th>{{$log->created_at}}</th>
+                            <th>{{$log->user->user_id}}</th>
+                            <th>{{$log->action}}</th>
+                            <th style="width: 40%; white-space: normal; word-wrap: break-word;">
+                                {{ $log->description }}
+                            </th>
 
-                            <td>0.00</td>
+                            <th>{{$log->log_id}}</th>
+
                         </tr>
+                  
 
                     @endforeach
                 </tbody>
@@ -102,6 +87,7 @@
         </div>
 
    </div>
+
 @endsection
 
 @push('scripts')

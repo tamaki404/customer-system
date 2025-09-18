@@ -81,7 +81,9 @@ tr {
     height: auto; 
 }
 
-
+                            tbody tr th{
+                                font-weight: normal
+                            }
 
 
 .contents-display p{

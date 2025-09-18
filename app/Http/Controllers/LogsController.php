@@ -10,11 +10,13 @@ class LogsController extends Controller
 {
         public function logsList(Request $request)
         {
+            $user = Auth::user();
             $logs = Logs::all();
 
 
             return view('logs.list', [
                 'logs' => $logs,
+                'user' => $user,
 
             ]);
         

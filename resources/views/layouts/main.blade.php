@@ -146,15 +146,7 @@
                     </div>
                 @endif
                 
-                <div class="logoutFrame">
-                    <form action="/logout-user" method="post">
-                        @csrf
-                        <button class="logoutButton" type="submit">
-                            <span class="material-symbols-outlined">logout</span>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                </div>
+w
 
                 <div class="ownFrame">
                     <p>OWNED BY</p>

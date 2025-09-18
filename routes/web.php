@@ -15,11 +15,16 @@ Route::get('/registration/signin', function () {
     return view('registration.signin');
 })->name('signin');
 
-
+Route::post('/logout-user', function () {
+    Auth::logout();          
+    request()->session()->invalidate(); 
+    request()->session()->regenerateToken(); 
+    return redirect('/signin');  
+})->name('logout');
 
 Route::get('/account/registration', [RegistrationController::class, 'showSignupForm'])->name('registration.signup');
 Route::post('/account/supplier/registration', [UserController::class, 'registerSupplier'])->name('registration.supplier.register');
-Route::post('/account/signin', [UserController::class, 'signin'])->name('account.signin');
+Route::post('/account.signin', [UserController::class, 'signin'])->name('account.signin');
 Route::post('/check-email', [UserController::class, 'checkEmail'])->name('check.email');
 
 // Email verification
