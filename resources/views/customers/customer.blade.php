@@ -9,59 +9,123 @@
 
 @section('content')
 
+            @if ($errors->any())
+                <div class="alert alert-danger" style="margin: 10px;">
+                    <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        @foreach ($errors->all() as $error)
+                            <li style="font-size: 14px;">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            
+            @if (session('success'))
+                <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger" style="margin: 10px;">
+                    <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
+                    <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
+                </div>
+            @endif
+
+            <script>
+                setTimeout(function() {
+                    const alerts = document.querySelectorAll('.alert');
+                    alerts.forEach(function(alert) {
+                        alert.style.transition = 'opacity 0.5s';
+                        alert.style.opacity = '0';
+                        setTimeout(function() {
+                            alert.remove();
+                        }, 500);
+                    });
+                }, 5000);
+            </script>
 
     <div class="modal fade" id="request-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="modal-content" method="POST" action="{{ route('supplier.confirm.account') }}" enctype="multipart/form-data">
+    <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
+        @csrf
+        <div class="modal-header">
+            <p class="modal-title">Supplier request action</p>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
         
-            <div class="modal-header">
-                <p class="modal-title" id="requestActionLabel">Supplier request action</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            
-            <div class="modal-body">
-                <p class="note-notify">
-                    <span class="material-symbols-outlined"> warning </span>
-                    <span>Review the profile before taking any action on this request.</span>
-                </p>
+        <div class="modal-body">
+            <p class="note-notify">
+                <span class="material-symbols-outlined"> warning </span>
+                <span>Review the profile before taking any action on this request.</span>
+            </p>
 
-                <div class="modal-option-groups">
-                    <p>Do you want to accept this supplier's request to join the system?</p>
-                    <select name="status">
-                        <option value="process-request">Yes, confirm supplier's request</option>
-                        <option value="decline-request">No, there's a problem with their request</option>
-                    </select>
-
-                </div>
-                <div class="modal-option-groups">
-                    <p>What seems to be the problem?</p>
-                    <select name="reason-to-decline">
-                        <option value="wrong-documents">Wrong documents, need to be changed</option>
-                        <option value="contact-support">Contact support to learn issue</option>
-                    </select>
-                </div>
-                <div class="modal-option-groups">
-                    <p>Assign a sales agent</p>
-                    <select name="staff_id" id="agent_id" class="form-control">
-                        <option value="">-- Select Sales Agent --</option>
-                        @foreach($staffs as $staff)
-                            <option value="{{ $staff->staff->staff_id }}">{{ $staff->staff->firstname }} {{ $staff->staff->lastname }}</option>
-                        @endforeach
-                    </select>
-
-                </div>
-
+            <!-- Status selection -->
+            <div class="modal-option-groups">
+                <p>Do you want to accept this supplier's request to join the system?</p>
+                <select name="acc_status" id="acc_status" required>
+                    <option value="Processing">Yes, confirm supplier's request</option>
+                    <option value="Declined">No, there's a problem with their request</option>
+                </select>
             </div>
 
-
-            <input type="hidden" name="user_id" value="{{$supplier->user->user_id}}">
-            
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" >Submit action</button>
+            <!-- Reason to decline (hidden by default) -->
+            <div class="modal-option-groups" id="reason_group" style="display: none;">
+                <p>What seems to be the problem?</p>
+                <select name="reason_to_decline" id="reason_to_decline">
+                    <option value="">-- Select reason --</option>
+                    <option value="Wrong documents">Wrong documents, need to be changed</option>
+                    <option value="Contact support">Contact support to learn issue</option>
+                </select>
             </div>
-        
-        </form>
+
+            <!-- Assign staff -->
+            <div class="modal-option-groups">
+                <p>Assign a sales agent</p>
+                <select name="staff_id" class="form-control" required>
+                    <option value="">-- Select Sales Agent --</option>
+                    @foreach($staffs as $staff)
+                        <option value="{{ $staff->staff->staff_id }}">
+                            {{ $staff->staff->firstname }} {{ $staff->staff->lastname }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
+        <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Submit action</button>
+        </div>
+    </form>
+
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const accStatus = document.getElementById("acc_status");
+            const reasonGroup = document.getElementById("reason_group");
+            const reasonSelect = document.getElementById("reason_to_decline");
+
+            function toggleReasonField() {
+                if (accStatus.value === "Declined") {
+                    reasonGroup.style.display = "block";
+                    reasonSelect.setAttribute("required", "required");
+                } else {
+                    reasonGroup.style.display = "none";
+                    reasonSelect.removeAttribute("required");
+                    reasonSelect.value = ""; // reset selection
+                }
+            }
+
+            // Run once on page load
+            toggleReasonField();
+
+            // Run every time status changes
+            accStatus.addEventListener("change", toggleReasonField);
+        });
+        </script>
+
     </div>
     </div>
 

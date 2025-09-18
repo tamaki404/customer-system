@@ -46,8 +46,7 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/staffs/list',  [StaffsController::class, 'staffsList'])->name('staffs.list');
     Route::get('/staffs/list/staff/{staff_id}',  [StaffsController::class, 'staffView'])->name('staffs.staff');
 
-    Route::post('/supplier/confirm/account', [SupplierController::class, 'supplier.confirm.account'])->name('supplier.confirm.account');
-
+Route::post('/supplier/confirm', [CustomersController::class, 'supplierConfirm'])->name('supplier.confirm');
 });
 
 

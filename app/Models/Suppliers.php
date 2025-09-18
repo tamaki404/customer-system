@@ -39,6 +39,8 @@ class Suppliers extends Model
         'product_requirements',
         
         'agreement',
+
+        'staff_id',
     ];
 
     public function user()

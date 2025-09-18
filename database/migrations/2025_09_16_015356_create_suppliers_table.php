@@ -52,6 +52,9 @@ return new class extends Migration
             // Agreement
             $table->boolean('agreement')->default(false);
 
+            $table->string('staff_id')->nullable();
+
+
             $table->timestamps();
         });
 

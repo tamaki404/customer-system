@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Suppliers;
 use App\Models\Documents;
 use App\Models\User;
-use App\Models\Staffs;
+use App\Models\AccountStatus;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CustomersController extends Controller
 {
@@ -76,6 +78,56 @@ class CustomersController extends Controller
 
             ]);
         }
+
+        public function supplierConfirm(Request $request)
+        {
+                   \Log::info('SupplierConfirm started', $request->all());
+
+            $request->validate([
+                'supplier_id'       => 'required|exists:suppliers,supplier_id',
+                'user_id'       => 'required|exists:users,user_id',
+                'acc_status'        => 'required|string|max:100',
+                'reason_to_decline' => 'nullable|string|max:200|required_if:acc_status,Declined',
+                'staff_id'          => 'required|exists:staffs,staff_id',
+            ]);
+
+            DB::beginTransaction();
+
+            try {
+                // make sure user has supplier_id column
+                $user = User::where('user_id', $request->user_id)->firstOrFail();
+
+                $date = now()->format('Ymd');
+                $status_id = 'STATUS-' . $date . '-' . strtoupper(Str::random(5));
+
+                AccountStatus::create([
+                    'supplier_id'       => $request->supplier_id,
+                    'status_id'         => $status_id,
+                    'acc_status'        => $request->acc_status,
+                    'reason_to_decline' => $request->acc_status === 'Declined' ? $request->reason_to_decline : null,
+                    'staff_id'          => $request->staff_id,
+                ]);
+
+                $user->status = $request->acc_status;
+                $user->save();
+
+                DB::commit();
+
+                return redirect()->route('staffs.list')
+                    ->with('success', "Supplier confirmation saved successfully (status: {$request->acc_status}).");
+
+                } catch (\Exception $e) {
+                    \Log::error('SupplierConfirm failed: ' . $e->getMessage(), [
+                        'trace' => $e->getTraceAsString(),
+                        'request' => $request->all(),
+                        'line' => $e->getLine(),
+                        'file' => $e->getFile(),
+                    ]);
+                    
+                    return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+                }
+        }
+
 
 
 }
