@@ -38,7 +38,16 @@ class CustomersController extends Controller
         public function customerView($supplier_id, Request $request)
         {
             $user = Auth::user();
-            $staff = Staffs::where('user_id', $user->user_id)->firstOrFail();
+            $staff = null;
+            $ownSupppliers = collect();
+
+
+            $accStatus= AccountStatus::where('supplier_id', $supplier_id)->firstOrFail();
+            // Only fetch staff if user is staff
+            if ($user->role === 'Staff') {
+                $staff = Staffs::where('user_id', $user->user_id)->firstOrFail();
+                $ownSupppliers = Suppliers::where('staff_id', $staff->staff_id)->get();
+            }
 
             $supplier = Suppliers::where('supplier_id', $supplier_id)->firstOrFail();
 
@@ -64,16 +73,10 @@ class CustomersController extends Controller
                     ->first();
             }
 
-      
             $staffs = User::where('role', 'Staff')
                 ->where('role_type', 'sales_representative')
                 ->where('status', 'Active')
                 ->get();
-
-            $ownSupppliers = Suppliers::where('staff_id', $staff->staff_id)->get();
-
-
-
 
             return view('customers.customer', [
                 'user' => $user,
@@ -84,11 +87,10 @@ class CustomersController extends Controller
                 'staffs' => $staffs,
                 'staffAgent' => $staffAgent,
                 'ownSupppliers' => $ownSupppliers,
-
+                'accStatus' => $accStatus,
 
             ]);
         }
-
         public function supplierConfirm(Request $request)
         {
                    \Log::info('SupplierConfirm started', $request->all());

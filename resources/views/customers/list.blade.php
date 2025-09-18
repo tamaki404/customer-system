@@ -69,11 +69,22 @@
                             <th>{{ $loop->iteration }}</th>
                             <td>{{ $supplier->supplier_id }}</td>
                             <td>{{ $supplier->company_name }}</td>
-                            <td>{{ $supplier->representative->rep_last_name }}sd</td>
+                            <td>
+                                {{ $supplier->representative->rep_first_name }}
+                                {{ $supplier->representative->rep_last_name }}
+                                {{ $supplier->representative->rep_middle_name }}
+
+                            </td>
                             <td>{{ $supplier->user->email_address }}</td>
                             <td>{{ $supplier->user->role }}</td>
+                            <td>
+                                @if($supplier->staff)
+                                    {{ $supplier->staff->lastname }}, {{ $supplier->staff->firstname }}
+                                @else
+                                    --
+                                @endif
+                            </td>
 
-                            <td>{{ $supplier->staff->lastname}}, {{ $supplier->staff->firstname}}</td>
 
                             <td>{{ $supplier->user->status }}</td>
                             <td>0.00</td>

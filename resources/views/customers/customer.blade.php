@@ -63,7 +63,7 @@
                         <div class="modal-option-groups">
                             <p>Do you want to accept this supplier's request to join the system?</p>
                             <select name="acc_status" id="acc_status" required>
-                                <option value="Processing">Yes, confirm supplier's request</option>
+                                <option value="Accepted">Yes, confirm supplier's request</option>
                                 <option value="Declined">No, there's a problem with their request</option>
                             </select>
                         </div>
@@ -126,7 +126,81 @@
 
             </div>
             </div>
+            <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <p class="modal-title">Supplier confirm action</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined"> warning </span>
+                            <span>Any actiosn comitted would notify the suppleir</span>
+                        </p>
 
+                        <!-- Status selection -->
+                        <div class="modal-option-groups">
+                            <p>Freeze account</p>
+                            <button>Freeze account</button>
+                            <button>Unfreeze account</button>
+
+                        </div>
+                        <div class="modal-option-groups">
+                            <p>Reason to freezing account</p>
+                            <input type="text" name="freezing_note" >
+                            
+                        </div>
+                        <!-- Assign staff -->
+                        <div class="modal-option-groups">
+                            <p>Assign a new sales agent</p>
+                            <select name="staff_id" class="form-control" required>
+                                <option value="">-- Select Sales Agent --</option>
+                                @foreach($staffs as $staff)
+                                    <option value="{{ $staff->staff->staff_id }}">
+                                        {{ $staff->staff->firstname }} {{ $staff->staff->lastname }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
+                    <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit action</button>
+                    </div>
+                </form>
+
+                <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const accStatus = document.getElementById("acc_status");
+                    const reasonGroup = document.getElementById("reason_group");
+                    const reasonSelect = document.getElementById("reason_to_decline");
+
+                    function toggleReasonField() {
+                        if (accStatus.value === "Declined") {
+                            reasonGroup.style.display = "block";
+                            reasonSelect.setAttribute("required", "required");
+                        } else {
+                            reasonGroup.style.display = "none";
+                            reasonSelect.removeAttribute("required");
+                            reasonSelect.value = ""; 
+                        }
+                    }
+
+                    toggleReasonField();
+
+                    accStatus.addEventListener("change", toggleReasonField);
+                });
+                </script>
+
+            </div>
+            </div>
 
 
         <div class="content-bg" >
@@ -140,14 +214,24 @@
                     <div class="title-actions">
                         <p class="heading">Supplier's profile</p>
 
-                        @if ($supplier->account_status->acc_status==NULL)
+                        @if (optional($supplier->account_status)->acc_status == null && $accStatus->acc_status === 'Pending')
                             <div>
                                 <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
                             </div>
-                       
-                        
                         @endif
 
+
+                        @if ($accStatus->acc_status === 'Declined')
+                            <div>
+                                <p>This user was declined due to: {{$accStatus->reason_to_decline}}</p>
+                                waiting for supplier to modify their request
+                            </div>
+                        @elseif ($accStatus->acc_status === 'Accepted')
+                            <div>
+                                <button data-bs-toggle="modal" data-bs-target="#modify-action">File an action</button>
+                            </div>
+                  
+                        @endif
 
                     </div>
 
@@ -157,8 +241,8 @@
                 <div class="content-body" style="padding: 10px; border: none; height: auto;">
                     <div class="profile-upper">
                         @php
-                            $imgSrc = auth()->user()->image 
-                                ? ('data:' . auth()->user()->image_mime_type . ';base64,' . base64_encode(auth()->user()->image))
+                            $imgSrc =  $supplier->user->image 
+                                ? ('data:' . $supplier->user->image_mime_type . ';base64,' . base64_encode($supplier->user->image))
                                 : asset('images/default-avatar.png');
                         @endphp
                         <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image">   

@@ -19,7 +19,7 @@ Route::post('/logout-user', function () {
     Auth::logout();          
     request()->session()->invalidate(); 
     request()->session()->regenerateToken(); 
-    return redirect('/signin');  
+    return redirect('/');  
 })->name('logout');
 
 Route::get('/account/registration', [RegistrationController::class, 'showSignupForm'])->name('registration.signup');

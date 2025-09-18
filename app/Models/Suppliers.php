@@ -56,6 +56,7 @@ class Suppliers extends Model
     {
         return $this->belongsTo( Signatories::class, 'supplier_id', 'supplier_id');
     }
+
     public function representative()
     {
         return $this->belongsTo( Representatives::class, 'supplier_id', 'supplier_id');
