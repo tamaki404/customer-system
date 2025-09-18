@@ -224,7 +224,7 @@
                             </td>
                             <td>{{ $staff->user->role_type }}</td>
                             <td>{{ $staff->user->status }}</td>
-                            <td>0</td>
+                            <td>{{ $staff->contactNo  }}</td>
 
                             <td>0.00</td>
                         </tr>

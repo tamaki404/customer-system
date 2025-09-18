@@ -41,10 +41,11 @@
 
         </div>
 
-        <div class="content-body">
-            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                <thead style="background-color: #f9f9f9;">
-                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+
+        <div class="content-body" style="background: #fff">
+            <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                <thead style="background-color: #fff;">
+                    <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                         <th>#</th>
                         <th>SUP ID.</th>
                         <th>Supplier</th>

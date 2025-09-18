@@ -18,10 +18,11 @@ class StaffsController extends Controller
         public function staffsList(Request $request)
         {
             $user = Auth::user();
-            $staffs = Staffs::with('user')
-                ->whereRelation('user', 'role', 'Staff')
-                ->get();
+            $staffs = Staffs::with('user')->whereRelation('user', 'role', 'Staff')->get();
 
+            foreach ($staffs as $staff) {
+                $staff->contactNo = Suppliers::where('staff_id', $staff->staff_id)->count();
+            }
             return view('staffs.list', [
                 'user' => $user,
                 'staffs' => $staffs,

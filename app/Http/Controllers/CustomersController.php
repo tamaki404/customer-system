@@ -22,7 +22,6 @@ class CustomersController extends Controller
         {
             $user = Auth::user();
             $supplier = Suppliers::where('user_id', $user->user_id)->first() ;
-            $documentCount = Documents::where('supplier_id', $supplier->supplier_id)->count();
             $suppliers = Suppliers::with('user')
                 ->whereRelation('user', 'role', 'Supplier')
                 ->get();
@@ -32,7 +31,6 @@ class CustomersController extends Controller
             return view('customers.list', [
                 'user' => $user,
                 'supplier' => $supplier,
-                'documentCount' => $documentCount,
                 'suppliers' => $suppliers,
             ]);
         }
