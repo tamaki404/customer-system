@@ -39,7 +39,7 @@
                     <div class="modal-option-groups">
                     <p>Profile picture</p>
                     <input type="file" name="image" accept="image/*" required>
-                    <p class="error-message"></p>
+                    <p class="error-message" style="font-size: 13px"></p>
                     </div>
 
 
@@ -84,8 +84,8 @@
                             <input type="password" name="password_confirmation" minlength="6" placeholder="Confirm password" required>
                             <div id="staff-password-requirements" style="margin-top: 5px; font-size: 12px;">
                                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                    <span id="staff-length-check" style="color: #ccc;"> ≥ 6 chars -</span>
-                                    <span id="staff-match-check" style="color: #ccc;"> Match confirm -</span>
+                                    <span id="staff-length-check" style="color: #ccc;"> Minimum of 6 -</span>
+                                    <span id="staff-match-check" style="color: #ccc;"> Matched confirm password </span>
                                 </div>
                             </div>
                         </div>

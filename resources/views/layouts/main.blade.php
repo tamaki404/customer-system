@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="{{ asset('css/layout/modal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/btn-hover.css') }}">
 
+    <link rel="stylesheet" href="{{ asset('css/layout/error-message.css') }}">
 
 
      @stack('styles')
