@@ -359,23 +359,47 @@ class UserController extends Controller
 
     public function registerStaff(Request $request){
        
-        $request->validate([
-            'email_address' => 'required|email|unique:users,email_address|max:50',
-            'password' => [
-                'required',
-                'string',
-                'min:6',
-                'confirmed',
-            ],
-            'mobile_no'       => 'required|string|max:11',
-            'telephone_no'    => 'required|string|max:11',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'lastname'   => 'required|string|max:50',
-            'firstname'  => 'required|string|max:50',
-            'middlename' => 'nullable|string|max:50',
-            'action_by' => 'required|exists:users,user_id',
-            'role_type'  => 'required|string|in:sales_representative,procurement_officer,warehouse_staff,accounting_staff,system_admin',
-        ]);
+        // Log the incoming request for debugging
+        \Log::info('Staff Registration Request Data:', $request->all());
+
+        try {
+            $request->validate([
+                'email_address' => 'required|email|unique:users,email_address|max:50',
+                'password' => [
+                    'required',
+                    'string',
+                    'min:6',
+                    'confirmed',
+                    'regex:/^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).*$/'
+                ],
+                'mobile_no'       => 'required|string|max:11',
+                'telephone_no'    => 'required|string|max:11',
+                'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'lastname'   => 'required|string|max:50',
+                'firstname'  => 'required|string|max:50',
+                'middlename' => 'nullable|string|max:50',
+                'action_by' => 'required|exists:users,user_id',
+                'role_type'  => 'required|string|in:sales_representative,procurement_officer,warehouse_staff,accounting_staff,system_admin',
+            ], [
+                'password.min' => 'Password must be at least 6 characters long.',
+                'password.regex' => 'Password must contain at least one number and one special character.',
+                'password.confirmed' => 'Password confirmation does not match password.',
+                'email_address.unique' => 'This email address is already registered.',
+                'email_address.email' => 'Please enter a valid email address.',
+                'role_type.required' => 'Please select a staff role.',
+                'role_type.in' => 'Please select a valid staff role.',
+                'image.required' => 'Profile picture is required.',
+                'image.image' => 'Profile picture must be an image file.',
+                'image.mimes' => 'Profile picture must be a jpg, jpeg, png, or webp file.',
+                'image.max' => 'Profile picture must be less than 2MB.',
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Staff Registration Validation Failed:', $e->errors());
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        }
 
 
         DB::beginTransaction();
@@ -465,12 +489,32 @@ class UserController extends Controller
 
             DB::commit();
 
-            return redirect()->route('customers.list');
+            return redirect()->route('staffs.list')
+                ->with('success', 'Staff member has been successfully registered and verification email has been sent.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Supplier registration error: ' . $e->getMessage());
-            return redirect()->back()->withErrors(['error' => 'Registration failed. Please try again.'])->withInput();
+            \Log::error('Staff registration error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
+            
+            // Check for specific database errors
+            if (str_contains($e->getMessage(), 'Duplicate entry')) {
+                return redirect()->back()
+                    ->with('error', 'A staff member with this information already exists. Please check the email address or try again.')
+                    ->withInput();
+            }
+            
+            if (str_contains($e->getMessage(), 'foreign key constraint')) {
+                return redirect()->back()
+                    ->with('error', 'Invalid user reference. Please refresh the page and try again.')
+                    ->withInput();
+            }
+            
+            return redirect()->back()
+                ->with('error', 'Staff registration failed: ' . $e->getMessage() . '. Please check the logs for more details.')
+                ->withInput();
         }
         }
 
