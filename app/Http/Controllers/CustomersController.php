@@ -10,6 +10,7 @@ use App\Models\Documents;
 use App\Models\User;
 use App\Models\AccountStatus;
 use App\Models\Staffs;
+use App\Models\Logs;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -124,6 +125,12 @@ class CustomersController extends Controller
                 $supplier->staff_id = $request->staff_id;
                 $supplier->save();
 
+                
+                Logs::create([
+                    'user_id' => Auth::user()->user_id,
+                    'action' => 'Supplier registration request',
+                    'description' => "Supplier {$request->supplier_id} confirmed with status '{$request->acc_status}' and assigned to staff {$request->staff_id}.",
+                ]);
 
 
                 DB::commit();
