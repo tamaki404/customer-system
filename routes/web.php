@@ -50,5 +50,8 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/account/staff/registration', [UserController::class, 'registerStaff'])->name('registration.staff.register');
     Route::post('/staffs/modify', [StaffsController::class, 'modifyStaff'])->name('staff.modify');
+    
+    // Debug route (remove in production)
+    Route::get('/debug/staff/{staff_id}', [StaffsController::class, 'debugStaff'])->name('debug.staff');
 });
 

@@ -19,6 +19,7 @@
             
             @if ($errors->any())
                 <div class="alert alert-danger" style="margin: 10px;">
+                    <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
                     <ul style="margin: 0; padding-left: 20px;">
                         @foreach ($errors->all() as $error)
                             <li style="font-size: 14px;">{{ $error }}</li>
@@ -31,9 +32,16 @@
                 <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
             @endif
 
+            @if (session('error'))
+                <div class="alert alert-danger" style="margin: 10px;">
+                    <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
+                    <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
+                </div>
+            @endif
+
             <!-- Hidden field for staff ID -->
             <input type="hidden" name="staff_id" value="{{ $staff->staff_id }}">
-            
+
             
             <div class="modal-header">
                 <p class="modal-title" id="requestActionLabel">Staff modify action</p>
@@ -94,20 +102,23 @@
                     </div>
                     <div class="form-group">
                         <p style="margin: 5px">Fill this if user wants their password changed</p>
-                        <input type="password" name="password" placeholder="Password" minlength="6" class="@error('password') is-invalid @enderror">
+                        <input type="password" name="password" id="staff-password" placeholder="Password" minlength="6" class="@error('password') is-invalid @enderror">
                         @error('password')
                             <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                         @enderror
-                        <input type="password" name="password_confirmation" minlength="6" placeholder="Confirm password" class="@error('password_confirmation') is-invalid @enderror">
+                        <input type="password" name="password_confirmation" id="staff-password-confirmation" minlength="6" placeholder="Confirm password" class="@error('password_confirmation') is-invalid @enderror">
                         @error('password_confirmation')
                             <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                         @enderror
                         <div id="staff-password-requirements" style="margin-top: 5px; font-size: 12px;">
                             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <span id="staff-length-check" style="color: #ccc;"> Minimum of 6 -</span>
-                                <span id="staff-match-check" style="color: #ccc;"> Matched confirm password </span>
+                                <span id="staff-length-check" style="color: #ccc;">✓ Minimum of 6 characters</span>
+                                <span id="staff-number-check" style="color: #ccc;">✓ Contains a number</span>
+                                <span id="staff-special-check" style="color: #ccc;">✓ Contains special character</span>
+                                <span id="staff-match-check" style="color: #ccc;">✓ Passwords match</span>
                             </div>
                         </div>
+                        <div id="staff-password-error" style="color: #dc3545; font-size: 12px; margin-top: 5px; display: none;"></div>
                     </div>
                 </div>
             </div>
@@ -164,7 +175,9 @@
                         ? ('data:' . $staff->user->image_mime_type . ';base64,' . base64_encode($staff->user->image))
                         : asset('assets/default-image.jpg');
                 @endphp
-                <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image">   
+                <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image"> 
+                
+                <p>{{$staff->lastname}}</p>
             
 
             </div>
@@ -235,15 +248,131 @@
         // Form validation enhancement
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form[action="{{ route('staff.modify') }}"]');
+            const passwordInput = document.getElementById('staff-password');
+            const passwordConfirmationInput = document.getElementById('staff-password-confirmation');
+            const lengthCheck = document.getElementById('staff-length-check');
+            const numberCheck = document.getElementById('staff-number-check');
+            const specialCheck = document.getElementById('staff-special-check');
+            const matchCheck = document.getElementById('staff-match-check');
+            const passwordError = document.getElementById('staff-password-error');
+            
+            function validatePassword() {
+                const password = passwordInput.value;
+                const passwordConfirmation = passwordConfirmationInput.value;
+                let hasError = false;
+                let errorMessage = '';
+                
+                // Clear previous error
+                passwordError.style.display = 'none';
+                passwordError.textContent = '';
+                
+                // Check password length
+                if (password && password.length < 6) {
+                    lengthCheck.style.color = '#dc3545';
+                    lengthCheck.textContent = '✗ Minimum of 6 characters';
+                    hasError = true;
+                    errorMessage = 'Password must be at least 6 characters long.';
+                } else if (password) {
+                    lengthCheck.style.color = '#28a745';
+                    lengthCheck.textContent = '✓ Minimum of 6 characters';
+                } else {
+                    lengthCheck.style.color = '#ccc';
+                    lengthCheck.textContent = '✓ Minimum of 6 characters';
+                }
+                
+                // Check for number
+                const hasNumber = /[0-9]/.test(password);
+                if (password && !hasNumber) {
+                    numberCheck.style.color = '#dc3545';
+                    numberCheck.textContent = '✗ Contains a number';
+                    hasError = true;
+                    if (errorMessage) {
+                        errorMessage += ' ';
+                    }
+                    errorMessage += 'Password must contain at least one number.';
+                } else if (password) {
+                    numberCheck.style.color = '#28a745';
+                    numberCheck.textContent = '✓ Contains a number';
+                } else {
+                    numberCheck.style.color = '#ccc';
+                    numberCheck.textContent = '✓ Contains a number';
+                }
+                
+                // Check for special character
+                const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+                if (password && !hasSpecial) {
+                    specialCheck.style.color = '#dc3545';
+                    specialCheck.textContent = '✗ Contains special character';
+                    hasError = true;
+                    if (errorMessage) {
+                        errorMessage += ' ';
+                    }
+                    errorMessage += 'Password must contain at least one special character.';
+                } else if (password) {
+                    specialCheck.style.color = '#28a745';
+                    specialCheck.textContent = '✓ Contains special character';
+                } else {
+                    specialCheck.style.color = '#ccc';
+                    specialCheck.textContent = '✓ Contains special character';
+                }
+                
+                // Check password match
+                if (password && passwordConfirmation && password !== passwordConfirmation) {
+                    matchCheck.style.color = '#dc3545';
+                    matchCheck.textContent = '✗ Passwords do not match';
+                    hasError = true;
+                    if (errorMessage) {
+                        errorMessage += ' ';
+                    }
+                    errorMessage += 'Passwords do not match.';
+                } else if (password && passwordConfirmation && password === passwordConfirmation) {
+                    matchCheck.style.color = '#28a745';
+                    matchCheck.textContent = '✓ Passwords match';
+                } else if (passwordConfirmation) {
+                    matchCheck.style.color = '#dc3545';
+                    matchCheck.textContent = '✗ Passwords do not match';
+                    hasError = true;
+                    if (errorMessage) {
+                        errorMessage += ' ';
+                    }
+                    errorMessage += 'Passwords do not match.';
+                } else {
+                    matchCheck.style.color = '#ccc';
+                    matchCheck.textContent = '✓ Passwords match';
+                }
+                
+                // Show error message if there are validation errors
+                if (hasError) {
+                    passwordError.textContent = errorMessage;
+                    passwordError.style.display = 'block';
+                }
+                
+                return !hasError;
+            }
+            
+            // Add event listeners for real-time validation
+            if (passwordInput) {
+                passwordInput.addEventListener('input', validatePassword);
+                passwordInput.addEventListener('blur', validatePassword);
+            }
+            
+            if (passwordConfirmationInput) {
+                passwordConfirmationInput.addEventListener('input', validatePassword);
+                passwordConfirmationInput.addEventListener('blur', validatePassword);
+            }
+            
+            // Form submission validation
             if (form) {
                 form.addEventListener('submit', function(e) {
-                    const password = form.querySelector('input[name="password"]').value;
-                    const passwordConfirmation = form.querySelector('input[name="password_confirmation"]').value;
+                    const password = passwordInput ? passwordInput.value : '';
+                    const passwordConfirmation = passwordConfirmationInput ? passwordConfirmationInput.value : '';
                     
-                    if (password && password !== passwordConfirmation) {
-                        e.preventDefault();
-                        alert('Password and password confirmation do not match.');
-                        return false;
+                    // Only validate if password is provided
+                    if (password || passwordConfirmation) {
+                        if (!validatePassword()) {
+                            e.preventDefault();
+                            return false;
+                        }
                     }
                 });
             }
