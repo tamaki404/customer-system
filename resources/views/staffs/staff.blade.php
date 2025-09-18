@@ -57,9 +57,11 @@
                 <div class="modal-option-groups">
                     <p>Profile picture</p>
                     <input type="file" name="new_image" accept="image/*" class="@error('new_image') is-invalid @enderror">
+
                     @error('new_image')
                         <div class="invalid-feedback" style="color: #dc3545; font-size: 13px; margin-top: 5px;">{{ $message }}</div>
                     @enderror
+                    
                 </div>
                 
                 <div class="modal-option-groups">
@@ -118,7 +120,6 @@
                                 <span id="staff-match-check" style="color: #ccc;">✓ Passwords match</span>
                             </div>
                         </div>
-                        <div id="staff-password-error" style="color: #dc3545; font-size: 12px; margin-top: 5px; display: none;"></div>
                     </div>
                 </div>
             </div>
@@ -232,150 +233,114 @@
 
 @push('scripts')
     <script src="{{ asset('js/global/password.js') }}"></script>
-    <script>
-        // Auto-hide success/error messages after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                alert.style.transition = 'opacity 0.5s';
-                alert.style.opacity = '0';
-                setTimeout(function() {
-                    alert.remove();
-                }, 500);
-            });
-        }, 5000);
+    <script src="{{ asset('js/global/two_mb.js') }}"></script>
 
-        // Form validation enhancement
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form[action="{{ route('staff.modify') }}"]');
-            const passwordInput = document.getElementById('staff-password');
-            const passwordConfirmationInput = document.getElementById('staff-password-confirmation');
-            const lengthCheck = document.getElementById('staff-length-check');
-            const numberCheck = document.getElementById('staff-number-check');
-            const specialCheck = document.getElementById('staff-special-check');
-            const matchCheck = document.getElementById('staff-match-check');
-            const passwordError = document.getElementById('staff-password-error');
-            
-            function validatePassword() {
-                const password = passwordInput.value;
-                const passwordConfirmation = passwordConfirmationInput.value;
-                let hasError = false;
-                let errorMessage = '';
-                
-                // Clear previous error
-                passwordError.style.display = 'none';
-                passwordError.textContent = '';
-                
-                // Check password length
-                if (password && password.length < 6) {
-                    lengthCheck.style.color = '#dc3545';
-                    lengthCheck.textContent = '✗ Minimum of 6 characters';
-                    hasError = true;
-                    errorMessage = 'Password must be at least 6 characters long.';
-                } else if (password) {
-                    lengthCheck.style.color = '#28a745';
-                    lengthCheck.textContent = '✓ Minimum of 6 characters';
-                } else {
-                    lengthCheck.style.color = '#ccc';
-                    lengthCheck.textContent = '✓ Minimum of 6 characters';
-                }
-                
-                // Check for number
-                const hasNumber = /[0-9]/.test(password);
-                if (password && !hasNumber) {
-                    numberCheck.style.color = '#dc3545';
-                    numberCheck.textContent = '✗ Contains a number';
-                    hasError = true;
-                    if (errorMessage) {
-                        errorMessage += ' ';
-                    }
-                    errorMessage += 'Password must contain at least one number.';
-                } else if (password) {
-                    numberCheck.style.color = '#28a745';
-                    numberCheck.textContent = '✓ Contains a number';
-                } else {
-                    numberCheck.style.color = '#ccc';
-                    numberCheck.textContent = '✓ Contains a number';
-                }
-                
-                // Check for special character
-                const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-                if (password && !hasSpecial) {
-                    specialCheck.style.color = '#dc3545';
-                    specialCheck.textContent = '✗ Contains special character';
-                    hasError = true;
-                    if (errorMessage) {
-                        errorMessage += ' ';
-                    }
-                    errorMessage += 'Password must contain at least one special character.';
-                } else if (password) {
-                    specialCheck.style.color = '#28a745';
-                    specialCheck.textContent = '✓ Contains special character';
-                } else {
-                    specialCheck.style.color = '#ccc';
-                    specialCheck.textContent = '✓ Contains special character';
-                }
-                
-                // Check password match
-                if (password && passwordConfirmation && password !== passwordConfirmation) {
-                    matchCheck.style.color = '#dc3545';
-                    matchCheck.textContent = '✗ Passwords do not match';
-                    hasError = true;
-                    if (errorMessage) {
-                        errorMessage += ' ';
-                    }
-                    errorMessage += 'Passwords do not match.';
-                } else if (password && passwordConfirmation && password === passwordConfirmation) {
-                    matchCheck.style.color = '#28a745';
-                    matchCheck.textContent = '✓ Passwords match';
-                } else if (passwordConfirmation) {
-                    matchCheck.style.color = '#dc3545';
-                    matchCheck.textContent = '✗ Passwords do not match';
-                    hasError = true;
-                    if (errorMessage) {
-                        errorMessage += ' ';
-                    }
-                    errorMessage += 'Passwords do not match.';
-                } else {
-                    matchCheck.style.color = '#ccc';
-                    matchCheck.textContent = '✓ Passwords match';
-                }
-                
-                // Show error message if there are validation errors
-                if (hasError) {
-                    passwordError.textContent = errorMessage;
-                    passwordError.style.display = 'block';
-                }
-                
-                return !hasError;
-            }
-            
-            // Add event listeners for real-time validation
-            if (passwordInput) {
-                passwordInput.addEventListener('input', validatePassword);
-                passwordInput.addEventListener('blur', validatePassword);
-            }
-            
-            if (passwordConfirmationInput) {
-                passwordConfirmationInput.addEventListener('input', validatePassword);
-                passwordConfirmationInput.addEventListener('blur', validatePassword);
-            }
-            
-            // Form submission validation
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    const password = passwordInput ? passwordInput.value : '';
-                    const passwordConfirmation = passwordConfirmationInput ? passwordConfirmationInput.value : '';
-                    
-                    // Only validate if password is provided
-                    if (password || passwordConfirmation) {
-                        if (!validatePassword()) {
-                            e.preventDefault();
-                            return false;
-                        }
-                    }
-                });
-            }
+<script>
+    // Auto-hide success/error messages after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(function() {
+                alert.remove();
+            }, 500);
         });
-    </script>
+    }, 5000);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form[action="{{ route('staff.modify') }}"]');
+        const passwordInput = document.querySelector('input[name="password"]');
+        const passwordConfirmationInput = document.querySelector('input[name="password_confirmation"]');
+
+        const lengthCheck  = document.getElementById('staff-length-check');
+        const numberCheck  = document.getElementById('staff-number-check');
+        const specialCheck = document.getElementById('staff-special-check');
+        const matchCheck   = document.getElementById('staff-match-check');
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            const passwordConfirmation = passwordConfirmationInput.value;
+            let hasError = false;
+
+            // Length check
+            if (password && password.length < 6) {
+                lengthCheck.style.color = '#dc3545';
+                lengthCheck.textContent = '✗ Minimum of 6 characters';
+                hasError = true;
+            } else if (password) {
+                lengthCheck.style.color = '#28a745';
+                lengthCheck.textContent = '✓ Minimum of 6 characters';
+            } else {
+                lengthCheck.style.color = '#ccc';
+                lengthCheck.textContent = '✓ Minimum of 6 characters';
+            }
+
+            // Number check
+            if (password && !/[0-9]/.test(password)) {
+                numberCheck.style.color = '#dc3545';
+                numberCheck.textContent = '✗ Contains a number';
+                hasError = true;
+            } else if (password) {
+                numberCheck.style.color = '#28a745';
+                numberCheck.textContent = '✓ Contains a number';
+            } else {
+                numberCheck.style.color = '#ccc';
+                numberCheck.textContent = '✓ Contains a number';
+            }
+
+            // Special character check
+            if (password && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                specialCheck.style.color = '#dc3545';
+                specialCheck.textContent = '✗ Contains special character';
+                hasError = true;
+            } else if (password) {
+                specialCheck.style.color = '#28a745';
+                specialCheck.textContent = '✓ Contains special character';
+            } else {
+                specialCheck.style.color = '#ccc';
+                specialCheck.textContent = '✓ Contains special character';
+            }
+
+            // Match check
+            if (password && passwordConfirmation && password !== passwordConfirmation) {
+                matchCheck.style.color = '#dc3545';
+                matchCheck.textContent = '✗ Passwords do not match';
+                hasError = true;
+            } else if (password && passwordConfirmation && password === passwordConfirmation) {
+                matchCheck.style.color = '#28a745';
+                matchCheck.textContent = '✓ Passwords match';
+            } else {
+                matchCheck.style.color = '#ccc';
+                matchCheck.textContent = '✓ Passwords match';
+            }
+
+            return !hasError;
+        }
+
+        if (passwordInput) {
+            passwordInput.addEventListener('input', validatePassword);
+            passwordInput.addEventListener('blur', validatePassword);
+        }
+        if (passwordConfirmationInput) {
+            passwordConfirmationInput.addEventListener('input', validatePassword);
+            passwordConfirmationInput.addEventListener('blur', validatePassword);
+        }
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const password = passwordInput.value;
+                const confirm  = passwordConfirmationInput.value;
+                if (password || confirm) {
+                    if (!validatePassword()) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+            });
+        }
+    });
+</script>
+    <script src="{{ asset('js/global/two_mb.js') }}"></script>
+
 @endpush
