@@ -12,7 +12,7 @@
 
     <div class="modal fade" id="request-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="modal-content">
+        <form class="modal-content" method="POST" action="{{ route('supplier.confirm.account') }}" enctype="multipart/form-data">
         
             <div class="modal-header">
                 <p class="modal-title" id="requestActionLabel">Supplier request action</p>
@@ -27,32 +27,38 @@
 
                 <div class="modal-option-groups">
                     <p>Do you want to accept this supplier's request to join the system?</p>
-                    <select name="" id="">
-                        <option value="">Yes, confirm supplier's request</option>
-                        <option value="">No, there's a problem with their request</option>
+                    <select name="status">
+                        <option value="process-request">Yes, confirm supplier's request</option>
+                        <option value="decline-request">No, there's a problem with their request</option>
                     </select>
 
                 </div>
                 <div class="modal-option-groups">
                     <p>What seems to be the problem?</p>
-                    <select name="" id="">
-                        <option value="">Wrong documents, need to be changed</option>
-                        <option value="">Contact support to learn issue</option>
-                        <option value="">Documents and information needs changes</option>
+                    <select name="reason-to-decline">
+                        <option value="wrong-documents">Wrong documents, need to be changed</option>
+                        <option value="contact-support">Contact support to learn issue</option>
                     </select>
                 </div>
                 <div class="modal-option-groups">
                     <p>Assign a sales agent</p>
-                    <select name="" id="">
-                        <option value="">Erica</option>
+                    <select name="staff_id" id="agent_id" class="form-control">
+                        <option value="">-- Select Sales Agent --</option>
+                        @foreach($staffs as $staff)
+                            <option value="{{ $staff->staff->staff_id }}">{{ $staff->staff->firstname }} {{ $staff->staff->lastname }}</option>
+                        @endforeach
                     </select>
+
                 </div>
 
             </div>
+
+
+            <input type="hidden" name="user_id" value="{{$supplier->user->user_id}}">
             
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" >Submit action</button>
+                <button type="submit" class="btn btn-primary" >Submit action</button>
             </div>
         
         </form>

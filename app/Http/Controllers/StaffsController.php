@@ -11,6 +11,7 @@ use App\Models\Suppliers;
 use App\Models\Documents;
 use App\Models\Staffs;
 use App\Models\User;
+use App\Models\Logs;
 
 class StaffsController extends Controller
 {
@@ -95,7 +96,7 @@ class StaffsController extends Controller
             try {
                 // Find the staff record
                 $staff = Staffs::where('staff_id', $request->staff_id)->first();
-                
+
                 if (!$staff) {
                     \Log::error('Staff not found with ID: ' . $request->staff_id);
                     return redirect()->back()
@@ -105,7 +106,7 @@ class StaffsController extends Controller
 
                 // Get the associated user
                 $user = $staff->user;
-                
+
                 if (!$user) {
                     \Log::error('User account not found for staff ID: ' . $request->staff_id);
                     return redirect()->back()
@@ -113,95 +114,83 @@ class StaffsController extends Controller
                         ->withInput();
                 }
 
-                // Debug: Log current data before update
-                \Log::info('Current Staff Data:', [
-                    'staff_id' => $staff->staff_id,
-                    'lastname' => $staff->lastname,
-                    'firstname' => $staff->firstname,
-                    'middlename' => $staff->middlename,
-                    'mobile_no' => $staff->mobile_no,
-                    'telephone_no' => $staff->telephone_no
-                ]);
+                // Capture the original attributes
+                $originalStaff = $staff->getOriginal();
+                $originalUser  = $user->getOriginal();
 
-                \Log::info('Current User Data:', [
-                    'user_id' => $user->user_id,
-                    'email_address' => $user->email_address
-                ]);
+                // Update staff data
+                $staffUpdateData = [
+                    'lastname'     => $request->lastname,
+                    'firstname'    => $request->firstname,
+                    'middlename'   => $request->middlename,
+                    'mobile_no'    => $request->mobile_no,
+                    'telephone_no' => $request->telephone_no,
+                    'action_by'    => Auth::user()->user_id
+                ];
 
-                // Check if email is being changed and if it's already taken
-                if ($request->email_address !== $user->email_address) {
-                    $existingUser = User::where('email_address', $request->email_address)
-                        ->where('user_id', '!=', $user->user_id)
-                        ->first();
-                    
-                    if ($existingUser) {
-                        \Log::warning('Email already taken: ' . $request->email_address);
-                        return redirect()->back()
-                            ->withErrors(['email_address' => 'The email address is already taken.'])
-                            ->withInput();
+                // Detect staff changes
+                $staffChanges = [];
+                foreach ($staffUpdateData as $key => $newValue) {
+                    $oldValue = $originalStaff[$key] ?? null;
+                    if ($oldValue != $newValue) {
+                        $staffChanges[] = "Changed {$key} from '{$oldValue}' to '{$newValue}'";
                     }
                 }
 
-                // Update staff information
-                $staffUpdateData = [
-                    'lastname' => $request->lastname,
-                    'firstname' => $request->firstname,
-                    'middlename' => $request->middlename,
-                    'mobile_no' => $request->mobile_no,
-                    'telephone_no' => $request->telephone_no,
-                    // 'action_at' => now(),
-                    'action_by' => Auth::user()->user_id
-                ];
-
-                \Log::info('Updating Staff with data:', $staffUpdateData);
                 $staffUpdated = $staff->update($staffUpdateData);
-                \Log::info('Staff update result: ' . ($staffUpdated ? 'SUCCESS' : 'FAILED'));
 
-                // Prepare user update data
+                // Update user data
                 $userUpdateData = [
                     'email_address' => $request->email_address
                 ];
 
-                // Handle password update if provided
                 if ($request->filled('password')) {
                     $userUpdateData['password'] = Hash::make($request->password);
-                    \Log::info('Password will be updated');
                 }
 
-                // Handle image upload
                 if ($request->hasFile('new_image')) {
                     $image = $request->file('new_image');
-                    $imageData = file_get_contents($image->getRealPath());
-                    $mimeType = $image->getMimeType();
-                    $filename = $image->getClientOriginalName();
-                    $size = $image->getSize();
-
-                    $userUpdateData['image'] = $imageData;
-                    $userUpdateData['image_mime_type'] = $mimeType;
-                    $userUpdateData['image_filename'] = $filename;
-                    $userUpdateData['image_size'] = $size;
-                    \Log::info('Image will be updated: ' . $filename);
+                    $userUpdateData['image']            = file_get_contents($image->getRealPath());
+                    $userUpdateData['image_mime_type']  = $image->getMimeType();
+                    $userUpdateData['image_filename']   = $image->getClientOriginalName();
+                    $userUpdateData['image_size']       = $image->getSize();
                 }
 
-                \Log::info('Updating User with data:', $userUpdateData);
+                // Detect user changes
+                $userChanges = [];
+                foreach ($userUpdateData as $key => $newValue) {
+                    $oldValue = $originalUser[$key] ?? null;
+
+                    if ($key === 'password' && $request->filled('password')) {
+                        $userChanges[] = "Updated password";
+                    } elseif (in_array($key, ['image', 'image_mime_type', 'image_filename', 'image_size']) && $request->hasFile('new_image')) {
+                        $userChanges[] = "Updated profile image";
+                    } elseif ($oldValue != $newValue) {
+                        $userChanges[] = "Changed {$key} from '{$oldValue}' to '{$newValue}'";
+                    }
+                }
+
                 $userUpdated = $user->update($userUpdateData);
-                \Log::info('User update result: ' . ($userUpdated ? 'SUCCESS' : 'FAILED'));
 
-                // Verify the updates by fetching fresh data
-                $staff->refresh();
-                $user->refresh();
-                
-                \Log::info('After update - Staff Data:', [
-                    'lastname' => $staff->lastname,
-                    'firstname' => $staff->firstname,
-                    'middlename' => $staff->middlename,
-                    'mobile_no' => $staff->mobile_no,
-                    'telephone_no' => $staff->telephone_no
-                ]);
+                // Create audit logs if there were changes
+                if (!empty($staffChanges)) {
+                    Logs::create([
+                        'user_id'     => Auth::user()->user_id,
+                        'action'      => 'Updated Staff Account',
+                        'description' => implode("; ", $staffChanges) . " for staff_id {$staff->staff_id}",
 
-                \Log::info('After update - User Data:', [
-                    'email_address' => $user->email_address
-                ]);
+                    ]);
+                    \Log::info("Staff changes for staff_id {$staff->staff_id}", $staffChanges);
+                }
+
+                if (!empty($userChanges)) {
+                    Logs::create([
+                        'user_id'     => Auth::user()->user_id,
+                        'action'      => 'Updated User Account',
+                        'description' => implode("; ", $userChanges),
+                    ]);
+                    \Log::info("User changes for user_id {$user->user_id}", $userChanges);
+                }
 
                 if (!$staffUpdated || !$userUpdated) {
                     return redirect()->back()
@@ -217,12 +206,13 @@ class StaffsController extends Controller
                     'trace' => $e->getTraceAsString(),
                     'request_data' => $request->all()
                 ]);
-                
+
                 return redirect()->back()
                     ->with('error', 'An error occurred while updating the staff profile: ' . $e->getMessage())
                     ->withInput();
             }
         }
+
 
 
 

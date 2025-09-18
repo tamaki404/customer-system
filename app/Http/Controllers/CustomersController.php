@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Suppliers;
 use App\Models\Documents;
+use App\Models\User;
+use App\Models\Staffs;
 
 class CustomersController extends Controller
 {
@@ -52,12 +54,25 @@ class CustomersController extends Controller
                     ->first();
             }
 
+      
+            $staffs = User::where('role', 'Staff')
+                ->where('role_type', 'sales_representative')
+                ->where('status', 'Active')
+                ->get();
+
+
+
+
+
+
             return view('customers.customer', [
                 'user' => $user,
                 'supplier' => $supplier,
                 'documentCount' => $documentCount,
                 'customer' => $customer,
                 'documents' => $documents,
+                'staffs' => $staffs,
+
 
             ]);
         }

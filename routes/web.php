@@ -3,10 +3,12 @@
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\UserController;
 
+use App\Models\Suppliers;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\StaffsController;
+use App\Http\Controllers\SupplierController;
 
 
 Route::get('/registration/signin', function () {
@@ -44,14 +46,14 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/staffs/list',  [StaffsController::class, 'staffsList'])->name('staffs.list');
     Route::get('/staffs/list/staff/{staff_id}',  [StaffsController::class, 'staffView'])->name('staffs.staff');
 
+    Route::post('/supplier/confirm/account', [SupplierController::class, 'supplier.confirm.account'])->name('supplier.confirm.account');
+
 });
 
 
 Route::middleware(['auth', 'role:Admin'])->group(function () {
     Route::post('/account/staff/registration', [UserController::class, 'registerStaff'])->name('registration.staff.register');
     Route::post('/staffs/modify', [StaffsController::class, 'modifyStaff'])->name('staff.modify');
-    
-    // Debug route (remove in production)
-    Route::get('/debug/staff/{staff_id}', [StaffsController::class, 'debugStaff'])->name('debug.staff');
+
 });
 
