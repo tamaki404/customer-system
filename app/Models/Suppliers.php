@@ -47,6 +47,10 @@ class Suppliers extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
+    public function staff()
+    {
+        return $this->belongsTo(Staffs::class, 'staff_id', 'staff_id');
+    }
 
     public function signatory()
     {

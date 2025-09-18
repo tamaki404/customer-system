@@ -37,7 +37,13 @@
                 </form>
             </div>
 
-            <p class="heading">Customers list</p>
+            @if (auth()->user()->role === "Admin")
+                <p class="heading">Customers list</p>
+            @elseif (auth()->user()->role_type === "sales_representative")
+                <p class="heading">Assigned suppliers</p>
+            @else
+                <p class="heading">Customers list</p>
+            @endif
 
         </div>
 
@@ -67,7 +73,7 @@
                             <td>{{ $supplier->user->email_address }}</td>
                             <td>{{ $supplier->user->role }}</td>
 
-                            <td>{{ $supplier->representative->sdas ?? NULL}}</td>
+                            <td>{{ $supplier->staff->lastname}}, {{ $supplier->staff->firstname}}</td>
 
                             <td>{{ $supplier->user->status }}</td>
                             <td>0.00</td>

@@ -49,9 +49,18 @@
                             <p class="userName">{{ auth()->user()->supplier->company_name }}</p>
                         @elseif($user->role === 'Supplier' && $supplier)
                             <p class="userName">{{  auth()->user()->supplier->company_name }}</p>
+                        @elseif($user->role === 'Staff')
+                            <p class="userName">
+                                {{  auth()->user()->staff->firstname }}
+                                {{  auth()->user()->staff->lastname }}
+                            </p>
                         @endif
-
                         <p class="userTitle">{{  auth()->user()->role }}</p>
+                        {{-- @if($user->role === 'Staff')
+                            <p style="font-size: 13px; color: #666; margin: 0;">{{  auth()->user()->role_type }}</p>
+                        @endif --}}
+
+
                     </div>
 
                 </div>

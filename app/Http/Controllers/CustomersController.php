@@ -38,6 +38,7 @@ class CustomersController extends Controller
         public function customerView($supplier_id, Request $request)
         {
             $user = Auth::user();
+            $staff = Staffs::where('user_id', $user->user_id)->firstOrFail();
 
             $supplier = Suppliers::where('supplier_id', $supplier_id)->firstOrFail();
 
@@ -69,7 +70,7 @@ class CustomersController extends Controller
                 ->where('status', 'Active')
                 ->get();
 
-
+            $ownSupppliers = Suppliers::where('staff_id', $staff->staff_id)->get();
 
 
 
@@ -82,6 +83,7 @@ class CustomersController extends Controller
                 'documents' => $documents,
                 'staffs' => $staffs,
                 'staffAgent' => $staffAgent,
+                'ownSupppliers' => $ownSupppliers,
 
 
             ]);

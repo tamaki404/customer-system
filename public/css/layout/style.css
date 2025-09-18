@@ -190,6 +190,7 @@ body .mainFrame{
     color: #666;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin: 0;
 }
 
 .toggle-icon {

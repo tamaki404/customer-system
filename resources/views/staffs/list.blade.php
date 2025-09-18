@@ -188,10 +188,13 @@
 
             <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
                 <p class="heading">Staffs list</p>
-                <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#add-staff-modal">
-                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
-                    Add staffs
-                </button>
+                @if ( auth()->user()->role === 'Admin')
+                    <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#add-staff-modal">
+                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
+                        Add staffs
+                     </button>
+                @endif
+
             </div>
 
         </div>
