@@ -9,6 +9,8 @@ use App\Models\Suppliers;
 use App\Models\Documents;
 use App\Models\User;
 use App\Models\AccountStatus;
+use App\Models\Staffs;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -38,7 +40,13 @@ class CustomersController extends Controller
         {
             $user = Auth::user();
 
-            $supplier = Suppliers::where('supplier_id', $supplier_id)->first();
+            $supplier = Suppliers::where('supplier_id', $supplier_id)->firstOrFail();
+
+            // Get assigned staff
+            $staffAgent = null;
+            if ($supplier->staff_id) {
+                $staffAgent = Staffs::where('staff_id', $supplier->staff_id)->first();
+            }
 
             $documentCount = $supplier
                 ? Documents::where('supplier_id', $supplier->supplier_id)->count()
@@ -74,6 +82,7 @@ class CustomersController extends Controller
                 'customer' => $customer,
                 'documents' => $documents,
                 'staffs' => $staffs,
+                'staffAgent' => $staffAgent,
 
 
             ]);
@@ -111,10 +120,16 @@ class CustomersController extends Controller
                 $user->status = $request->acc_status;
                 $user->save();
 
-                DB::commit();
+                $supplier = Suppliers::where('supplier_id', $request->supplier_id)->firstOrFail();
+                $supplier->staff_id = $request->staff_id;
+                $supplier->save();
 
-                return redirect()->route('staffs.list')
+
+
+                DB::commit();
+                return redirect()->back()
                     ->with('success', "Supplier confirmation saved successfully (status: {$request->acc_status}).");
+
 
                 } catch (\Exception $e) {
                     \Log::error('SupplierConfirm failed: ' . $e->getMessage(), [
