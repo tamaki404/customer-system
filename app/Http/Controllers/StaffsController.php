@@ -14,7 +14,7 @@ class StaffsController extends Controller
         public function staffsList(Request $request)
         {
             $user = Auth::user();
-            $staffs = Suppliers::with('user')
+            $staffs = Staffs::with('user')
                 ->whereRelation('user', 'role', 'Staff')
                 ->get();
 

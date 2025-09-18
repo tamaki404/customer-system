@@ -37,10 +37,14 @@
                     </p>
 
                     <div class="modal-option-groups">
-                        <p>Profile picture</p>
-                        <input type="file" name="image" accept="image/*" required>
-
+                    <p>Profile picture</p>
+                    <input type="file" name="image" accept="image/*" required>
+                    <p class="error-message"></p>
                     </div>
+
+
+
+                    </script>
 
                     <div class="modal-option-groups">
                         <p>Fullname</p>
@@ -54,11 +58,11 @@
                     <div class="modal-option-groups">
                         <p>Staff role</p>
                         <select name="role_type" id="">
-                            <option value="sales_representative">Sales representative</option>
-                            <option value="procurement_officer">Procurement officer</option>
-                            <option value="warehouse_staff">Warehouse staff</option>
-                            <option value="accounting_staff">Accounting staff</option>
-                            <option value="system_admin">System administrator</option>
+                            <option value="Sales representative">Sales representative</option>
+                            <option value="Procurement officer">Procurement officer</option>
+                            <option value="Warehouse staff">Warehouse staff</option>
+                            <option value="Accounting staff">Accounting staff</option>
+                            <option value="System admin">System administrator</option>
 
                         </select>
                     </div>
@@ -163,15 +167,8 @@
                     @foreach ($staffs as $staff)
                         <tr onclick="window.location.href='{{ route('staffs.staff', ['staff_id' => $staff->staff_id]) }}'">
                             <th>{{ $loop->iteration }}</th>
-                            <td>{{ $staff->supplier_id }}</td>
-                            <td>{{ $staff->company_name }}</td>
-                            <td>{{ $staff->representative->rep_last_name }}sd</td>
-                            <td>{{ $staff->user->email_address }}</td>
-                            <td>{{ $staff->user->role }}</td>
-
-                            <td>{{ $staff->representative->sdas ?? NULL}}</td>
-
-                            <td>{{ $staff->user->status }}</td>
+                            <td>{{ $staff->firstname }}</td>
+                 
                             <td>0.00</td>
                         </tr>
 
@@ -193,46 +190,8 @@
 @endsection
 
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    var modal = document.getElementById('add-staff-modal');
-    if (!modal) return;
-    var form = modal.querySelector('form');
-    var password = form.querySelector('input[name="password"]');
-    var confirm = form.querySelector('input[name="password_confirmation"]');
-    var submit = document.getElementById('add-staff-submit');
+    <script src="{{ asset('js/global/two_mb.js') }}"></script>
+    <script src="{{ asset('js/global/password.js') }}"></script>
 
-    function strong(val){
-        return val.length > 0 && val.length <= 8 && /[A-Z]/.test(val) && /[@$!%*?&]/.test(val);
-    }
 
-    function valid(){
-        return strong(password.value) && password.value === confirm.value;
-    }
-
-    function update(){
-        if (!strong(password.value)) {
-            password.setCustomValidity('Password must be ≤ 8 chars and include at least 1 uppercase and 1 special character.');
-        } else {
-            password.setCustomValidity('');
-        }
-        if (confirm.value && password.value !== confirm.value) {
-            confirm.setCustomValidity('Passwords do not match.');
-        } else {
-            confirm.setCustomValidity('');
-        }
-        if (submit) submit.disabled = !valid();
-
-        var len = document.getElementById('staff-length-check');
-        var match = document.getElementById('staff-match-check');
-        if (len) len.style.color = (password.value.length >= 6) ? '#27ae60' : '#ccc';
-        if (match) match.style.color = (password.value && confirm.value && password.value === confirm.value) ? '#27ae60' : '#ccc';
-    }
-
-    if (password) password.addEventListener('input', update);
-    if (confirm) confirm.addEventListener('input', update);
-    if (form) form.addEventListener('submit', function(e){ if (!valid()) { e.preventDefault(); update(); } });
-    update();
-});
-</script>
 @endpush

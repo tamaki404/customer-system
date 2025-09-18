@@ -20,4 +20,10 @@ class Staffs extends Model
         'telephone_no',
         'log_id'
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
+
 }
