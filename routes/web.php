@@ -12,6 +12,7 @@ use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\StaffsController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderController;
 
 
 Route::get('/registration/signin', function () {
@@ -52,6 +53,8 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
 
     Route::get('/products/list',  [ProductController::class, 'productList'])->name('products.list');
     Route::get('/products/product/view',  [ProductController::class, 'productView'])->name('products.product');
+
+    Route::get('/orders/list',  [OrderController::class, 'orderList'])->name('order.list');
 
 
 
