@@ -90,7 +90,150 @@
                                 @endforeach
                             </select>
                         </div>
+                        
+                        <!-- Product requirement section -->
+                        <div class="modal-option-groups">
+                            <p>Select required products for this supplier:</p>
+
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <select id="filter-category" class="form-control">
+                                        <option value="">-- Category --</option>
+                                        <option value="Frozen">Frozen</option>
+                                        <option value="Cuts">Cuts</option>
+                                        <option value="Eggs">Eggs</option>
+                                        <option value="Processed">Processed</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select id="filter-unit" class="form-control">
+                                        <option value="">-- Unit --</option>
+                                        <option value="Pack">Pack</option>
+                                        <option value="Box">Box</option>
+                                        <option value="Bag">Bag</option>
+                                        <option value="Piece">Piece</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select id="filter-weight" class="form-control">
+                                        <option value="">-- Weight --</option>
+                                        <option value="Kilogram">Kilogram</option>
+                                        <option value="Gram">Gram</option>
+                                        <option value="Piece">Piece</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <button type="button" class="btn btn-secondary" onclick="filterProducts()">Search</button>
+                                </div>
+                            </div>
+
+                            <div id="product-results">
+                                <!-- Filtered products will appear here -->
+                            </div>
+
+                            <hr>
+
+                            <h6>Selected Products</h6>
+                            <table class="table" id="selected-products">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Unit</th>
+                                        <th>Weight</th>
+                                        <th>Price</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows added dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+                <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const accStatus = document.getElementById("acc_status");
+                    const reasonGroup = document.getElementById("reason_group");
+                    const reasonSelect = document.getElementById("reason_to_decline");
+
+                    function toggleReasonField() {
+                        if (accStatus.value === "Declined") {
+                            reasonGroup.style.display = "block";
+                            reasonSelect.setAttribute("required", "required");
+                        } else {
+                            reasonGroup.style.display = "none";
+                            reasonSelect.removeAttribute("required");
+                            reasonSelect.value = ""; 
+                        }
+                    }
+
+                    toggleReasonField();
+
+                    accStatus.addEventListener("change", toggleReasonField);
+                });
+
+
+                
+                function addProduct(id, name, category, unit, weight) {
+                    // Prevent duplicates
+                    if (document.querySelector(`#selected-products tr[data-id="${id}"]`)) {
+                        alert("This product is already added.");
+                        resetFilters();
+                        return;
+                    }
+
+                    // Build row
+                    let row = `
+                        <tr data-id="${id}">
+                            <td>
+                                ${name}
+                                <input type="hidden" name="products[${id}][product_id]" value="${id}">
+                            </td>
+                            <td>${category}</td>
+                            <td>${unit}</td>
+                            <td>${weight}</td>
+                            <td>
+                                <input type="number" step="0.01" class="form-control"
+                                    name="products[${id}][price]" placeholder="Enter price" required>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
+                            </td>
+                        </tr>
+                    `;
+
+                    document.querySelector("#selected-products tbody").insertAdjacentHTML('beforeend', row);
+
+                    // Reset filters after adding
+                    resetFilters();
+                }
+
+                function removeRow(button) {
+                    button.closest("tr").remove();
+                }
+
+                function resetFilters() {
+                    document.getElementById('filter-category').value = "";
+                    document.getElementById('filter-unit').value = "";
+                    document.getElementById('filter-weight').value = "";
+                    document.getElementById('product-results').innerHTML = "";
+                }
+
+                </script>
+
+
+                        
+
+
                     </div>
+
+
+
+
+
 
                     <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
                     <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
@@ -124,8 +267,11 @@
                 });
                 </script>
 
+
+
             </div>
             </div>
+
             <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
@@ -165,6 +311,8 @@
                                 @endforeach
                             </select>
                         </div>
+
+
                     </div>
 
                     <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
@@ -176,28 +324,7 @@
                     </div>
                 </form>
 
-                <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    const accStatus = document.getElementById("acc_status");
-                    const reasonGroup = document.getElementById("reason_group");
-                    const reasonSelect = document.getElementById("reason_to_decline");
 
-                    function toggleReasonField() {
-                        if (accStatus.value === "Declined") {
-                            reasonGroup.style.display = "block";
-                            reasonSelect.setAttribute("required", "required");
-                        } else {
-                            reasonGroup.style.display = "none";
-                            reasonSelect.removeAttribute("required");
-                            reasonSelect.value = ""; 
-                        }
-                    }
-
-                    toggleReasonField();
-
-                    accStatus.addEventListener("change", toggleReasonField);
-                });
-                </script>
 
             </div>
             </div>
@@ -214,11 +341,11 @@
                     <div class="title-actions">
                         <p class="heading">Supplier's profile</p>
 
-                        @if (optional($supplier->account_status)->acc_status == null && $accStatus->acc_status === 'Pending')
+                        {{-- @if (optional($supplier->account_status)->acc_status == null && $accStatus->acc_status === "Pending")
                             <div>
                                 <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
                             </div>
-                        @endif
+                        @endif --}}
 
 
                         @if ($accStatus->acc_status === 'Declined')
@@ -226,6 +353,9 @@
                                 <p>This user was declined due to: {{$accStatus->reason_to_decline}}</p>
                                 waiting for supplier to modify their request
                             </div>
+                        @elseif ($accStatus->acc_status === 'Pending')
+                            <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
+
                         @elseif ($accStatus->acc_status === 'Accepted')
                             <div>
                                 <button data-bs-toggle="modal" data-bs-target="#modify-action">File an action</button>
@@ -524,5 +654,18 @@
 
 
 @push('scripts')
+<script>
+    function filterProducts() {
+        const category = document.getElementById('filter-category').value;
+        const unit = document.getElementById('filter-unit').value;
+        const weight = document.getElementById('filter-weight').value;
+
+        fetch("{{ route('products.filter') }}?category=" + category + "&unit=" + unit + "&weight=" + weight)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('product-results').innerHTML = html;
+            });
+    }
+</script>
 
 @endpush

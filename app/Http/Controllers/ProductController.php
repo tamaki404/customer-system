@@ -79,5 +79,24 @@ class ProductController extends Controller
             }
         }
 
+        public function filter(Request $request)
+        {
+            $query = Products::where('status', 'Listed');
+
+            if ($request->filled('category')) {
+                $query->where('category', $request->category);
+            }
+            if ($request->filled('unit')) {
+                $query->where('unit', $request->unit);
+            }
+            if ($request->filled('weight')) {
+                $query->where('weight', $request->weight);
+            }
+
+            $products = $query->get();
+
+            return view('customers.partials.filter_results', compact('products'));
+        }
+
 
 }

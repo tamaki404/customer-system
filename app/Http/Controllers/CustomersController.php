@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\AccountStatus;
 use App\Models\Staffs;
 use App\Models\Logs;
+use App\Models\Products;
+use App\Models\ProductSetting;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -39,32 +41,32 @@ class CustomersController extends Controller
         {
             $user = Auth::user();
 
-            $supplier = Suppliers::where('supplier_id', $supplier_id)->first();
-            $accStatus= AccountStatus::where('supplier_id', $supplier_id)->first();
-
-            $staffs = User::where('role', 'Staff')
-                ->where('role_type', 'sales_representative')
-                ->where('status', 'Active')
-                ->get();
-
+            $supplier   = Suppliers::where('supplier_id', $supplier_id)->firstOrFail();
+            $accStatus  = AccountStatus::where('supplier_id', $supplier_id)->first();
+            $staffs     = User::where('role', 'Staff')
+                                ->where('role_type', 'sales_representative')
+                                ->where('status', 'Active')
+                                ->get();
             $staffAgent = Staffs::where('staff_id', $supplier->staff_id)->first();
-            $documents = Documents::where('supplier_id', $supplier_id)->get();
-
+            $documents  = Documents::where('supplier_id', $supplier_id)->get();
+            $products   = Products::where('status', 'Listed')->get();
+            
 
             return view('customers.customer', [
-                'user' => $user,
-                'supplier' => $supplier,
-                'staffs' => $staffs,
-                'accStatus' => $accStatus,
+                'user'       => $user,
+                'supplier'   => $supplier,
+                'staffs'     => $staffs,
+                'accStatus'  => $accStatus,
                 'staffAgent' => $staffAgent,
-                'documents' => $documents,
-
-
+                'documents'  => $documents,
+                'products'   => $products,
             ]);
         }
+
         public function supplierConfirm(Request $request)
         {
-                   \Log::info('SupplierConfirm started', $request->all());
+            $user = Auth::user();
+            \Log::info('SupplierConfirm started', $request->all());
 
             $request->validate([
                 'supplier_id'       => 'required|exists:suppliers,supplier_id',
@@ -72,18 +74,29 @@ class CustomersController extends Controller
                 'acc_status'        => 'required|string|max:100',
                 'reason_to_decline' => 'nullable|string|max:200|required_if:acc_status,Declined',
                 'staff_id'          => 'required|exists:staffs,staff_id',
+
+                'products'    => 'nullable|array',
+                'products.*.product_id' => 'required|string|exists:products,product_id',
+                'products.*.price'      => 'required|numeric|min:0',
+
             ]);
 
             DB::beginTransaction();
 
             try {
+
+
+
+
                 // make sure user has supplier_id column
                 $user = User::where('user_id', $request->user_id)->firstOrFail();
-                $defaultStatus = 'Pending';
-                $acc_status = AccountStatus::where('supplier_id', $request->supplier_id);
+                $acc_status = AccountStatus::firstOrNew(['supplier_id' => $request->supplier_id]);
+
                 $acc_status->staff_id = $request->staff_id;
-                $acc_status->acc_status = $defaultStatus;
-                $acc_status->reason_to_decline =  $request->acc_status === 'Declined' ? $request->reason_to_decline : null;
+                $acc_status->acc_status = $request->acc_status; // use the actual selected status
+                $acc_status->reason_to_decline = $request->acc_status === 'Declined'
+                    ? $request->reason_to_decline
+                    : null;
                 $acc_status->save();
 
                 $user->status = $request->acc_status;
@@ -93,6 +106,19 @@ class CustomersController extends Controller
                 $supplier->staff_id = $request->staff_id;
                 $supplier->save();
 
+
+                // Save product settings only if accepted
+                if ($request->acc_status === 'Accepted' && $request->has('products')) {
+                    foreach ($request->products as $product) {
+                        ProductSetting::create([
+                            'product_id'  => $product['product_id'],
+                            'supplier_id' => $request->supplier_id,
+                            'price'       => $product['price'],
+                            'added_by'    => $user->user_id, 
+                        ]);
+                    }
+
+                }
                     $date = date('Ymd');
                     function randomBase36String(int $length): string {
                         $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -105,6 +131,7 @@ class CustomersController extends Controller
 
                     $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
 
+            
                 
                 Logs::create([
                     'user_id' => Auth::user()->user_id,
@@ -119,6 +146,8 @@ class CustomersController extends Controller
                     ->with('success', "Supplier confirmation saved successfully (status: {$request->acc_status}).");
 
 
+                
+
                 } catch (\Exception $e) {
                     \Log::error('SupplierConfirm failed: ' . $e->getMessage(), [
                         'trace' => $e->getTraceAsString(),
@@ -130,9 +159,6 @@ class CustomersController extends Controller
                     return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
                 }
         }
-
-
-
             public function afas($supplier_id, Request $request)
         {
             $user = Auth::user();
