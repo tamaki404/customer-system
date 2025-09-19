@@ -38,56 +38,27 @@ class CustomersController extends Controller
         public function customerView($supplier_id, Request $request)
         {
             $user = Auth::user();
-            $staff = null;
-            $ownSupppliers = collect();
 
-
-            $accStatus= AccountStatus::where('supplier_id', $supplier_id)->firstOrFail();
-            // Only fetch staff if user is staff
-            if ($user->role === 'Staff') {
-                $staff = Staffs::where('user_id', $user->user_id)->firstOrFail();
-                $ownSupppliers = Suppliers::where('staff_id', $staff->staff_id)->get();
-            }
-
-            $supplier = Suppliers::where('supplier_id', $supplier_id)->firstOrFail();
-
-            // Get assigned staff
-            $staffAgent = null;
-            if ($supplier->staff_id) {
-                $staffAgent = Staffs::where('staff_id', $supplier->staff_id)->first();
-            }
-
-            $documentCount = $supplier
-                ? Documents::where('supplier_id', $supplier->supplier_id)->count()
-                : 0;
-            $documents = Documents::where('supplier_id', $supplier_id)->get();
-
-            // optional: get specific customer
-            $customerId = $request->query('id');
-            $customer = null;
-
-            if ($customerId) {
-                $customer = Suppliers::with('user')
-                    ->where('supplier_id', $customerId)
-                    ->whereRelation('user', 'role', 'Supplier')
-                    ->first();
-            }
+            $supplier = Suppliers::where('supplier_id', $supplier_id)->first();
+            $accStatus= AccountStatus::where('supplier_id', $supplier_id)->first();
 
             $staffs = User::where('role', 'Staff')
                 ->where('role_type', 'sales_representative')
                 ->where('status', 'Active')
                 ->get();
 
+            $staffAgent = Staffs::where('staff_id', $supplier->staff_id)->first();
+            $documents = Documents::where('supplier_id', $supplier_id)->get();
+
+
             return view('customers.customer', [
                 'user' => $user,
                 'supplier' => $supplier,
-                'documentCount' => $documentCount,
-                'customer' => $customer,
-                'documents' => $documents,
                 'staffs' => $staffs,
-                'staffAgent' => $staffAgent,
-                'ownSupppliers' => $ownSupppliers,
                 'accStatus' => $accStatus,
+                'staffAgent' => $staffAgent,
+                'documents' => $documents,
+
 
             ]);
         }
@@ -108,17 +79,12 @@ class CustomersController extends Controller
             try {
                 // make sure user has supplier_id column
                 $user = User::where('user_id', $request->user_id)->firstOrFail();
-
-                $date = now()->format('Ymd');
-                $status_id = 'STATUS-' . $date . '-' . strtoupper(Str::random(5));
-
-                AccountStatus::create([
-                    'supplier_id'       => $request->supplier_id,
-                    'status_id'         => $status_id,
-                    'acc_status'        => $request->acc_status,
-                    'reason_to_decline' => $request->acc_status === 'Declined' ? $request->reason_to_decline : null,
-                    'staff_id'          => $request->staff_id,
-                ]);
+                $defaultStatus = 'Pending';
+                $acc_status = AccountStatus::where('supplier_id', $request->supplier_id);
+                $acc_status->staff_id = $request->staff_id;
+                $acc_status->acc_status = $defaultStatus;
+                $acc_status->reason_to_decline =  $request->acc_status === 'Declined' ? $request->reason_to_decline : null;
+                $acc_status->save();
 
                 $user->status = $request->acc_status;
                 $user->save();
@@ -166,5 +132,55 @@ class CustomersController extends Controller
         }
 
 
+
+            public function afas($supplier_id, Request $request)
+        {
+            $user = Auth::user();
+
+            $supplier = Suppliers::where($supplier_id, 'supplier_id');
+
+            $accStatus= AccountStatus::where('supplier_id', $supplier_id)->firstOrFail();
+            // Only fetch staff if user is staff
+            $staff = Staffs::where('user_id', $user->user_id)->firstOrFail();
+
+            // Get assigned staff
+            $staffAgent = null;
+            if ($supplier->staff_id) {
+                $staffAgent = Staffs::where('staff_id', $supplier->staff_id)->first();
+            }
+
+            $documentCount = $supplier
+                ? Documents::where('supplier_id', $supplier->supplier_id)->count()
+                : 0;
+            $documents = Documents::where('supplier_id', $supplier_id)->get();
+
+            // optional: get specific customer
+            $customerId = $request->query('id');
+            $customer = null;
+
+            if ($customerId) {
+                $customer = Suppliers::with('user')
+                    ->where('supplier_id', $customerId)
+                    ->whereRelation('user', 'role', 'Supplier')
+                    ->first();
+            }
+
+            $staffs = User::where('role', 'Staff')
+                ->where('role_type', 'sales_representative')
+                ->where('status', 'Active')
+                ->get();
+
+            return view('customers.customer', [
+                'user' => $user,
+                'supplier' => $supplier,
+                'documentCount' => $documentCount,
+                'customer' => $customer,
+                'documents' => $documents,
+                'staffs' => $staffs,
+                'staffAgent' => $staffAgent,
+                'accStatus' => $accStatus,
+
+            ]);
+        }
 
 }

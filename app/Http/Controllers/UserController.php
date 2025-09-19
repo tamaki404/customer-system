@@ -9,6 +9,7 @@ use App\Models\Signatories;
 use App\Models\Banks;
 use App\Models\Documents;
 use App\Models\Staffs;
+use App\Models\AccountStatus;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -207,6 +208,7 @@ class UserController extends Controller
 
         $user_id = 'USR-' . $date . '-' . randomBase36String(5);
         $supplier_id = 'SUP-' . $date . '-' . randomBase36String(5);
+        $status_id = 'STATUS-' . $date . '-' . randomBase36String(5);
 
         try {
             // Handle company logo upload as BLOB with metadata
@@ -235,6 +237,15 @@ class UserController extends Controller
                 'image_filename' => $imageFilename,
                 'image_size'    => $imageSize,
             ]);
+
+                AccountStatus::create([
+                    'supplier_id'       => $supplier_id,
+                    'status_id'         => $status_id,
+                    'acc_status'        => $request->acc_status === 'Pending',
+                    'reason_to_decline' => $request->acc_status === 'Declined' ? $request->reason_to_decline : null,
+                    'staff_id'          => $request->staff_id  ? : null,
+                ]);
+
 
             // 2. Create Supplier
             $supplier = Suppliers::create([
