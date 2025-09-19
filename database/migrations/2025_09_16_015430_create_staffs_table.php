@@ -19,7 +19,7 @@ return new class extends Migration
         $table->string('log_id')->unique();
         $table->string('firstname');
         $table->string('lastname');
-        $table->string('action_by')->nullable(); // Add this line
+        $table->string('action_by')->nullable(); 
 
         $table->string('middlename')->nullable();
         $table->string('mobile_no')->nullable();

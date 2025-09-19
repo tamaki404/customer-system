@@ -56,7 +56,8 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/logs/list',  [LogsController::class, 'logsList'])->name('logs.list');
 
     Route::get('/products/list',  [ProductController::class, 'productList'])->name('products.list');
-    Route::post('/product/add', [UserController::class, 'addProduct'])->name('product.add');
+    Route::post('/products/add', [ProductController::class, 'addProduct'])->name('product.add');
+    Route::get('/products/product/view',  [ProductController::class, 'productView'])->name('products.product');
 
 
 });

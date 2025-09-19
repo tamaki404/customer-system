@@ -9,7 +9,7 @@
 
     <div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form class="modal-content"  method="POST" action="{{ route('product.add') }}" enctype="multipart/form-data">
+            <form class="modal-content"  method="POST" action="{{ route('product.add') }}">
                 @csrf
         
                 @if (session('success'))
@@ -40,29 +40,30 @@
 
                     <div class="modal-option-groups">
                         <div class="form-group">
-                            <p>Name</p>
-                            <input type="text" name="name" maxlength="200" minlength="3">
+                            <p><span class="req-asterisk">*</span> Name</p>
+                            <input type="text" name="name" maxlength="200" minlength="3" required>
                             @error('name')
                                 <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
-                            <p>Sample retail price (SRP)</p>
-                            <input type="text" name="name" maxlength="200" minlength="3">
+                            <p><span class="req-asterisk">*</span> Suggested retail price (SRP)</p>
+                            <input type="text" name="srp" maxlength="200" minlength="3" required>
                             @error('name')
                                 <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
-                            <p>Product ID</p>
+                            <p><span class="req-asterisk">*</span> Product ID</p>
                             <input type="text" name="product_id" maxlength="200" minlength="3" required>
                             @error('name')
                                 <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
-                            <p>Category</p>
-                            <select name="category" id="">
+                            <p><span class="req-asterisk">*</span> Category</p>
+                            <select name="category" id="" required>
+                                <option value="">-- Select category --</option>
                                 <option value="Frozen">Frozen</option>
                                 <option value="Cuts">Cuts</option>
                                 <option value="Eggs">Eggs</option>
@@ -70,16 +71,31 @@
                             </select>
                         </div>
                         <div>
-                            <p>Unit</p>
-                            <select name="unit" id="">
-                                <option value="Kg">Kg</option>
+                            <p><span class="req-asterisk">*</span> Unit</p>
+                            <select name="unit" id="" required>
+                                <option value="">-- Select unit --</option>
                                 <option value="Pack">Pack</option>
+                                <option value="Box">Box</option>
+                                <option value="Bag">Bag</option>
                                 <option value="Piece">Piece</option>
-                                <option value="Tray">Tray</option>
+                            </select>                            
+                            @error('name')
+                                <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div>
+                            <p>Weight (Optional)</p>
+                            <select name="weight" id="">
+                                <option value="">-- Select weight --</option>
+                                <option value="Kilogram">Kilogram (kg)</option>
+                                <option value="Gram">Gram (g)</option>
+                                <option value="Piece">Piece (pc)</option>
                             </select>                            @error('name')
                                 <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                             @enderror
                         </div>
+                        <input type="hidden" name="status" value="Listed">
+                        <input type="hidden" name="added_by" value="{{ auth()->user()->user_id }}">
                     </div>
       
 
@@ -143,37 +159,36 @@
         </div>
 
         <div class="content-body" style="background: #fff">
-            {{-- <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+            <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                 <thead style="background-color: #fff;">
                     <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                         <th>#</th>
-                        <th>Staff ID</th>
+                        <th>Product ID</th>
                         <th>Name</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>No. of contacts</th>
-                        <th>Customers' balance</th>
+                        <th>Category</th>
+                        <th>SRP</th>
+                        <th>Unit</th>
+                        <th>Weight</th>
+                        <th>Sold</th>
 
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($products as $product)
-                        <tr onclick="window.location.href='{{ route('products.products', ['product_id' => $product->product_id]) }}'">
-                            <th >{{ $loop->iteration }}</th>
-                            <td></td>
-                            <td>
-                                                        
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-
-                            <td>0.00</td>
+                        <tr onclick="window.location.href='{{ route('products.product', ['product_id' => $product->product_id]) }}'">
+                            <th>{{ $loop->iteration }}</th>
+                            <td>{{ $product->product_id }}</td>
+                            <td>{{ $product->name }}</td>
+                            <td>{{ $product->category }}</td>
+                            <td>{{ $product->srp }}</td>
+                            <td>{{ $product->unit }}</td>
+                            <td>{{ $product->weight }}</td>
+                            <td>--</td>
                         </tr>
 
                     @endforeach
                 </tbody>
-            </table> --}}
+            </table>
        
         </div>
 
