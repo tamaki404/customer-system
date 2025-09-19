@@ -66,6 +66,8 @@
                             </select>
                         </div>
 
+
+
                         <!-- Assign staff -->
                         <div class="modal-option-groups">
                             <p>Assign a sales agent</p>
@@ -78,7 +80,24 @@
                                 @endforeach
                             </select>
                         </div>
-                        
+
+                        <div class="modal-option-groups">
+                            <label for="credit_limit" class="block text-sm font-medium text-gray-700">
+                                Add credit limit
+                            </label>
+                            <input 
+                                type="text" 
+                                name="credit_limit" 
+                                id="credit_limit" 
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                placeholder="Enter credit limit"
+                                required
+                            >
+                        </div>
+
+
+
+                 
                         <!-- Product requirement section -->
                         <div class="modal-option-groups">
                             <p>Select required products for this supplier:</p>
@@ -679,12 +698,13 @@
 
 @push('scripts')
 
-  
+
     <script src="{{ asset('js/global/edit-product.js') }}"></script>
     <script src="{{ asset('js/global/filter-products.js') }}"></script>
     <script src="{{ asset('js/global/modal-hide-input.js') }}"></script>
     <script src="{{ asset('js/global/alert-timeout.js') }}"></script>
     <script src="{{ asset('js/global/modal/add-product-user.js') }}"></script>
+    <script src="{{ asset('js/global/format-currency.js') }}"></script>
 
 
 @endpush

@@ -122,6 +122,7 @@
                             <thead style="background-color: #fff;">
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
+                                    <th>Date</th>
                                     <th>Order ID</th>
                                     <th>Quantity</th>
                                     {{-- <th>Amount</th> --}}
@@ -132,6 +133,7 @@
                                 @foreach ($orders as $order)
                                     <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">
                                         <td>{{$loop->iteration}}</td>
+                                        <td>{{$order->created_at}}</td>
                                         <td>{{$order->order_id}}</td>
                                         <td>--<td>
                                         {{-- <td>{{$order->amount}}</td> --}}
