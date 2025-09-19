@@ -329,6 +329,74 @@
             </div>
             </div>
 
+            {{-- add new product to user requirements --}}
+            <div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <p class="modal-title">Add product to requirements</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined"> warning </span>
+                            <span>Any action comitted would notify the supplier</span>
+                        </p>
+
+                        <!-- Status selection -->
+                     
+
+                    </div>
+
+                    <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
+                    <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit action</button>
+                    </div>
+                </form>
+
+
+
+            </div>
+            </div>
+            {{-- edit products in each product requirements row --}}
+            <div class="modal fade" id="edit-row-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <p class="modal-title">Modify this product requirement</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined"> warning </span>
+                            <span>Any action comitted would notify the supplier</span>
+                        </p>
+
+                        <!-- Status selection -->
+                     
+
+                    </div>
+
+                    <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
+                    <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit action</button>
+                    </div>
+                </form>
+
+
+
+            </div>
+            </div>
 
         <div class="content-bg" >
                 <div class="content-header">
@@ -358,7 +426,7 @@
 
                         @elseif ($accStatus->acc_status === 'Accepted')
                             <div>
-                                <button data-bs-toggle="modal" data-bs-target="#modify-action">File an action</button>
+                                <button class="btn-transition" data-bs-toggle="modal" data-bs-target="#modify-action">File an action</button>
                             </div>
                   
                         @endif
@@ -468,6 +536,7 @@
                             <p style="margin-bottom: 5px">Product requirements</p>
                             <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
                                 <div class="authorized-rep">
+                                    <button  data-bs-toggle="modal" data-bs-target="#add-product-modal" class="btn-transition btn-span" style="width: 100px;     background-color: #f8912a; color: #fff; font-weight: normal;"> <span class="material-symbols-outlined ">add</span>Add new</button>
                                     <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
                                         <thead style="background-color: #f9f9f9;">
                                             <tr style="background:#f7f7fa; text-align: center; height: 30px">
@@ -477,6 +546,7 @@
                                                 <th>Unit</th>
                                                 <th>Measurement</th>
                                                 <th>Price</th>
+                                                <th></th>
 
                                             </tr>
                                         </thead>
@@ -490,6 +560,10 @@
                                                     <td>{{$productRequirement->product->unit}}</td>
                                                     <td>{{$productRequirement->product->measurement}}</td>
                                                     <td>{{$productRequirement->price}}</td>
+                                                    <td>
+                                                        <button  data-bs-toggle="modal" data-bs-target="#edit-row-action" class="btn-span edit-product-btn"><span class="material-symbols-outlined">edit</span></button>
+                                                    </td>
+                                                  
                                                 </tr>
                                             @endforeach
 

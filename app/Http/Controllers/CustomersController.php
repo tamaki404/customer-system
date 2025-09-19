@@ -106,19 +106,6 @@ class CustomersController extends Controller
                 $supplier->staff_id = $request->staff_id;
                 $supplier->save();
 
-
-                // Save product settings only if accepted
-                if ($request->acc_status === 'Accepted' && $request->has('products')) {
-                    foreach ($request->products as $product) {
-                        ProductSetting::create([
-                            'product_id'  => $product['product_id'],
-                            'supplier_id' => $request->supplier_id,
-                            'price'       => $product['price'],
-                            'added_by'    => $user->user_id, 
-                        ]);
-                    }
-
-                }
                     $date = date('Ymd');
                     function randomBase36String(int $length): string {
                         $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -130,6 +117,22 @@ class CustomersController extends Controller
                     }
 
                     $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
+                    $set_id = 'SET-' . $date . '-' . randomBase36String(5);
+
+
+                // Save product settings only if accepted
+                if ($request->acc_status === 'Accepted' && $request->has('products')) {
+                    foreach ($request->products as $product) {
+                        ProductSetting::create([
+                            'product_id'  => $product['product_id'],
+                            'set_id'  => $set_id,
+                            'supplier_id' => $request->supplier_id,
+                            'price'       => $product['price'],
+                            'added_by'    => $user->user_id, 
+                        ]);
+                    }
+
+                }
 
             
                 
@@ -137,7 +140,7 @@ class CustomersController extends Controller
                     'user_id' => Auth::user()->user_id,
                     'action' => 'Supplier registration request',
                     'log_id' => $log_id,
-                    'description' => "Supplier {$request->supplier_id} confirmed with status '{$request->acc_status}' and assigned to staff {$request->staff_id}.",
+                    'description' => "Supplier {$request->supplier_id} confirmed with status '{$request->acc_status}', assigned to staff {$request->staff_id} and added products.",
                 ]);
 
 

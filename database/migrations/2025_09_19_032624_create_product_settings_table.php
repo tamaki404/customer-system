@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_settings', function (Blueprint $table) {
             $table->id();
+            $table->string('set_id'); 
             $table->string('product_id'); 
             $table->string('supplier_id'); 
             $table->decimal('price', 10, 2);
