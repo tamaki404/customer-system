@@ -31,18 +31,6 @@
                 </div>
             @endif
 
-            <script>
-                setTimeout(function() {
-                    const alerts = document.querySelectorAll('.alert');
-                    alerts.forEach(function(alert) {
-                        alert.style.transition = 'opacity 0.5s';
-                        alert.style.opacity = '0';
-                        setTimeout(function() {
-                            alert.remove();
-                        }, 500);
-                    });
-                }, 5000);
-            </script>
 
             <div class="modal fade" id="request-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -150,90 +138,7 @@
                                 </tbody>
                             </table>
                         </div>
-
-
-
-                <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    const accStatus = document.getElementById("acc_status");
-                    const reasonGroup = document.getElementById("reason_group");
-                    const reasonSelect = document.getElementById("reason_to_decline");
-
-                    function toggleReasonField() {
-                        if (accStatus.value === "Declined") {
-                            reasonGroup.style.display = "block";
-                            reasonSelect.setAttribute("required", "required");
-                        } else {
-                            reasonGroup.style.display = "none";
-                            reasonSelect.removeAttribute("required");
-                            reasonSelect.value = ""; 
-                        }
-                    }
-
-                    toggleReasonField();
-
-                    accStatus.addEventListener("change", toggleReasonField);
-                });
-
-
-                
-                function addProduct(id, name, category, unit, weight) {
-                    // Prevent duplicates
-                    if (document.querySelector(`#selected-products tr[data-id="${id}"]`)) {
-                        alert("This product is already added.");
-                        resetFilters();
-                        return;
-                    }
-
-                    // Build row
-                    let row = `
-                        <tr data-id="${id}">
-                            <td>
-                                ${name}
-                                <input type="hidden" name="products[${id}][product_id]" value="${id}">
-                            </td>
-                            <td>${category}</td>
-                            <td>${unit}</td>
-                            <td>${weight}</td>
-                            <td>
-                                <input type="number" step="0.01" class="form-control"
-                                    name="products[${id}][price]" placeholder="Enter price" required>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Remove</button>
-                            </td>
-                        </tr>
-                    `;
-
-                    document.querySelector("#selected-products tbody").insertAdjacentHTML('beforeend', row);
-
-                    // Reset filters after adding
-                    resetFilters();
-                }
-
-                function removeRow(button) {
-                    button.closest("tr").remove();
-                }
-
-                function resetFilters() {
-                    document.getElementById('filter-category').value = "";
-                    document.getElementById('filter-unit').value = "";
-                    document.getElementById('filter-weight').value = "";
-                    document.getElementById('product-results').innerHTML = "";
-                }
-
-                </script>
-
-
-                        
-
-
                     </div>
-
-
-
-
-
 
                     <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
                     <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
@@ -244,28 +149,7 @@
                     </div>
                 </form>
 
-                <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    const accStatus = document.getElementById("acc_status");
-                    const reasonGroup = document.getElementById("reason_group");
-                    const reasonSelect = document.getElementById("reason_to_decline");
 
-                    function toggleReasonField() {
-                        if (accStatus.value === "Declined") {
-                            reasonGroup.style.display = "block";
-                            reasonSelect.setAttribute("required", "required");
-                        } else {
-                            reasonGroup.style.display = "none";
-                            reasonSelect.removeAttribute("required");
-                            reasonSelect.value = ""; 
-                        }
-                    }
-
-                    toggleReasonField();
-
-                    accStatus.addEventListener("change", toggleReasonField);
-                });
-                </script>
 
 
 
@@ -338,7 +222,10 @@
                         <p class="modal-title">Add product to requirements</p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    
+
+                    <input type="hidden" name="set_id" id="modal-set-id">
+                    <input type="hidden" name="supplier_id" id="modal-supplier-id">
+
                     <div class="modal-body">
                         <p class="note-notify">
                             <span class="material-symbols-outlined"> warning </span>
@@ -363,6 +250,7 @@
 
             </div>
             </div>
+
             {{-- edit products in each product requirements row --}}
             <div class="modal fade" id="edit-row-action" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
@@ -790,36 +678,13 @@
 
 
 @push('scripts')
-<script>
-    function filterProducts() {
-        const category = document.getElementById('filter-category').value;
-        const unit = document.getElementById('filter-unit').value;
-        const weight = document.getElementById('filter-weight').value;
 
-        fetch("{{ route('products.filter') }}?category=" + category + "&unit=" + unit + "&weight=" + weight)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('product-results').innerHTML = html;
-            });
-    }
-</script>
-
-
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const editButtons = document.querySelectorAll(".edit-product-btn");
-
-    editButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            document.getElementById("modal-set-id").value = button.dataset.setId;
-            document.getElementById("modal-price").value = button.dataset.price;
-            document.getElementById("modal-product-name").value = button.dataset.name;
-        });
-    });
-});
-</script>
-
+  
+    <script src="{{ asset('js/global/edit-product.js') }}"></script>
+    <script src="{{ asset('js/global/filter-products.js') }}"></script>
+    <script src="{{ asset('js/global/modal-hide-input.js') }}"></script>
+    <script src="{{ asset('js/global/alert-timeout.js') }}"></script>
+    <script src="{{ asset('js/global/modal/add-product-user.js') }}"></script>
 
 
 @endpush
