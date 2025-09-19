@@ -343,7 +343,7 @@ class UserController extends Controller
                 \Log::error('Verification email send failed: ' . $mailErr->getMessage());
             }
 
-            DB::commit();
+            DB::commit(); 
 
             return redirect()->route('verification.notice')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
 

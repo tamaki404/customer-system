@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\StaffsController;
 use App\Http\Controllers\LogsController;
+use App\Http\Controllers\ProductController;
 
 
 Route::get('/registration/signin', function () {
@@ -53,6 +54,9 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::post('/supplier/confirm', [CustomersController::class, 'supplierConfirm'])->name('supplier.confirm');
 
     Route::get('/logs/list',  [LogsController::class, 'logsList'])->name('logs.list');
+
+    Route::get('/products/list',  [ProductController::class, 'productList'])->name('products.list');
+    Route::post('/product/add', [UserController::class, 'addProduct'])->name('product.add');
 
 
 });

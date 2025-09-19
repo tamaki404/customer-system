@@ -87,9 +87,9 @@
                 </div>
 
                 <!-- Group 2: Orders & Inventory -->
-                {{-- <div class="nav-group">
+               <div class="nav-group">
                     <div class="nav-group-title">Orders & Inventory</div>
-                    <a class="nav-item">
+                    {{-- <a class="nav-item">
                         <span class="material-symbols-outlined">receipt</span>
                         <p>Receipts</p>
                         <div class="nav-indicator"></div>
@@ -103,13 +103,13 @@
                         <span class="material-symbols-outlined">receipt_long</span>
                         <p>Purchase Order</p>
                         <div class="nav-indicator"></div>
-                    </a>
-                    <a class="nav-item">
+                    </a> --}}
+                    <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
                         <span class="material-symbols-outlined">store</span>
-                        <p>Inventory</p>
+                        <p>Products</p>
                         <div class="nav-indicator"></div>
                     </a>
-                </div> --}}
+                </div> 
 
                 <!-- Group 3: People -->
                 <div class="nav-group">
