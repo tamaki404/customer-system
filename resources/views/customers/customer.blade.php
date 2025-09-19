@@ -462,7 +462,49 @@
 
                     </div>
 
+
                     <div class="profile-mid">
+                        <div class="authorized-staffs" >
+                            <p style="margin-bottom: 5px">Product requirements</p>
+                            <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                <div class="authorized-rep">
+                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                        <thead style="background-color: #f9f9f9;">
+                                            <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                <th>#</th>
+                                                <th>Category</th>
+                                                <th>Name</th>
+                                                <th>Unit</th>
+                                                <th>Measurement</th>
+                                                <th>Price</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($productRequirements as $productRequirement)
+
+                                                <tr>
+                                                    <td>{{$loop->iteration}}</td>
+                                                    <td>{{$productRequirement->product->category}}</td>
+                                                    <td>{{$productRequirement->product->name}}</td>
+                                                    <td>{{$productRequirement->product->unit}}</td>
+                                                    <td>{{$productRequirement->product->measurement}}</td>
+                                                    <td>{{$productRequirement->price}}</td>
+                                                </tr>
+                                            @endforeach
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                        
+
+                            </di>
+                        </div>
+                    </div>
+
+                    <div class="profile-mid">
+
+                        
                         <div class="authorized-staffs" >
                             <p style="margin-bottom: 5px">Authorized staffs</p>
                             <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">

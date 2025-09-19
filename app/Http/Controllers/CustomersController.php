@@ -50,7 +50,8 @@ class CustomersController extends Controller
             $staffAgent = Staffs::where('staff_id', $supplier->staff_id)->first();
             $documents  = Documents::where('supplier_id', $supplier_id)->get();
             $products   = Products::where('status', 'Listed')->get();
-            
+            $productRequirements   = ProductSetting::where('supplier_id', $supplier_id)->get();
+
 
             return view('customers.customer', [
                 'user'       => $user,
@@ -60,6 +61,8 @@ class CustomersController extends Controller
                 'staffAgent' => $staffAgent,
                 'documents'  => $documents,
                 'products'   => $products,
+                'productRequirements'   => $productRequirements,
+
             ]);
         }
 
@@ -86,14 +89,11 @@ class CustomersController extends Controller
             try {
 
 
-
-
-                // make sure user has supplier_id column
                 $user = User::where('user_id', $request->user_id)->firstOrFail();
                 $acc_status = AccountStatus::firstOrNew(['supplier_id' => $request->supplier_id]);
 
                 $acc_status->staff_id = $request->staff_id;
-                $acc_status->acc_status = $request->acc_status; // use the actual selected status
+                $acc_status->acc_status = $request->acc_status; 
                 $acc_status->reason_to_decline = $request->acc_status === 'Declined'
                     ? $request->reason_to_decline
                     : null;

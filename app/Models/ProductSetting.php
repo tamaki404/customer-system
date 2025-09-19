@@ -12,4 +12,9 @@ class ProductSetting extends Model
         'price',
         'added_by',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Products::class, 'product_id', 'product_id');
+    }
 }
