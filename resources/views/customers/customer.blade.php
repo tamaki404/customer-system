@@ -380,6 +380,7 @@
                     </p>
 
                     <input type="hidden" name="set_id" id="modal-set-id">
+                    <input type="hidden" name="supplier_id" id="modal-supplier-id">
 
                     <div class="mb-3">
                     <label class="form-label">Product</label>
@@ -577,6 +578,7 @@
                                                         data-set-id="{{ $productRequirement->set_id }}"
                                                         data-price="{{ $productRequirement->price }}"
                                                         data-name="{{ $productRequirement->product->name }}"
+                                                        data-supplier-id="{{ $productRequirement->supplier_id }}"
                                                     >
                                                         <span class="material-symbols-outlined">edit</span>
                                                     </button>
