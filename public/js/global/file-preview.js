@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ];
 
-    const fileInput = document.getElementById('order_file');
+    const fileInput = document.getElementById('image');
     const preview   = document.getElementById('file-preview');
     const errorMsg  = document.getElementById('file-error');
 

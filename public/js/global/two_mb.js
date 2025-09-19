@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // Match either new_image OR image
     var profilePicInput = document.querySelector(
-        '.modal-option-groups input[type="file"][name="new_image"], .modal-option-groups input[type="file"][name="image"], .form-group input[type="file"][name="order_file"]'
+        '.modal-option-groups input[type="file"][name="new_image"], .modal-option-groups input[type="file"][name="image"], .form-group input[type="file"][name="image"]'
     );
 
     var errorMessage = document.createElement('div');

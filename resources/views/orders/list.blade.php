@@ -10,7 +10,7 @@
     @if (auth()->user()->role === 'Supplier')
         <div class="modal fade" id="create-order-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <form class="modal-content"  method="POST" action="{{ route('product.add') }}">
+                <form class="modal-content"  method="POST" action="{{ route('order.create') }}"  enctype="multipart/form-data">
                     @csrf
             
                     @if (session('success'))
@@ -35,21 +35,19 @@
                     <div class="modal-body">
                         <p class="note-notify">
                             <span class="material-symbols-outlined"> info </span>
-                            <span>When order is palced, kindly wait for staff's confirmation</span>
+                            <span> Make sure image selected is 2MB or less, scanned image is recommended.</span>
 
                         </p>
 
                         <div class="modal-option-groups">
                             <div class="form-group">
                                     <p><span class="req-asterisk">*</span> Upload purchase order file</p>
-                                    <input type="file" name="order_file" id="order_file" required>
+                                    <input type="file" name="image" id="image" required accept="image/*">
                                     <div id="file-preview" style="margin-top:10px;"></div>
                                     <div id="file-error" style="color:#dc3545; font-size:13px; margin-top:5px;"></div>
                             </div>
-                                            
-                   
-                            <input type="hidden" name="status" value="Listed">
-                            <input type="hidden" name="added_by" value="{{ auth()->user()->user_id }}">
+                            <input type="hidden" name="status" value="Pending">
+                            <input type="hidden" name="supplier_id" value="{{ auth()->user()->supplier->supplier_id }}">
                         </div>
         
 
@@ -57,7 +55,7 @@
                     
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" id="add-staff-submit">List product</button>
+                        <button type="submit" class="btn btn-primary" id="add-staff-submit">Submit order</button>
                     </div>
 
 

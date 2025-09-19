@@ -13,8 +13,19 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->string('order_id')->unique(); 
+            $table->string('supplier_id');
+            $table->string('status')->default('Pending')->nullable();
+
+            $table->string('image_mime_type')->nullable();
+            $table->string('image_filename')->nullable();
+            $table->unsignedInteger('image_size')->nullable(); 
+
             $table->timestamps();
         });
+
+        DB::statement('ALTER TABLE orders ADD image MEDIUMBLOB NULL');
+
     }
 
     /**

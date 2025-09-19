@@ -56,6 +56,9 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
 
     Route::get('/orders/list',  [OrderController::class, 'orderList'])->name('order.list');
 
+    // supplier only
+    Route::post('/orders/order/create',  [OrderController::class, 'createOrder'])->name('order.create');
+
 
 
 });
