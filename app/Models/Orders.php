@@ -10,10 +10,9 @@ class Orders extends Model
         'order_id',
         'supplier_id',
         'status',
-        'image',
-        'image_mime_type',
-        'image_filename',
-        'image_size',
+        'quantity',
+        'ttoal_amount',
+
     ];
 
 }

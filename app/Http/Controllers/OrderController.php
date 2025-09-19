@@ -7,16 +7,22 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Orders;
+use App\Models\PurchaseOrders;
+use App\Models\Suppliers;
 
 class OrderController extends Controller
 {
         public function orderList(Request $request)
         {
             $user = Auth::user();
-           
+            $supplier = Suppliers::where('user_id', $user->user_id)->first();
+            $orders = Orders::where('supplier_id', $supplier->supplier_id)->get(); 
+
 
             return view('orders.list', [
                 'user' => $user,
+                'supplier' => $supplier,
+                'orders' => $orders,
 
             ]);
         }
@@ -53,6 +59,7 @@ class OrderController extends Controller
         }
 
         $order_id = 'ORDR-' . $date . '-' . randomBase36String(5);
+        $po_id = 'PO-' . $date . '-' . randomBase36String(5);
 
         try {
             $imageBlob = null;
@@ -82,6 +89,14 @@ class OrderController extends Controller
 
             // 1. Create order
             $order = Orders::create([
+                'order_id'       => $order_id,
+                'supplier_id' => $request->supplier_id,
+                'status' => $request->status,
+
+            ]);
+
+            $purchaseOrder = PurchaseOrders::create([
+                'po_id'       => $po_id,
                 'order_id'       => $order_id,
                 'supplier_id' => $request->supplier_id,
                 'status' => $request->status,

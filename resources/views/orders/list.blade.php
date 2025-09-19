@@ -124,16 +124,21 @@
                                     <th>#</th>
                                     <th>Order ID</th>
                                     <th>Quantity</th>
-                                    <th>Amount</th>
+                                    {{-- <th>Amount</th> --}}
                                     <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {{-- @for (orders)
+                            <tbody>                                
+                                @foreach ($orders as $order)
                                     <tr>
-                                        <td></td>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$order->order_id}}</td>
+                                        <td>--<td>
+                                        {{-- <td>{{$order->amount}}</td> --}}
+                                        <td>{{$order->status}}</td>
+
                                     </tr>
-                                @endfor --}}
+                                @endforeach
                             </tbody>
                         </table>
                 
