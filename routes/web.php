@@ -48,6 +48,15 @@ Route::get('/dashboard/layout',  [DashboardController::class, 'layoutView'])->mi
 
 
 
+Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
+
+    Route::get('/products/list',  [ProductController::class, 'productList'])->name('products.list');
+    Route::get('/products/product/view',  [ProductController::class, 'productView'])->name('products.product');
+
+
+
+});
+
 Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/customers/list',  [CustomersController::class, 'customersList'])->name('customers.list');
     Route::get('/customers/list/customer/{supplier_id}',  [CustomersController::class, 'customerView'])->name('customers.customer');
@@ -58,9 +67,7 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
     Route::get('/logs/list',  [LogsController::class, 'logsList'])->name('logs.list');
 
-    Route::get('/products/list',  [ProductController::class, 'productList'])->name('products.list');
     Route::post('/products/add', [ProductController::class, 'addProduct'])->name('product.add');
-    Route::get('/products/product/view',  [ProductController::class, 'productView'])->name('products.product');
     
     Route::get('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
     Route::post('/products/setting/modify', [ProductSettingController::class, 'modifyProduct'])->name('productset.modify');

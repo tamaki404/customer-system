@@ -3,22 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Suppliers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Products;
 use App\Models\Logs;
+use App\Models\ProductSetting;
 
 class ProductController extends Controller
 {
         public function productList(Request $request)
         {
             $user = Auth::user();
+            $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
+
             $products = Products::where('status', 'Listed')->get(); 
+            $setProducts = $supplier 
+                ? ProductSetting::where('supplier_id', $supplier->supplier_id)->get() 
+                : collect(); 
+
             return view('products.list', [
                 'user' => $user,
                 'products' => $products,
+                'setProducts' => $setProducts,
             ]);
         }
+
 
         public function addProduct(Request $request) {
             \Log::info('Request data:', $request->all());
