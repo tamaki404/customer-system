@@ -364,39 +364,49 @@
             </div>
             </div>
             {{-- edit products in each product requirements row --}}
-            <div class="modal fade" id="edit-row-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+            <div class="modal fade" id="edit-row-action" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
-                <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-header">
-                        <p class="modal-title">Modify this product requirement</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <form class="modal-content" method="POST" action="{{ route('productset.modify') }}">
+                @csrf
+                <div class="modal-header">
+                    <p class="modal-title">Modify Product Requirement</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="note-notify">
+                    <span class="material-symbols-outlined"> warning </span>
+                    <span>Any action committed will notify the supplier</span>
+                    </p>
+
+                    <input type="hidden" name="set_id" id="modal-set-id">
+
+                    <div class="mb-3">
+                    <label class="form-label">Product</label>
+                    <input type="text" class="form-control" id="modal-product-name" disabled>
                     </div>
-                    
-                    <div class="modal-body">
-                        <p class="note-notify">
-                            <span class="material-symbols-outlined"> warning </span>
-                            <span>Any action comitted would notify the supplier</span>
-                        </p>
 
-                        <!-- Status selection -->
-                     
-
+                    <div class="mb-3">
+                    <label class="form-label">Price</label>
+                    <input type="number" step="0.01" class="form-control" name="price" id="modal-price">
                     </div>
 
-                    <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
-                    <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit action</button>
+                    <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="remove" value="1" id="modal-remove">
+                    <label class="form-check-label" for="modal-remove">
+                        Remove this requirement
+                    </label>
                     </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
                 </form>
-
-
-
             </div>
             </div>
+
 
         <div class="content-bg" >
                 <div class="content-header">
@@ -552,20 +562,28 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($productRequirements as $productRequirement)
-
-                                                <tr>
-                                                    <td>{{$loop->iteration}}</td>
-                                                    <td>{{$productRequirement->product->category}}</td>
-                                                    <td>{{$productRequirement->product->name}}</td>
-                                                    <td>{{$productRequirement->product->unit}}</td>
-                                                    <td>{{$productRequirement->product->measurement}}</td>
-                                                    <td>{{$productRequirement->price}}</td>
-                                                    <td>
-                                                        <button  data-bs-toggle="modal" data-bs-target="#edit-row-action" class="btn-span edit-product-btn"><span class="material-symbols-outlined">edit</span></button>
-                                                    </td>
-                                                  
-                                                </tr>
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $productRequirement->product->category }}</td>
+                                                <td>{{ $productRequirement->product->name }}</td>
+                                                <td>{{ $productRequirement->product->unit }}</td>
+                                                <td>{{ $productRequirement->product->measurement }}</td>
+                                                <td>{{ $productRequirement->price }}</td>
+                                                <td>
+                                                    <button  
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#edit-row-action" 
+                                                        class="btn-span edit-product-btn"
+                                                        data-set-id="{{ $productRequirement->set_id }}"
+                                                        data-price="{{ $productRequirement->price }}"
+                                                        data-name="{{ $productRequirement->product->name }}"
+                                                    >
+                                                        <span class="material-symbols-outlined">edit</span>
+                                                    </button>
+                                                </td>
+                                            </tr>
                                             @endforeach
+
 
                                         </tbody>
                                     </table>
@@ -783,5 +801,23 @@
             });
     }
 </script>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const editButtons = document.querySelectorAll(".edit-product-btn");
+
+    editButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            document.getElementById("modal-set-id").value = button.dataset.setId;
+            document.getElementById("modal-price").value = button.dataset.price;
+            document.getElementById("modal-product-name").value = button.dataset.name;
+        });
+    });
+});
+</script>
+
+
 
 @endpush

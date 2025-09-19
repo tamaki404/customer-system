@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\ProductSettingController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\UserController;
 
+use App\Models\ProductSetting;
 use App\Models\Suppliers;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
@@ -61,6 +63,7 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/products/product/view',  [ProductController::class, 'productView'])->name('products.product');
     
     Route::get('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
+    Route::post('/products/setting/modify', [ProductSettingController::class, 'modifyProduct'])->name('productset.modify');
 
 
 });
