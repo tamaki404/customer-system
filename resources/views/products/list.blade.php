@@ -48,7 +48,7 @@
                         </div>
                         <div class="form-group">
                             <p><span class="req-asterisk">*</span> Suggested retail price (SRP)</p>
-                            <input type="text" name="srp" maxlength="200" minlength="3" required>
+                            <input type="text" name="srp" maxlength="200" placeholder="&#8369; 0.00" minlength="3" required>
                             @error('name')
                                 <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                             @enderror
@@ -180,7 +180,7 @@
                             <td>{{ $product->product_id }}</td>
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->category }}</td>
-                            <td>{{ $product->srp }}</td>
+                            <td>₱{{ number_format($product->srp, 2) }}</td>
                             <td>{{ $product->unit }}</td>
                             <td>{{ $product->weight }}</td>
                             <td>--</td>
