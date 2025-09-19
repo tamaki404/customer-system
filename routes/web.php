@@ -13,7 +13,7 @@ use App\Http\Controllers\StaffsController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
-
+use App\Http\Controllers\PurchaseOrderController;
 
 Route::get('/registration/signin', function () {
     return view('registration.signin');
@@ -56,9 +56,14 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
 
     Route::get('/orders/list',  [OrderController::class, 'orderList'])->name('order.list');
 
+
+
     // supplier only
     Route::post('/orders/order/create',  [OrderController::class, 'createOrder'])->name('order.create');
+    Route::get('/purchase-orders/list',  [PurchaseOrderController::class, 'purchaseOrderList'])->name('purchaseorder.list');
 
+    Route::get('/purchase-orders/list/view/{po_id}',  [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchaseorders.purchaseorder');
+    Route::get('/orders/list/view/{order_id}',  [OrderController::class, 'orderView'])->name('orders.order');
 
 
 });

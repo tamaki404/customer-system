@@ -69,7 +69,7 @@
         <div class="content-bg">
                 <div class="content-header">
                     <div class="contents-display">
-                        <form action="{{ route('products.list') }}" id="text-search" class="search-text-con" method="GET">
+                        <form action="{{ route('purchaseorder.list') }}" id="text-search" class="search-text-con" method="GET">
                             <input type="text" name="search" class="search-bar"
                                 placeholder="Search by SUP ID. , Supplier, Representative and status"
                                 value="{{ request('search') }}"
@@ -79,7 +79,7 @@
                         </form>
 
 
-                        <form action="{{ route('products.list') }}" class="date-search" id="from-to-date" method="GET">
+                        <form action="{{ route('purchaseorder.list') }}" class="date-search" id="from-to-date" method="GET">
                             <p>Date range</p>
                             <div class="from-to-picker">
                                 <div class="month-div">
@@ -122,21 +122,18 @@
                             <thead style="background-color: #fff;">
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
-                                    <th>Order ID</th>
-                                    <th>Quantity</th>
-                                    {{-- <th>Amount</th> --}}
+                                    <th>Date</th>
+                                    <th>PO ID</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>                                
-                                @foreach ($orders as $order)
-                                    <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">
+                                @foreach ($pos as $po)
+                                    <tr onclick="window.location.href='{{ route('purchaseorders.purchaseorder', ['po_id' => $po->po_id]) }}'">
                                         <td>{{$loop->iteration}}</td>
-                                        <td>{{$order->order_id}}</td>
-                                        <td>--<td>
-                                        {{-- <td>{{$order->amount}}</td> --}}
-                                        <td>{{$order->status}}</td>
-
+                                        <td>{{$po->created_at}}</td>
+                                        <td>{{$po->po_id}}</td>
+                                        <td>{{$po->status}}</td>
                                     </tr>
                                 @endforeach
                             </tbody>

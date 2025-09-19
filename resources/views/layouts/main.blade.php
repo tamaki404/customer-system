@@ -173,12 +173,12 @@
                             <span class="material-symbols-outlined">receipt</span>
                             <p>Receipts</p>
                             <div class="nav-indicator"></div>
-                        </a>
-                        <a class="nav-item">
-                            <span class="material-symbols-outlined">shopping_bag</span>
-                            <p>Orders</p>
-                            <div class="nav-indicator"></div>
                         </a>--}}
+                        <a class="nav-item{{ $currentRoute == 'purchaseorder.list' ? ' active' : '' }}" href="{{ route('purchaseorder.list') }}">
+                            <span class="material-symbols-outlined">shopping_bag</span>
+                            <p>Purchase orders</p>
+                            <div class="nav-indicator"></div>
+                        </a>
 
                         <a class="nav-item{{ $currentRoute == 'order.list' ? ' active' : '' }}" href="{{ route('order.list') }}">
                             <span class="material-symbols-outlined">receipt_long</span>
