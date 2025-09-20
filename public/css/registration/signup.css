@@ -11,6 +11,50 @@ body{
     padding: 20px;
     background-color: #f4f4fb; 
 }
+.email-display{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+.emaild-siplay strong,
+.email-display p{
+    margin: 0;
+}
+.ownerImage{
+    height: 150px;
+    width: auto;
+    margin: 15px;
+}
+
+.signin-btn{
+    margin-top: 25px;
+    padding: 15px 35px;
+    border-radius: 5px;
+    font-size: 14px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    cursor: pointer;
+    color: #333;
+    height: 50px;
+    background-color: #ffde59; 
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.signin-btn p{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin: 0;
+}
+
+.signin-btn:hover{
+    background-color: #d7b941; 
+}
+
+
 .log-form-bg{
     display: flex;
     flex-direction: column;

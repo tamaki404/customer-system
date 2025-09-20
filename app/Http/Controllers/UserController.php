@@ -10,7 +10,7 @@ use App\Models\Banks;
 use App\Models\Documents;
 use App\Models\Staffs;
 use App\Models\AccountStatus;
-use App\Models\Credits;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -198,19 +198,18 @@ class UserController extends Controller
         DB::beginTransaction();
 
         $date = date('Ymd');
-        function randomBase36String(int $length): string {
-            $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $str = '';
-            for ($i = 0; $i < $length; $i++) {
-                $str .= $chars[random_int(0, strlen($chars) - 1)];
-            }
-            return $str;
-        }
 
+                    function randomBase36String(int $length): string {
+                        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        $str = '';
+                        for ($i = 0; $i < $length; $i++) {
+                            $str .= $chars[random_int(0, strlen($chars) - 1)];
+                        }
+                        return $str;
+                    }
         $user_id = 'USR-' . $date . '-' . randomBase36String(5);
         $supplier_id = 'SUP-' . $date . '-' . randomBase36String(5);
         $status_id = 'STATUS-' . $date . '-' . randomBase36String(5);
-        $credit_id = 'CRDT-' . $date . '-' . randomBase36String(5);
 
         try {
             // Handle company logo upload as BLOB with metadata
@@ -246,14 +245,6 @@ class UserController extends Controller
                     'acc_status'        => $request->acc_status === 'Pending',
                     'reason_to_decline' => $request->acc_status === 'Declined' ? $request->reason_to_decline : null,
                     'staff_id'          => $request->staff_id  ? : null,
-                ]);
-
-                Credits::create([
-                    'credit_id'       =>  $credit_id,
-                    'user_id'       => $user_id,
-                    'status'         => 'Active',
-                    'balance'        =>  0,
-                    'credit_limit' => $request->credit_limit,
                 ]);
 
 
@@ -362,7 +353,7 @@ class UserController extends Controller
                     $message->to($user->email_address)->subject('Verify your email address');
                 });
             } catch (\Throwable $mailErr) {
-                \Log::error('Verification email send failed: ' . $mailErr->getMessage());
+                Log::error('Verification email send failed: ' . $mailErr->getMessage());
             }
 
             DB::commit(); 
@@ -371,7 +362,7 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Supplier registration error: ' . $e->getMessage());
+            Log::error('Supplier registration error: ' . $e->getMessage());
             return redirect()->back()->withErrors(['error' => 'Registration failed. Please try again.'])->withInput();
         }
         }
@@ -379,7 +370,7 @@ class UserController extends Controller
     public function registerStaff(Request $request){
        
         // Log the incoming request for debugging
-        \Log::info('Staff Registration Request Data:', $request->all());
+        Log::info('Staff Registration Request Data:', $request->all());
 
         try {
             $request->validate([
@@ -414,7 +405,7 @@ class UserController extends Controller
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Staff Registration Validation Failed:', $e->errors());
+            Log::error('Staff Registration Validation Failed:', $e->errors());
             return redirect()->back()
                 ->withErrors($e->validator)
                 ->withInput();
@@ -503,7 +494,7 @@ class UserController extends Controller
                     $message->to($user->email_address)->subject('Verify your email address');
                 });
             } catch (\Throwable $mailErr) {
-                \Log::error('Verification email send failed: ' . $mailErr->getMessage());
+                Log::error('Verification email send failed: ' . $mailErr->getMessage());
             }
 
             DB::commit();
@@ -513,7 +504,7 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Staff registration error: ' . $e->getMessage(), [
+            Log::error('Staff registration error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'request_data' => $request->all()
             ]);

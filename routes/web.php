@@ -3,7 +3,7 @@
 use App\Http\Controllers\ProductSettingController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\UserController;
-
+use Illuminate\Support\Facades\Auth;
 use App\Models\ProductSetting;
 use App\Models\Suppliers;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +18,7 @@ use App\Http\Controllers\PurchaseOrderController;
 Route::get('/registration/signin', function () {
     return view('registration.signin');
 })->name('signin');
+
 
 Route::post('/logout-user', function () {
     Auth::logout();          

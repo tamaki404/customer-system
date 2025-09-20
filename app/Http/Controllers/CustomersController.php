@@ -13,6 +13,8 @@ use App\Models\Staffs;
 use App\Models\Logs;
 use App\Models\Products;
 use App\Models\ProductSetting;
+use App\Models\Credits;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -69,7 +71,7 @@ class CustomersController extends Controller
         public function supplierConfirm(Request $request)
         {
             $user = Auth::user();
-            \Log::info('SupplierConfirm started', $request->all());
+            Log::info('SupplierConfirm started', $request->all());
 
             $request->validate([
                 'supplier_id'       => 'required|exists:suppliers,supplier_id',
@@ -133,8 +135,18 @@ class CustomersController extends Controller
                     }
 
                 }
+                $user_id = 'USR-' . $date . '-' . randomBase36String(5);
+                $credit_id = 'CRDT-' . $date . '-' . randomBase36String(5);
 
-            
+
+                Credits::create([
+                    'credit_id'       =>  $credit_id,
+                    'user_id'       => $user_id,
+                    'status'         => 'Active',
+                    'balance'        =>  0,
+                    'credit_limit' => $request->credit_limit,
+                ]);
+
                 
                 Logs::create([
                     'user_id' => Auth::user()->user_id,
@@ -152,7 +164,7 @@ class CustomersController extends Controller
                 
 
                 } catch (\Exception $e) {
-                    \Log::error('SupplierConfirm failed: ' . $e->getMessage(), [
+                    Log::error('SupplierConfirm failed: ' . $e->getMessage(), [
                         'trace' => $e->getTraceAsString(),
                         'request' => $request->all(),
                         'line' => $e->getLine(),
