@@ -136,7 +136,7 @@
                                         <td>{{$order->order_id}}</td>
                                         <td>--</td>
                                         <td>{{$order->total_amount}}</td>
-                                        <td>--</td>
+                                        <td>{{$order->payment_status}}</td>
                                         <td>--</td>
 
                                         <td>{{$order->status}}</td>

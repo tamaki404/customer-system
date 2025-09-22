@@ -62,10 +62,12 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     Route::get('/products/product/view',  [ProductController::class, 'productView'])->name('products.product');
 
     Route::get('/orders/list',  [OrderController::class, 'orderList'])->name('order.list');
+    Route::get('/receipts/list',  [ReceiptController::class, 'receiptList'])->name('receipts.list');
 
 
     Route::get('/credits/list',  [CreditsController::class, 'creditsList'])->name('credits.list');
     // Route::get('/credits/list/view/{credit_id}',  [CreditsController::class, 'creditsView'])->name('credits.view');
+    Route::get('/receipts/list/receipt/{receipt_id}',  [ReceiptController::class, 'receiptView'])->name('receipts.receipt');
 
 
     // supplier only
@@ -94,6 +96,8 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::post('/products/setting/modify', [ProductSettingController::class, 'modifyProduct'])->name('productset.modify');
 
     Route::post('/purchase-orders/purchase/view/place', [OrderController::class, 'placeOrderItems'])->name('purchaseorders.place');
+
+Route::post('/receipts/action/{receipt_id}', [ReceiptController::class, 'receiptAction'])->name('receipts.action');
 
 
 });

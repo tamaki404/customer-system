@@ -17,5 +17,10 @@ class Receipts extends Model
         'image_filename',
         'image_size',
     ];
+    public function order()
+    {
+        return $this->belongsTo(orders::class, 'order_id', 'order_id');
+    }
+
     
 }

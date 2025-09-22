@@ -25,4 +25,10 @@ class Orders extends Model
         return $this->items->sum('total_price');
     }
 
+    public function receipts()
+{
+    return $this->hasMany(Receipts::class, 'order_id', 'order_id');
+}
+
+
 }

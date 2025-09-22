@@ -32,11 +32,44 @@ class OrderController extends Controller
             $orders = collect(); 
 
             if ($user->role !== "Supplier") {
-                $orders = Orders::all();
+                $orders = Orders::withSum('receipts', 'total_amount')
+                    ->get()
+                    ->map(function ($order) {
+                        $paid = $order->receipts_sum_total_amount ?? 0;
+                        $balance = $order->total_amount - $paid;
+
+                        if ($paid >= $order->total_amount) {
+                            $order->payment_status = 'Fully Paid';
+                        } elseif ($paid > 0) {
+                            $order->payment_status = 'Partially Paid';
+                        } else {
+                            $order->payment_status = 'Unpaid';
+                        }
+
+                        $order->paid_amount = $paid;
+                        $order->balance = max($balance, 0);
+
+                        return $order;
+                    });
             } 
             elseif ($user->role === "Supplier") {
                 $supplier = Suppliers::where('user_id', $user->user_id)->first();
-                $orders = Orders::where('supplier_id', $supplier->supplier_id)->get();
+                $orders = Orders::where('supplier_id', $supplier->supplier_id)
+                    ->withSum('receipts', 'total_amount') 
+                    ->get()
+                    ->map(function ($order) {
+                        $paid = $order->receipts_sum_total_amount ?? 0;
+
+                        if ($paid >= $order->total_amount) {
+                            $order->payment_status = 'Fully Paid';
+                        } elseif ($paid > 0) {
+                            $order->payment_status = 'Partially Paid';
+                        } else {
+                            $order->payment_status = 'Unpaid';
+                        }
+
+                        return $order;
+                    });
             }
 
             return view('orders.list', [
