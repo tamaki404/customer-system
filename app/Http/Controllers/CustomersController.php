@@ -70,8 +70,13 @@ class CustomersController extends Controller
 
         public function supplierConfirm(Request $request)
         {
-            $user = Auth::user();
+            $staff = Auth::user();
             Log::info('SupplierConfirm started', $request->all());
+            $input = $request->all();
+            $input['credit_limit'] = str_replace(',', '', $input['credit_limit']);
+
+            $request->merge($input);
+
 
             $request->validate([
                 'supplier_id'       => 'required|exists:suppliers,supplier_id',
@@ -79,7 +84,7 @@ class CustomersController extends Controller
                 'acc_status'        => 'required|string|max:100',
                 'reason_to_decline' => 'nullable|string|max:200|required_if:acc_status,Declined',
                 'staff_id'          => 'required|exists:staffs,staff_id',
-
+                'credit_limit' => 'required|numeric|min:0',
                 'products'    => 'nullable|array',
                 'products.*.product_id' => 'required|string|exists:products,product_id',
                 'products.*.price'      => 'required|numeric|min:0',
@@ -135,17 +140,18 @@ class CustomersController extends Controller
                     }
 
                 }
-                $user_id = 'USR-' . $date . '-' . randomBase36String(5);
                 $credit_id = 'CRDT-' . $date . '-' . randomBase36String(5);
 
+                Credits::updateOrCreate(
+                    ['user_id' => $user->user_id],
+                    [
+                        'credit_id'   => $credit_id,
+                        'status'      => 'Active',
+                        'balance'     => 0,
+                        'credit_limit'=> $input['credit_limit'],
+                    ]
+                );
 
-                Credits::create([
-                    'credit_id'       =>  $credit_id,
-                    'user_id'       => $user_id,
-                    'status'         => 'Active',
-                    'balance'        =>  0,
-                    'credit_limit' => $request->credit_limit,
-                ]);
 
                 
                 Logs::create([

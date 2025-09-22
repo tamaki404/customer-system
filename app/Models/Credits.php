@@ -13,4 +13,8 @@ class Credits extends Model
         'credit_limit',
         'balance',
     ];
+    protected $casts = [
+    'credit_limit' => 'integer',
+    'balance' => 'integer',
+    ];
 }

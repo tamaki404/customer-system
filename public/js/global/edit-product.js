@@ -1,11 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const editButtons = document.querySelectorAll(".edit-product-btn");
+    const modal = document.getElementById("edit-row-action");
 
-    editButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            document.getElementById("modal-set-id").value = button.dataset.setId;
-            document.getElementById("modal-price").value = button.dataset.price;
-            document.getElementById("modal-product-name").value = button.dataset.name;
-        });
+    modal.addEventListener("show.bs.modal", event => {
+        // The button that triggered the modal
+        const button = event.relatedTarget;
+
+        // Extract data from button
+        const setId = button.getAttribute("data-set-id");
+        const supplierId = button.getAttribute("data-supplier-id");
+        const price = button.getAttribute("data-price");
+        const name = button.getAttribute("data-name");
+
+        // Populate modal fields
+        document.getElementById("edit-modal-set-id").value = setId;
+        document.getElementById("edit-modal-supplier-id").value = supplierId;
+        document.getElementById("modal-price").value = price;
+        document.getElementById("modal-product-name").value = name;
     });
 });

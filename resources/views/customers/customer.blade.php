@@ -285,10 +285,9 @@
                     <span class="material-symbols-outlined"> warning </span>
                     <span>Any action committed will notify the supplier</span>
                     </p>
-
-                    <input type="hidden" name="set_id" id="modal-set-id">
-                    <input type="hidden" name="supplier_id" id="modal-supplier-id">
-
+                
+                    <input type="hidden" id="edit-modal-set-id" name="set_id">
+                    <input type="hidden" name="supplier_id" id="edit-modal-supplier-id">
                     <div class="mb-3">
                     <label class="form-label">Product</label>
                     <input type="text" class="form-control" id="modal-product-name" disabled>
@@ -489,6 +488,8 @@
                                                     >
                                                         <span class="material-symbols-outlined">edit</span>
                                                     </button>
+
+
                                                 </td>
                                             </tr>
                                             @endforeach
@@ -708,6 +709,7 @@
     <script src="{{ asset('js/global/modal/add-product-user.js') }}"></script>
     <script src="{{ asset('js/global/format-currency.js') }}"></script>
 
+</script>
 
 
 @endpush
