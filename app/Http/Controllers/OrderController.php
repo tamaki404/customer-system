@@ -38,6 +38,7 @@ class OrderController extends Controller
                         $paid = $order->receipts_sum_total_amount ?? 0;
                         $balance = $order->total_amount - $paid;
 
+
                         if ($paid >= $order->total_amount) {
                             $order->payment_status = 'Fully Paid';
                         } elseif ($paid > 0) {

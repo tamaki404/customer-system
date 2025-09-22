@@ -33,7 +33,6 @@
         <div class="sideAccess" id="sideAccess">
             
             <!-- Sidebar Header -->
-            <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <div class="userProfile">
                     <div class="imgFrame">
@@ -89,11 +88,11 @@
 
                     <div class="nav-group">
                         <div class="nav-group-title">Credits & Receipts</div>
-                        <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
+                        {{-- <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
                             <span class="material-symbols-outlined">credit_card</span>
                             <p>Credits</p>
                             <div class="nav-indicator"></div>
-                        </a>
+                        </a> --}}
                         <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
                             <span class="material-symbols-outlined">receipt</span>
 

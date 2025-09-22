@@ -109,9 +109,9 @@
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
 
            <div>
-            <p>Total Credit Limit: {{ number_format($credit->credit_limit, 2) }}</p>
-            <p>Used Credit: {{ number_format($usedCredit, 2) }}</p>
-            <p>Available Credit: {{ number_format($availableCredit, 2) }}</p>
+                <p>Total Credit Limit: {{ number_format($credit->credit_limit, 2) }}</p>
+                <p>Used Credit: {{ number_format($usedCredit, 2) }}</p>
+                <p>Available Credit: {{ number_format($availableCredit, 2) }}</p>
 
 
            </div>
