@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Credits;
 use App\Models\Orders;
 use App\Models\Suppliers;
+use App\Models\Receipts;
 
 class CreditsController extends Controller
 {
@@ -31,7 +32,7 @@ class CreditsController extends Controller
                     ->where('status', 'pending')
                     ->get();
 
-
+                $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->get();
 
             }
             return view('credits.list', [
@@ -40,6 +41,7 @@ class CreditsController extends Controller
                 'credit' => $credit,
                 'usedCredit' => $usedCredit,
                 'availableCredit' => $availableCredit,
+                'receipts' => $receipts,
 
             ]);
         }
