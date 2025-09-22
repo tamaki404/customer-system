@@ -15,6 +15,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\CreditsController;
+use App\Http\Controllers\ReceiptController;
 
 Route::get('/registration/signin', function () {
     return view('registration.signin');

@@ -26,7 +26,7 @@
     </div>
 @endif
 
-        <div class="modal fade" id="create-order-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        <div class="modal fade" id="add-receipt-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <form class="modal-content"  method="POST" action="{{ route('receipt.create') }}"  enctype="multipart/form-data">
                     @csrf
@@ -58,6 +58,7 @@
                         </p>
 
                         <div class="modal-option-groups">
+                            <input type="text" name="order_id" placeholder="order id" required>
                             <div class="form-group">
                                     <p><span class="req-asterisk">*</span>Upload receipt image</p>
                                     <input type="file" name="image" id="image" required accept="image/*">
@@ -66,6 +67,7 @@
                             </div>
                             <input type="hidden" name="status" value="Pending">
                             <input type="hidden" name="supplier_id" value="{{ auth()->user()->supplier->supplier_id }}">
+
                         </div>
         
 
@@ -170,5 +172,6 @@
 
 @push('scripts')
 
-
+    <script src="{{ asset('js/global/two_mb.js') }}"></script>
+    <script src="{{ asset('js/global/file-preview.js') }}"></script>
 @endpush

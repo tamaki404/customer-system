@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('supplier_id');
             $table->string('order_id');
             $table->string('status')->default('Pending');
-            $table->decimal('total_amount', 12, 2)->default(0);
+            $table->decimal('total_amount', 12, 2)->default(0)->nullable();
             $table->string('image_mime_type')->nullable();
             $table->string('image_filename')->nullable();
             $table->unsignedInteger('image_size')->nullable(); 
