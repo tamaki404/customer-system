@@ -698,13 +698,16 @@
 
 @push('scripts')
 
-
+    <script>
+        const filterUrl = "{{ route('products.filter') }}";
+    </script>
     <script src="{{ asset('js/global/edit-product.js') }}"></script>
     <script src="{{ asset('js/global/filter-products.js') }}"></script>
     <script src="{{ asset('js/global/modal-hide-input.js') }}"></script>
     <script src="{{ asset('js/global/alert-timeout.js') }}"></script>
     <script src="{{ asset('js/global/modal/add-product-user.js') }}"></script>
     <script src="{{ asset('js/global/format-currency.js') }}"></script>
+
 
 
 @endpush
