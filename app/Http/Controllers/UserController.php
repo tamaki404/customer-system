@@ -383,13 +383,13 @@ class UserController extends Controller
                     'regex:/^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>]).*$/'
                 ],
                 'mobile_no'       => 'required|string|max:11',
-                'telephone_no'    => 'required|string|max:11',
+                'telephone_no'    => 'nullable|string|max:11',
                 'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'lastname'   => 'required|string|max:50',
                 'firstname'  => 'required|string|max:50',
                 'middlename' => 'nullable|string|max:50',
                 'action_by' => 'required|exists:users,user_id',
-                'role_type'  => 'required|string|in:sales_representative,procurement_officer,warehouse_staff,accounting_staff,system_admin',
+                'role_type'  => 'required|string|in:sales_representative,procurement_officer,warehouse_staff,accounting_staff,system_admin,inventory_staff',
             ], [
                 'password.min' => 'Password must be at least 6 characters long.',
                 'password.regex' => 'Password must contain at least one number and one special character.',

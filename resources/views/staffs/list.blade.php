@@ -86,6 +86,7 @@
                         <select name="role_type" id="" class="@error('role_type') is-invalid @enderror">
                             <option value="">Select role...</option>
                             <option value="sales_representative" {{ old('role_type') == 'sales_representative' ? 'selected' : '' }}>Sales representative</option>
+                            <option value="inventory_staff" {{ old('role_type') == 'inventory_staff' ? 'selected' : '' }}>Inventory staff</option>
                             <option value="procurement_officer" {{ old('role_type') == 'procurement_officer' ? 'selected' : '' }}>Procurement officer</option>
                             <option value="warehouse_staff" {{ old('role_type') == 'warehouse_staff' ? 'selected' : '' }}>Warehouse staff</option>
                             <option value="accounting_staff" {{ old('role_type') == 'accounting_staff' ? 'selected' : '' }}>Accounting staff</option>
@@ -102,7 +103,7 @@
                         @error('mobile_no')
                             <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                         @enderror
-                        <input type="text" placeholder="Telephone no." maxlength="11" name="telephone_no" required class="@error('telephone_no') is-invalid @enderror" value="{{ old('telephone_no') }}">
+                        <input type="text" placeholder="Telephone no." maxlength="11" name="telephone_no" class="@error('telephone_no') is-invalid @enderror" value="{{ old('telephone_no') }}">
                         @error('telephone_no')
                             <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                         @enderror
