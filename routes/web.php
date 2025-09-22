@@ -21,11 +21,15 @@ Route::get('/registration/signin', function () {
 
 
 Route::post('/logout-user', function () {
-    Auth::logout();          
-    request()->session()->invalidate(); 
-    request()->session()->regenerateToken(); 
-    return redirect('/');  
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('login'); 
 })->name('logout');
+
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 
 Route::get('/account/registration', [RegistrationController::class, 'showSignupForm'])->name('registration.signup');
 Route::post('/account/supplier/registration', [UserController::class, 'registerSupplier'])->name('registration.supplier.register');
