@@ -99,7 +99,7 @@
                     </div>
 
                     <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
-                        <p class="heading">Order list</p>
+                        <p class="heading">Purchase order list</p>
                         @if ( auth()->user()->role === 'Supplier')
                             <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
                                 <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
@@ -113,7 +113,31 @@
 
 
                 @if (auth()->user()->role !== 'Supplier')
-                 
+
+                    <div class="content-body" style="background: #fff">
+
+                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                            <thead style="background-color: #fff;">
+                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>PO ID</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>                                
+                                @foreach ($pos as $po)
+                                    <tr onclick="window.location.href='{{ route('purchaseorders.purchaseorder', ['po_id' => $po->po_id]) }}'">
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{$po->created_at}}</td>
+                                        <td>{{$po->po_id}}</td>
+                                        <td>{{$po->status}}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                
+                    </div>
                 @elseif (auth()->user()->role === 'Supplier')
 
                     <div class="content-body" style="background: #fff">

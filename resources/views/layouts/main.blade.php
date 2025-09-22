@@ -94,17 +94,18 @@
                             <span class="material-symbols-outlined">receipt</span>
                             <p>Receipts</p>
                             <div class="nav-indicator"></div>
-                        </a>
-                        <a class="nav-item">
+                        </a>--}}
+                        <a class="nav-item{{ $currentRoute == 'purchaseorder.list' ? ' active' : '' }}" href="{{ route('purchaseorder.list') }}">
                             <span class="material-symbols-outlined">shopping_bag</span>
+                            <p>Purchase orders</p>
+                            <div class="nav-indicator"></div>
+                        </a>
+
+                        <a class="nav-item{{ $currentRoute == 'order.list' ? ' active' : '' }}" href="{{ route('order.list') }}">
+                            <span class="material-symbols-outlined">receipt_long</span>
                             <p>Orders</p>
                             <div class="nav-indicator"></div>
                         </a>
-                        <a class="nav-item">
-                            <span class="material-symbols-outlined">receipt_long</span>
-                            <p>Purchase Order</p>
-                            <div class="nav-indicator"></div>
-                        </a> --}}
                         <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
                             <span class="material-symbols-outlined">store</span>
                             <p>Products</p>
@@ -235,7 +236,7 @@
 
                 <div class="ownFrame">
                     <p>OWNED BY</p>
-                    <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image" width="100" class="ownerImage">
+                    <img src="{{ asset(path: 'assets/sunnyLogo1.png') }}" alt="Owner Image" width="100" class="ownerImage">
                 </div>
             </div>
             

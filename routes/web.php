@@ -88,6 +88,8 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
     Route::post('/products/setting/modify', [ProductSettingController::class, 'modifyProduct'])->name('productset.modify');
 
+    Route::post('/purchase-orders/purchase/view/place', [OrderController::class, 'placeOrderItems'])->name('purchaseorders.place');
+
 
 });
 

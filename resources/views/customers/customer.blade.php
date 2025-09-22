@@ -338,7 +338,7 @@
                                 <p>This user was declined due to: {{$accStatus->reason_to_decline}}</p>
                                 waiting for supplier to modify their request
                             </div>
-                        @elseif ($accStatus->acc_status === 'Pending')
+                        @elseif ($accStatus->acc_status === 'Accepted')
                             <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
 
                         @elseif ($accStatus->acc_status === 'Accepted')

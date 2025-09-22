@@ -14,17 +14,16 @@ return new class extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
             $table->string('po_id')->unique(); 
-            $table->string('order_id');
             $table->string('supplier_id');
-            $table->string('status')->default('Pending')->nullable();
+            $table->string('status')->default('Pending');
             $table->string('image_mime_type')->nullable();
             $table->string('image_filename')->nullable();
             $table->unsignedInteger('image_size')->nullable(); 
+            $table->timestamp('placed_at')->nullable();
             $table->timestamps();
         });
 
         DB::statement('ALTER TABLE purchase_orders ADD image MEDIUMBLOB NULL');
-
     }
 
     /**

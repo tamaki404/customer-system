@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_id')->unique(); 
-            $table->string('supplier_id')->nullable();
-            $table->string('status')->default('Pending')->nullable();
-            $table->string('quantity')->nullable();
-            $table->string('total_amount')->nullable();
+            $table->string('po_id');
+            $table->string('supplier_id');
+            $table->string('status')->default('Pending');
+            $table->decimal('total_amount', 12, 2)->default(0);
+            $table->timestamp('order_date')->nullable();
+            $table->string('document_path')->nullable();
             $table->timestamps();
         });
-
-
     }
 
     /**

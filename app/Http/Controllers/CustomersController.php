@@ -130,16 +130,18 @@ class CustomersController extends Controller
                 // Save product settings only if accepted
                 if ($request->acc_status === 'Accepted' && $request->has('products')) {
                     foreach ($request->products as $product) {
+                        $set_id = 'SET-' . $date . '-' . randomBase36String(5);
+
                         ProductSetting::create([
                             'product_id'  => $product['product_id'],
-                            'set_id'  => $set_id,
+                            'set_id'      => $set_id,
                             'supplier_id' => $request->supplier_id,
                             'price'       => $product['price'],
                             'added_by'    => $user->user_id, 
                         ]);
                     }
-
                 }
+
                 $credit_id = 'CRDT-' . $date . '-' . randomBase36String(5);
 
                 Credits::updateOrCreate(

@@ -8,11 +8,12 @@ class Orders extends Model
 {
     protected $fillable = [
         'order_id',
+        'po_id',
         'supplier_id',
         'status',
-        'quantity',
-        'ttoal_amount',
-
+        'total_amount',
+        'order_date',
+        'document_path',
     ];
 
 }
