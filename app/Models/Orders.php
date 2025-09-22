@@ -16,4 +16,13 @@ class Orders extends Model
         'document_path',
     ];
 
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class, 'order_id', 'order_id');
+    }
+    public function getTotalAmountAttribute()
+    {
+        return $this->items->sum('total_price');
+    }
+
 }

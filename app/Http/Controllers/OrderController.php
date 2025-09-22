@@ -13,7 +13,9 @@ use App\Models\Suppliers;
 use App\Models\OrderItem;
 
 class OrderController extends Controller
-{    public static function randomBase36String(int $length): string
+{   
+    
+    public static function randomBase36String(int $length): string
     {
         $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $str = '';
@@ -29,7 +31,7 @@ class OrderController extends Controller
             $supplier = null;
             $orders = collect(); 
 
-            if ($user->role === "Staff") {
+            if ($user->role !== "Supplier") {
                 $orders = Orders::all();
             } 
             elseif ($user->role === "Supplier") {
@@ -249,8 +251,6 @@ class OrderController extends Controller
                     ->withInput();
             }
         }
-    
-
 
         public function orderView($order_id, Request $request)
         {

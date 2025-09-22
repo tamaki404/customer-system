@@ -14,6 +14,7 @@ use App\Http\Controllers\LogsController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\CreditsController;
 
 Route::get('/registration/signin', function () {
     return view('registration.signin');
@@ -62,11 +63,14 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     Route::get('/orders/list',  [OrderController::class, 'orderList'])->name('order.list');
 
 
+    Route::get('/credits/list',  [CreditsController::class, 'creditsList'])->name('credits.list');
+    // Route::get('/credits/list/view/{credit_id}',  [CreditsController::class, 'creditsView'])->name('credits.view');
+
 
     // supplier only
     Route::post('/orders/order/create',  [OrderController::class, 'createOrder'])->name('order.create');
     Route::get('/purchase-orders/list',  [PurchaseOrderController::class, 'purchaseOrderList'])->name('purchaseorder.list');
-
+    Route::post('/receipts/create',  [ReceiptController::class, 'receiptUpload'])->name('receipt.create');
     Route::get('/purchase-orders/list/view/{po_id}',  [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchaseorders.purchaseorder');
     Route::get('/orders/list/view/{order_id}',  [OrderController::class, 'orderView'])->name('orders.order');
 

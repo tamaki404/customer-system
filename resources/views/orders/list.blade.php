@@ -121,8 +121,10 @@
                                     <th>#</th>
                                     <th>Date</th>
                                     <th>Order ID</th>
-                                    <th>Total amount</th>
                                     <th>Quantity</th>
+                                    <th>Amount</th>
+                                    <th>Payment</th>
+                                    <th>Balance</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -132,8 +134,11 @@
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{$order->created_at}}</td>
                                         <td>{{$order->order_id}}</td>
-                                        <td>--<td>
-                                        <td>--<td>
+                                        <td>--</td>
+                                        <td>{{$order->total_amount}}</td>
+                                        <td>--</td>
+                                        <td>--</td>
+
                                         <td>{{$order->status}}</td>
 
                                     </tr>

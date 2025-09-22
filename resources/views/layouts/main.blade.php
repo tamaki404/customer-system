@@ -167,6 +167,20 @@
                         </a>
                     </div>
 
+                    <div class="nav-group">
+                        <div class="nav-group-title">Credits & Receipts</div>
+                        <a class="nav-item{{ $currentRoute == 'credits.view' ? ' active' : '' }}" href="{{ route('credits.list') }}">
+                            <span class="material-symbols-outlined">credit_card</span>
+                            <p>Credits</p>
+                            <div class="nav-indicator"></div>
+                        </a>
+                        <a class="nav-item">
+                            <span class="material-symbols-outlined">receipt</span>
+                            <p>Receipts</p>
+                            <div class="nav-indicator"></div>
+                        </a>
+                    </div>
+
                     <!-- Group 2: Orders & Inventory -->
                 <div class="nav-group">
                         <div class="nav-group-title">Orders & Inventory</div>

@@ -30,13 +30,16 @@
         <div class="content-header">
             <div class="contents-display">
                 <p>
-                    <a href="{{ route('staffs.list') }}">< Orders list</a>
+                    <a href="{{ route('staffs.list') }}">< Staffs list</a>
                 </p>
             </div>
 
             <div class="title-actions">
-                <p class="heading">Order</p>
+                <p class="heading">Credits</p>
 
+                <div>
+                    <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">Modify account</button>
+                </div>
 
             </div>
 
@@ -44,7 +47,7 @@
         </div>
 
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
-          
+           
          
        
         </div>
@@ -56,9 +59,6 @@
 
 
 @push('scripts')
-    <script src="{{ asset('js/global/password.js') }}"></script>
-    <script src="{{ asset('js/global/two_mb.js') }}"></script>
-
 
 
 @endpush
