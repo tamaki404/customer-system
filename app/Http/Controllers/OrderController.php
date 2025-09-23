@@ -12,20 +12,20 @@ use App\Models\PurchaseOrders;
 use App\Models\Suppliers;
 use App\Models\OrderItem;
 use App\Models\Logs;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {   
     
-    public static function randomBase36String(int $length): string
-    {
-        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $str = '';
-        for ($i = 0; $i < $length; $i++) {
-            $str .= $chars[random_int(0, strlen($chars) - 1)];
+        public static function randomBase36String(int $length): string
+        {
+            $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $str = '';
+            for ($i = 0; $i < $length; $i++) {
+                $str .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            return $str;
         }
-        return $str;
-    }
         public function orderList(Request $request)
         {
             $user = Auth::user();
@@ -365,19 +365,19 @@ class OrderController extends Controller
     
     public function customerOrderPdf(Orders $order)
     {
-        $pdf = PDF::loadView('pdf.customer_order', compact('order'));
+        $pdf = Pdf::loadView('pdf.orders.customer_order', compact('order'));
         return $pdf->stream('customer-order.pdf');
     }
 
     public function deliveryReceiptPdf(Orders $order)
     {
-        $pdf = PDF::loadView('pdf.delivery_receipt', compact('order'));
+        $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('order'));
         return $pdf->stream('delivery-receipt.pdf');
     }
 
     public function salesInvoicePdf(Orders $order)
     {
-        $pdf = PDF::loadView('pdf.sales_invoice', compact('order'));
+        $pdf = PDF::loadView('pdf.orders.sales_invoice', compact('order'));
         return $pdf->stream('sales-invoice.pdf');
     }
 
