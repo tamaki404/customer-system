@@ -96,7 +96,7 @@
                             </thead>
                             <tbody>                                
                                 @foreach ($receipts as $receipt)
-                                    <tr >
+                                    <tr onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $receipt->receipt_id]) }}'">
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{$receipt->created_at}}</td>
                                         <td>{{$receipt->receipt_id}}</td>

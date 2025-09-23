@@ -79,11 +79,11 @@
                             <p>Dashboard</p>
                             <div class="nav-indicator"></div>
                         </a>
-                        {{-- <a class="nav-item">
+                        <a class="nav-item{{ $currentRoute == 'profile.view' ? ' active' : '' }}" href="{{ route('profile.view') }}">
                             <span class="material-symbols-outlined">person</span>
                             <p>Profile</p>
                             <div class="nav-indicator"></div>
-                        </a> --}}
+                        </a>
                     </div>
 
                     <div class="nav-group">
@@ -174,7 +174,7 @@
                             <p>Dashboard</p>
                             <div class="nav-indicator"></div>
                         </a>
-                        <a class="nav-item">
+                        <a class="nav-item{{ $currentRoute == 'profile.view' ? ' active' : '' }}" href="{{ route('profile.view') }}">
                             <span class="material-symbols-outlined">person</span>
                             <p>Profile</p>
                             <div class="nav-indicator"></div>

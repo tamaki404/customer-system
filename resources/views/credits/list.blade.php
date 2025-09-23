@@ -146,17 +146,18 @@
                                         </thead>
                                         <tbody>                                
                                             @foreach ($transactionHistory as $transaction)
-                                                <tr>
+                                                <tr >
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ $transaction->action_at }}</td>
                                                     <td>{{ $transaction->order_id }}</td>
                                                     <td>{{ $transaction->label }}</td>
                                                     <td>{{ $transaction->status }}</td>
                                                     @if ($transaction->label === 'Receipt')
-                                                        <td>+{{ number_format($transaction->order->total_amount, 2) }}</td>
+                                                       <td>+{{ $transaction->amount }}</td>
                                                     @elseif ($transaction->label === 'Order')
-                                                        <td>-{{ number_format($transaction->order->total_amount, 2) }}</td>
+                                                        <td>-{{ $transaction->amount }}</td>
                                                     @endif
+                                                  
                                          
                                                 </tr>
                                             @endforeach

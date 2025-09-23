@@ -17,6 +17,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\CreditsController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/registration/signin', function () {
     return view('registration.signin');
@@ -78,6 +79,7 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     Route::get('/purchase-orders/list/view/{po_id}',  [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchaseorders.purchaseorder');
     Route::get('/orders/list/view/{order_id}',  [OrderController::class, 'orderView'])->name('orders.order');
 
+    Route::get('/profile/view', [ProfileController::class, 'profileView'])->name('profile.view');
 
 });
 

@@ -91,7 +91,8 @@
                                     <th>Date</th>
                                     <th>Order ID</th>
                                     <th>Quantity</th>
-                                    {{-- <th>Amount</th> --}}
+                                    <th>Payment status</th>
+                                    <th>Total amount</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -102,7 +103,8 @@
                                         <td>{{$order->created_at}}</td>
                                         <td>{{$order->order_id}}</td>
                                         <td>--<td>
-                                        {{-- <td>{{$order->amount}}</td> --}}
+                                        <td>{{$order->payment_status}}<td>
+                                        <td>{{$order->total_amount}}</td>
                                         <td>{{$order->status}}</td>
 
                                     </tr>

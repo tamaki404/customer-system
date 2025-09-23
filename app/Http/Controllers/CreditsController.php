@@ -32,7 +32,7 @@ class CreditsController extends Controller
                 $availableCredit = $credit->credit_limit - $usedCredit;
                 $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->get();
                 $oustandingPayments = Orders::where('orders.supplier_id', $supplier->supplier_id)
-                    ->whereIn('orders.payment_status', ['Unpaid', 'Partially Settled'])
+                    ->whereIn('orders.payment_status', ['Unpaid', 'Partially settled'])
                     ->select('orders.*')
                     ->selectSub(function ($query) {
                         $query->from('receipts')
@@ -57,13 +57,14 @@ class CreditsController extends Controller
                     ->where('payment_status', '!=', 'Fully paid')
                     ->get();
 
-
                 $orderIds = Orders::where('supplier_id', $supplier->supplier_id)
                     ->pluck('order_id');
 
                 $transactionHistory = OrderHistory::whereIn('order_id', $orderIds)
+                    ->whereIn('status', ['Verified', 'Accepted'])
                     ->orderBy('created_at', 'desc')
                     ->get();
+
 
 
 
@@ -94,5 +95,6 @@ class CreditsController extends Controller
         
         // }
     
+
 }
 
