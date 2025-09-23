@@ -71,11 +71,8 @@
                             <div class="modal-body">
                                 <div class="form-group">
                                     <p>Parent Product (optional)</p>
-                                    <div id="edit_parent_picker">
-                                        <select id="edit_parent_product_root" data-level="0" onchange="onEditParentLevelChange(this)">
-                                            <option value="">-- No parent (root product) --</option>
-                                        </select>
-                                    </div>
+                                    <div id="edit_parent_tree" style="max-height:220px; overflow:auto; border:1px solid #eee; border-radius:6px; padding:8px;"></div>
+                                    <div id="edit_parent_breadcrumb" style="margin-top:6px; font-size:12px; color:#666;"></div>
                                     <input type="hidden" name="parent_product_id" id="edit_final_parent_product_id">
                                 </div>
                                 <input type="hidden" name="product_id" value="{{ $product->product_id }}">
@@ -99,49 +96,86 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    buildEditParentTree();
+});
+
+function buildEditParentTree() {
     fetch("{{ route('products.tree') }}")
         .then(r => r.json())
-        .then(data => populateEditLevelOptions(document.getElementById('edit_parent_product_root'), data));
-});
-function populateEditLevelOptions(selectEl, nodes) {
-    [...selectEl.options].slice(1).forEach(o => o.remove());
-    nodes.forEach(n => {
-        const opt = document.createElement('option');
-        opt.value = n.product_id;
-        opt.textContent = n.name;
-        selectEl.appendChild(opt);
-    });
+        .then(data => {
+            const root = document.getElementById('edit_parent_tree');
+            root.innerHTML = '';
+            const ul = document.createElement('ul');
+            ul.style.listStyle = 'none';
+            ul.style.paddingLeft = '0';
+            data.forEach(node => ul.appendChild(makeEditParentTreeNode(node, [])));
+            root.appendChild(ul);
+        });
 }
 
-function onEditParentLevelChange(selectEl) {
-    const level = parseInt(selectEl.getAttribute('data-level') || '0', 10);
-    const wrapper = document.getElementById('edit_parent_picker');
+function makeEditParentTreeNode(node, path) {
+    const li = document.createElement('li');
+    li.style.margin = '2px 0';
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '6px';
 
-    // Remove deeper levels only
-    const deeper = [...wrapper.querySelectorAll('select')].filter(s => parseInt(s.getAttribute('data-level')||'0',10) > level);
-    deeper.forEach(s => s.remove());
+    const toggle = document.createElement('span');
+    toggle.textContent = node.children && node.children.length ? '▸' : '•';
+    toggle.style.cursor = node.children && node.children.length ? 'pointer' : 'default';
+    toggle.style.width = '14px';
 
-    const value = selectEl.value;
-    document.getElementById('edit_final_parent_product_id').value = value;
+    const label = document.createElement('button');
+    label.type = 'button';
+    label.textContent = node.name;
+    label.className = 'btn btn-sm';
+    label.style.padding = '2px 6px';
+    label.style.border = '1px solid #ddd';
+    label.style.background = '#fafafa';
+    label.addEventListener('click', () => {
+        document.getElementById('edit_final_parent_product_id').value = node.product_id;
+        const bc = document.getElementById('edit_parent_breadcrumb');
+        const names = path.concat([node.name]).join(' > ');
+        bc.textContent = names;
+        document.querySelectorAll('#edit_parent_tree button').forEach(b => b.style.background = '#fafafa');
+        label.style.background = '#e7f1ff';
+    });
 
-    if (!value) return;
+    row.appendChild(toggle);
+    row.appendChild(label);
+    li.appendChild(row);
 
-    fetch(`{{ url('/products') }}/${value}/children`)
-        .then(r => r.json())
-        .then(children => {
-            if (!children.length) return;
-            const next = document.createElement('select');
-            next.setAttribute('data-level', String(level+1));
-            next.innerHTML = '<option value="">-- Select child product --</option>';
-            next.addEventListener('change', function() { onEditParentLevelChange(next); });
-            wrapper.appendChild(next);
-            children.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c.product_id;
-                opt.textContent = c.name;
-                next.appendChild(opt);
-            });
-        });
+    const childUl = document.createElement('ul');
+    childUl.style.listStyle = 'none';
+    childUl.style.marginLeft = '16px';
+    childUl.style.display = 'none';
+    li.appendChild(childUl);
+
+    if (node.children && node.children.length) {
+        node.children.forEach(ch => childUl.appendChild(makeEditParentTreeNode(ch, path.concat([node.name]))));
+        toggle.style.cursor = 'pointer';
+    }
+
+    toggle.addEventListener('click', () => {
+        const open = childUl.style.display !== 'none';
+        if (open) {
+            childUl.style.display = 'none';
+            toggle.textContent = '▸';
+            return;
+        }
+        childUl.style.display = 'block';
+        toggle.textContent = '▾';
+        if (!childUl.hasChildNodes()) {
+            fetch(`{{ url('/products') }}/${node.product_id}/children`)
+                .then(r => r.json())
+                .then(children => {
+                    if (!children || !children.length) return;
+                    children.forEach(ch => childUl.appendChild(makeEditParentTreeNode(ch, path.concat([node.name]))));
+                });
+        }
+    });
+    return li;
 }
 </script>
 

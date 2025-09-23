@@ -63,11 +63,8 @@
 
                         <div class="form-group">
                             <p>Parent Product (optional)</p>
-                            <div id="parent_picker">
-                                <select id="parent_product_root" data-level="0" onchange="onParentLevelChange(this)">
-                                    <option value="">-- No parent (root product) --</option>
-                                </select>
-                            </div>
+                            <div id="parent_tree" style="max-height:220px; overflow:auto; border:1px solid #eee; border-radius:6px; padding:8px;"></div>
+                            <div id="parent_breadcrumb" style="margin-top:6px; font-size:12px; color:#666;"></div>
                             <input type="hidden" name="parent_product_id" id="final_parent_product_id">
                         </div>
                         <div>
@@ -266,55 +263,86 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Populate root level
-    fetch("{{ route('products.tree') }}")
-        .then(r => r.json())
-        .then(data => populateLevelOptions(document.getElementById('parent_product_root'), data));
+    buildParentTree();
 });
 
-function populateLevelOptions(selectEl, nodes) {
-    // Clear existing non-default options
-    [...selectEl.options].slice(1).forEach(o => o.remove());
-    nodes.forEach(n => {
-        const opt = document.createElement('option');
-        opt.value = n.product_id;
-        opt.textContent = n.name;
-        selectEl.appendChild(opt);
-    });
+function buildParentTree() {
+    fetch("{{ route('products.tree') }}")
+        .then(r => r.json())
+        .then(data => {
+            const root = document.getElementById('parent_tree');
+            root.innerHTML = '';
+            const ul = document.createElement('ul');
+            ul.style.listStyle = 'none';
+            ul.style.paddingLeft = '0';
+            data.forEach(node => ul.appendChild(makeParentTreeNode(node, [])));
+            root.appendChild(ul);
+        });
 }
 
-function onParentLevelChange(selectEl) {
-    const level = parseInt(selectEl.getAttribute('data-level') || '0', 10);
-    const wrapper = document.getElementById('parent_picker');
+function makeParentTreeNode(node, path) {
+    const li = document.createElement('li');
+    li.style.margin = '2px 0';
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '6px';
 
-    // Remove deeper levels
-    const deeper = [...wrapper.querySelectorAll('select')].filter(s => parseInt(s.getAttribute('data-level')||'0',10) > level);
-    deeper.forEach(s => s.remove());
+    const toggle = document.createElement('span');
+    toggle.textContent = node.children && node.children.length ? '▸' : '•';
+    toggle.style.cursor = node.children && node.children.length ? 'pointer' : 'default';
+    toggle.style.width = '14px';
 
-    const value = selectEl.value;
-    // Update hidden final input to current value (may be empty)
-    document.getElementById('final_parent_product_id').value = value;
+    const label = document.createElement('button');
+    label.type = 'button';
+    label.textContent = node.name;
+    label.className = 'btn btn-sm';
+    label.style.padding = '2px 6px';
+    label.style.border = '1px solid #ddd';
+    label.style.background = '#fafafa';
+    label.addEventListener('click', () => {
+        document.getElementById('final_parent_product_id').value = node.product_id;
+        const bc = document.getElementById('parent_breadcrumb');
+        const names = path.concat([node.name]).join(' > ');
+        bc.textContent = names;
+        document.querySelectorAll('#parent_tree button').forEach(b => b.style.background = '#fafafa');
+        label.style.background = '#e7f1ff';
+    });
 
-    if (!value) return;
+    row.appendChild(toggle);
+    row.appendChild(label);
+    li.appendChild(row);
 
-    // Fetch children and append next level if any
-    fetch(`{{ url('/products') }}/${value}/children`)
-        .then(r => r.json())
-        .then(children => {
-            if (!children.length) return;
-            const next = document.createElement('select');
-            next.setAttribute('data-level', String(level+1));
-            next.innerHTML = '<option value="">-- Select child product --</option>';
-            next.addEventListener('change', function() { onParentLevelChange(next); });
-            wrapper.appendChild(next);
-            // Fill children options
-            children.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c.product_id;
-                opt.textContent = c.name;
-                next.appendChild(opt);
-            });
-        });
+    const childUl = document.createElement('ul');
+    childUl.style.listStyle = 'none';
+    childUl.style.marginLeft = '16px';
+    childUl.style.display = 'none';
+    li.appendChild(childUl);
+
+    if (node.children && node.children.length) {
+        node.children.forEach(ch => childUl.appendChild(makeParentTreeNode(ch, path.concat([node.name]))));
+        toggle.style.cursor = 'pointer';
+    }
+
+    toggle.addEventListener('click', () => {
+        const open = childUl.style.display !== 'none';
+        if (open) {
+            childUl.style.display = 'none';
+            toggle.textContent = '▸';
+            return;
+        }
+        childUl.style.display = 'block';
+        toggle.textContent = '▾';
+        if (!childUl.hasChildNodes()) {
+            fetch(`{{ url('/products') }}/${node.product_id}/children`)
+                .then(r => r.json())
+                .then(children => {
+                    if (!children || !children.length) return;
+                    children.forEach(ch => childUl.appendChild(makeParentTreeNode(ch, path.concat([node.name]))));
+                });
+        }
+    });
+    return li;
 }
 </script>
 @endpush
