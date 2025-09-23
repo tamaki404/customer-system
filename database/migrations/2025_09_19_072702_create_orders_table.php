@@ -20,6 +20,15 @@ return new class extends Migration
             $table->decimal('total_amount', 12, 2)->default(0);
             $table->timestamp('order_date')->nullable();
             $table->string('document_path')->nullable();
+
+
+            $table->timestamp('accepted_at')->nullable();
+            $table->timestamp('delivered_at')->nullable();
+            $table->timestamp('completed_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
+
+
+
             $table->timestamps();
         });
     }

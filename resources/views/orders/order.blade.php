@@ -128,28 +128,52 @@
             </div>
             <div>
 
+            <!-- Buttons -->
             <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
-                <p style="margin: 0">
-                    <span>Print</span>
-                </p>
+                <p style="margin: 0"><span>Print</span></p>
                 <div>
-                    <a href="{{ route('orders.customer.pdf', $order->id) }}" target="_blank">
-                        <button type="button">Customer order</button>
-                    </a>
-                    <a href="{{ route('orders.delivery.pdf', $order->id) }}" target="_blank">
-                        <button type="button">Delivery receipt</button>
-                    </a>
-                    <a href="{{ route('orders.invoice.pdf', $order->id) }}" target="_blank">
-                        <button type="button">Sales invoice</button>
-                    </a>
+                    <button type="button" 
+                            data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                            data-url="{{ route('orders.customer.pdf', $order->id) }}">
+                        Customer order
+                    </button>
+
+                    <button type="button" 
+                            data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                            data-url="{{ route('orders.delivery.pdf', $order->id) }}">
+                        Delivery receipt
+                    </button>
+
+                    <button type="button" 
+                            data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                            data-url="{{ route('orders.invoice.pdf', $order->id) }}">
+                        Sales invoice
+                    </button>
                 </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content" style="width: 100%">
+                <div class="modal-header">
+                    <p class="modal-title">PDF Preview</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="height: 80vh;">
+                    <iframe id="pdfFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+                </div>
+                </div>
+            </div>
             </div>
 
 
 
 
-                <p>{{$order->status}}</p>
+
+                <p>Status: {{$order->status}}</p>
                 <p style="display: flex; flex-direction: column;">
+                    <span>Orders</span>
                     @foreach ($items as $item)
                         <span>{{$item->product->name}}</span>
                         <span>{{ $item->productSetting?->price ?? 'N/A' }}</span>
@@ -178,6 +202,7 @@
 @push('scripts')
     <script src="{{ asset('js/global/password.js') }}"></script>
     <script src="{{ asset('js/global/two_mb.js') }}"></script>
+    <script src="{{ asset('js/global/pdf_view.js') }}"></script>
 
 
 

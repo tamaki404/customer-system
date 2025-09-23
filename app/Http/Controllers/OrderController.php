@@ -325,13 +325,23 @@ class OrderController extends Controller
 
                 $date = date('Ymd');
                 $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
-
                 $order = Orders::where('order_id', $validated['order_id'])->firstOrFail();
-                $order->update([
-                    'status' => $validated['status'],
-                    'updated_at' => now(),
-                ]);
 
+                $data = [
+                    'status'     => $validated['status'],
+                    'updated_at' => now(),
+                ];
+
+                // Conditional timestamps
+                if ($validated['status'] === 'Accepted') {
+                    $data['accepted_at'] = now();
+                    $data['rejected_at'] = null; // reset opposite
+                } elseif ($validated['status'] === 'Rejected') {
+                    $data['rejected_at'] = now();
+                    $data['accepted_at'] = null; // reset opposite
+                }
+
+                $order->update($data);
                 $user_id = Auth::user()->user_id;
 
 
@@ -363,23 +373,23 @@ class OrderController extends Controller
             }
         }
     
-    public function customerOrderPdf(Orders $order)
-    {
-        $pdf = Pdf::loadView('pdf.orders.customer_order', compact('order'));
-        return $pdf->stream('customer-order.pdf');
-    }
+        public function customerOrderPdf(Orders $order)
+        {
+            $pdf = Pdf::loadView('pdf.orders.customer_order', compact('order'));
+            return $pdf->stream('customer-order.pdf');
+        }
 
-    public function deliveryReceiptPdf(Orders $order)
-    {
-        $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('order'));
-        return $pdf->stream('delivery-receipt.pdf');
-    }
+        public function deliveryReceiptPdf(Orders $order)
+        {
+            $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('order'));
+            return $pdf->stream('delivery-receipt.pdf');
+        }
 
-    public function salesInvoicePdf(Orders $order)
-    {
-        $pdf = PDF::loadView('pdf.orders.sales_invoice', compact('order'));
-        return $pdf->stream('sales-invoice.pdf');
-    }
+        public function salesInvoicePdf(Orders $order)
+        {
+            $pdf = PDF::loadView('pdf.orders.sales_invoice', compact('order'));
+            return $pdf->stream('sales-invoice.pdf');
+        }
 
 
 }

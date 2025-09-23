@@ -34,6 +34,12 @@ class CreditsController extends Controller
 
                 $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->get();
 
+                $transactionHistory = Orders::where('supplier_id', $supplier->supplier_id)
+                    ->where('status', '!=', 'Pending')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
+
             }
             return view('credits.list', [
                 'user' => $user,
@@ -42,6 +48,7 @@ class CreditsController extends Controller
                 'usedCredit' => $usedCredit,
                 'availableCredit' => $availableCredit,
                 'receipts' => $receipts,
+                'transactionHistory' => $transactionHistory,
 
             ]);
         }
