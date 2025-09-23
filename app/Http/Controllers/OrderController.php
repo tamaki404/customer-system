@@ -325,6 +325,8 @@ class OrderController extends Controller
 
                 $date = date('Ymd');
                 $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
+
                 $order = Orders::where('order_id', $validated['order_id'])->firstOrFail();
 
                 $data = [
@@ -351,7 +353,13 @@ class OrderController extends Controller
                     'log_id' => $log_id,
                     'description' => "Staff '{$user_id}' {$request->status} order '{$request->order_id}'",
                 ]);
-            
+
+                OrderHistory::create([
+                    'action_by' => Auth::user()->user_id,
+                    'action_at' => now(),
+                    'history_id' => $history_id,
+                    'status' => $request->status
+                ]);
                 
                 DB::commit();
                 
