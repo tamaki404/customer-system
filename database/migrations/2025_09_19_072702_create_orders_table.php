@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('total_amount', 12, 2)->default(0);
             $table->timestamp('order_date')->nullable();
             $table->string('document_path')->nullable();
+            $table->string('payment_status')->default('Unpaid');
 
 
             $table->timestamp('accepted_at')->nullable();

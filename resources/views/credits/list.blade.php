@@ -125,8 +125,9 @@
                                         <thead style="background-color: #fff;">
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
+                                                <th>Date</th>
                                                 <th>Order ID</th>
-                                                <th>Description</th>
+                                                <th>Label</th>
                                                 <th>Amount</th>
                                                 
                                             </tr>
@@ -135,10 +136,11 @@
                                             @foreach ($transactionHistory as $transaction)
                                                 <tr>
                                                     <td>{{$loop->iteration}}</td>
+                                                    <td>{{ $transaction->action_at }}</td>
                                                     <td>{{ $transaction->order_id }}</td>
-                                                    <td>-{{ number_format($transaction->total_amount, 2) }}</td>
-                                                    <td><strong>{{ number_format($oustandingPayment->total_amount, 2) }}</strong></td>
-                                                    <td>{{ $oustandingPayment->status }}</td>
+                                                    <td>Order {{ $transaction->status }}</td>
+                                                    <td>-{{ number_format($transaction->order->total_amount, 2) }}</td>
+                                         
                                                 </tr>
                                             @endforeach
 
@@ -175,7 +177,7 @@
                                                             x{{$item->quantity}} {{ $item->product->name }},
                                                         @endforeach
                                                     </td>
-                                                    <td><strong>{{ number_format($oustandingPayment->total_amount, 2) }}</strong></td>
+                                                    <td><strong>{{ number_format($oustandingPayment->outstanding_balance, 2) }}</strong></td>
                                                     <td>{{ $oustandingPayment->status }}</td>
                                                 </tr>
                                             @endforeach

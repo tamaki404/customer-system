@@ -11,8 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('order_histories', function (Blueprint $table) {
+            $table->id();
+            $table->string('order_id');   
+            $table->string('action_by'); 
+            $table->string('history_id')->unique();  
+            $table->string('status');
+            $table->timestamp('action_at')->useCurrent(); 
+            $table->timestamps();
+        });
     }
+
 
     /**
      * Reverse the migrations.

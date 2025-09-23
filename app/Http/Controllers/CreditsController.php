@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\OrderHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Credits;
 use App\Models\Orders;
 use App\Models\Suppliers;
 use App\Models\Receipts;
+use Illuminate\Support\Facades\DB;
 
 class CreditsController extends Controller
 {
@@ -28,16 +30,32 @@ class CreditsController extends Controller
                     ->sum('total_amount');
 
                 $availableCredit = $credit->credit_limit - $usedCredit;
-                $oustandingPayments = Orders::where('supplier_id', $supplier->supplier_id)
-                    ->where('status', 'pending')
-                    ->get();
-
                 $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->get();
+                $oustandingPayments = Orders::where('orders.supplier_id', $supplier->supplier_id)
+                    ->where('orders.payment_status', 'Unpaid')
+                    ->select('orders.*')
+                    ->selectSub(function ($query) {
+                        $query->from('receipts')
+                            ->selectRaw('COALESCE(SUM(total_amount), 0)')
+                            ->whereColumn('receipts.order_id', 'orders.order_id')
+                            ->where('receipts.status', 'Verified');
+                    }, 'verified_receipts_total')
+                    ->get()
+                    ->map(function ($order) {
+                        $order->outstanding_balance = $order->total_amount - $order->verified_receipts_total;
+                        return $order;
+                    });
 
-                $transactionHistory = Orders::where('supplier_id', $supplier->supplier_id)
-                    ->where('status', '!=', 'Pending')
+
+
+
+                $orderIds = Orders::where('supplier_id', $supplier->supplier_id)
+                    ->pluck('order_id');
+
+                $transactionHistory = OrderHistory::whereIn('order_id', $orderIds)
                     ->orderBy('created_at', 'desc')
                     ->get();
+
 
 
             }

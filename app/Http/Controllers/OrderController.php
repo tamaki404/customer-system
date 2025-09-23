@@ -13,6 +13,7 @@ use App\Models\Suppliers;
 use App\Models\OrderItem;
 use App\Models\Logs;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\OrderHistory;
 
 class OrderController extends Controller
 {   
@@ -328,22 +329,17 @@ class OrderController extends Controller
                 $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
 
                 $order = Orders::where('order_id', $validated['order_id'])->firstOrFail();
+                $po = PurchaseOrders::where('po_id', $order->po_id)->firstOrFail();
 
                 $data = [
                     'status'     => $validated['status'],
-                    'updated_at' => now(),
+                    'updated_at' =>now(),
                 ];
 
-                // Conditional timestamps
-                if ($validated['status'] === 'Accepted') {
-                    $data['accepted_at'] = now();
-                    $data['rejected_at'] = null; // reset opposite
-                } elseif ($validated['status'] === 'Rejected') {
-                    $data['rejected_at'] = now();
-                    $data['accepted_at'] = null; // reset opposite
-                }
-
                 $order->update($data);
+                $po->update($data);
+
+
                 $user_id = Auth::user()->user_id;
 
 
@@ -356,9 +352,10 @@ class OrderController extends Controller
 
                 OrderHistory::create([
                     'action_by' => Auth::user()->user_id,
+                    'order_id' => $request->order_id,
                     'action_at' => now(),
                     'history_id' => $history_id,
-                    'status' => $request->status
+                    'status' => $request->status,
                 ]);
                 
                 DB::commit();

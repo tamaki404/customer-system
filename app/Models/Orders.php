@@ -13,6 +13,7 @@ class Orders extends Model
         'status',
         'total_amount',
         'order_date',
+        'payment_status',
         'document_path',
     ];
 
