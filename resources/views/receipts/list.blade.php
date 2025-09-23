@@ -100,7 +100,7 @@
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{$receipt->created_at}}</td>
                                         <td>{{$receipt->receipt_id}}</td>
-                                        <td>{{$receipt->amount}}</td>
+                                        <td>{{$receipt->total_amount}}</td>
                                         <td>{{$receipt->status}}</td>
                                     </tr>
                                 @endforeach

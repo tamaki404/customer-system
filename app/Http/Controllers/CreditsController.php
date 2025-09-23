@@ -26,8 +26,18 @@ class CreditsController extends Controller
             elseif ($user->role === "Supplier") {
                 $credit = Credits::where('user_id', $user->user_id)->first();
                 $usedCredit = Orders::where('supplier_id', $supplier->supplier_id)
-                    ->where('status', 'Accepted')
-                    ->sum('total_amount');
+                    ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
+                    ->selectRaw('
+                        SUM(
+                            orders.total_amount - COALESCE(
+                                (SELECT SUM(r.total_amount) 
+                                FROM receipts r 
+                                WHERE r.order_id = orders.order_id 
+                                AND r.status = "Verified"), 0
+                            )
+                        ) as outstanding_balance
+                    ')
+                    ->value('outstanding_balance');
 
                 $availableCredit = $credit->credit_limit - $usedCredit;
                 $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->get();
