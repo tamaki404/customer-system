@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery receipt</title>
+    <title>Customer order</title>
     <style>
     body {
         font-family: 'DejaVu Sans', sans-serif;
@@ -17,7 +17,7 @@
         <div class="header">
 
             <div>
-                <h1>Delivery receipt</h1>
+                <h1>Customer order</h1>
                 <p>Sunny & Scramble</p>
                 <p>Created at {{ $order->created_at}}</p>
 
@@ -37,7 +37,7 @@
                         <span>Email {{ $order->supplier->user->email_address }}</span>
 
                     </p>
-                    <p>
+                    {{-- <p>
                         <span>Home address:
                               {{ implode(', ', array_filter([
                                     $order->supplier->home_street,
@@ -56,8 +56,7 @@
                                     $order->supplier->office_city,
                                 ])) }}
                         </span>
-                    </p> 
-
+                    </p> --}}
 
 
 
@@ -111,10 +110,6 @@
         </div>
         </div>
         <div class="footer">
-            <p>
-                <span></span>
-                <span>Authorized signatories to accept deliveries & sign invoices</span>
-            </p>
 
         </div>
     </div>

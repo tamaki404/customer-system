@@ -150,7 +150,7 @@ class OrderController extends Controller
 
                 DB::commit();
 
-                return redirect()->route('orders.list')
+                return redirect()->route('purchaseorders.list')
                     ->with('success', 'Purchase order has been created!');
 
             } catch (\Exception $e) {
@@ -380,16 +380,22 @@ class OrderController extends Controller
             }
         }
     
-        public function customerOrderPdf(Orders $order)
+        public function customerOrderPdf($order_id)
         {
-            $pdf = Pdf::loadView('pdf.orders.customer_order', compact('order'));
-            return $pdf->stream('customer-order.pdf');
+            $order = Orders::where('order_id', $order_id)->firstOrFail();
+            $items = $order->items;
+
+            $pdf = Pdf::loadView('pdf.orders.customer_order', compact('order', 'items'));
+            return $pdf->stream("customer-order-{$order_id}.pdf");
         }
 
-        public function deliveryReceiptPdf(Orders $order)
+
+        public function deliveryReceiptPdf($order_id)
         {
-            $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('order'));
-            return $pdf->stream('delivery-receipt.pdf');
+            $order = Orders::where('order_id', $order_id)->firstOrFail();
+            $items = $order->items;            
+            $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('order', 'items'));
+            return $pdf->stream("delivery-receipt-{$order_id}.pdf");
         }
 
         public function salesInvoicePdf(Orders $order)

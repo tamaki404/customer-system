@@ -94,6 +94,12 @@
                                 <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div>
+
+                            
+
+
+                        </div>
                         <input type="hidden" name="status" value="Listed">
                         <input type="hidden" name="added_by" value="{{ auth()->user()->user_id }}">
                     </div>

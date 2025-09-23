@@ -40,12 +40,23 @@
                         </p>
 
                         <div class="modal-option-groups">
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                     <p><span class="req-asterisk">*</span> Upload purchase order file</p>
                                     <input type="file" name="image" id="image" required accept="image/*">
                                     <div id="file-preview" style="margin-top:10px;"></div>
                                     <div id="file-error" style="color:#dc3545; font-size:13px; margin-top:5px;"></div>
+                            </div> --}}
+
+                            <div class="products">
+                                
+                                @foreach ($products as $product)
+
+                                
+                                @endforeach
                             </div>
+
+
+
                             <input type="hidden" name="status" value="Pending">
                             <input type="hidden" name="supplier_id" value="{{ auth()->user()->supplier->supplier_id }}">
                         </div>
@@ -129,7 +140,7 @@
                                 @foreach ($pos as $po)
                                     <tr onclick="window.location.href='{{ route('purchaseorders.purchaseorder', ['po_id' => $po->po_id]) }}'">
                                         <td>{{$loop->iteration}}</td>
-                                        <td>{{$po->created_at}}</td>
+                                        <td>{{ $po->created_at->format('F j, Y') }}</td>
                                         <td>{{$po->po_id}}</td>
                                         <td>{{$po->status}}</td>
                                     </tr>
@@ -155,7 +166,8 @@
                                 @foreach ($pos as $po)
                                     <tr onclick="window.location.href='{{ route('purchaseorders.purchaseorder', ['po_id' => $po->po_id]) }}'">
                                         <td>{{$loop->iteration}}</td>
-                                        <td>{{$po->created_at}}</td>
+                                        <td>{{ $po->created_at->format('F j, Y') }}</td>
+
                                         <td>{{$po->po_id}}</td>
                                         <td>{{$po->status}}</td>
                                     </tr>

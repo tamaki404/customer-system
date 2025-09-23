@@ -11,8 +11,7 @@ class LogsController extends Controller
         public function logsList(Request $request)
         {
             $user = Auth::user();
-            $logs = Logs::all();
-
+            $logs = Logs::orderBy('created_at', 'desc')->get();
 
             return view('logs.list', [
                 'logs' => $logs,

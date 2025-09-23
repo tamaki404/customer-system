@@ -28,6 +28,6 @@ class OrderItem extends Model
     // Relation to ProductSetting through supplier_id
     public function productSetting()
     {
-        return $this->hasOne(ProductSetting::class, 'supplier_id', 'supplier_id');
+        return $this->hasOne(ProductSetting::class, 'set_id', 'set_id');
     }
 }

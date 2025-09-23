@@ -116,6 +116,10 @@
                     <div>
                         <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">Modify account</button>
                     </div>
+                @elseif (Auth()->user()->role === 'Supplier')
+                    <div>
+                        <button data-bs-toggle="modal"  class="btn-transition">Purchase order</button>
+                    </div>
                 @endif
 
 
@@ -135,19 +139,19 @@
                     <div>
                         <button type="button" 
                                 data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                data-url="{{ route('orders.customer.pdf', $order->id) }}">
+                                data-url="{{ route('orders.customer.pdf', $order->order_id) }}">
                             Customer order
                         </button>
 
                         <button type="button" 
                                 data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                data-url="{{ route('orders.delivery.pdf', $order->id) }}">
+                                data-url="{{ route('orders.delivery.pdf', $order->order_id) }}">
                             Delivery receipt
                         </button>
 
                         <button type="button" 
                                 data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                data-url="{{ route('orders.invoice.pdf', $order->id) }}">
+                                data-url="{{ route('orders.invoice.pdf', $order->order_id) }}">
                             Sales invoice
                         </button>
                     </div>
@@ -175,16 +179,7 @@
 
 
                 <p>Status: {{$order->status}}</p>
-                <p style="display: flex; flex-direction: column;">
-                    <span>Orders</span>
-                    @foreach ($items as $item)
-                        <span>{{$item->product->name}}</span>
-                        <span>{{ $item->productSetting?->price ?? 'N/A' }}</span>
-
-                        
-                    @endforeach
-                </p>
-                <button onclick="">View purchase order</button>
+              
             </div>
 
 
@@ -192,7 +187,39 @@
 
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
           
-         
+                            <div class="table-body" style="margin-top: 50px">
+                                <p style="margin: 5px; font-weight: bold;">Order items</p>
+                                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
+                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                                        <thead style="background-color: #fff;">
+                                            <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Unit price</th>
+                                                <th>Quantity</th>
+                                                <th>Total amount</th>                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>                                
+                                             @foreach ($items as $item)
+                                                <tr >
+                                                    <td>{{$loop->iteration}}</td>
+                                                    <td>{{ $item->product->name }}</td>
+                                                    <td>{{ $item->productSetting?->price ?? 'N/A' }}</td>
+                                                    <td>{{ $item->quantity }}</td>
+                                                    <td>{{ $item->total_price }}</td>
+                                      
+                                                  
+                                         
+                                                </tr>
+                                            @endforeach
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                        
+                            </div>
        
         </div>
 
