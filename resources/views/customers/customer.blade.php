@@ -102,6 +102,19 @@
                         <div class="modal-option-groups">
                             <p>Select required products for this supplier:</p>
 
+                            <div style="margin-bottom:10px;">
+                                <p>Browse by Product Hierarchy</p>
+                                <div id="supplier_parent_picker">
+                                    <select id="supplier_parent_root" data-level="0" onchange="onSupplierParentLevelChange(this)">
+                                        <option value="">-- Select product --</option>
+                                    </select>
+                                </div>
+                                <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+                                    <input type="hidden" id="supplier_selected_product_id">
+                                    <button type="button" class="btn btn-secondary" onclick="addSelectedHierarchyProduct()">Add selected</button>
+                                </div>
+                            </div>
+
                             <div class="row mb-2">
                                 <div class="col">
                                     <select id="filter-category" class="form-control">
@@ -413,7 +426,7 @@
                                 <p>This user was declined due to: {{$accStatus->reason_to_decline}}</p>
                                 waiting for supplier to modify their request
                             </div>
-                        @elseif ($accStatus->acc_status === 'Accepted')
+                        @elseif ($accStatus->acc_status === 'Pending')
                             <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
 
                         @elseif ($accStatus->acc_status === 'Accepted')
@@ -782,6 +795,68 @@
     <script src="{{ asset('js/global/modal-hide-input.js') }}"></script>
     <script src="{{ asset('js/global/alert-timeout.js') }}"></script>
     <script src="{{ asset('js/global/modal/add-product-user.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // populate root
+            fetch("{{ route('products.tree') }}")
+                .then(r => r.json())
+                .then(data => populateSupplierLevelOptions(document.getElementById('supplier_parent_root'), data));
+        });
+
+        function populateSupplierLevelOptions(selectEl, nodes) {
+            if (!selectEl) return;
+            [...selectEl.options].slice(1).forEach(o => o.remove());
+            nodes.forEach(n => {
+                const opt = document.createElement('option');
+                opt.value = n.product_id;
+                opt.textContent = n.name;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        function onSupplierParentLevelChange(selectEl) {
+            const level = parseInt(selectEl.getAttribute('data-level') || '0', 10);
+            const wrapper = document.getElementById('supplier_parent_picker');
+            const deeper = [...wrapper.querySelectorAll('select')].filter(s => parseInt(s.getAttribute('data-level')||'0',10) > level);
+            deeper.forEach(s => s.remove());
+
+            const value = selectEl.value;
+            document.getElementById('supplier_selected_product_id').value = value;
+            if (!value) return;
+
+            fetch(`{{ url('/products') }}/${value}/children`)
+                .then(r => r.json())
+                .then(children => {
+                    if (!children.length) return;
+                    const next = document.createElement('select');
+                    next.setAttribute('data-level', String(level+1));
+                    next.innerHTML = '<option value="">-- Select child product --</option>';
+                    next.addEventListener('change', function() { onSupplierParentLevelChange(next); });
+                    wrapper.appendChild(next);
+                    children.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.product_id;
+                        opt.textContent = c.name;
+                        next.appendChild(opt);
+                    });
+                });
+        }
+
+        function addSelectedHierarchyProduct() {
+            const id = document.getElementById('supplier_selected_product_id').value;
+            if (!id) {
+                alert('Please choose a product.');
+                return;
+            }
+            fetch(`{{ url('/products') }}/${id}/info`)
+                .then(r => r.json())
+                .then(p => {
+                    if (!p || !p.product_id) return;
+                    // uses existing helper from add-product-user.js
+                    addProduct(p.product_id, p.name ?? '', p.category ?? '', p.unit ?? '', p.weight ?? '');
+                });
+        }
+    </script>
     <script src="{{ asset('js/global/format-currency.js') }}"></script>
 
 </script>

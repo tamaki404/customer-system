@@ -30,16 +30,45 @@ class ProductController extends Controller
             ]);
         }
 
+        public function productView($product_id, Request $request)
+        {
+            $user = Auth::user();
+            $product = Products::where('product_id', $product_id)->first(); 
 
+            $products = Products::all(); 
+
+            return view('products.product', [
+                'user' => $user,
+                'products' => $products,
+                'product' => $product,
+
+
+            ]);
+        }
+        public function updateParent(Request $request)
+        {
+            $data = $request->validate([
+                'product_id' => 'required|string|exists:products,product_id',
+                'parent_product_id' => 'nullable|string|exists:products,product_id',
+            ]);
+
+            $product = Products::where('product_id', $data['product_id'])->firstOrFail();
+            $product->parent_product_id = $data['parent_product_id'] ?? null;
+            $product->save();
+
+            return back()->with('success', 'Product parent updated.');
+        }
         public function addProduct(Request $request) {
             \Log::info('Request data:', $request->all());
             
             try {
                 $validated = $request->validate([
                     'product_id' => 'required|string|max:50|unique:products,product_id',
+                    'parent_product_id' => 'nullable|string|exists:products,product_id',
                     'name'       => 'required|string|max:255',
                     'srp'        => 'required|numeric|min:0',
-                    'category'   => 'required|string|max:100',
+                    'category'   => 'nullable|string|max:100',
+                    'category_id'=> 'nullable|string|exists:categories,category_id',
                     'unit'       => 'required|string|max:50',
                     'weight'     => 'nullable|string|max:50',
                     'status'     => 'required|string|in:Listed,Unlisted',
@@ -48,6 +77,12 @@ class ProductController extends Controller
                 \Log::info('Validated data:', $validated);
                 
                 $validated['added_by'] = auth()->user()->user_id;
+                if (!empty($validated['category_id']) && empty($validated['category'])) {
+                    $cat = \App\Models\Category::where('category_id', $validated['category_id'])->first();
+                    if ($cat) {
+                        $validated['category'] = $cat->name; // keep legacy text for now
+                    }
+                }
                 
                 \Log::info('Final data for creation:', $validated);
                 
@@ -107,6 +142,18 @@ class ProductController extends Controller
             $products = $query->get();
 
             return view('customers.partials.filter_results', compact('products'));
+        }
+
+        public function info($product_id)
+        {
+            $product = Products::where('product_id', $product_id)->firstOrFail();
+            return response()->json([
+                'product_id' => $product->product_id,
+                'name' => $product->name,
+                'category' => $product->category,
+                'unit' => $product->unit,
+                'weight' => $product->weight,
+            ]);
         }
 
 

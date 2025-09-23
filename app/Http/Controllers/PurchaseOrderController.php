@@ -25,7 +25,6 @@ class PurchaseOrderController extends Controller
 
             if ($user->role === "Supplier") {
                 $supplier = Suppliers::where('user_id', $user->user_id)->first();
-                $products = ProductSetting::where('supplier_id', 'supplier_id');
 
                 if ($supplier) {
                     $pos = PurchaseOrders::where('supplier_id', $supplier->supplier_id)
@@ -43,7 +42,6 @@ class PurchaseOrderController extends Controller
                 'user' => $user,
                 'supplier' => $supplier,
                 'pos' => $pos,
-                'products' => $products
             ]);
         }
 

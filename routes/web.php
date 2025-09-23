@@ -18,6 +18,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\CreditsController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CategoryController;
 
 Route::get('/registration/signin', function () {
     return view('registration.signin');
@@ -61,7 +62,14 @@ Route::get('/dashboard/layout',  [DashboardController::class, 'layoutView'])->mi
 Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
 
     Route::get('/products/list',  [ProductController::class, 'productList'])->name('products.list');
-    Route::get('/products/product/view',  [ProductController::class, 'productView'])->name('products.product');
+    Route::get('/products/product/view/{product_id}',  [ProductController::class, 'productView'])->name('products.product');
+    Route::get('/products/{product_id}/info', [ProductController::class, 'info'])->name('products.info');
+    // Categories API
+    Route::get('/categories/tree', [CategoryController::class, 'tree'])->name('categories.tree');
+    Route::get('/categories/{parentId}/children', [CategoryController::class, 'children'])->name('categories.children');
+    // Product hierarchy API
+    Route::get('/products/tree', [CategoryController::class, 'productTree'])->name('products.tree');
+    Route::get('/products/{parentProductId}/children', [CategoryController::class, 'productChildren'])->name('products.children');
 
     Route::get('/orders/list',  [OrderController::class, 'orderList'])->name('orders.list');
     Route::get('/receipts/list',  [ReceiptController::class, 'receiptList'])->name('receipts.list');
@@ -94,6 +102,9 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/logs/list',  [LogsController::class, 'logsList'])->name('logs.list');
 
     Route::post('/products/add', [ProductController::class, 'addProduct'])->name('product.add');
+    // Category management
+    Route::get('/categories/manage', [CategoryController::class, 'manage'])->name('categories.manage');
+    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
     
     Route::get('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
     Route::post('/products/setting/modify', [ProductSettingController::class, 'modifyProduct'])->name('productset.modify');
@@ -108,6 +119,10 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/orders/{order_id}/delivery-receipt', [OrderController::class, 'deliveryReceiptPdf'])->name('orders.delivery.pdf');
     Route::get('/orders/{order_id}/sales-invoice', [OrderController::class, 'salesInvoicePdf'])->name('orders.invoice.pdf');
 
+    Route::post('/products/add-sub/{product_id}', [ProductController::class, 'addSub'])->name(name: 'add.subproduct');
+
+    // Product parent update
+    Route::post('/products/update-parent', [ProductController::class, 'updateParent'])->name('products.updateParent');
 
 
 

@@ -60,15 +60,27 @@
                                 <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                             @enderror
                         </div>
+
                         <div class="form-group">
+                            <p>Parent Product (optional)</p>
+                            <div id="parent_picker">
+                                <select id="parent_product_root" data-level="0" onchange="onParentLevelChange(this)">
+                                    <option value="">-- No parent (root product) --</option>
+                                </select>
+                            </div>
+                            <input type="hidden" name="parent_product_id" id="final_parent_product_id">
+                        </div>
+                        <div>
                             <p><span class="req-asterisk">*</span> Category</p>
                             <select name="category" id="" required>
                                 <option value="">-- Select category --</option>
-                                <option value="Frozen">Frozen</option>
-                                <option value="Cuts">Cuts</option>
-                                <option value="Eggs">Eggs</option>
-                                <option value="Processed">Processed</option>
-                            </select>
+                                <option value="frozen">Frozen</option>
+                                <option value="processed">Processed</option>
+                                <option value="chicken">Chicken</option>
+                            </select>                            
+                            @error('name')
+                                <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div>
                             <p><span class="req-asterisk">*</span> Unit</p>
@@ -252,5 +264,57 @@
 @endsection
 
 @push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Populate root level
+    fetch("{{ route('products.tree') }}")
+        .then(r => r.json())
+        .then(data => populateLevelOptions(document.getElementById('parent_product_root'), data));
+});
 
+function populateLevelOptions(selectEl, nodes) {
+    // Clear existing non-default options
+    [...selectEl.options].slice(1).forEach(o => o.remove());
+    nodes.forEach(n => {
+        const opt = document.createElement('option');
+        opt.value = n.product_id;
+        opt.textContent = n.name;
+        selectEl.appendChild(opt);
+    });
+}
+
+function onParentLevelChange(selectEl) {
+    const level = parseInt(selectEl.getAttribute('data-level') || '0', 10);
+    const wrapper = document.getElementById('parent_picker');
+
+    // Remove deeper levels
+    const deeper = [...wrapper.querySelectorAll('select')].filter(s => parseInt(s.getAttribute('data-level')||'0',10) > level);
+    deeper.forEach(s => s.remove());
+
+    const value = selectEl.value;
+    // Update hidden final input to current value (may be empty)
+    document.getElementById('final_parent_product_id').value = value;
+
+    if (!value) return;
+
+    // Fetch children and append next level if any
+    fetch(`{{ url('/products') }}/${value}/children`)
+        .then(r => r.json())
+        .then(children => {
+            if (!children.length) return;
+            const next = document.createElement('select');
+            next.setAttribute('data-level', String(level+1));
+            next.innerHTML = '<option value="">-- Select child product --</option>';
+            next.addEventListener('change', function() { onParentLevelChange(next); });
+            wrapper.appendChild(next);
+            // Fill children options
+            children.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.product_id;
+                opt.textContent = c.name;
+                next.appendChild(opt);
+            });
+        });
+}
+</script>
 @endpush
