@@ -83,35 +83,29 @@
                 @elseif (auth()->user()->role === 'Supplier')
 
                     <div class="content-body" style="background: #fff">
-
                         <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                             <thead style="background-color: #fff;">
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
                                     <th>Date</th>
                                     <th>Order ID</th>
-                                    <th>Quantity</th>
+                                    <th>Grand total</th>
                                     <th>Payment status</th>
-                                    <th>Total amount</th>
-                                    <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>                                
+                            <tbody>
                                 @foreach ($orders as $order)
-                                    <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">
-                                        <td>{{$loop->iteration}}</td>
-                                        <td>{{$order->created_at}}</td>
-                                        <td>{{$order->order_id}}</td>
-                                        <td>--<td>
-                                        <td>{{$order->payment_status}}<td>
-                                        <td>{{$order->total_amount}}</td>
-                                        <td>{{$order->status}}</td>
+                                    <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'" style="cursor: pointer;">
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $order->created_at->format('F j, Y') }}</td>
+                                        <td>{{ $order->order_id }}</td>
+                                        <td>₱{{ number_format($order->total_amount, 2) }}</td>
+                                        <td>{{ $order->payment_status }}</td>
 
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                
                     </div>
 
                 @endif

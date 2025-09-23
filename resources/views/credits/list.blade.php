@@ -117,19 +117,43 @@
 
                 </div>
 
-                <div class="content-body" style="padding: 10px; border: none; height: auto;">
+                <div class="content-body" style="padding: 10px; border: none; height: auto; gap: 10px">
 
-                <div>
-                        <p>Total Credit Limit: {{ number_format($credit->credit_limit, 2) }}</p>
-                        <p>Used Credit: {{ number_format($usedCredit, 2) }}</p>
-                        <p>Available Credit: {{ number_format($availableCredit, 2) }}</p>
+                    <div class="credit-summary" style="gap: 5px">
+                        <div class="credit-row" style="display: flex; flex-direction: column;">
+                            <span class="credit-label">Available Credit</span>
+                            <span class="credit-value available" style="font-size: 30px">₱{{ number_format($availableCredit, 2) }}</span>
+                        </div>
+                        <div class="credit-row">
+                            <span class="credit-label" >Credit Limit: </span>
+                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($credit->credit_limit, 2) }}</span>
+                        </div>
+                        <div class="credit-row">
+                            <span class="credit-label">Outstanding Balance: </span>
+                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($usedCredit, 2) }}</span>
+                        </div>
+
+                    </div>
+
+                    <style>
+                        .credit-summary{
+                            display: flex;
+                            flex-direction: column;
+                            height: 100px;
+                        }
+                        .credit-row{
+                            display: flex;
+                            
+                        }
+                    </style>
 
 
-                </div>
+
+                 
 
 
                 
-                            <div class="table-body">
+                            <div class="table-body" style="margin-top: 50px">
                                 <p style="margin: 5px; font-weight: bold;">Transaction history</p>
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
                                     <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">

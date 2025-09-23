@@ -67,7 +67,7 @@ class OrderController extends Controller
                         if ($paid >= $order->total_amount) {
                             $order->payment_status = 'Fully Paid';
                         } elseif ($paid > 0) {
-                            $order->payment_status = 'Partially Paid';
+                            $order->payment_status = 'Partially settled';
                         } else {
                             $order->payment_status = 'Unpaid';
                         }

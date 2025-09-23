@@ -313,7 +313,71 @@
                 </form>
             </div>
             </div>
+            {{-- account control --}}
+            <div class="modal fade" id="account-control" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form class="modal-content" method="POST" action="{{ route('productset.modify') }}" style="width: 600px">
+                    @csrf
+                    <div class="modal-header">
+                        <p class="modal-title">Account control</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
 
+                    <div class="modal-body">
+                        <p class="note-notify">
+                        <span class="material-symbols-outlined"> warning </span>
+                        <span>Any action committed will notify the supplier</span>
+                        </p>
+                    
+                        <input type="hidden" id="edit-modal-set-id" name="set_id">
+                        <input type="hidden" name="supplier_id" id="edit-modal-supplier-id">
+                        <div class="action-btn">
+                            <button class="suspend" style="background-color: #e60b06 ">
+                                Suspend
+                            </button>
+                            <button class="activate" style="background-color: #37e606 ">
+                                Activate
+                            </button>
+                            <button class="edit" style="background-color: gray ">
+                                Edit
+                            </button>
+                        </div>
+
+                        <style>
+                            .action-btn{
+                                display: flex;
+                                flex-direction: row;
+                                 justify-content: space-evenly;
+                            }
+                            .action-btn button{
+                                transition: background-color 0.3s ease, color 0.3s ease;
+                                color: #fff;
+                                border: none;
+                                box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+                                border-radius: 5px;
+                                padding: 10px;
+                                min-width: 150px;
+                                display: flex;
+                                flex-direction: row;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 10px
+
+                            }
+                        </style>
+
+               
+
+                   
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
 
         <div class="content-bg" >
                 <div class="content-header">
@@ -325,6 +389,17 @@
 
                     <div class="title-actions">
                         <p class="heading">Supplier's profile</p>
+
+                        @if (Auth()->user()->role !== 'Staff')
+                            <div>
+                                <button data-bs-toggle="modal" data-bs-target="#account-control" class="btn-transition">
+                                    <span class="material-symbols-outlined"> joystick</span>
+                                    Account controls
+                                </button>
+                            </div>
+                        @endif
+
+
 
                         {{-- @if (optional($supplier->account_status)->acc_status == null && $accStatus->acc_status === "Pending")
                             <div>
@@ -348,7 +423,7 @@
                   
                         @endif
 
-                    </div>
+                    </>
 
 
                 </div>
