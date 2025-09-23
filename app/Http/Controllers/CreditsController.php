@@ -32,7 +32,7 @@ class CreditsController extends Controller
                 $availableCredit = $credit->credit_limit - $usedCredit;
                 $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->get();
                 $oustandingPayments = Orders::where('orders.supplier_id', $supplier->supplier_id)
-                    ->where('orders.payment_status', 'Unpaid')
+                    ->whereIn('orders.payment_status', ['Unpaid', 'Partially Settled'])
                     ->select('orders.*')
                     ->selectSub(function ($query) {
                         $query->from('receipts')
@@ -40,6 +40,12 @@ class CreditsController extends Controller
                             ->whereColumn('receipts.order_id', 'orders.order_id')
                             ->where('receipts.status', 'Verified');
                     }, 'verified_receipts_total')
+                    ->whereRaw('orders.total_amount > (
+                        select COALESCE(SUM(total_amount), 0)
+                        from receipts
+                        where receipts.order_id = orders.order_id
+                        and receipts.status = "Verified"
+                    )') 
                     ->get()
                     ->map(function ($order) {
                         $order->outstanding_balance = $order->total_amount - $order->verified_receipts_total;
@@ -47,6 +53,9 @@ class CreditsController extends Controller
                     });
 
 
+                $unpaidOrders = Orders::where('supplier_id', $supplier->supplier_id)
+                    ->where('payment_status', '!=', 'Fully paid')
+                    ->get();
 
 
                 $orderIds = Orders::where('supplier_id', $supplier->supplier_id)
@@ -67,6 +76,7 @@ class CreditsController extends Controller
                 'availableCredit' => $availableCredit,
                 'receipts' => $receipts,
                 'transactionHistory' => $transactionHistory,
+                'unpaidOrders' => $unpaidOrders
 
             ]);
         }

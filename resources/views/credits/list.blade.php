@@ -46,7 +46,7 @@
                     @endif
                 
                     <div class="modal-header">
-                        <p class="modal-title" id="requestActionLabel">Upload payment form</p>
+                        <p class="modal-title" id="requestActionLabel">Payment receipt form</p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     
@@ -58,7 +58,18 @@
                         </p>
 
                         <div class="modal-option-groups">
-                            <input type="text" name="order_id" placeholder="order id" required>
+                            <div class="form-group">
+                                <p><span class="req-asterisk">*</span>Unpaid orders</p>
+                                 <select name="order_id" id="">
+                                    <option value="">-- Select order --</option> 
+                                    @foreach($unpaidOrders as $unpaidOrder)
+                                        <option value="{{ $unpaidOrder->order_id }}">
+                                            {{ $unpaidOrder->order_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->created_at)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->total_amount, 2) }}
+                                        </option>
+
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="form-group">
                                     <p><span class="req-asterisk">*</span>Upload receipt image</p>
                                     <input type="file" name="image" id="image" required accept="image/*">
@@ -128,6 +139,7 @@
                                                 <th>Date</th>
                                                 <th>Order ID</th>
                                                 <th>Label</th>
+                                                <th>Status</th>
                                                 <th>Amount</th>
                                                 
                                             </tr>
@@ -138,8 +150,13 @@
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ $transaction->action_at }}</td>
                                                     <td>{{ $transaction->order_id }}</td>
-                                                    <td>Order {{ $transaction->status }}</td>
-                                                    <td>-{{ number_format($transaction->order->total_amount, 2) }}</td>
+                                                    <td>{{ $transaction->label }}</td>
+                                                    <td>{{ $transaction->status }}</td>
+                                                    @if ($transaction->label === 'Receipt')
+                                                        <td>+{{ number_format($transaction->order->total_amount, 2) }}</td>
+                                                    @elseif ($transaction->label === 'Order')
+                                                        <td>-{{ number_format($transaction->order->total_amount, 2) }}</td>
+                                                    @endif
                                          
                                                 </tr>
                                             @endforeach

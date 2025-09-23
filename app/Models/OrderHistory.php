@@ -11,12 +11,17 @@ class OrderHistory extends Model
         'action_at',
         'history_id',
         'status',
-        'order_id'
+        'order_id',
+        'label',
+        'amount'
     ];
 
     public function order()
     {
         return $this->belongsTo(Orders::class, 'order_id', 'order_id');
     }
-
+    public function receipt()
+    {
+        return $this->belongsTo(Receipts::class, 'order_id', 'order_id');
+    }
 }

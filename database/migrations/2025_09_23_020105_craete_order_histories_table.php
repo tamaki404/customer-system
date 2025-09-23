@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('action_by'); 
             $table->string('history_id')->unique();  
             $table->string('status');
+            $table->string('label');
+            $table->string('amount');
             $table->timestamp('action_at')->useCurrent(); 
             $table->timestamps();
         });

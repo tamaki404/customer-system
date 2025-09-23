@@ -77,12 +77,21 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <select name="status" id="" required>
+                        <option value="Verified">Verify receipt</option>
+                        <option value="Rejected">Reject receipt</option>
+                    </select>
+                    
+                    <div class="form-group">
+                        <input type="text" name="remarks" maxlength="200">
+                    </div>
       
                 </div>
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Confirm receipt</button>
+                    <button type="submit"  class="btn btn-primary">Confirm receipt</button>
                 </div>
             </form>
         </div>

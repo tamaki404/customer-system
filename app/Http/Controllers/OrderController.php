@@ -355,6 +355,8 @@ class OrderController extends Controller
                     'order_id' => $request->order_id,
                     'action_at' => now(),
                     'history_id' => $history_id,
+                    'label' => 'Order',
+                    'amount' => $order->total_amount,
                     'status' => $request->status,
                 ]);
                 

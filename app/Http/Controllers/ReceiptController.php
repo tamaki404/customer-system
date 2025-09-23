@@ -8,6 +8,8 @@ use App\Models\Receipts;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Suppliers;
+use App\Models\Logs;
+use App\Models\OrderHistory;
 
 
 class ReceiptController extends Controller
@@ -143,6 +145,7 @@ class ReceiptController extends Controller
                 'receipt_id' => 'required|exists:receipts,receipt_id',
                 'order_id'   => 'required|exists:orders,order_id',
                 'amount'     => 'required|numeric|min:1',
+                'status' => 'required|in:Verified,Rejected',
             ]);
 
             try {
@@ -150,10 +153,34 @@ class ReceiptController extends Controller
                 $receipt = Receipts::where('receipt_id', $receipt_id)->firstOrFail();
 
                 $receipt->total_amount = $request->amount;  
-                $receipt->status = "Verified";  
+                $receipt->status = $request->status;  
                 $receipt->save();
             
                 $updatedAmount = $receipt->total_amount;
+
+                $date = date('Ymd');
+                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
+                $user_id = Auth::user()->user_id;
+
+
+                Logs::create([
+                    'user_id' => Auth::user()->user_id,
+                    'action' => 'Commited a receipt action',
+                    'log_id' => $log_id,
+                    'description' => "Staff '{$user_id}' {$request->status} receipt '{$request->receipt_id}'",
+                ]);
+
+                OrderHistory::create([
+                    'action_by' => Auth::user()->user_id,
+                    'order_id' => $request->order_id,
+                    'action_at' => now(),
+                    'history_id' => $history_id,
+                    'label' => 'Receipt',
+                    'amount' => $request->amount,
+                    'status' => $request->status,
+                ]);
+
 
                 DB::commit();
 
