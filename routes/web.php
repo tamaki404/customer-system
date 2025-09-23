@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProductSettingController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\UserController;
+use App\Models\Orders;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ProductSetting;
 use App\Models\Suppliers;
@@ -61,7 +62,7 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     Route::get('/products/list',  [ProductController::class, 'productList'])->name('products.list');
     Route::get('/products/product/view',  [ProductController::class, 'productView'])->name('products.product');
 
-    Route::get('/orders/list',  [OrderController::class, 'orderList'])->name('order.list');
+    Route::get('/orders/list',  [OrderController::class, 'orderList'])->name('orders.list');
     Route::get('/receipts/list',  [ReceiptController::class, 'receiptList'])->name('receipts.list');
 
 
@@ -72,7 +73,7 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
 
     // supplier only
     Route::post('/orders/order/create',  [OrderController::class, 'createOrder'])->name('order.create');
-    Route::get('/purchase-orders/list',  [PurchaseOrderController::class, 'purchaseOrderList'])->name('purchaseorder.list');
+    Route::get('/purchase-orders/list',  [PurchaseOrderController::class, 'purchaseOrderList'])->name('purchaseorders.list');
     Route::post('/receipts/create',  [ReceiptController::class, 'receiptUpload'])->name('receipt.create');
     Route::get('/purchase-orders/list/view/{po_id}',  [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchaseorders.purchaseorder');
     Route::get('/orders/list/view/{order_id}',  [OrderController::class, 'orderView'])->name('orders.order');
@@ -97,7 +98,15 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
     Route::post('/purchase-orders/purchase/view/place', [OrderController::class, 'placeOrderItems'])->name('purchaseorders.place');
 
-Route::post('/receipts/action/{receipt_id}', [ReceiptController::class, 'receiptAction'])->name('receipts.action');
+    Route::post('/receipts/action/{receipt_id}', [ReceiptController::class, 'receiptAction'])->name('receipts.action');
+    Route::post('/order/action', [OrderController::class, 'orderAction'])->name('order.action');
+
+    // order pdf views
+    Route::get('/orders/{order}/customer-order', [OrderController::class, 'customerOrderPdf'])->name('orders.customer.pdf');
+    Route::get('/orders/{order}/delivery-receipt', [OrderController::class, 'deliveryReceiptPdf'])->name('orders.delivery.pdf');
+    Route::get('/orders/{order}/sales-invoice', [OrderController::class, 'salesInvoicePdf'])->name('orders.invoice.pdf');
+
+
 
 
 });

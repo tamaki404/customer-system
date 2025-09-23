@@ -115,49 +115,83 @@
 
 
            </div>
-           <div>
-                <strong>Transactions history</strong>
-                <div>
-                    <div>
-                        s
+
+
+           
+                    <div class="table-body">
+                        <p style="margin: 5px; font-weight: bold;">Transaction history</p>
+                        <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
+                            <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                                <thead style="background-color: #fff;">
+                                    <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                        <th>#</th>
+                                        <th>Date</th>
+                                        <th>Order ID</th>
+                                        <th>Description</th>
+                                        <th>Running Balance</th>
+                                        <th>Status</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>                                
+                                    @foreach ($oustandingPayments as $oustandingPayment)
+                                        <tr>
+                                            <td>{{$loop->iteration}}</td>
+                                            <td>{{ $oustandingPayment->order_date }}</td>
+                                            <td>{{ $oustandingPayment->order_id }}</td>
+                                            <td>
+                                                @foreach ($oustandingPayment->items as $item)
+                                                    x{{$item->quantity}} {{ $item->product->name }},
+                                                @endforeach
+                                            </td>
+                                            <td><strong>{{ number_format($oustandingPayment->total_amount, 2) }}</strong></td>
+                                            <td>{{ $oustandingPayment->status }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                
                     </div>
-                </div>
 
-           </div>
-           <div>
-                <strong>Outstanding Payments</strong>
-               
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Order ID</th>
-                                <th>Description</th>
-                                <th>Running Balance</th>
-                                <th>Status</th>
+                    <div class="table-body" style="margin-top: 10px">
+                        <p style="margin: 5px; font-weight: bold;">Outstanding Payments</p>
+                        <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
+                            <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                                <thead style="background-color: #fff;">
+                                    <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                        <th>#</th>
+                                        <th>Date</th>
+                                        <th>Order ID</th>
+                                        <th>Description</th>
+                                        <th>Running Balance</th>
+                                        <th>Status</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>                                
+                                    @foreach ($oustandingPayments as $oustandingPayment)
+                                        <tr>
+                                            <td>{{$loop->iteration}}</td>
+                                            <td>{{ $oustandingPayment->order_date }}</td>
+                                            <td>{{ $oustandingPayment->order_id }}</td>
+                                            <td>
+                                                @foreach ($oustandingPayment->items as $item)
+                                                    x{{$item->quantity}} {{ $item->product->name }},
+                                                @endforeach
+                                            </td>
+                                            <td><strong>{{ number_format($oustandingPayment->total_amount, 2) }}</strong></td>
+                                            <td>{{ $oustandingPayment->status }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            @foreach ($oustandingPayments as $oustandingPayment)
-                                <tr>
-                                    <td>{{ $oustandingPayment->order_date }}</td>
-                                    <td>{{ $oustandingPayment->order_id }}</td>
-                                    <td>
-                                        @foreach ($oustandingPayment->items as $item)
-                                            x{{$item->quantity}} {{ $item->product->name }},
-                                        @endforeach
-                                    </td>
-                                    <td><strong>{{ number_format($oustandingPayment->total_amount, 2) }}</strong></td>
-                                    <td>{{ $oustandingPayment->status }}</td>
-                                </tr>
-                            @endforeach
+                
+                    </div>
 
-
-                        </tbody>
-                    </table>
-           </div>
 
            
          

@@ -20,5 +20,14 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }
+    public function order()
+    {
+        return $this->belongsTo(Orders::class, 'order_id', 'order_id');
+    }
 
+    // Relation to ProductSetting through supplier_id
+    public function productSetting()
+    {
+        return $this->hasOne(ProductSetting::class, 'supplier_id', 'supplier_id');
+    }
 }

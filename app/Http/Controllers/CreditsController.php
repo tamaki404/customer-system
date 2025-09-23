@@ -24,7 +24,7 @@ class CreditsController extends Controller
             elseif ($user->role === "Supplier") {
                 $credit = Credits::where('user_id', $user->user_id)->first();
                 $usedCredit = Orders::where('supplier_id', $supplier->supplier_id)
-                    ->where('status', 'pending')
+                    ->where('status', 'Accepted')
                     ->sum('total_amount');
 
                 $availableCredit = $credit->credit_limit - $usedCredit;

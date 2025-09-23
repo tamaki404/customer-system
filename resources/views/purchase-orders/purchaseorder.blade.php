@@ -41,11 +41,14 @@
                 <!-- Hidden field for PO ID -->
                 <input type="hidden" name="po_id" value="{{ $po->po_id }}">
                 <input type="hidden" name="supplier_id" value="{{ $po->supplier_id }}">
+
+
+                    <div class="modal-header">
+                        <p class="modal-title" id="requestActionLabel">Place purchase order</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
                 
-                <div class="modal-header">
-                    <p class="modal-title" id="requestActionLabel">Place purchase order</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+
                 
                 <div class="modal-body" style="width: auto">
                     <p class="note-notify">
@@ -109,11 +112,7 @@
                         </table>
                     </div>
                     
-                    <!-- Optional: File upload for order documentation -->
-                    <div class="mt-3">
-                        <label for="order_document" class="form-label">Order Document (Optional)</label>
-                        <input type="file" class="form-control" name="order_document" accept=".jpg,.jpeg,.png,.webp,.pdf">
-                    </div>
+                 
                 </div>
                 
                 <div class="modal-footer">
@@ -144,16 +143,17 @@
         <div class="content-header">
             <div class="contents-display">
                 <p>
-                    <a href="{{ route('purchaseorder.list') }}">< Purchase orders list</a>
+                    <a href="{{ route('purchaseorders.list') }}">< Purchase orders list</a>
                 </p>
             </div>
 
             <div class="title-actions">
                 <p class="heading">Purchase order</p>
-
-                <div>
-                    <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">Place this order</button>
-                </div>
+                @if ( auth()->user()->role !== 'Supplier')
+                    <div>
+                        <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">Place this order</button>
+                    </div>
+                @endif
             </div>
 
 

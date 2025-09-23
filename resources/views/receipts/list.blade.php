@@ -11,7 +11,7 @@
         <div class="content-bg">
                 <div class="content-header">
                     <div class="contents-display">
-                        <form action="{{ route('purchaseorder.list') }}" id="text-search" class="search-text-con" method="GET">
+                        <form action="{{ route('purchaseorders.list') }}" id="text-search" class="search-text-con" method="GET">
                             <input type="text" name="search" class="search-bar"
                                 placeholder="Search by SUP ID. , Supplier, Representative and status"
                                 value="{{ request('search') }}"
@@ -21,7 +21,7 @@
                         </form>
 
 
-                        <form action="{{ route('purchaseorder.list') }}" class="date-search" id="from-to-date" method="GET">
+                        <form action="{{ route('purchaseorders.list') }}" class="date-search" id="from-to-date" method="GET">
                             <p>Date range</p>
                             <div class="from-to-picker">
                                 <div class="month-div">

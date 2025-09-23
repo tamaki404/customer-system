@@ -109,13 +109,13 @@
                             <p>Receipts</p>
                             <div class="nav-indicator"></div>
                         </a>--}}
-                        <a class="nav-item{{ $currentRoute == 'purchaseorder.list' ? ' active' : '' }}" href="{{ route('purchaseorder.list') }}">
+                        <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
                             <span class="material-symbols-outlined">shopping_bag</span>
                             <p>Purchase orders</p>
                             <div class="nav-indicator"></div>
                         </a>
 
-                        <a class="nav-item{{ $currentRoute == 'order.list' ? ' active' : '' }}" href="{{ route('order.list') }}">
+                        <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
                             <span class="material-symbols-outlined">receipt_long</span>
                             <p>Orders</p>
                             <div class="nav-indicator"></div>
@@ -204,13 +204,13 @@
                             <p>Receipts</p>
                             <div class="nav-indicator"></div>
                         </a>--}}
-                        <a class="nav-item{{ $currentRoute == 'purchaseorder.list' ? ' active' : '' }}" href="{{ route('purchaseorder.list') }}">
+                        <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
                             <span class="material-symbols-outlined">shopping_bag</span>
                             <p>Purchase orders</p>
                             <div class="nav-indicator"></div>
                         </a>
 
-                        <a class="nav-item{{ $currentRoute == 'order.list' ? ' active' : '' }}" href="{{ route('order.list') }}">
+                        <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
                             <span class="material-symbols-outlined">receipt_long</span>
                             <p>Orders</p>
                             <div class="nav-indicator"></div>

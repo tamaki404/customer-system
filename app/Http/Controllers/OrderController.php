@@ -11,6 +11,8 @@ use App\Models\Orders;
 use App\Models\PurchaseOrders;
 use App\Models\Suppliers;
 use App\Models\OrderItem;
+use App\Models\Logs;
+use PDF;
 
 class OrderController extends Controller
 {   
@@ -164,18 +166,220 @@ class OrderController extends Controller
             }
             }
 
-
-
         public function orderView($order_id, Request $request)
         {
             $user = Auth::user();
-            $order = Orders::where('order_id', $order_id)->first(); 
+         
+            $order = Orders::with(['items.productSetting'])->where('order_id', $order_id)->first();
+            $items = $order->items;
 
             return view('orders.order', [
                 'user' => $user,
                 'order' => $order,
+                'items' => $items,
 
             ]);
         }
+
+        public function placeOrderItems(Request $request)
+        {
+            \Log::info('Placing purchase order items - Request Data:', $request->all());
+            
+            try {
+                // Validate the request
+                $request->validate([
+                    'po_id' => 'required|exists:purchase_orders,po_id',
+                    'supplier_id' => 'required|exists:suppliers,supplier_id',
+                    'selected_products' => 'required|array|min:1',
+                    'selected_products.*' => 'required|exists:product_settings,set_id', 
+                    'quantities' => 'required|array',
+                    'quantities.*' => 'required|numeric|min:1',
+                    'product_ids' => 'required|array',
+                    'unit_prices' => 'required|array',
+                ]);
+                
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                \Log::error('Purchase order submission failed:', $e->errors());
+                return redirect()->back()
+                    ->withErrors($e->validator)
+                    ->withInput();
+            }
+            
+            try {
+                DB::beginTransaction();
+                
+                // Get the purchase order
+                $purchaseOrder = PurchaseOrders::where('po_id', $request->po_id)->firstOrFail();
+                
+                // Create the main order first
+                $date = date('Ymd');
+                $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
+                
+                $order = Orders::create([
+                    'order_id' => $order_id,
+                    'po_id' => $request->po_id,
+                    'supplier_id' => $request->supplier_id,
+                    'order_date' => now(),
+                    'status' => 'Pending', 
+                    'total_amount' => 0, 
+                ]);
+                
+                $totalOrderAmount = 0;
+                $orderItemsCreated = [];
+                
+                foreach (array_unique($request->selected_products) as $setId) {
+                    if (!isset($request->quantities[$setId]) || 
+                        !isset($request->product_ids[$setId]) || 
+                        !isset($request->unit_prices[$setId])) {
+                        continue;
+                    }
+
+                    $quantity = (int) $request->quantities[$setId];
+                    $unitPrice = (float) $request->unit_prices[$setId];
+                    $productId = $request->product_ids[$setId];
+                    $totalPrice = $quantity * $unitPrice;
+
+                    $orderItemId = 'ORDR_ITEM-' . $date . '-' . $this->randomBase36String(5);
+
+                    OrderItem::create([
+                        'order_item_id' => $orderItemId,
+                        'order_id' => $order_id,
+                        'product_id' => $productId,
+                        'set_id' => $setId,
+                        'quantity' => $quantity,
+                        'unit_price' => $unitPrice,
+                        'total_price' => $totalPrice,
+                        'status' => 'Pending',
+                    ]);
+
+                    $totalOrderAmount += $totalPrice;
+                }
+
+                
+                $order->update(['total_amount' => $totalOrderAmount]);
+                
+                // Handle file upload if present
+                if ($request->hasFile('order_document')) {
+                    $file = $request->file('order_document');
+                    $filename = 'order_doc_' . $order_id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                    $filePath = $file->storeAs('order_documents', $filename, 'public');
+                    
+                    // Update order with document path
+                    $order->update(['document_path' => $filePath]);
+                }
+                
+                $purchaseOrder->update([
+                    'status' => 'Placed',
+                    'placed_at' => now(),
+                ]);
+            
+
+                \Log::info('Processing order items:', [
+                    'selected_products' => $request->selected_products,
+                    'quantities' => $request->quantities,
+                    'product_ids' => $request->product_ids,
+                    'unit_prices' => $request->unit_prices,
+                ]);
+
+                
+                DB::commit();
+                
+                return redirect()->back()->with('success', 
+                    'Purchase order has been placed successfully! Order ID: ' . $order_id . 
+                    '. Total items: ' . count($orderItemsCreated));
+                    
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Purchase order placement failed:', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'request_data' => $request->all(),
+                ]);
+                
+                return redirect()->back()
+                    ->with('error', 'Purchase order placement failed: ' . $e->getMessage() . 
+                        '. Please check the logs for more details.')
+                    ->withInput();
+            }
+        }
+    
+        public function orderAction(Request $request)
+        {
+            \Log::info('Placing purchase order items - Request Data:', $request->all());
+            
+            try {
+                $validated = $request->validate([
+                    'order_id' => 'required|exists:orders,order_id',
+                    'status'   => 'required|in:Accepted,Rejected',
+                ]);
+                
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                \Log::error('Purchase order submission failed:', $e->errors());
+                return redirect()->back()
+                    ->withErrors($e->validator)
+                    ->withInput();
+            }
+            
+            try {
+                DB::beginTransaction();
+
+                $date = date('Ymd');
+                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+
+                $order = Orders::where('order_id', $validated['order_id'])->firstOrFail();
+                $order->update([
+                    'status' => $validated['status'],
+                    'updated_at' => now(),
+                ]);
+
+                $user_id = Auth::user()->user_id;
+
+
+                Logs::create([
+                    'user_id' => Auth::user()->user_id,
+                    'action' => 'Commited on an order',
+                    'log_id' => $log_id,
+                    'description' => "Staff '{$user_id}' {$request->status} order '{$request->order_id}'",
+                ]);
+            
+                
+                DB::commit();
+                
+                return back()->with('success', 'Order status updated successfully.');
+
+                    
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Order update failed:', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'request_data' => $request->all(),
+                ]);
+                
+                return redirect()->back()
+                    ->with('error', 'Order update failed: ' . $e->getMessage() . 
+                        '. Please check the logs for more details.')
+                    ->withInput();
+            }
+        }
+    
+    public function customerOrderPdf(Orders $order)
+    {
+        $pdf = PDF::loadView('pdf.customer_order', compact('order'));
+        return $pdf->stream('customer-order.pdf');
+    }
+
+    public function deliveryReceiptPdf(Orders $order)
+    {
+        $pdf = PDF::loadView('pdf.delivery_receipt', compact('order'));
+        return $pdf->stream('delivery-receipt.pdf');
+    }
+
+    public function salesInvoicePdf(Orders $order)
+    {
+        $pdf = PDF::loadView('pdf.sales_invoice', compact('order'));
+        return $pdf->stream('sales-invoice.pdf');
+    }
+
 
 }

@@ -18,4 +18,8 @@ class ProductSetting extends Model
     {
         return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }
+        public function supplier()
+    {
+        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+    }
 }
