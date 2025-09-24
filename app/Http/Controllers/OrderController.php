@@ -398,10 +398,12 @@ class OrderController extends Controller
             return $pdf->stream("delivery-receipt-{$order_id}.pdf");
         }
 
-        public function salesInvoicePdf(Orders $order)
+        public function salesInvoicePdf($order_id)
         {
-            $pdf = PDF::loadView('pdf.orders.sales_invoice', compact('order'));
-            return $pdf->stream('sales-invoice.pdf');
+            $order = Orders::where('order_id', $order_id)->firstOrFail();
+            $items = $order->items;
+            $pdf = PDF::loadView('pdf.orders.sales_invoice', compact('order', 'items'));
+            return $pdf->stream("sales-invoice-{$order_id}.pdf");
         }
 
 

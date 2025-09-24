@@ -28,17 +28,21 @@
                     }
                 </style>
                 <div class="details-box" style="display: flex; flex-direction: column; ">
+                    <p><strong>Delivery Information:</strong></p>
+                    <p>Delivery Receipt #: {{ $order->order_id }}</p>
                     <p>Order ID: {{ $order->order_id }}</p>
                     <p>PO ID: {{ $order->po_id }}</p>
-                    <p>Supplier: {{ $order->supplier->company_name }}</p>
+                    <p>Delivery Date: {{ $order->created_at->format('F j, Y') }}</p>
+                    
+                    <p style="margin-top: 15px;"><strong>Deliver To:</strong></p>
+                    <p>{{ $order->supplier->company_name }}</p>
                     <p>
                         <span>Mobile# {{ $order->supplier->mobile_no }}</span>
                         <span>Telephone# {{ $order->supplier->telephone_no }}</span>
                         <span>Email {{ $order->supplier->user->email_address }}</span>
-
                     </p>
                     <p>
-                        <span>Home address:
+                        <span><strong>Delivery Address:</strong>
                               {{ implode(', ', array_filter([
                                     $order->supplier->home_street,
                                     $order->supplier->home_subdivision,
@@ -48,7 +52,7 @@
                         </span>
                     </p>
                     <p>
-                        <span>Office address:
+                        <span><strong>Billing Address:</strong>
                               {{ implode(', ', array_filter([
                                     $order->supplier->office_street,
                                     $order->supplier->office_subdivision,
@@ -56,11 +60,7 @@
                                     $order->supplier->office_city,
                                 ])) }}
                         </span>
-                    </p> 
-
-
-
-
+                    </p>
                 </div>
                
 
@@ -72,33 +72,35 @@
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
           
             <div class="table-body" style="margin-top: 50px">
-                <p style="margin: 5px; font-weight: bold;">Order items</p>
+                <p style="margin: 5px; font-weight: bold;">Delivered Items</p>
                 <div class="table-content" style="background: #fff; border-radius: 10px; overflow: hidden;">
                     <table style="width:100%; border-collapse:collapse; border: 1px solid #fff; text-align: center;">
                         <thead style="background-color: #fff;">
                             <tr style="background:#fff; height: 30px; border-bottom: 1px solid #ccc;">
                                 <th style="vertical-align: middle;">#</th>
-                                <th style="vertical-align: middle;">Name</th>
-                                <th style="vertical-align: middle;">Unit price</th>
-                                <th style="vertical-align: middle;">Quantity</th>
-                                <th style="vertical-align: middle;">Total amount</th>                                                
+                                <th style="vertical-align: middle;">Product ID</th>
+                                <th style="vertical-align: middle;">Description</th>
+                                <th style="vertical-align: middle;">Unit Price</th>
+                                <th style="vertical-align: middle;">Quantity Delivered</th>
+                                <th style="vertical-align: middle;">Total Amount</th>                                                
                             </tr>
                         </thead>
                         <tbody>                                
                             @foreach ($items as $item)
                                 <tr>
                                     <td style="vertical-align: middle;">{{$loop->iteration}}</td>
+                                    <td style="vertical-align: middle;">{{ $item->set_id }}</td>
                                     <td style="vertical-align: middle;">{{ $item->product->name }}</td>
-                                    <td style="vertical-align: middle;">{{ $item->productSetting?->price ?? 'N/A' }}</td>
+                                    <td style="vertical-align: middle;">₱{{ number_format($item->unit_price, 2) }}</td>
                                     <td style="vertical-align: middle;">{{ $item->quantity }}</td>
-                                    <td style="vertical-align: middle;">&#8369;{{ number_format($item->total_price, 2) }}</td>
+                                    <td style="vertical-align: middle;">₱{{ number_format($item->total_price, 2) }}</td>
                                 </tr>
                             @endforeach
 
                             <tr style="margin-top: 20px">
-                                <td colspan="4" style="text-align: right; font-weight: bold; vertical-align: middle;">Grand Total:</td>
+                                <td colspan="5" style="text-align: right; font-weight: bold; vertical-align: middle;">Grand Total:</td>
                                 <td style="font-weight: bold; vertical-align: middle;">
-                                    &#8369;{{ number_format($items->sum('total_price'), 2) }}
+                                    ₱{{ number_format($items->sum('total_price'), 2) }}
                                 </td>
                             </tr>
                         </tbody>
@@ -110,12 +112,24 @@
        
         </div>
         </div>
-        <div class="footer">
-            <p>
-                <span></span>
-                <span>Authorized signatories to accept deliveries & sign invoices</span>
-            </p>
-
+        <div class="footer" style="margin-top: 50px;">
+            <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+                <div style="width: 45%;">
+                    <p><strong>Delivery Confirmation:</strong></p>
+                    <p>I acknowledge receipt of the above items in good condition.</p>
+                    <p>Date: _________________</p>
+                    <p>Signature: _________________</p>
+                </div>
+                <div style="width: 45%; text-align: right;">
+                    <p><strong>Delivery Personnel:</strong></p>
+                    <p>Name: _________________</p>
+                    <p>Signature: _________________</p>
+                    <p>Date: _________________</p>
+                </div>
+            </div>
+            <div style="margin-top: 20px; text-align: center; font-size: 12px;">
+                <p>Authorized signatories to accept deliveries & sign invoices</p>
+            </div>
         </div>
     </div>
 

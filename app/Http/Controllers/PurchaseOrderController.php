@@ -11,7 +11,7 @@ use App\Models\PurchaseOrderItem;
 use App\Models\Suppliers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Products;
-use App\Models\Orderitem;
+use App\Models\OrderItem;
 use App\Models\ProductSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -219,6 +219,7 @@ class PurchaseOrderController extends Controller
 
                 if ($request->action === 'Accept') {
                     // Update quantities and calculate new total
+                    $acceptedItems = [];
                     foreach ($request->staff_quantities as $poItemId => $quantity) {
                         $item = PurchaseOrderItem::where('po_item_id', $poItemId)->first();
                         if ($item) {
@@ -230,6 +231,7 @@ class PurchaseOrderController extends Controller
                             
                             if ($quantity > 0) {
                                 $totalAmount += $item->total_price;
+                                $acceptedItems[] = $item;
                             }
                         }
                     }
@@ -241,6 +243,9 @@ class PurchaseOrderController extends Controller
                         'confirmed_at' => now(),
                         'notes' => $request->notes,
                     ]);
+
+                    // Create an order from the accepted purchase order
+                    $orderId = $this->createOrderFromPurchaseOrder($purchaseOrder, $acceptedItems);
                 } else {
                     // Reject the entire order
                     PurchaseOrderItem::where('po_id', $po_id)->update(['status' => 'Rejected']);
@@ -255,8 +260,11 @@ class PurchaseOrderController extends Controller
 
                 DB::commit();
 
-                $action = $request->action === 'Accept' ? 'accepted' : 'rejected';
-                return redirect()->back()->with('success', "Purchase order has been {$action} successfully!");
+                if ($request->action === 'Accept') {
+                    return redirect()->back()->with('success', "Purchase order has been accepted successfully! Order ID: {$orderId}");
+                } else {
+                    return redirect()->back()->with('success', "Purchase order has been rejected successfully!");
+                }
 
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -279,6 +287,57 @@ class PurchaseOrderController extends Controller
 
             $pdf = Pdf::loadView('pdf.purchase-orders.purchase_order', compact('purchaseOrder'));
             return $pdf->stream("purchase-order-{$po_id}.pdf");
+        }
+
+        private function createOrderFromPurchaseOrder($purchaseOrder, $acceptedItems)
+        {
+            try {
+                $date = date('Ymd');
+                $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
+                
+                // Create the main order
+                $order = Orders::create([
+                    'order_id' => $order_id,
+                    'po_id' => $purchaseOrder->po_id,
+                    'supplier_id' => $purchaseOrder->supplier_id,
+                    'order_date' => now(),
+                    'status' => 'Accepted', 
+                    'total_amount' => $purchaseOrder->total_amount, 
+                ]);
+                
+                // Create order items from accepted purchase order items
+                foreach ($acceptedItems as $poItem) {
+                    $orderItemId = 'ORDR_ITEM-' . $date . '-' . $this->randomBase36String(5);
+
+                    OrderItem::create([
+                        'order_item_id' => $orderItemId,
+                        'order_id' => $order_id,
+                        'product_id' => $poItem->product_id,
+                        'set_id' => $poItem->set_id,
+                        'quantity' => $poItem->staff_quantity,
+                        'unit_price' => $poItem->unit_price,
+                        'total_price' => $poItem->total_price,
+                        'status' => 'Accepted',
+                    ]);
+                }
+
+                \Log::info('Order created from purchase order', [
+                    'po_id' => $purchaseOrder->po_id,
+                    'order_id' => $order_id,
+                    'items_count' => count($acceptedItems),
+                    'total_amount' => $purchaseOrder->total_amount
+                ]);
+
+                return $order_id;
+
+            } catch (\Exception $e) {
+                \Log::error('Failed to create order from purchase order', [
+                    'po_id' => $purchaseOrder->po_id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw $e;
+            }
         }
 
         private function randomBase36String($length)

@@ -10,39 +10,39 @@
     @if (auth()->user()->role !== 'Supplier' && $po->status === 'Pending')
         <div class="modal fade" id="confirm-action" tabindex="-1" aria-labelledby="confirmActionLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
-                <form class="modal-content" method="POST" action="{{ route('purchaseorders.confirm', $po->po_id) }}">
-                    @csrf
-                    
-                    @if ($errors->any())
-                        <div class="alert alert-danger" style="margin: 10px;">
-                            <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
-                            <ul style="margin: 0; padding-left: 20px;">
-                                @foreach ($errors->all() as $error)
-                                    <li style="font-size: 14px;">{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                    
-                    @if (session('success'))
-                        <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
-                    @endif
+                <form class="modal-content" style="width: 800px" method="POST" action="{{ route('purchaseorders.confirm', $po->po_id) }}">
+                @csrf
+                
+                @if ($errors->any())
+                    <div class="alert alert-danger" style="margin: 10px;">
+                        <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            @foreach ($errors->all() as $error)
+                                <li style="font-size: 14px;">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                
+                @if (session('success'))
+                    <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
+                @endif
 
-                    @if (session('error'))
-                        <div class="alert alert-danger" style="margin: 10px;">
-                            <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
-                            <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
-                        </div>
-                    @endif
+                @if (session('error'))
+                    <div class="alert alert-danger" style="margin: 10px;">
+                        <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
+                        <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
+                    </div>
+                @endif
 
                     <div class="modal-header">
                         <p class="modal-title" id="confirmActionLabel">Confirm Purchase Order</p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-
+                
                     <div class="modal-body">
-                        <p class="note-notify">
-                            <span class="material-symbols-outlined"> info </span>
+                    <p class="note-notify">
+                        <span class="material-symbols-outlined"> info </span>
                             <span>Review and modify quantities as needed. You can accept or reject this purchase order.</span>
                         </p>
 
@@ -52,25 +52,25 @@
                         </div>
 
                         <div style="overflow-x: auto;">
-                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                <thead style="background-color: #f9f9f9;">
-                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                        <td>#</td>
-                                        <td>Product ID</td>
+                        <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                            <thead style="background-color: #f9f9f9;">
+                                <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                    <td>#</td>
+                                    <td>Product ID</td>
                                         <td>Product Name</td>
-                                        <td>Category</td>
-                                        <td>Unit</td>
-                                        <td>Weight</td>
+                                    <td>Category</td>
+                                    <td>Unit</td>
+                                    <td>Weight</td>
                                         <td>Unit Price</td>
                                         <td>Supplier Qty</td>
                                         <td>Staff Qty</td>
-                                        <td>Total</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                                    <td>Total</td>
+                                </tr>
+                            </thead>
+                            <tbody>
                                     @foreach($po->items as $item)
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $loop->iteration }}</td>
                                         <td>{{ $item->set_id }}</td>
                                         <td>{{ $item->product->name }}</td>
                                         <td>{{ $item->product->category }}</td>
@@ -78,25 +78,25 @@
                                         <td>{{ $item->product->weight }}</td>
                                         <td>₱{{ number_format($item->unit_price, 2) }}</td>
                                         <td>{{ $item->supplier_quantity }}</td>
-                                        <td>
-                                            <input type="number" 
+                                    <td>
+                                        <input type="number" 
                                                 name="staff_quantities[{{ $item->po_item_id }}]" 
                                                 value="{{ $item->supplier_quantity }}" 
                                                 min="0"
                                                 class="form-control staff-quantity-input"
                                                 onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})">
-                                        </td>
-                                        <td>
+                                    </td>
+                                    <td>
                                             <span id="staff_total_{{ $item->po_item_id }}" class="staff-row-total">
                                                 ₱{{ number_format($item->unit_price * $item->supplier_quantity, 2) }}
                                             </span>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    
                         <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
@@ -107,16 +107,16 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" name="action" value="Reject" class="btn btn-danger">Reject Order</button>
                         <button type="submit" name="action" value="Accept" class="btn btn-success">Accept Order</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
+    </div>
     @endif
 
     @if ($errors->any())
@@ -151,13 +151,46 @@
                     @endif
                     
                     @if ($po->status !== 'Pending' && auth()->user()->role !== 'Supplier')
-                        <button type="button" 
-                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                data-url="{{ route('purchaseorders.pdf', $po->po_id) }}"
-                                class="btn-transition">
-                            Print Purchase Order
-                        </button>
-                    @endif
+                        <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
+                            <p style="margin: 0"><span>Print</span></p>
+                    <div>
+                                <button type="button" 
+                                        data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                        data-url="{{ route('purchaseorders.pdf', $po->po_id) }}"
+                                        class="btn-transition">
+                                    Purchase Order
+                                </button>
+                                
+                                @if($po->status === 'Accepted')
+                                    @php
+                                        $relatedOrder = \App\Models\Orders::where('po_id', $po->po_id)->first();
+                                    @endphp
+                                    @if($relatedOrder)
+                                        <button type="button" 
+                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                                data-url="{{ route('orders.customer.pdf', $relatedOrder->order_id) }}"
+                                                class="btn-transition">
+                                            Customer Order
+                                        </button>
+
+                                        <button type="button" 
+                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                                data-url="{{ route('orders.delivery.pdf', $relatedOrder->order_id) }}"
+                                                class="btn-transition">
+                                            Delivery Receipt
+                                        </button>
+
+                                        <button type="button" 
+                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                                data-url="{{ route('orders.invoice.pdf', $relatedOrder->order_id) }}"
+                                                class="btn-transition">
+                                            Sales Invoice
+                                        </button>
+                                    @endif
+                                @endif
+                            </div>
+                    </div>
+                @endif
                 </div>
             </div>
         </div>
@@ -191,6 +224,18 @@
                         @endif
                         @if($po->notes)
                             <p><strong>Notes:</strong> {{ $po->notes }}</p>
+                        @endif
+                        @if($po->status === 'Accepted')
+                            @php
+                                $relatedOrder = \App\Models\Orders::where('po_id', $po->po_id)->first();
+                    @endphp
+                            @if($relatedOrder)
+                                <p><strong>Related Order:</strong> 
+                                    <a href="{{ route('orders.order', $relatedOrder->order_id) }}" style="color: #007bff; text-decoration: none;">
+                                        {{ $relatedOrder->order_id }}
+                                    </a>
+                                </p>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -245,7 +290,7 @@
                 </div>
             </div>
         </div>
-   </div>
+        </div>
 
    <!-- PDF Modal -->
    <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">

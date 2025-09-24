@@ -16,6 +16,10 @@ class PurchaseOrders extends Model
         'placed_at',
         'confirmed_at',
     ];
+    protected $casts = [
+    'confirmed_at' => 'datetime',
+];
+
 
     public function supplier()
     {
