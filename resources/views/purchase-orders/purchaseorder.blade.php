@@ -1,127 +1,123 @@
 
 @extends('layouts.main')
 
-
 @push('styles')
 @endpush
 
-
-
 @section('content')
 
+    {{-- Staff confirmation modal --}}
+    @if (auth()->user()->role !== 'Supplier' && $po->status === 'Pending')
+        <div class="modal fade" id="confirm-action" tabindex="-1" aria-labelledby="confirmActionLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <form class="modal-content" method="POST" action="{{ route('purchaseorders.confirm', $po->po_id) }}">
+                    @csrf
+                    
+                    @if ($errors->any())
+                        <div class="alert alert-danger" style="margin: 10px;">
+                            <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
+                            <ul style="margin: 0; padding-left: 20px;">
+                                @foreach ($errors->all() as $error)
+                                    <li style="font-size: 14px;">{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    
+                    @if (session('success'))
+                        <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
+                    @endif
 
-    {{-- purchase order placing --}}
-    <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true" >
-        <div class="modal-dialog" style="width: auto">
-            <form class="modal-content" method="POST" enctype="multipart/form-data" style="width: 800px" action="{{ route('purchaseorders.place', $po->po_id) }}">
-                @csrf
-                
-                @if ($errors->any())
-                    <div class="alert alert-danger" style="margin: 10px;">
-                        <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
-                        <ul style="margin: 0; padding-left: 20px;">
-                            @foreach ($errors->all() as $error)
-                                <li style="font-size: 14px;">{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                
-                @if (session('success'))
-                    <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger" style="margin: 10px;">
-                        <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
-                        <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
-                    </div>
-                @endif
-
-                <!-- Hidden field for PO ID -->
-                <input type="hidden" name="po_id" value="{{ $po->po_id }}">
-                <input type="hidden" name="supplier_id" value="{{ $po->supplier_id }}">
-
+                    @if (session('error'))
+                        <div class="alert alert-danger" style="margin: 10px;">
+                            <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
+                            <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
+                        </div>
+                    @endif
 
                     <div class="modal-header">
-                        <p class="modal-title" id="requestActionLabel">Place purchase order</p>
+                        <p class="modal-title" id="confirmActionLabel">Confirm Purchase Order</p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                
 
-                
-                <div class="modal-body" style="width: auto">
-                    <p class="note-notify">
-                        <span class="material-symbols-outlined"> info </span>
-                        <span>Any changes will be logged.</span>
-                    </p>
+                    <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined"> info </span>
+                            <span>Review and modify quantities as needed. You can accept or reject this purchase order.</span>
+                        </p>
 
-                    <div style="width: auto">
-                        <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                            <thead style="background-color: #f9f9f9;">
-                                <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                    <td>Select</td>
-                                    <td>#</td>
-                                    <td>Product ID</td>
-                                    <td>Product name</td>
-                                    <td>Category</td>
-                                    <td>Unit</td>
-                                    <td>Weight</td>
-                                    <td>Price</td>
-                                    <td>Quantity</td>
-                                    <td>Total</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($setProducts as $setProduct)
-                                <tr class="product-row" data-set-id="{{ $setProduct->set_id }}" 
-                                    data-product-id="{{ $setProduct->product->product_id }}" 
-                                    data-price="{{ $setProduct->price }}">
-                                    <td class="checkbox-cell">
-                                        <input type="checkbox" 
-                                            name="selected_products[]" 
-                                            value="{{ $setProduct->set_id }}"
-                                            class="product-checkbox"
-                                            onchange="toggleProductRow(this, '{{ $setProduct->set_id }}')">
-                                    </td>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $setProduct->set_id }}</td>
-                                    <td>{{ $setProduct->product->name }}</td>
-                                    <td>{{ $setProduct->product->category }}</td>
-                                    <td>{{ $setProduct->product->unit }}</td>
-                                    <td>{{ $setProduct->product->weight }}</td>
-                                    <td>${{ $setProduct->price }}</td>
-                                    <td>
-                                        <input type="number" 
-                                            name="quantities[{{ $setProduct->set_id }}]" 
-                                            value="1" 
-                                            min="1"
-                                            class="form-control quantity-input"
-                                            onchange="calculateRowTotal('{{ $setProduct->set_id }}')"
-                                            disabled>
-                                    </td>
-                                    <td>
-                                        <span id="total_{{ $setProduct->set_id }}" class="row-total">${{ number_format($setProduct->price, 2) }}</span>
-                                    </td>
-                                    <!-- Hidden fields for backend validation -->
-                                    <input type="hidden" name="product_ids[{{ $setProduct->set_id }}]" value="{{ $setProduct->product->product_id }}">
-                                    <input type="hidden" name="unit_prices[{{ $setProduct->set_id }}]" value="{{ $setProduct->price }}">
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="staff_notes">Staff Notes (Optional)</label>
+                            <textarea name="notes" id="staff_notes" class="form-control" rows="3" placeholder="Add any notes about this purchase order..."></textarea>
+                        </div>
+
+                        <div style="overflow-x: auto;">
+                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                <thead style="background-color: #f9f9f9;">
+                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                        <td>#</td>
+                                        <td>Product ID</td>
+                                        <td>Product Name</td>
+                                        <td>Category</td>
+                                        <td>Unit</td>
+                                        <td>Weight</td>
+                                        <td>Unit Price</td>
+                                        <td>Supplier Qty</td>
+                                        <td>Staff Qty</td>
+                                        <td>Total</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($po->items as $item)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $item->set_id }}</td>
+                                        <td>{{ $item->product->name }}</td>
+                                        <td>{{ $item->product->category }}</td>
+                                        <td>{{ $item->product->unit }}</td>
+                                        <td>{{ $item->product->weight }}</td>
+                                        <td>₱{{ number_format($item->unit_price, 2) }}</td>
+                                        <td>{{ $item->supplier_quantity }}</td>
+                                        <td>
+                                            <input type="number" 
+                                                name="staff_quantities[{{ $item->po_item_id }}]" 
+                                                value="{{ $item->supplier_quantity }}" 
+                                                min="0"
+                                                class="form-control staff-quantity-input"
+                                                onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})">
+                                        </td>
+                                        <td>
+                                            <span id="staff_total_{{ $item->po_item_id }}" class="staff-row-total">
+                                                ₱{{ number_format($item->unit_price * $item->supplier_quantity, 2) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>Total Items: <span id="totalItems">{{ $po->items->count() }}</span></strong>
+                                </div>
+                                <div>
+                                    <strong>Grand Total: <span id="staffGrandTotal">₱{{ number_format($po->total_amount, 2) }}</span></strong>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
-                 
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Finalize Order</button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" name="action" value="Reject" class="btn btn-danger">Reject Order</button>
+                        <button type="submit" name="action" value="Accept" class="btn btn-success">Accept Order</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    @endif
 
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -139,7 +135,7 @@
         </div>
     @endif
 
-   <div class="content-bg" >
+   <div class="content-bg">
         <div class="content-header">
             <div class="contents-display">
                 <p>
@@ -148,35 +144,122 @@
             </div>
 
             <div class="title-actions">
-                <p class="heading">Purchase order</p>
-                @if ( auth()->user()->role !== 'Supplier')
-                    <div>
-                        <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">Place this order</button>
-                    </div>
-                @endif
-            </div>
-
-
-        </div>
-
-        <div class="content-body" style="padding: 10px; border: none; height: auto;">
-            <div class="purchase-order-div" style="display: flex; flex-direction: row; gap: 20px">
-                <div class="po-image-div">
-                    @php
-                        $imgSrc = $po->image 
-                            ? ('data:' . $po->image_mime_type . ';base64,' . base64_encode($po->image))
-                            : asset('assets/default-image.jpg');
-                    @endphp
-                    <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image"> 
+                <p class="heading">Purchase Order - {{ $po->po_id }}</p>
+                <div style="display: flex; gap: 10px;">
+                    @if (auth()->user()->role !== 'Supplier' && $po->status === 'Pending')
+                        <button data-bs-toggle="modal" data-bs-target="#confirm-action" class="btn-transition">Confirm Order</button>
+                    @endif
+                    
+                    @if ($po->status !== 'Pending' && auth()->user()->role !== 'Supplier')
+                        <button type="button" 
+                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                data-url="{{ route('purchaseorders.pdf', $po->po_id) }}"
+                                class="btn-transition">
+                            Print Purchase Order
+                        </button>
+                    @endif
                 </div>
-
-
             </div>
-
-       
         </div>
 
+        <div class="content-body" style="padding: 20px; border: none; height: auto;">
+            <!-- Order Details -->
+            <div style="background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h4>Order Details</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                    <div>
+                        <p><strong>PO ID:</strong> {{ $po->po_id }}</p>
+                        <p><strong>Supplier:</strong> {{ $po->supplier->company_name }}</p>
+                        <p><strong>Status:</strong> 
+                            <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; 
+                                @if($po->status === 'Pending') background-color: #fff3cd; color: #856404;
+                                @elseif($po->status === 'Accepted') background-color: #d4edda; color: #155724;
+                                @else background-color: #f8d7da; color: #721c24;
+                                @endif">
+                                {{ $po->status }}
+                            </span>
+                        </p>
+                        <p><strong>Created:</strong> {{ $po->created_at->format('F j, Y g:i A') }}</p>
+                    </div>
+                    <div>
+                        <p><strong>Total Amount:</strong> ₱{{ number_format($po->total_amount, 2) }}</p>
+                        @if($po->staff)
+                            <p><strong>Confirmed by:</strong> {{ $po->staff->first_name }} {{ $po->staff->last_name }}</p>
+                        @endif
+                        @if($po->confirmed_at)
+                            <p><strong>Confirmed at:</strong> {{ $po->confirmed_at->format('F j, Y g:i A') }}</p>
+                        @endif
+                        @if($po->notes)
+                            <p><strong>Notes:</strong> {{ $po->notes }}</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
 
+            <!-- Order Items -->
+            <div style="background: #fff; padding: 20px; border-radius: 10px;">
+                <h4>Order Items</h4>
+                <div style="overflow-x: auto; margin-top: 15px;">
+                    <table style="width:100%; border-collapse:collapse; border: 1px solid #ddd;">
+                        <thead style="background-color: #f8f9fa;">
+                            <tr style="text-align: center; height: 40px; border-bottom: 1px solid #ddd;">
+                                <th>#</th>
+                                <th>Product ID</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Unit</th>
+                                <th>Weight</th>
+                                <th>Unit Price</th>
+                                <th>Supplier Qty</th>
+                                <th>Staff Qty</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($po->items as $item)
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td style="text-align: center;">{{ $loop->iteration }}</td>
+                                    <td style="text-align: center;">{{ $item->set_id }}</td>
+                                    <td>{{ $item->product->name }}</td>
+                                    <td>{{ $item->product->category }}</td>
+                                    <td>{{ $item->product->unit }}</td>
+                                    <td>{{ $item->product->weight }}</td>
+                                    <td style="text-align: right;">₱{{ number_format($item->unit_price, 2) }}</td>
+                                    <td style="text-align: center;">{{ $item->supplier_quantity }}</td>
+                                    <td style="text-align: center;">{{ $item->staff_quantity }}</td>
+                                    <td style="text-align: center;">
+                                        <span style="padding: 2px 6px; border-radius: 3px; font-size: 11px;
+                                            @if($item->status === 'Pending') background-color: #fff3cd; color: #856404;
+                                            @elseif($item->status === 'Accepted') background-color: #d4edda; color: #155724;
+                                            @else background-color: #f8d7da; color: #721c24;
+                                            @endif">
+                                            {{ $item->status }}
+                                        </span>
+                                    </td>
+                                    <td style="text-align: right;">₱{{ number_format($item->total_price, 2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+   </div>
+
+   <!-- PDF Modal -->
+   <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+       <div class="modal-dialog modal-xl">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title">Purchase Order PDF</h5>
+                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               </div>
+               <div class="modal-body">
+                   <iframe id="pdfFrame" src="" width="100%" height="600px" style="border: none;"></iframe>
+               </div>
+           </div>
+       </div>
    </div>
 
 @endsection
@@ -186,215 +269,49 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Track selected products and their data
-    let selectedProducts = new Map();
-
-    function toggleAllProducts() {
-        const selectAllCheckbox = document.getElementById('selectAll');
-        const productCheckboxes = document.querySelectorAll('.product-checkbox');
+    function calculateStaffTotal(poItemId, unitPrice) {
+        const quantityInput = document.querySelector(`input[name="staff_quantities[${poItemId}]"]`);
+        const totalSpan = document.getElementById(`staff_total_${poItemId}`);
         
-        productCheckboxes.forEach(checkbox => {
-            if (checkbox.checked !== selectAllCheckbox.checked) {
-                checkbox.checked = selectAllCheckbox.checked;
-                toggleProductRow(checkbox, checkbox.value);
-            }
-        });
-    }
-
-    function toggleProductRow(checkbox, setId) {
-        const row = document.querySelector(`tr[data-set-id="${setId}"]`);
-        const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
-        
-        if (checkbox.checked) {
-            // Enable the row
-            row.classList.remove('disabled');
-            quantityInput.disabled = false;
-            quantityInput.value = quantityInput.value || 1;
-            
-            // Store product data
-            selectedProducts.set(setId, {
-                productId: row.dataset.productId,
-                price: parseFloat(row.dataset.price),
-                quantity: parseInt(quantityInput.value) || 1
-            });
-            
-            calculateRowTotal(setId);
-        } else {
-            // Disable the row
-            row.classList.add('disabled');
-            quantityInput.disabled = true;
-            
-            // Remove from selected products
-            selectedProducts.delete(setId);
-            
-            // Reset total
-            document.getElementById(`total_${setId}`).textContent = '$0.00';
-        }
-        
-        updateSummary();
-        updateHiddenFields();
-        updateSelectAllState();
-    }
-
-    function calculateRowTotal(setId) {
-        const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
-        const totalSpan = document.getElementById(`total_${setId}`);
-        const checkbox = document.querySelector(`input[name="selected_products[]"][value="${setId}"]`);
-        
-        if (checkbox.checked && quantityInput && !quantityInput.disabled) {
-            const row = document.querySelector(`tr[data-set-id="${setId}"]`);
-            const price = parseFloat(row.dataset.price);
+        if (quantityInput && totalSpan) {
             const quantity = parseInt(quantityInput.value) || 0;
-            const total = price * quantity;
+            const total = unitPrice * quantity;
             
-            totalSpan.textContent = `$${total.toFixed(2)}`;
+            totalSpan.textContent = `₱${total.toFixed(2)}`;
             
-            // Update stored data
-            if (selectedProducts.has(setId)) {
-                selectedProducts.get(setId).quantity = quantity;
-            }
-            
-            updateSummary();
-        } else {
-            totalSpan.textContent = '$0.00';
+            // Update grand total
+            updateStaffGrandTotal();
         }
     }
 
-    function updateSummary() {
-        let totalItems = 0;
+    function updateStaffGrandTotal() {
         let grandTotal = 0;
+        const totalSpans = document.querySelectorAll('.staff-row-total');
         
-        selectedProducts.forEach((data, setId) => {
-            const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
-            const currentQuantity = parseInt(quantityInput.value) || 0;
-            
-            totalItems += currentQuantity;
-            grandTotal += data.price * currentQuantity;
+        totalSpans.forEach(span => {
+            const amount = parseFloat(span.textContent.replace('₱', '').replace(',', '')) || 0;
+            grandTotal += amount;
         });
         
-        document.getElementById('selectedCount').textContent = selectedProducts.size;
-        document.getElementById('grandTotal').textContent = `$${grandTotal.toFixed(2)}`;
-        document.getElementById('submitCount').textContent = selectedProducts.size;
-        
-        // Enable/disable submit button
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = selectedProducts.size === 0;
-    }
-
-    function updateHiddenFields() {
-        const hiddenFieldsContainer = document.getElementById('hiddenFields');
-        hiddenFieldsContainer.innerHTML = '';
-        
-        selectedProducts.forEach((data, setId) => {
-            // Add hidden field for product_id
-            const productIdInput = document.createElement('input');
-            productIdInput.type = 'hidden';
-            productIdInput.name = `product_ids[${setId}]`;
-            productIdInput.value = data.productId;
-            hiddenFieldsContainer.appendChild(productIdInput);
-            
-            // Add hidden field for unit_price
-            const unitPriceInput = document.createElement('input');
-            unitPriceInput.type = 'hidden';
-            unitPriceInput.name = `unit_prices[${setId}]`;
-            unitPriceInput.value = data.price;
-            hiddenFieldsContainer.appendChild(unitPriceInput);
-        });
-    }
-
-    function updateSelectAllState() {
-        const selectAllCheckbox = document.getElementById('selectAll');
-        const productCheckboxes = document.querySelectorAll('.product-checkbox');
-        const checkedBoxes = document.querySelectorAll('.product-checkbox:checked');
-        
-        if (checkedBoxes.length === 0) {
-            selectAllCheckbox.indeterminate = false;
-            selectAllCheckbox.checked = false;
-        } else if (checkedBoxes.length === productCheckboxes.length) {
-            selectAllCheckbox.indeterminate = false;
-            selectAllCheckbox.checked = true;
-        } else {
-            selectAllCheckbox.indeterminate = true;
+        const grandTotalSpan = document.getElementById('staffGrandTotal');
+        if (grandTotalSpan) {
+            grandTotalSpan.textContent = `₱${grandTotal.toFixed(2)}`;
         }
     }
 
-    // Form validation before submit
-    function validateForm() {
-        if (selectedProducts.size === 0) {
-            showError(['Please select at least one product.']);
-            return false;
-        }
-        
-        let hasErrors = false;
-        const errors = [];
-        
-        selectedProducts.forEach((data, setId) => {
-            const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
-            const quantity = parseInt(quantityInput.value) || 0;
-            
-            if (quantity <= 0) {
-                errors.push(`Quantity for product ${setId} must be greater than 0.`);
-                hasErrors = true;
-            }
-        });
-        
-        if (hasErrors) {
-            showError(errors);
-            return false;
-        }
-        
-        return true;
-    }
-
-    function showError(errors) {
-        const errorContainer = document.getElementById('errorContainer');
-        const errorList = document.getElementById('errorList');
-        
-        errorList.innerHTML = '';
-        errors.forEach(error => {
-            const li = document.createElement('li');
-            li.textContent = error;
-            errorList.appendChild(li);
-        });
-        
-        errorContainer.style.display = 'block';
-        
-        // Hide after 5 seconds
-        setTimeout(() => {
-            errorContainer.style.display = 'none';
-        }, 5000);
-    }
-
-    function showSuccess(message) {
-        const successContainer = document.getElementById('successContainer');
-        successContainer.textContent = message;
-        successContainer.style.display = 'block';
-        
-        // Hide after 5 seconds
-        setTimeout(() => {
-            successContainer.style.display = 'none';
-        }, 5000);
-    }
-
-    // Add form submit event listener
-    document.querySelector('form').addEventListener('submit', function(e) {
-        if (!validateForm()) {
-            e.preventDefault();
-            return false;
-        }
-    });
-
-    // Initialize on page load
+    // PDF Modal functionality
     document.addEventListener('DOMContentLoaded', function() {
-        updateSummary();
-        updateSelectAllState();
+        const pdfModal = document.getElementById('pdfModal');
+        if (pdfModal) {
+            pdfModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const pdfUrl = button.getAttribute('data-url');
+                const pdfFrame = document.getElementById('pdfFrame');
+                if (pdfFrame && pdfUrl) {
+                    pdfFrame.src = pdfUrl;
+                }
+            });
+        }
     });
 </script>
-
-<!-- Demo button to open modal -->
-<div class="container mt-5">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modify-action">
-        Open Purchase Order Modal
-    </button>
-</div>
 @endpush

@@ -9,8 +9,8 @@
     {{-- create order --}}
     @if (auth()->user()->role === 'Supplier')
         <div class="modal fade" id="create-order-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <form class="modal-content"  method="POST" action="{{ route('order.create') }}"  enctype="multipart/form-data">
+            <div class="modal-dialog modal-xl">
+                <form class="modal-content" method="POST"  style="width: 800px" action="{{ route('purchaseorders.create') }}">
                     @csrf
             
                     @if (session('success'))
@@ -28,42 +28,99 @@
                     @endif
                 
                     <div class="modal-header">
-                        <p class="modal-title" id="requestActionLabel">Create order form</p>
+                        <p class="modal-title" id="requestActionLabel">Create Purchase Order</p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     
                     <div class="modal-body">
                         <p class="note-notify">
                             <span class="material-symbols-outlined"> info </span>
-                            <span> Make sure image selected is 2MB or less, scanned image is recommended.</span>
-
+                            <span>Select products from your available inventory and specify quantities.</span>
                         </p>
 
-                        <div class="modal-option-groups">
-                            <div class="form-group">
-                                    <p><span class="req-asterisk">*</span> Upload purchase order file</p>
-                                    <input type="file" name="image" id="image" required accept="image/*">
-                                    <div id="file-preview" style="margin-top:10px;"></div>
-                                    <div id="file-error" style="color:#dc3545; font-size:13px; margin-top:5px;"></div>
-                            </div>
-                            <input type="hidden" name="status" value="Pending">
-                            <input type="hidden" name="supplier_id" value="{{ auth()->user()->supplier->supplier_id }}">
+                        <div class="form-group" style="margin-bottom: 20px; flex-direction: column; display: flex;">
+                            <label for="notes">Notes (Optional)</label>
+                            <input name="notes" style="font-size: 14px" id="notes" rows="3" placeholder="Add any additional notes for this purchase order...">
                         </div>
-        
 
+                        <div style="overflow-x: auto;">
+                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                <thead style="background-color: #f9f9f9;">
+                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                        <td>Select</td>
+                                        <td>#</td>
+                                        <td>Product ID</td>
+                                        <td>Product Name</td>
+                                        <td>Category</td>
+                                        <td>Unit</td>
+                                        <td>Weight</td>
+                                        <td>Price</td>
+                                        <td>Quantity</td>
+                                        <td>Total</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $supplier = auth()->user()->supplier;
+                                        $setProducts = \App\Models\ProductSetting::where('supplier_id', $supplier->supplier_id)
+                                            ->with('product')
+                                            ->get();
+                                    @endphp
+                                    @foreach($setProducts as $setProduct)
+                                    <tr class="product-row" data-set-id="{{ $setProduct->set_id }}" 
+                                        data-product-id="{{ $setProduct->product->product_id }}" 
+                                        data-price="{{ $setProduct->price }}">
+                                        <td class="checkbox-cell">
+                                            <input type="checkbox" 
+                                                name="selected_products[]" 
+                                                value="{{ $setProduct->set_id }}"
+                                                class="product-checkbox"
+                                                onchange="toggleProductRow(this, '{{ $setProduct->set_id }}')">
+                                        </td>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $setProduct->set_id }}</td>
+                                        <td>{{ $setProduct->product->name }}</td>
+                                        <td>{{ $setProduct->product->category }}</td>
+                                        <td>{{ $setProduct->product->unit }}</td>
+                                        <td>{{ $setProduct->product->weight }}</td>
+                                        <td>₱{{ number_format($setProduct->price, 2) }}</td>
+                                        <td>
+                                            <input type="number" 
+                                                name="quantities[{{ $setProduct->set_id }}]" 
+                                                value="1" 
+                                                min="1"
+                                                class="form-control quantity-input"
+                                                onchange="calculateRowTotal('{{ $setProduct->set_id }}')"
+                                                disabled>
+                                        </td>
+                                        <td>
+                                            <span id="total_{{ $setProduct->set_id }}" class="row-total">₱{{ number_format($setProduct->price, 2) }}</span>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>Selected Items: <span id="selectedCount">0</span></strong>
+                                </div>
+                                <div>
+                                    <strong>Grand Total: <span id="grandTotal">₱0.00</span></strong>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" id="add-staff-submit">Submit order</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Create Purchase Order</button>
                     </div>
-
-
-                
                 </form>
             </div>
         </div>
-
     @endif
 
         <div class="content-bg">
@@ -71,7 +128,7 @@
                     <div class="contents-display">
                         <form action="{{ route('purchaseorders.list') }}" id="text-search" class="search-text-con" method="GET">
                             <input type="text" name="search" class="search-bar"
-                                placeholder="Search by SUP ID. , Supplier, Representative and status"
+                                placeholder="Search by PO ID, Supplier, Status"
                                 value="{{ request('search') }}"
                                 style="outline:none;"
                             >
@@ -122,16 +179,32 @@
                                     <th>#</th>
                                     <th>Date</th>
                                     <th>PO ID</th>
+                                    <th>Supplier</th>
+                                    <th>Items</th>
+                                    <th>Total Amount</th>
                                     <th>Status</th>
+                                    <th>Confirmed By</th>
                                 </tr>
                             </thead>
                             <tbody>                                
                                 @foreach ($pos as $po)
-                                    <tr onclick="window.location.href='{{ route('purchaseorders.purchaseorder', ['po_id' => $po->po_id]) }}'">
+                                    <tr onclick="window.location.href='{{ route('purchaseorders.purchaseorder', ['po_id' => $po->po_id]) }}'" style="cursor: pointer;">
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $po->created_at->format('F j, Y') }}</td>
                                         <td>{{$po->po_id}}</td>
-                                        <td>{{$po->status}}</td>
+                                        <td>{{ $po->supplier->company_name ?? 'N/A' }}</td>
+                                        <td>{{ $po->items->count() }}</td>
+                                        <td>₱{{ number_format($po->total_amount, 2) }}</td>
+                                        <td>
+                                            <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; 
+                                                @if($po->status === 'Pending') background-color: #fff3cd; color: #856404;
+                                                @elseif($po->status === 'Accepted') background-color: #d4edda; color: #155724;
+                                                @else background-color: #f8d7da; color: #721c24;
+                                                @endif">
+                                                {{$po->status}}
+                                            </span>
+                                        </td>
+                                        <td>{{ $po->staff ? $po->staff->first_name . ' ' . $po->staff->last_name : '-' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -148,17 +221,30 @@
                                     <th>#</th>
                                     <th>Date</th>
                                     <th>PO ID</th>
+                                    <th>Items</th>
+                                    <th>Total Amount</th>
                                     <th>Status</th>
+                                    <th>Confirmed By</th>
                                 </tr>
                             </thead>
                             <tbody>                                
                                 @foreach ($pos as $po)
-                                    <tr onclick="window.location.href='{{ route('purchaseorders.purchaseorder', ['po_id' => $po->po_id]) }}'">
+                                    <tr onclick="window.location.href='{{ route('purchaseorders.purchaseorder', ['po_id' => $po->po_id]) }}'" style="cursor: pointer;">
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $po->created_at->format('F j, Y') }}</td>
-
                                         <td>{{$po->po_id}}</td>
-                                        <td>{{$po->status}}</td>
+                                        <td>{{ $po->items->count() }}</td>
+                                        <td>₱{{ number_format($po->total_amount, 2) }}</td>
+                                        <td>
+                                            <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; 
+                                                @if($po->status === 'Pending') background-color: #fff3cd; color: #856404;
+                                                @elseif($po->status === 'Accepted') background-color: #d4edda; color: #155724;
+                                                @else background-color: #f8d7da; color: #721c24;
+                                                @endif">
+                                                {{$po->status}}
+                                            </span>
+                                        </td>
+                                        <td>{{ $po->staff ? $po->staff->first_name . ' ' . $po->staff->last_name : '-' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -174,7 +260,128 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/global/two_mb.js') }}"></script>
-    <script src="{{ asset('js/global/file-preview.js') }}"></script>
+<script>
+    // Track selected products and their data
+    let selectedProducts = new Map();
 
+    function toggleProductRow(checkbox, setId) {
+        const row = document.querySelector(`tr[data-set-id="${setId}"]`);
+        const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
+        
+        if (checkbox.checked) {
+            // Enable the row
+            row.classList.remove('disabled');
+            quantityInput.disabled = false;
+            quantityInput.value = quantityInput.value || 1;
+            
+            // Store product data
+            selectedProducts.set(setId, {
+                productId: row.dataset.productId,
+                price: parseFloat(row.dataset.price),
+                quantity: parseInt(quantityInput.value) || 1
+            });
+            
+            calculateRowTotal(setId);
+        } else {
+            // Disable the row
+            row.classList.add('disabled');
+            quantityInput.disabled = true;
+            
+            // Remove from selected products
+            selectedProducts.delete(setId);
+            
+            // Reset total
+            document.getElementById(`total_${setId}`).textContent = '₱0.00';
+        }
+        
+        updateSummary();
+    }
+
+    function calculateRowTotal(setId) {
+        const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
+        const totalSpan = document.getElementById(`total_${setId}`);
+        const checkbox = document.querySelector(`input[name="selected_products[]"][value="${setId}"]`);
+        
+        if (checkbox.checked && quantityInput && !quantityInput.disabled) {
+            const row = document.querySelector(`tr[data-set-id="${setId}"]`);
+            const price = parseFloat(row.dataset.price);
+            const quantity = parseInt(quantityInput.value) || 0;
+            const total = price * quantity;
+            
+            totalSpan.textContent = `₱${total.toFixed(2)}`;
+            
+            // Update stored data
+            if (selectedProducts.has(setId)) {
+                selectedProducts.get(setId).quantity = quantity;
+            }
+            
+            updateSummary();
+        } else {
+            totalSpan.textContent = '₱0.00';
+        }
+    }
+
+    function updateSummary() {
+        let totalItems = 0;
+        let grandTotal = 0;
+        
+        selectedProducts.forEach((data, setId) => {
+            const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
+            const currentQuantity = parseInt(quantityInput.value) || 0;
+            
+            totalItems += currentQuantity;
+            grandTotal += data.price * currentQuantity;
+        });
+        
+        document.getElementById('selectedCount').textContent = selectedProducts.size;
+        document.getElementById('grandTotal').textContent = `₱${grandTotal.toFixed(2)}`;
+        
+        // Enable/disable submit button
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = selectedProducts.size === 0;
+    }
+
+    // Form validation before submit
+    function validateForm() {
+        if (selectedProducts.size === 0) {
+            alert('Please select at least one product.');
+            return false;
+        }
+        
+        let hasErrors = false;
+        const errors = [];
+        
+        selectedProducts.forEach((data, setId) => {
+            const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
+            const quantity = parseInt(quantityInput.value) || 0;
+            
+            if (quantity <= 0) {
+                errors.push(`Quantity for product ${setId} must be greater than 0.`);
+                hasErrors = true;
+            }
+        });
+        
+        if (hasErrors) {
+            alert(errors.join('\n'));
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Add form submit event listener
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('#create-order-modal form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        }
+        
+        updateSummary();
+    });
+</script>
 @endpush

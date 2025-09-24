@@ -83,6 +83,7 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     // supplier only
     Route::post('/orders/order/create',  [OrderController::class, 'createOrder'])->name('order.create');
     Route::get('/purchase-orders/list',  [PurchaseOrderController::class, 'purchaseOrderList'])->name('purchaseorders.list');
+    Route::post('/purchase-orders/create',  [PurchaseOrderController::class, 'createPurchaseOrder'])->name('purchaseorders.create');
     Route::post('/receipts/create',  [ReceiptController::class, 'receiptUpload'])->name('receipt.create');
     Route::get('/purchase-orders/list/view/{po_id}',  [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchaseorders.purchaseorder');
     Route::get('/orders/list/view/{order_id}',  [OrderController::class, 'orderView'])->name('orders.order');
@@ -110,6 +111,7 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::post('/products/setting/modify', [ProductSettingController::class, 'modifyProduct'])->name('productset.modify');
 
     Route::post('/purchase-orders/purchase/view/place', [OrderController::class, 'placeOrderItems'])->name('purchaseorders.place');
+    Route::post('/purchase-orders/{po_id}/confirm', [PurchaseOrderController::class, 'confirmPurchaseOrder'])->name('purchaseorders.confirm');
 
     Route::post('/receipts/action/{receipt_id}', [ReceiptController::class, 'receiptAction'])->name('receipts.action');
     Route::post('/order/action', [OrderController::class, 'orderAction'])->name('order.action');
@@ -118,6 +120,9 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/orders/{order_id}/customer-order', [OrderController::class, 'customerOrderPdf'])->name('orders.customer.pdf');
     Route::get('/orders/{order_id}/delivery-receipt', [OrderController::class, 'deliveryReceiptPdf'])->name('orders.delivery.pdf');
     Route::get('/orders/{order_id}/sales-invoice', [OrderController::class, 'salesInvoicePdf'])->name('orders.invoice.pdf');
+    
+    // purchase order pdf view
+    Route::get('/purchase-orders/{po_id}/pdf', [PurchaseOrderController::class, 'purchaseOrderPdf'])->name('purchaseorders.pdf');
 
     Route::post('/products/add-sub/{product_id}', [ProductController::class, 'addSub'])->name(name: 'add.subproduct');
 
