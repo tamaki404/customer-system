@@ -242,7 +242,7 @@
                     </style>
 
 
-                    <div class="file-upload-container">
+                    <div class="file-upload-container" style="display: flex; flex-direction: column;">
                         <div class="file-upload-section">
                             <label for="affidavit-of-loss">
                                 <span class="req-asterisk">*</span> Affidavit of loss 
@@ -393,8 +393,6 @@
                     </section>
 
                 </div>
-
-
 
             </form>
             <button class="next-btn btn-transition" type="button"><span class="material-symbols-outlined">arrow_forward_ios</span></button>

@@ -20,7 +20,7 @@
         <div class="header">
             {{-- <img src="https://sunny&scramble.com/logo.png" alt="Company Logo"> --}}
         </div>
-        <h1>Welcome to YourCompany!</h1>
+        <h1>Welcome to Sunny and scramble - customer system!</h1>
         <p>Thanks for registering. Please confirm your email address to activate your account:</p>
         <p style="text-align:center;">
             <a class="btn" href="{{ $verifyUrl }}" target="_blank">Verify Email</a>
