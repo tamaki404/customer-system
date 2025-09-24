@@ -90,18 +90,8 @@
                                     </tr>
                                 @endforeach
 
-                                <tr style="margin-top: 20px; border-top: 2px solid #333;">
-                                    <td colspan="5" style="text-align: right; font-weight: bold; vertical-align: middle;">Subtotal:</td>
-                                    <td style="font-weight: bold; vertical-align: middle;">
-                                        ₱{{ number_format($items->sum('total_price'), 2) }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="5" style="text-align: right; font-weight: bold; vertical-align: middle;">Tax (0%):</td>
-                                    <td style="font-weight: bold; vertical-align: middle;">
-                                        ₱0.00
-                                    </td>
-                                </tr>
+                       
+                            
                                 <tr style="border-top: 1px solid #ccc;">
                                     <td colspan="5" style="text-align: right; font-weight: bold; vertical-align: middle; font-size: 16px;">Total Amount Due:</td>
                                     <td style="font-weight: bold; vertical-align: middle; font-size: 16px;">

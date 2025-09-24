@@ -14,7 +14,8 @@ use App\Models\Products;
 use App\Models\OrderItem;
 use App\Models\ProductSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use App\Models\Logs;
+use App\Models\OrderHistory;
 class PurchaseOrderController extends Controller
 {
         public function purchaseOrderlist(Request $request)
@@ -303,6 +304,8 @@ class PurchaseOrderController extends Controller
                     'order_date' => now(),
                     'status' => 'Accepted', 
                     'total_amount' => $purchaseOrder->total_amount, 
+                    'payment_status' => 'Unpaid', 
+
                 ]);
                 
                 // Create order items from accepted purchase order items
@@ -320,6 +323,42 @@ class PurchaseOrderController extends Controller
                         'status' => 'Accepted',
                     ]);
                 }
+
+                $date = date('Ymd');
+                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
+
+                $order = Orders::where('order_id', $order_id)->firstOrFail();
+                $po = PurchaseOrders::where('po_id', $order->po_id)->firstOrFail();
+
+                $data = [
+                    'status'     => 'Accepted',
+                    'updated_at' =>now(),
+                ];
+
+                $order->update($data);
+                $po->update($data);
+
+
+                $user_id = Auth::user()->user_id;
+
+
+                Logs::create([
+                    'user_id' => Auth::user()->user_id,
+                    'action' => 'Commited on an order',
+                    'log_id' => $log_id,
+                    'description' => "Staff '{$user_id}' Accepted order '$order_id'",
+                ]);
+
+                OrderHistory::create([
+                    'action_by' => Auth::user()->user_id,
+                    'order_id' => $order_id,
+                    'action_at' => now(),
+                    'history_id' => $history_id,
+                    'label' => 'Order',
+                    'amount' => $order->total_amount,
+                    'status' => 'Accepted',
+                ]);
 
                 \Log::info('Order created from purchase order', [
                     'po_id' => $purchaseOrder->po_id,

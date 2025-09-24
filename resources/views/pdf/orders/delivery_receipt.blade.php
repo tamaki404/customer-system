@@ -80,29 +80,20 @@
                                 <th style="vertical-align: middle;">#</th>
                                 <th style="vertical-align: middle;">Product ID</th>
                                 <th style="vertical-align: middle;">Description</th>
-                                <th style="vertical-align: middle;">Unit Price</th>
                                 <th style="vertical-align: middle;">Quantity Delivered</th>
-                                <th style="vertical-align: middle;">Total Amount</th>                                                
                             </tr>
                         </thead>
                         <tbody>                                
                             @foreach ($items as $item)
                                 <tr>
                                     <td style="vertical-align: middle;">{{$loop->iteration}}</td>
-                                    <td style="vertical-align: middle;">{{ $item->set_id }}</td>
+                                    <td style="vertical-align: middle;">{{ $item->product_id }}</td>
                                     <td style="vertical-align: middle;">{{ $item->product->name }}</td>
-                                    <td style="vertical-align: middle;">₱{{ number_format($item->unit_price, 2) }}</td>
                                     <td style="vertical-align: middle;">{{ $item->quantity }}</td>
-                                    <td style="vertical-align: middle;">₱{{ number_format($item->total_price, 2) }}</td>
                                 </tr>
                             @endforeach
 
-                            <tr style="margin-top: 20px">
-                                <td colspan="5" style="text-align: right; font-weight: bold; vertical-align: middle;">Grand Total:</td>
-                                <td style="font-weight: bold; vertical-align: middle;">
-                                    ₱{{ number_format($items->sum('total_price'), 2) }}
-                                </td>
-                            </tr>
+                  
                         </tbody>
                     </table>
                 </div>
@@ -113,7 +104,7 @@
         </div>
         </div>
         <div class="footer" style="margin-top: 50px;">
-            <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+            {{-- <div style="display: flex; justify-content: space-between; margin-top: 30px;">
                 <div style="width: 45%;">
                     <p><strong>Delivery Confirmation:</strong></p>
                     <p>I acknowledge receipt of the above items in good condition.</p>
@@ -126,9 +117,19 @@
                     <p>Signature: _________________</p>
                     <p>Date: _________________</p>
                 </div>
-            </div>
+            </div> --}}
             <div style="margin-top: 20px; text-align: center; font-size: 12px;">
-                <p>Authorized signatories to accept deliveries & sign invoices</p>
+                    <p><strong>Authorized signatories to accept deliveries & sign invoices:</strong></p>
+                    <p>Name: 
+                            {{ implode(', ', array_filter([
+                                    $order->signatory->signatory_first_name,
+                                    $order->signatory->signatory_middle_name,
+                                    $order->signatory->signatory_last_name,
+
+                                ])) }}
+                    </p>
+                    <p>Signature: _________________</p>
+                    <p>Date: _________________</p>
             </div>
         </div>
     </div>

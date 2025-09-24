@@ -136,27 +136,32 @@
             @if ($order->status !== 'Pending' && Auth()->user()->role !== 'Supplier')
                 <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
                     <p style="margin: 0"><span>Print</span></p>
-                    <div>
-                        <button type="button" 
-                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                data-url="{{ route('orders.customer.pdf', $order->order_id) }}">
-                            Customer order
-                        </button>
+                    <div style="display: flex; flex-direction: row; gap: 10px">
+            
+                                        <button type="button" 
+                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                                data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                                                class="btn-transition">
+                                            Customer Order
+                                        </button>
 
-                        <button type="button" 
-                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                data-url="{{ route('orders.delivery.pdf', $order->order_id) }}">
-                            Delivery receipt
-                        </button>
+                                        <button type="button" 
+                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                                data-url="{{ route('orders.delivery.pdf', $order->order_id) }}"
+                                                class="btn-transition">
+                                            Delivery Receipt
+                                        </button>
 
-                        <button type="button" 
-                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                data-url="{{ route('orders.invoice.pdf', $order->order_id) }}">
-                            Sales invoice
-                        </button>
+                                        <button type="button" 
+                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                                data-url="{{ route('orders.invoice.pdf', $order->order_id) }}"
+                                                class="btn-transition">
+                                            Sales Invoice
+                                        </button>
                     </div>
                 </div>
             @endif
+                     
 
 
             <!-- Modal -->

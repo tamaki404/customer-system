@@ -161,33 +161,7 @@
                                     Purchase Order
                                 </button>
                                 
-                                @if($po->status === 'Accepted')
-                                    @php
-                                        $relatedOrder = \App\Models\Orders::where('po_id', $po->po_id)->first();
-                                    @endphp
-                                    @if($relatedOrder)
-                                        <button type="button" 
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                                data-url="{{ route('orders.customer.pdf', $relatedOrder->order_id) }}"
-                                                class="btn-transition">
-                                            Customer Order
-                                        </button>
 
-                                        <button type="button" 
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                                data-url="{{ route('orders.delivery.pdf', $relatedOrder->order_id) }}"
-                                                class="btn-transition">
-                                            Delivery Receipt
-                                        </button>
-
-                                        <button type="button" 
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                                data-url="{{ route('orders.invoice.pdf', $relatedOrder->order_id) }}"
-                                                class="btn-transition">
-                                            Sales Invoice
-                                        </button>
-                                    @endif
-                                @endif
                             </div>
                     </div>
                 @endif

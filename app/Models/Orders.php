@@ -16,6 +16,10 @@ class Orders extends Model
         'payment_status',
         'document_path',
     ];
+    protected $casts = [
+    'order_date' => 'datetime',
+];
+    
 
     public function items()
     {
@@ -37,5 +41,10 @@ class Orders extends Model
 {
     return $this->belongsTo(User::class, 'supplier_id', 'supplier_id');
 }
+    public function signatory()
+{
+    return $this->belongsTo(Signatories::class, 'supplier_id', 'supplier_id');
+}
+
 
 }

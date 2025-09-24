@@ -393,14 +393,17 @@ class OrderController extends Controller
         public function deliveryReceiptPdf($order_id)
         {
             $order = Orders::where('order_id', $order_id)->firstOrFail();
-            $items = $order->items;            
+            $items = $order->items;
             $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('order', 'items'));
             return $pdf->stream("delivery-receipt-{$order_id}.pdf");
         }
 
         public function salesInvoicePdf($order_id)
         {
-            $order = Orders::where('order_id', $order_id)->firstOrFail();
+            $order = Orders::with([
+                'supplier.user',
+                'items.product'
+            ])->where('order_id', $order_id)->firstOrFail();
             $items = $order->items;
             $pdf = PDF::loadView('pdf.orders.sales_invoice', compact('order', 'items'));
             return $pdf->stream("sales-invoice-{$order_id}.pdf");
