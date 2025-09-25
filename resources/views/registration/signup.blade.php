@@ -19,9 +19,7 @@
 <body style="overflow: hidden">
 
 
-    <div class="display-message">
-        <p class="error-text"></p>
-    </div>
+
 
     <div class="log-form-bg">
 
@@ -40,7 +38,8 @@
 
             <form method="POST" action="{{ route('registration.supplier.register') }}" class="log-form" id="registerForm" enctype="multipart/form-data">
                 @csrf
-                <section class="step-section" id="step1">
+
+                <div class="step-section" id="step1">
                     <p class="step-title-info">
                         <span class="title">1/3 Company information</span>
                         <span class="info">Answer the inputs below regarding the right details of your company</span>
@@ -187,7 +186,10 @@
                     </section>
                     <section class="group-details">
                         <p class="group-name">Authorized representative</p>
+                        <p class="error-text-auth" style="display: none"></p>
                         <div class="form-list" id="auth-container">
+         
+
                             <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px">
                                 <div class="input-forms">
                                     <label for="id-image"><span class="req-asterisk">*</span> Name</label>
@@ -210,7 +212,6 @@
                                     <div>
                                         <input id="contact" type="text" name="contact" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11">
                                     </div>
-                                    <p class="error-text" style="display: none"></p>
                                 </div>
                             </div>
 
@@ -223,8 +224,11 @@
                     </section>
                     <section class="group-details">
                         <p class="group-name">Signatories</p>
+                        <p class="error-text" style="display: none"></p>
                         <p style="margin: 0; font-size: 13px; color: #666; margin-bottom: 5px;">Authorized signatories to accept deliviries and sign invoices</p>
+                        <p class="error-text" style="display: none"></p>
                         <div class="form-list" id="signature-container">
+                            
                             <div class="sign-set" style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px; ">
                                 <div class="input-forms">
                                     <label for="sign-name"><span class="req-asterisk">*</span> Name</label>
@@ -247,7 +251,6 @@
                                     <div>
                                         <input type="file" id="id-signature" name="e_signature" accept="image/*" required>
                                     </div>
-                                    <p class="error-text" style="display: none"></p>
                                 </div>
                             </div>
 
@@ -311,7 +314,225 @@
                             </div>  
                      
                     </section>
-                </section>
+                </div>
+                <div class="step-section" id="step2">
+                    <p class="step-title-info">
+                        <span class="title">2/3 Documents filing</span>
+                        <span class="info">All documents listed are required. Files must be in PDF format and below 2MB.</span>
+                    </p>
+                    <section class="group-details" style="width: 100%">
+                        <p class="group-name" style="margin-bottom: 10px;">Necessary documents</p>
+                        <div class="form-list" style="display: flex; flex-direction: column;">
+                            <div class="input-forms" >
+                                <label for="sec"><span class="req-asterisk">*</span> Securities and Exchange Commission (SEC)</label>
+                                <input type="file" class="docu-file" id="sec" name="SEC" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="bp"><span class="req-asterisk">*</span> Business permit</label>
+                                <input type="file" class="docu-file" id="bp" name="BP" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="bir"><span class="req-asterisk">*</span> BIR form 2303</label>
+                                <input type="file" class="docu-file" id="bir" name="BIR" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="mp"><span class="req-asterisk">*</span> Mayor's permit</label>
+                                <input type="file" class="docu-file" id="mp" name="MP" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label><span class="req-asterisk">*</span> Valid ID (2)</label>
+                                <input type="file" class="docu-file" id="valid_one" name="valid_one" accept="application/pdf" required>
+                                <input type="file" class="docu-file" id="valid_two" name="valid_two" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="bs"><span class="req-asterisk">*</span> Bank statement (min. 6 months)</label>
+                                <input type="file" class="docu-file" id="bs" name="BS" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="pb"><span class="req-asterisk">*</span> Proof of billing</label>
+                                <input type="file" class="docu-file" id="pb" name="PB" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="ncc"><span class="req-asterisk">*</span> Notarized corporation certificate (CORP)</label>
+                                <input type="file" class="docu-file" id="ncc" name="NCC" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="aib"><span class="req-asterisk">*</span> Articles of incorporation and bylaws (CORP)</label>
+                                <input type="file" class="docu-file" id="aib" name="AIB" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+<div class="step-section" id="step3">
+    <p class="step-title-info">
+        <span class="title">3/3 Customer product requirements</span>
+        <span class="info">Answer the inputs below regarding your product requirements and delivery preferences</span>
+    </p>
+    
+    <section class="group-details">
+        <p class="group-name">Product search and add</p>
+        <div class="form-list">
+            <div class="input-forms">
+                <label for="product-search"><span class="req-asterisk">*</span> Product search</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="product-search" name="product_search" placeholder="Search by name" maxlength="100" style="width: 300px" required>
+                    <button class="search-prod-btn" type="button">
+                        <span class="material-symbols-outlined" style="font-size: 17px">search</span>
+                    </button>
+                </div>
+                <p class="error-text" style="display: none"></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="group-details">
+        <p class="group-name">Product details verification</p>
+        <div class="form-list">
+            <!-- Product 1 -->
+            <div class="product-form-main" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; width: 45%">
+                <h4 style="margin: 0 0 15px 0; font-weight: normal; font-size: 14px;">Product</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                    <div class="input-forms">
+                        <label for="product-name-1"><span class="req-asterisk">*</span> Name</label>
+                        <input type="text" id="product-name-1" name="product_name_1" required maxlength="100">
+                        <p class="error-text" style="display: none"></p>
+                    </div>
+                    
+                    <div class="input-forms">
+                        <label><span class="req-asterisk">*</span> Product condition</label>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <input type="checkbox" name="condition_1" id="fresh-1" value="fresh">
+                                <label for="fresh-1">Fresh</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <input type="checkbox" name="condition_1" id="frozen-1" value="frozen">
+                                <label for="frozen-1">Frozen</label>
+                            </div>
+                        </div>
+                        <p class="error-text" style="display: none"></p>
+                    </div>
+                    
+                    <div class="input-forms">
+                        <label for="weight-req-1"><span class="req-asterisk">*</span> Weight requirement</label>
+                        <input type="text" id="weight-req-1" name="weight_requirement_1" required maxlength="50">
+                        <p class="error-text" style="display: none"></p>
+                    </div>
+                    
+                    <div class="input-forms">
+                        <label><span class="req-asterisk">*</span> Packaging requirement</label>
+                        <div style="display: flex; gap: 10px;">
+                            <div>
+                                <label for="primary-pack-1" style="font-size: 12px; display: block;">Primary</label>
+                                <select name="primary_packaging_1" id="primary-pack-1" style="height: 35px; font-size: 13px;" required>
+                                    <option value="" disabled selected>-- Select primary packaging --</option>
+                                    <option value="sunny_plastic">Sunny plastic</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="secondary-pack-1" style="font-size: 12px; display: block;">Secondary</label>
+                                <select name="secondary_packaging_1" id="secondary-pack-1" style="height: 35px; font-size: 13px;" required>
+                                    <option value="" disabled selected>-- Select secondary packaging --</option>
+                                    <option value="sack_wrapper">Sack wrapper</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="error-text" style="display: none"></p>
+                    </div>
+                    
+                    <div class="input-forms">
+                        <label for="labeling-req-1"><span class="req-asterisk">*</span> Labeling requirement</label>
+                        <input type="text" id="labeling-req-1" name="labeling_requirement_1" required maxlength="255">
+                        <p class="error-text" style="display: none"></p>
+                    </div>
+                    
+                    <div class="input-forms">
+                        <label for="rejection-param-1"><span class="req-asterisk">*</span> Rejection parameter</label>
+                        <input type="text" id="rejection-param-1" name="rejection_parameter_1" required maxlength="255">
+                        <p class="error-text" style="display: none"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" class="add-btn" onclick="addProductRow()">
+                <span class="material-symbols-outlined">add</span>
+                Product
+            </button>
+        </div>
+    </section>
+
+    <section class="group-details">
+        <p class="group-name">PPE requirements</p>
+        <div class="form-list">
+            <div class="input-forms">
+                <label for="ppe-req"><span class="req-asterisk">*</span> PPE requirements during delivery and receiving</label>
+                <input type="text" id="ppe-req" name="ppe_requirements" required maxlength="255">
+                <p class="error-text" style="display: none"></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="group-details">
+        <p class="group-name">Delivery requirements</p>
+        <div class="form-list">
+            <div class="input-forms">
+                <label for="del-freq"><span class="req-asterisk">*</span> Frequency of delivery and receiving time</label>
+                <input type="text" id="del-freq" name="delivery_frequency" required maxlength="255">
+                <p class="error-text" style="display: none"></p>
+            </div>
+            
+            <div class="input-forms">
+                <label for="del-add-1">Delivery address 1</label>
+                <input type="text" id="del-add-1" name="delivery_address_1" maxlength="255">
+                <p class="error-text" style="display: none"></p>
+            </div>
+            
+            <div class="input-forms">
+                <label for="del-add-2">Delivery address 2</label>
+                <input type="text" id="del-add-2" name="delivery_address_2" maxlength="255">
+                <p class="error-text" style="display: none"></p>
+            </div>
+            
+            <div class="input-forms">
+                <label for="del-add-3">Delivery address 3</label>
+                <input type="text" id="del-add-3" name="delivery_address_3" maxlength="255">
+                <p class="error-text" style="display: none"></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="group-details">
+        <p class="group-name">Remarks/Special instructions</p>
+        <div class="form-list">
+            <div class="input-forms">
+                <label for="special-instruc">Special delivery instructions</label>
+                <textarea id="special-instruc" name="delivery_instructions" rows="3" maxlength="255" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"></textarea>
+                <p class="error-text" style="display: none"></p>
+            </div>
+        </div>
+    </section>
+</div>
+
+
 
 
             </form>
@@ -328,6 +549,7 @@
     <script src="{{ asset('js/registration/x/clone-auth-set.js') }}"></script>
     <script src="{{ asset('js/registration/x/clone-sign-set.js') }}"></script>
     <script src="{{ asset('js/registration/x/file-size.js') }}"></script>
+    <script src="{{ asset('js/registration/x/toggle-stepper.js') }}"></script>
 
 
 </body>

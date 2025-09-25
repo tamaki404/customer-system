@@ -242,3 +242,13 @@ body{
 .remove-btn span{
     font-size: 15px;
 }
+
+.error-text-auth,
+.error-text-sign{
+
+    margin: 0;
+    font-size: 13px;
+    color: #ec1e27;
+    font-weight: normal;
+
+}
