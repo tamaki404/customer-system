@@ -7,6 +7,8 @@ use App\Models\Orders;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ProductSetting;
 use App\Models\Suppliers;
+use App\Models\Products;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CustomersController;
@@ -56,8 +58,6 @@ Route::get('/login', function () {
 // Authenticated dashboard
 Route::get('/dashboard/view',  [DashboardController::class, 'dashboardView'])->middleware('auth')->name('dashboard.view');
 Route::get('/dashboard/layout',  [DashboardController::class, 'layoutView'])->middleware('auth')->name('dashboard.layout');
-
-
 
 Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
 

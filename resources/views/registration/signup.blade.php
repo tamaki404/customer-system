@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ asset('css/links/scroll-bar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/displays/alerts.css') }}">
     <link rel="stylesheet" href="{{ asset('css/notification/display-error.css') }}">
-
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <style>
         .alert {
@@ -97,6 +97,158 @@
             <form method="POST" action="{{ route('registration.supplier.register') }}" class="log-form" id="registerForm" enctype="multipart/form-data">
                 @csrf
 
+                <div class="step-section" id="step3">
+                    <p class="step-title-info">
+                        <span class="title">3/3 Customer product requirements</span>
+                        <span class="info">Answer the inputs below regarding your product requirements and delivery preferences</span>
+                    </p>
+                    
+                    <section class="group-details">
+                        <p class="group-name">Product search and add</p>
+                        <div class="form-list">
+                            <div class="input-forms" style="margin-bottom: 20px; width: 45%;">
+                                <label for="product-search"><span class="req-asterisk">*</span> Search for a product</label>
+                                <input type="text" id="product-search" style="width: 100%;" placeholder="Type to search products...">
+                                <div id="product-search-results" style="display:none; position: absolute; background: #fff; border: 1px solid #ccc; z-index: 10; width: 100%; max-height: 200px; overflow-y: auto;"></div>
+                            </div>
+                            <div id="all-products" style="display:none;">
+                                @foreach($products as $product)
+                                    <div class="product-item" data-id="{{ $product->id }}" data-name="{{ $product->name }}">{{ $product->name }}</div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="group-details">
+                        <p class="group-name">Product details verification</p>
+                        <div class="form-list" id="product-forms-container">
+                            <!-- Forms will be injected here -->
+                        </div>
+
+                        <template id="product-form-template">
+                          
+                            <div class="product-form-main" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; width: 45%;">
+                                <h4 style="margin: 0 0 15px 0; font-weight: normal; font-size: 14px;">Product: __PRODUCT_NAME__</h4>
+                                <input type="hidden" name="product_ids[]"  value="__PRODUCT_ID__">
+
+                                <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                                    <div class="input-forms">
+                                        <label><span class="req-asterisk">*</span> Name</label>
+                                        <input type="text" name="product_name___PRODUCT_ID__" value="__PRODUCT_NAME__" readonly>
+
+                                    </div>
+
+                                    <div class="input-forms">
+                                        <label><span class="req-asterisk">*</span> Product condition</label>
+                                        <div style="display: flex; gap: 15px; align-items: center;">
+                                            <div style="display: flex; align-items: center; gap: 5px;">
+                                                <input type="checkbox" name="condition___PRODUCT_ID__[]" id="fresh-__PRODUCT_ID__" value="fresh">
+                                                <label for="fresh-__PRODUCT_ID__">Fresh</label>
+
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 5px;">
+                                                <input type="checkbox" name="condition___PRODUCT_ID__[]" id="frozen-__PRODUCT_ID__" value="frozen">
+                                                <label for="frozen-__PRODUCT_ID__">Frozen</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="input-forms">
+                                        <label><span class="req-asterisk">*</span> Weight requirement</label>
+                                        <input type="text" name="weight_requirement___PRODUCT_ID__" required maxlength="50">
+                                    </div>
+
+                                    <div class="input-forms">
+                                        <label><span class="req-asterisk">*</span> Packaging requirement</label>
+                                        <div style="display: flex; gap: 10px;">
+                                            <div>
+                                                <label style="font-size: 12px; display: block;">Primary</label>
+                                                <select name="primary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
+                                                    <option value="" disabled selected>-- Select primary packaging --</option>
+                                                    <option value="sunny_plastic">Sunny plastic</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label style="font-size: 12px; display: block;">Secondary</label>
+                                                <select name="secondary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
+                                                    <option value="" disabled selected>-- Select secondary packaging --</option>
+                                                    <option value="sack_wrapper">Sack wrapper</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="input-forms">
+                                        <label><span class="req-asterisk">*</span> Labeling requirement</label>
+                                        <input type="text" name="labeling_requirement___PRODUCT_ID__" required maxlength="255">
+                                    </div>
+
+                                    <div class="input-forms">
+                                        <label><span class="req-asterisk">*</span> Rejection parameter</label>
+                                        <input type="text" name="rejection_parameter___PRODUCT_ID__" required maxlength="255">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="remove-btn" onclick="this.closest('.product-form-main').remove();" style="margin-top: 10px; background: #f8d7da; color: #721c24; border: none; padding: 5px 10px; border-radius: 4px;">
+                                Remove Product
+                            </button>
+
+                        </template>
+
+
+                    </section>
+
+                    <section class="group-details">
+                        <p class="group-name">PPE requirements</p>
+                        <div class="form-list">
+                            <div class="input-forms">
+                                <label for="ppe-req"><span class="req-asterisk">*</span> PPE requirements during delivery and receiving</label>
+                                <input type="text" id="ppe-req" name="ppe_requirements" required maxlength="255">
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="group-details">
+                        <p class="group-name">Delivery requirements</p>
+                        <div class="form-list">
+                            <div class="input-forms">
+                                <label for="del-freq"><span class="req-asterisk">*</span> Frequency of delivery and receiving time</label>
+                                <input type="text" id="del-freq" name="delivery_frequency" required maxlength="255">
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            
+                            <div class="input-forms">
+                                <label for="del-add-1">Delivery address 1</label>
+                                <input type="text" id="del-add-1" name="delivery_address_1" maxlength="255">
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            
+                            <div class="input-forms">
+                                <label for="del-add-2">Delivery address 2</label>
+                                <input type="text" id="del-add-2" name="delivery_address_2" maxlength="255">
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            
+                            <div class="input-forms">
+                                <label for="del-add-3">Delivery address 3</label>
+                                <input type="text" id="del-add-3" name="delivery_address_3" maxlength="255">
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="group-details">
+                        <p class="group-name">Remarks/Special instructions</p>
+                        <div class="form-list">
+                            <div class="input-forms">
+                                <label for="special-instruc">Special delivery instructions</label>
+                                <textarea id="special-instruc" name="delivery_instructions" rows="3" maxlength="255" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"></textarea>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
                 <div class="step-section" id="step1">
                     <p class="step-title-info">
                         <span class="title">1/3 Company information</span>
@@ -318,9 +470,7 @@
                                 </div>
                                 <div class="input-forms">
                                     <label for="id-signature"><span class="req-asterisk">*</span> E-signature</label>
-                                    <div>
                                         <input type="file" id="id-signature" name="e_signature" accept="image/*" required>
-                                    </div>
                                 </div>
                             </div>
 
@@ -336,30 +486,27 @@
                         <div class="form-list">
                             <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px">
                                 <div class="input-forms">
-                                    <label for="account_name"><span class="req-asterisk">*</span> Account name</label>
-                                    <input type="text" name="account_name" id="account_name" style="width: 300px"  maxlength="255" required>
+                                    <label for="account_name"> Account name</label>
+                                    <input type="text" name="account_name" id="account_name" style="width: 300px"  maxlength="255" >
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
-                                    <label for="bank"><span class="req-asterisk">*</span> Bank</label>
-                                    <input type="text" name="bank" id="bank" style="width: 80px"  maxlength="255" required>
+                                    <label for="bank"> Bank</label>
+                                    <input type="text" name="bank" id="bank" style="width: 80px"  maxlength="255" >
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
-                                    <label for="branch"><span class="req-asterisk">*</span> Branch</label>
-                                    <input type="text" name="branch" id="branch" style="width: 150px"  maxlength="200" required>
+                                    <label for="branch"> Branch</label>
+                                    <input type="text" name="branch" id="branch" style="width: 150px"  maxlength="200" >
                                     <p class="error-text" style="display: none"></p>
                                 </div>   
                                 <div class="input-forms">
-                                    <label for="account_number"><span class="req-asterisk">*</span> Account number</label>
-                                    <input type="text" name="account_number" id="account_number" style="width: 150px"  maxlength="50" required>
+                                    <label for="account_number"> Account number</label>
+                                    <input type="text" name="account_number" id="account_number" style="width: 150px"  maxlength="50" >
                                     <p class="error-text" style="display: none"></p>
                                 </div> 
                             </div>  
-                            <button class="add-btn">
-                                <span class="material-symbols-outlined">add</span>
-                                Bank account
-                            </button>
+                           
                         </div>
                     </section>
                     <section class="group-details">
@@ -452,155 +599,7 @@
                     </section>
 
                 </div>
-                <div class="step-section" id="step3">
-                    <p class="step-title-info">
-                        <span class="title">3/3 Customer product requirements</span>
-                        <span class="info">Answer the inputs below regarding your product requirements and delivery preferences</span>
-                    </p>
-                    
-                    <section class="group-details">
-                        <p class="group-name">Product search and add</p>
-                        <div class="form-list">
-                            <div class="input-forms">
-                                <label for="product-search"><span class="req-asterisk">*</span> Product search</label>
-                                <div style="display: flex; gap: 5px;">
-                                    <input type="text" id="product-search" name="product_search" placeholder="Search by name" maxlength="100" style="width: 300px" required>
-                                    <button class="search-prod-btn" type="button">
-                                        <span class="material-symbols-outlined" style="font-size: 17px">search</span>
-                                    </button>
-                                </div>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                        </div>
-                    </section>
 
-                    <section class="group-details">
-                        <p class="group-name">Product details verification</p>
-                        <div class="form-list">
-                            <!-- Product 1 -->
-                            <div class="product-form-main" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; width: 45%">
-                                <h4 style="margin: 0 0 15px 0; font-weight: normal; font-size: 14px;">Product</h4>
-                                <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                                    <div class="input-forms">
-                                        <label for="product-name-1"><span class="req-asterisk">*</span> Name</label>
-                                        <input type="text" id="product-name-1" name="product_name_1" required maxlength="100">
-                                        <p class="error-text" style="display: none"></p>
-                                    </div>
-                                    
-                                    <div class="input-forms">
-                                        <label><span class="req-asterisk">*</span> Product condition</label>
-                                        <div style="display: flex; gap: 15px; align-items: center;">
-                                            <div style="display: flex; align-items: center; gap: 5px;">
-                                                <input type="checkbox" name="condition_1" id="fresh-1" value="fresh">
-                                                <label for="fresh-1">Fresh</label>
-                                            </div>
-                                            <div style="display: flex; align-items: center; gap: 5px;">
-                                                <input type="checkbox" name="condition_1" id="frozen-1" value="frozen">
-                                                <label for="frozen-1">Frozen</label>
-                                            </div>
-                                        </div>
-                                        <p class="error-text" style="display: none"></p>
-                                    </div>
-                                    
-                                    <div class="input-forms">
-                                        <label for="weight-req-1"><span class="req-asterisk">*</span> Weight requirement</label>
-                                        <input type="text" id="weight-req-1" name="weight_requirement_1" required maxlength="50">
-                                        <p class="error-text" style="display: none"></p>
-                                    </div>
-                                    
-                                    <div class="input-forms">
-                                        <label><span class="req-asterisk">*</span> Packaging requirement</label>
-                                        <div style="display: flex; gap: 10px;">
-                                            <div>
-                                                <label for="primary-pack-1" style="font-size: 12px; display: block;">Primary</label>
-                                                <select name="primary_packaging_1" id="primary-pack-1" style="height: 35px; font-size: 13px;" required>
-                                                    <option value="" disabled selected>-- Select primary packaging --</option>
-                                                    <option value="sunny_plastic">Sunny plastic</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label for="secondary-pack-1" style="font-size: 12px; display: block;">Secondary</label>
-                                                <select name="secondary_packaging_1" id="secondary-pack-1" style="height: 35px; font-size: 13px;" required>
-                                                    <option value="" disabled selected>-- Select secondary packaging --</option>
-                                                    <option value="sack_wrapper">Sack wrapper</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <p class="error-text" style="display: none"></p>
-                                    </div>
-                                    
-                                    <div class="input-forms">
-                                        <label for="labeling-req-1"><span class="req-asterisk">*</span> Labeling requirement</label>
-                                        <input type="text" id="labeling-req-1" name="labeling_requirement_1" required maxlength="255">
-                                        <p class="error-text" style="display: none"></p>
-                                    </div>
-                                    
-                                    <div class="input-forms">
-                                        <label for="rejection-param-1"><span class="req-asterisk">*</span> Rejection parameter</label>
-                                        <input type="text" id="rejection-param-1" name="rejection_parameter_1" required maxlength="255">
-                                        <p class="error-text" style="display: none"></p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button type="button" class="add-btn" onclick="addProductRow()">
-                                <span class="material-symbols-outlined">add</span>
-                                Product
-                            </button>
-                        </div>
-                    </section>
-
-                    <section class="group-details">
-                        <p class="group-name">PPE requirements</p>
-                        <div class="form-list">
-                            <div class="input-forms">
-                                <label for="ppe-req"><span class="req-asterisk">*</span> PPE requirements during delivery and receiving</label>
-                                <input type="text" id="ppe-req" name="ppe_requirements" required maxlength="255">
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="group-details">
-                        <p class="group-name">Delivery requirements</p>
-                        <div class="form-list">
-                            <div class="input-forms">
-                                <label for="del-freq"><span class="req-asterisk">*</span> Frequency of delivery and receiving time</label>
-                                <input type="text" id="del-freq" name="delivery_frequency" required maxlength="255">
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                            
-                            <div class="input-forms">
-                                <label for="del-add-1">Delivery address 1</label>
-                                <input type="text" id="del-add-1" name="delivery_address_1" maxlength="255">
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                            
-                            <div class="input-forms">
-                                <label for="del-add-2">Delivery address 2</label>
-                                <input type="text" id="del-add-2" name="delivery_address_2" maxlength="255">
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                            
-                            <div class="input-forms">
-                                <label for="del-add-3">Delivery address 3</label>
-                                <input type="text" id="del-add-3" name="delivery_address_3" maxlength="255">
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="group-details">
-                        <p class="group-name">Remarks/Special instructions</p>
-                        <div class="form-list">
-                            <div class="input-forms">
-                                <label for="special-instruc">Special delivery instructions</label>
-                                <textarea id="special-instruc" name="delivery_instructions" rows="3" maxlength="255" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"></textarea>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                        </div>
-                    </section>
-                </div>
                 <div class="step-section" id="step4">
                     <p class="step-title-info">
                         <span class="title">Account security set-up</span>
@@ -692,9 +691,62 @@
     <script src="{{ asset('js/registration/x/toggle-stepper.js') }}"></script>
     <script src="{{ asset('js/registration/password-validation.js') }}"></script>
     <script src="{{ asset('js/registration/x/default-logo.js') }}"></script>
-    <script src="{{ asset('js/registration/two-mb.js') }}"></script>
+    <script src="{{ asset('js/registration/x/two-mb.js') }}"></script>
 
+<!-- jQuery (must be first) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<script>
+$(function () {
+    const $search = $('#product-search');
+    const $results = $('#product-search-results');
+    const $allProducts = $('#all-products .product-item');
 
+    $search.on('input', function() {
+        const val = $(this).val().toLowerCase();
+        $results.empty();
+        if (!val) {
+            $results.hide();
+            return;
+        }
+        let found = false;
+        $allProducts.each(function() {
+            const name = $(this).data('name').toLowerCase();
+            if (name.includes(val)) {
+                $results.append(`<div class="search-result" data-id="${$(this).data('id')}" data-name="${$(this).data('name')}">${$(this).data('name')}</div>`);
+                found = true;
+            }
+        });
+        $results.toggle(found);
+    });
+
+    $results.on('click', '.search-result', function() {
+        const productId = $(this).data('id');
+        const productName = $(this).data('name');
+        if (document.querySelector(`.product-form-main[data-id="${productId}"]`)) {
+            alert("Product already added.");
+            $results.hide();
+            return;
+        }
+        const template = document.getElementById('product-form-template').innerHTML;
+        const filledTemplate = template
+            .replace(/__PRODUCT_ID__/g, productId)
+            .replace(/__PRODUCT_NAME__/g, productName);
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = filledTemplate.trim();
+        const formElement = wrapper.firstElementChild;
+        formElement.setAttribute('data-id', productId);
+        document.getElementById('product-forms-container').appendChild(formElement);
+        $results.hide();
+        $search.val('');
+    });
+
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#product-search, #product-search-results').length) {
+            $results.hide();
+        }
+    });
+});
+</script>
 </body>
 </html>
