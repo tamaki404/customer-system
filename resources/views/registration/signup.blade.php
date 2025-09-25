@@ -12,11 +12,19 @@
     <link rel="stylesheet" href="{{ asset('css/registration/new-signup.css') }}">
     <link rel="stylesheet" href="{{ asset('css/links/scroll-bar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/displays/alerts.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/notification/display-error.css') }}">
 
 
 </head>
 <body style="overflow: hidden">
+
+
+    <div class="display-message">
+        <p class="error-text"></p>
+    </div>
+
     <div class="log-form-bg">
+
         <div class="header">
             <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image">
             <div class="header-texts">
@@ -57,7 +65,7 @@
                             </div>
                             <div class="input-forms">
                                 <label for="company-image"><span class="req-asterisk"></span> Company image/logo</label>
-                                <input type="file" id="company-image" name="image" accept="image/*">
+                                <input type="file" class="image" id="company-image" name="image" accept="image/*">
                                 <div class="use-default"><input type="checkbox" name="default_img">Use default</div>
                                 <p class="error-text" style="display: none"></p>
 
@@ -179,7 +187,7 @@
                     </section>
                     <section class="group-details">
                         <p class="group-name">Authorized representative</p>
-                        <div class="form-list">
+                        <div class="form-list" id="auth-container">
                             <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px">
                                 <div class="input-forms">
                                     <label for="id-image"><span class="req-asterisk">*</span> Name</label>
@@ -206,17 +214,16 @@
                                 </div>
                             </div>
 
-                            <button class="add-btn">
+                            <button class="add-btn" type="button" id="add-auth-btn" onclick="addAuthRow()" class="add-auth-btn add-btn">
                                 <span class="material-symbols-outlined">add</span>
                                 Representative
                             </button>
-
+                           
                         </div>
                     </section>
                     <section class="group-details">
                         <p class="group-name">Signatories</p>
                         <p style="margin: 0; font-size: 13px; color: #666; margin-bottom: 5px;">Authorized signatories to accept deliviries and sign invoices</p>
-                        <p class="max-error-display" style="">You've reached the max number of signatories. </p>
                         <div class="form-list" id="signature-container">
                             <div class="sign-set" style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px; ">
                                 <div class="input-forms">
@@ -318,8 +325,9 @@
 
 
 
-
+    <script src="{{ asset('js/registration/x/clone-auth-set.js') }}"></script>
     <script src="{{ asset('js/registration/x/clone-sign-set.js') }}"></script>
+    <script src="{{ asset('js/registration/x/file-size.js') }}"></script>
 
 
 </body>

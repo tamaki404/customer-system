@@ -231,12 +231,12 @@ body{
     align-items: center;
     height: 30px;
     color: #333;
-    background-color: #ec1e27;
+    background-color: #dfe0e1;
     cursor: pointer;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 .remove-btn:hover{
-    background-color: #c11820;
+    background-color: rgb(174, 174, 174);
 
 }
 .remove-btn span{
