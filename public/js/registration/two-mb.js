@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function(){
     var errorMessage = document.createElement('div');
     errorMessage.style.color = '#dc3545';
     errorMessage.style.fontSize = '13px';
-    errorMessage.style.marginTop = '5px';
 
     if (profilePicInput) {
         profilePicInput.parentNode.appendChild(errorMessage);

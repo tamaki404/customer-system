@@ -4,7 +4,7 @@ document.getElementById('use-default').addEventListener('change', function () {
 
     if (this.checked) {
         fileInput.disabled = true;
-        fileInput.value = '';
+        fileInput.value = ''; // clear any selected file
         defaultImageFlag.value = 'true'; 
     } else {
         fileInput.disabled = false;

@@ -692,6 +692,8 @@
     <script src="{{ asset('js/registration/x/toggle-stepper.js') }}"></script>
     <script src="{{ asset('js/registration/password-validation.js') }}"></script>
     <script src="{{ asset('js/registration/x/default-logo.js') }}"></script>
+    <script src="{{ asset('js/registration/two-mb.js') }}"></script>
+
 
 
 </body>
