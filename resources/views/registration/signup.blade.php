@@ -216,8 +216,9 @@
                     <section class="group-details">
                         <p class="group-name">Signatories</p>
                         <p style="margin: 0; font-size: 13px; color: #666; margin-bottom: 5px;">Authorized signatories to accept deliviries and sign invoices</p>
-                        <div class="form-list" id="signatory-container">
-                            <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px">
+                        <p class="max-error-display" style="">You've reached the max number of signatories. </p>
+                        <div class="form-list" id="signature-container">
+                            <div class="sign-set" style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px; ">
                                 <div class="input-forms">
                                     <label for="sign-name"><span class="req-asterisk">*</span> Name</label>
                                     <div>
@@ -243,7 +244,7 @@
                                 </div>
                             </div>
 
-                            <button type="button" id="add-signatory-btn" class="add-btn">
+                            <button type="button" id="add-signatory-btn" onclick="addSignatureRow()" class="add-signatory-btn add-btn">
                                 <span class="material-symbols-outlined">add</span>
                                 Signatories
                             </button>
@@ -318,7 +319,7 @@
 
 
 
-    <script src="{{ asset('js/registration/x/clone-row.js') }}"></script>
+    <script src="{{ asset('js/registration/x/clone-sign-set.js') }}"></script>
 
 
 </body>
