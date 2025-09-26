@@ -51,6 +51,16 @@
                 margin: 0;
             }
         }
+
+        .search-result{
+            cursor: pointer;
+            border-bottom: 1px solid #6666661e;
+            padding: 5px
+        }
+        .search-result:hover{
+            background-color: #f9fbfc;
+        }
+
     </style>
 
 </head>
@@ -97,19 +107,368 @@
             <form method="POST" action="{{ route('registration.supplier.register') }}" class="log-form" id="registerForm" enctype="multipart/form-data">
                 @csrf
 
-                <div class="step-section" id="step3">
+
+                <div class="step-section" id="step1">
                     <p class="step-title-info">
-                        <span class="title">3/3 Customer product requirements</span>
+                        <span class="title">1/4 Company information</span>
+                        <span class="info">Answer the inputs below regarding the right details of your company</span>
+                    </p>
+                    <section class="group-details" style="border-top-left-radius: 5px; border-top-right-radius: 5px;">
+                        <p class="group-name">Profile</p>
+                        <div class="form-list">
+                            <div class="input-forms">
+                                <label for="company_name"><span class="req-asterisk">*</span> Company name</label>
+                                <input type="text" name="company_name" id="company_name" style="width: 250px"  maxlength="200" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            <div class="input-forms">
+                                <label for="category"><span class="req-asterisk">*</span> Category</label>
+                                <select name="category" id="category" required>
+                                    <option value="" disabled selected>-- Select category --</option>
+                                    <option value="Wholesale">Wholesale</option>
+                                    <option value="Distributor">Distributor</option>
+                                    <option value="HRI">HRI</option>
+                                    <option value="Dealer">Dealer</option>
+                                </select>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="company-image">
+                                    <span class="req-asterisk">*</span> Company image/logo
+                                </label>
+                                <input type="file" class="image" id="company-image" name="image" accept="image/*">
+                                <div class="use-default">
+                                    <input type="checkbox" id="use-default" name="use_default">
+                                    <label for="use-default">Use default</label>
+                                </div>
+                                <input type="hidden" id="default-image-flag" name="default_image" value="false">
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+
+                        </div>
+                    </section>
+                    <section class="group-details">
+                        <p class="group-name">Address</p>
+                        <div class="form-list">
+                            <div class="input-forms">
+                                <label for="home_street"><span class="req-asterisk">*</span> Home address</label>
+                                <div class="office-address" >
+                                    <input type="text" name="home_street" id="home_street" required placeholder="Street" maxlength="255">
+                                    <input type="text" name="home_subdivision" id="home-subdivision" required placeholder="Subdivision" maxlength="255">
+                                    <input type="text" name="home_barangay" id="home-barangay" required placeholder="Barangay" maxlength="255">
+                                    <input type="text" name="home_city" id="home-city" required placeholder="City" maxlength="100">
+                                </div>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            <div class="input-forms">
+                                <label for="office-street"><span class="req-asterisk">*</span> Office address</label>
+                                    <div class="office-address">
+                                        <input type="text" name="office_street" id="office-street" required placeholder="Street" maxlength="255">
+                                        <input type="text" name="office_subdivision" id="office-subdivision" required placeholder="Subdivision" maxlength="255">
+                                        <input type="text" name="office_barangay" id="office-barangay" required placeholder="Barangay" maxlength="255">
+                                        <input type="text" name="office_city" id="office-city" required placeholder="City" maxlength="100">
+                                    </div>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="group-details">
+                        <p class="group-name"></p>
+                        <div class="form-list">
+                            <div class="input-forms">
+                                <label for="mobile"><span class="req-asterisk">*</span> Mobile no.</label>
+                                <input type="text" name="mobile" id="mobile" style="width: 150px" placeholder="ex: 09XX-XXX-XXXX"  maxlength="11" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            <div class="input-forms">
+                                <label for="tele"> Telephone no.</label>
+                                <input type="text" name="tele" id="tele" style="width: 150px" placeholder="ex: 02-XXX-XXXX"  maxlength="9" >
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            <div class="input-forms">
+                                <label for="civil-status"> Civil status</label>
+                                    <select name="civil_status" id="civil-status">
+                                        <option value="" disabled selected>-- Select civil status --</option>
+                                        <option value="Single">Single</option>
+                                        <option value="Married">Married</option>
+                                        <option value="Divorced">Divorced</option>
+                                        <option value="Widowed">Widowed</option>
+                                    </select>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            <div class="input-forms">
+                                <label for="citizenship" ><span class="req-asterisk">*</span> Citizenship</label>
+                                    <select name="citizenship" id="citizenship" required>
+                                        <option value="" disabled selected>-- Select citizenship --</option>
+                                        <option value="Filipino">Filipino</option>
+                                        <option value="American">American</option>
+                                        <option value="Canadian">Canadian</option>
+                                        <option value="British">British</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            <div class="input-forms">
+                                <label for="payment"><span class="req-asterisk">*</span> Payment method</label>
+                                    <select name="payment_method" id="payment" required>
+                                        <option value="" disabled selected>-- Select payment method --</option>
+                                        <option value="Cash">Cash</option>
+                                        <option value="Gcash">Gcash</option>
+                                        <option value="Bank transfer">Bank transfer</option>
+                                    </select>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                        </div>
+
+
+
+                    </section>
+                    <section class="group-details">
+                        <p class="group-name">ID verification</p>
+                        <div class="form-list">
+                            <div class="input-forms">
+                                <label for="id-image"><span class="req-asterisk">*</span> ID image</label>
+                                <input type="file" id="id-image" name="id_image" accept="image/*" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="id-type"><span class="req-asterisk">*</span> Type of ID</label>
+                                <select name="id_type" id="id-type" required>
+                                    <option value="" disabled selected>-- Select type of ID --</option>
+                                        <option value="Passport">Passport</option>
+                                        <option value="Driver's License">Driver's License</option>
+                                        <option value="National ID">National ID</option>
+                                        <option value="SSS ID">SSS ID</option>
+                                        <option value="GSIS ID">GSIS ID</option>
+                                        <option value="UMID">UMID</option>
+                                        <option value="Postal ID">Postal ID</option>
+                                        <option value="PhilHealth ID">PhilHealth ID</option>
+                                        <option value="Voter's ID">Voter's ID</option>
+                                        <option value="PRC ID">PRC ID</option>
+                                </select>
+                            </div>
+                            <div class="input-forms">
+                                <label for="id_number"><span class="req-asterisk">*</span> ID number</label>
+                                <input type="text" name="id_number" id="id_number" style="width: 200px"  maxlength="100" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            <div class="input-forms">
+                                <label for="birthdate"> Birthdate </label>
+                                <input type="date" name="birthdate" id="birthdate" style="width: 150px" required maxlength="100">
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="group-details">
+                        <p class="group-name">Authorized representative</p>
+                        <p class="error-text-auth" style="display: none"></p>
+                        <div class="form-list" id="auth-container">
+         
+
+                            <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px">
+                                <div class="input-forms">
+                                    <label for="id-image"><span class="req-asterisk">*</span> Name</label>
+                                    <div>
+                                        <input id="rep-name" type="text" name="lastname" placeholder="Last name" required maxlength="50">
+                                        <input type="text" name="firstname" placeholder="First name" required maxlength="50">
+                                        <input type="text" name="middlename" placeholder="Middle name" maxlength="50">
+                                    </div>
+                                    <p class="error-text" style="display: none"></p>
+                                </div>
+                                <div class="input-forms">
+                                    <label for="auth_position"><span class="req-asterisk">*</span> Position</label>
+                                    <div>
+                                        <input id="auth_position" type="text" name="auth_position" value="Admin" disabled required maxlength="50">
+                                    </div>
+                                    <p class="error-text" style="display: none"></p>
+                                </div>
+                                <div class="input-forms">
+                                    <label for="contact"><span class="req-asterisk">*</span> Contact no.</label>
+                                    <div>
+                                        <input id="contact" type="text" name="contact" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="add-btn" type="button" id="add-auth-btn" onclick="addAuthRow()" class="add-auth-btn add-btn">
+                                <span class="material-symbols-outlined">add</span>
+                                Representative
+                            </button>
+                           
+                        </div>
+                    </section>
+                    <section class="group-details">
+                        <p class="group-name">Signatories</p>
+                        <p class="error-text" style="display: none"></p>
+                        <p style="margin: 0; font-size: 13px; color: #666; margin-bottom: 5px;">Authorized signatories to accept deliviries and sign invoices</p>
+                        <p class="error-text" style="display: none"></p>
+                        <div class="form-list" id="signature-container">
+                            
+                            <div class="sign-set" style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px; ">
+                                <div class="input-forms">
+                                    <label for="sign-name"><span class="req-asterisk">*</span> Name</label>
+                                    <div>
+                                        <input id="sign-name" type="text" name="lastname" placeholder="Last name" required maxlength="50">
+                                        <input type="text" name="firstname" placeholder="First name" required maxlength="50">
+                                        <input type="text" name="middlename" placeholder="Middle name" maxlength="50">
+                                    </div>
+                                    <p class="error-text" style="display: none"></p>
+                                </div>
+                                <div class="input-forms">
+                                    <label for="position"><span class="req-asterisk">*</span> Position</label>
+                                    <div>
+                                        <input id="position" type="text" name="sign_position" required maxlength="50">
+                                    </div>
+                                    <p class="error-text" style="display: none"></p>
+                                </div>
+                                <div class="input-forms">
+                                    <label for="id-signature"><span class="req-asterisk">*</span> E-signature</label>
+                                        <input type="file" id="id-signature" name="e_signature" accept="image/*" required>
+                                </div>
+                            </div>
+
+                            <button type="button" id="add-signatory-btn" onclick="addSignatureRow()" class="add-signatory-btn add-btn">
+                                <span class="material-symbols-outlined">add</span>
+                                Signatories
+                            </button>
+
+                        </div>
+                    </section>
+                    <section class="group-details">
+                        <p class="group-name">Bank details</p>
+                        <div class="form-list">
+                            <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px">
+                                <div class="input-forms">
+                                    <label for="account_name"> Account name</label>
+                                    <input type="text" name="account_name" id="account_name" style="width: 300px"  maxlength="255" >
+                                    <p class="error-text" style="display: none"></p>
+                                </div>
+                                <div class="input-forms">
+                                    <label for="bank"> Bank</label>
+                                    <input type="text" name="bank" id="bank" style="width: 80px"  maxlength="255" >
+                                    <p class="error-text" style="display: none"></p>
+                                </div>
+                                <div class="input-forms">
+                                    <label for="branch"> Branch</label>
+                                    <input type="text" name="branch" id="branch" style="width: 150px"  maxlength="200" >
+                                    <p class="error-text" style="display: none"></p>
+                                </div>   
+                                <div class="input-forms">
+                                    <label for="account_number"> Account number</label>
+                                    <input type="text" name="account_number" id="account_number" style="width: 150px"  maxlength="50" >
+                                    <p class="error-text" style="display: none"></p>
+                                </div> 
+                            </div>  
+                           
+                        </div>
+                    </section>
+                    <section class="group-details">
+                        <p class="group-name">Business</p>
+                        <div class="form-list">
+                                <div class="input-forms">
+                                    <label for="years"> How long have you been in the industry?</label>
+                                    <input type="text" name="years" id="years" placeholder="5 years" style="width: 150px"  maxlength="50">
+                                    <p class="error-text" style="display: none"></p>
+                                </div>
+                                <div class="input-forms">
+                                    <label for="reffered_by"> Referred by</label>
+                                    <input type="text" name="reffered_by" id="reffered_by" style="width: 200px"  maxlength="255" >
+                                    <p class="error-text" style="display: none"></p>
+                                </div>
+                                <div class="input-forms">
+                                    <label for="contacted_by"> Contacted by</label>
+                                    <input type="text" name="contacted_by" id="contacted_by" style="width: 200px"  maxlength="200" >
+                                    <p class="error-text" style="display: none"></p>
+                                </div>   
+                         
+                            </div>  
+                     
+                    </section>
+                </div>
+                <div class="step-section" id="step2">
+                    <p class="step-title-info">
+                        <span class="title">2/4 Documents filing</span>
+                        <span class="info">All documents listed are required. Files must be in PDF format and below 2MB.</span>
+                    </p>
+                    <section class="group-details" style="border-top-left-radius: 5px; border-top-right-radius: 5px;">
+                        <p class="group-name" style="margin-bottom: 10px;">Necessary documents</p>
+                        <div class="form-list" style="display: flex; flex-direction: column;">
+                            <div class="input-forms" >
+                                <label for="sec"><span class="req-asterisk">*</span> Securities and Exchange Commission (SEC)</label>
+                                <input type="file" class="docu-file" id="sec" name="SEC" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="bp"><span class="req-asterisk">*</span> Business permit</label>
+                                <input type="file" class="docu-file" id="bp" name="BP" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="bir"><span class="req-asterisk">*</span> BIR form 2303</label>
+                                <input type="file" class="docu-file" id="bir" name="BIR" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="mp"><span class="req-asterisk">*</span> Mayor's permit</label>
+                                <input type="file" class="docu-file" id="mp" name="MP" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label><span class="req-asterisk">*</span> Valid ID (2)</label>
+                                <input type="file" class="docu-file" id="valid_one" name="valid_one" accept="application/pdf" required>
+                                <input type="file" class="docu-file" id="valid_two" name="valid_two" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="bs"><span class="req-asterisk">*</span> Bank statement (min. 6 months)</label>
+                                <input type="file" class="docu-file" id="bs" name="BS" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="pb"><span class="req-asterisk">*</span> Proof of billing</label>
+                                <input type="file" class="docu-file" id="pb" name="PB" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="ncc"><span class="req-asterisk">*</span> Notarized corporation certificate (CORP)</label>
+                                <input type="file" class="docu-file" id="ncc" name="NCC" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="aib"><span class="req-asterisk">*</span> Articles of incorporation and bylaws (CORP)</label>
+                                <input type="file" class="docu-file" id="aib" name="AIB" accept="application/pdf" required>
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+                <div class="step-section" id="step3" style="width: 100%"> 
+                    <p class="step-title-info">
+                        <span class="title">3/4 Customer product requirements</span>
                         <span class="info">Answer the inputs below regarding your product requirements and delivery preferences</span>
                     </p>
                     
-                    <section class="group-details">
+                    <section class="group-details" style="border-top-left-radius: 5px; border-top-right-radius: 5px;">
                         <p class="group-name">Product search and add</p>
                         <div class="form-list">
                             <div class="input-forms" style="margin-bottom: 20px; width: 45%;">
                                 <label for="product-search"><span class="req-asterisk">*</span> Search for a product</label>
                                 <input type="text" id="product-search" style="width: 100%;" placeholder="Type to search products...">
-                                <div id="product-search-results" style="display:none; position: absolute; background: #fff; border: 1px solid #ccc; z-index: 10; width: 100%; max-height: 200px; overflow-y: auto;"></div>
+                                <div id="product-search-results" style="display:none; width: 300px; position: absolute; background: #fff; border: 1px solid #ccc; z-index: 10;  max-height: 200px; overflow-y: auto; border-radius: 10px; padding: 10px;">
+                                    
+                                </div>
                             </div>
                             <div id="all-products" style="display:none;">
                                 @foreach($products as $product)
@@ -219,8 +578,8 @@
                             </div>
                             
                             <div class="input-forms">
-                                <label for="del-add-1">Delivery address 1</label>
-                                <input type="text" id="del-add-1" name="delivery_address_1" maxlength="255">
+                                <label for="del-add-1"><span class="req-asterisk">*</span> Delivery address 1</label>
+                                <input type="text" id="del-add-1" name="delivery_address_1" maxlength="255" required>
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             
@@ -243,369 +602,18 @@
                         <div class="form-list">
                             <div class="input-forms">
                                 <label for="special-instruc">Special delivery instructions</label>
-                                <textarea id="special-instruc" name="delivery_instructions" rows="3" maxlength="255" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"></textarea>
+                                <textarea id="special-instruc" name="delivery_instructions" rows="3" maxlength="255" style="width: 500px; padding: 8px;  border-radius: 4px; resize: none;"></textarea>
                                 <p class="error-text" style="display: none"></p>
                             </div>
                         </div>
                     </section>
                 </div>
-                <div class="step-section" id="step1">
-                    <p class="step-title-info">
-                        <span class="title">1/3 Company information</span>
-                        <span class="info">Answer the inputs below regarding the right details of your company</span>
-                    </p>
-                    <section class="group-details">
-                        <p class="group-name">Profile</p>
-                        <div class="form-list">
-                            <div class="input-forms">
-                                <label for="company_name"><span class="req-asterisk">*</span> Company name</label>
-                                <input type="text" name="company_name" id="company_name" style="width: 250px"  maxlength="200" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                            <div class="input-forms">
-                                <label for="category"><span class="req-asterisk">*</span> Category</label>
-                                <select name="category" id="category" required>
-                                    <option value="" disabled selected>-- Select category --</option>
-                                    <option value="Wholesale">Wholesale</option>
-                                    <option value="Distributor">Distributor</option>
-                                    <option value="HRI">HRI</option>
-                                    <option value="Dealer">Dealer</option>
-                                </select>
-                            </div>
-
-                            <div class="input-forms">
-                                <label for="company-image">
-                                    <span class="req-asterisk">*</span> Company image/logo
-                                </label>
-
-                                <input type="file" class="image" id="company-image" name="image" accept="image/*">
-
-                                <div class="use-default">
-                                    <input type="checkbox" id="use-default" name="use_default">
-                                    <label for="use-default">Use default</label>
-                                </div>
-
-                                <input type="hidden" id="default-image-flag" name="default_image" value="false">
-
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-
-                        </div>
-                    </section>
-                    <section class="group-details">
-                        <p class="group-name">Address</p>
-                        <div class="form-list">
-                            <div class="input-forms">
-                                <label for="home_street"><span class="req-asterisk">*</span> Home address</label>
-                                <div class="office-address" >
-                                    <input type="text" name="home_street" id="home_street" required placeholder="Street" maxlength="255">
-                                    <input type="text" name="home_subdivision" id="home-subdivision" required placeholder="Subdivision" maxlength="255">
-                                    <input type="text" name="home_barangay" id="home-barangay" required placeholder="Barangay" maxlength="255">
-                                    <input type="text" name="home_city" id="home-city" required placeholder="City" maxlength="100">
-                                </div>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                            <div class="input-forms">
-                                <label for="office-street"><span class="req-asterisk">*</span> Office address</label>
-                                    <div class="office-address">
-                                        <input type="text" name="office_street" id="office-street" required placeholder="Street" maxlength="255">
-                                        <input type="text" name="office_subdivision" id="office-subdivision" required placeholder="Subdivision" maxlength="255">
-                                        <input type="text" name="office_barangay" id="office-barangay" required placeholder="Barangay" maxlength="255">
-                                        <input type="text" name="office_city" id="office-city" required placeholder="City" maxlength="100">
-                                    </div>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="group-details">
-                        <p class="group-name"></p>
-                        <div class="form-list">
-                            <div class="input-forms">
-                                <label for="mobile"><span class="req-asterisk">*</span> Mobile no.</label>
-                                <input type="text" name="mobile" id="mobile" style="width: 150px" placeholder="ex: 09XX-XXX-XXXX"  maxlength="11" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                            <div class="input-forms">
-                                <label for="tele"> Telephone no.</label>
-                                <input type="text" name="tele" id="tele" style="width: 150px" placeholder="ex: 02-XXX-XXXX"  maxlength="9" >
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                            <div class="input-forms">
-                                <label for="civil-status"> Civil status</label>
-                                    <select name="civil_status" id="civil-status">
-                                        <option value="" disabled selected>-- Select civil status --</option>
-                                        <option value="Single">Single</option>
-                                        <option value="Married">Married</option>
-                                        <option value="Divorced">Divorced</option>
-                                        <option value="Widowed">Widowed</option>
-                                    </select>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                            <div class="input-forms">
-                                <label for="citizenship"> Citizenship</label>
-                                    <select name="civil_status" id="citizenship">
-                                        <option value="" disabled selected>-- Select citizenship --</option>
-                                        <option value="Filipino">Filipino</option>
-                                        <option value="American">American</option>
-                                        <option value="Canadian">Canadian</option>
-                                        <option value="British">British</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                            <div class="input-forms">
-                                <label for="payment"><span class="req-asterisk">*</span> Payment method</label>
-                                    <select name="payment_method" id="payment" required>
-                                        <option value="" disabled selected>-- Select payment method --</option>
-                                        <option value="Cash">Cash</option>
-                                        <option value="Gcash">Gcash</option>
-                                        <option value="Bank transfer">Bank transfer</option>
-                                    </select>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                        </div>
-
-
-
-                    </section>
-                    <section class="group-details">
-                        <p class="group-name">ID verification</p>
-                        <div class="form-list">
-                            <div class="input-forms">
-                                <label for="id-image"><span class="req-asterisk">*</span> ID image</label>
-                                <input type="file" id="id-image" name="id_image" accept="image/*" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-                            <div class="input-forms">
-                                <label for="id-type"><span class="req-asterisk">*</span> Type of ID</label>
-                                <select name="category" id="id-type" required>
-                                    <option value="" disabled selected>-- Select type of ID --</option>
-                                        <option value="Passport">Passport</option>
-                                        <option value="Driver's License">Driver's License</option>
-                                        <option value="National ID">National ID</option>
-                                        <option value="SSS ID">SSS ID</option>
-                                        <option value="GSIS ID">GSIS ID</option>
-                                        <option value="UMID">UMID</option>
-                                        <option value="Postal ID">Postal ID</option>
-                                        <option value="PhilHealth ID">PhilHealth ID</option>
-                                        <option value="Voter's ID">Voter's ID</option>
-                                        <option value="PRC ID">PRC ID</option>
-                                </select>
-                            </div>
-                            <div class="input-forms">
-                                <label for="id_number"><span class="req-asterisk">*</span> ID number</label>
-                                <input type="text" name="id_number" id="id_number" style="width: 200px"  maxlength="100" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                            <div class="input-forms">
-                                <label for="birthdate"> Birthdate </label>
-                                <input type="date" name="birthdate" id="birthdate" style="width: 150px"  maxlength="100" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-                        </div>
-                    </section>
-                    <section class="group-details">
-                        <p class="group-name">Authorized representative</p>
-                        <p class="error-text-auth" style="display: none"></p>
-                        <div class="form-list" id="auth-container">
-         
-
-                            <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px">
-                                <div class="input-forms">
-                                    <label for="id-image"><span class="req-asterisk">*</span> Name</label>
-                                    <div>
-                                        <input id="rep-name" type="text" name="lastname" placeholder="Last name" required maxlength="50">
-                                        <input type="text" name="firstname" placeholder="First name" required maxlength="50">
-                                        <input type="text" name="middlename" placeholder="Middle name" maxlength="50">
-                                    </div>
-                                    <p class="error-text" style="display: none"></p>
-                                </div>
-                                <div class="input-forms">
-                                    <label for="auth_position"><span class="req-asterisk">*</span> Position</label>
-                                    <div>
-                                        <input id="auth_position" type="text" name="auth_position" value="Admin" disabled required maxlength="50">
-                                    </div>
-                                    <p class="error-text" style="display: none"></p>
-                                </div>
-                                <div class="input-forms">
-                                    <label for="contact"><span class="req-asterisk">*</span> Contact no.</label>
-                                    <div>
-                                        <input id="contact" type="text" name="contact" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button class="add-btn" type="button" id="add-auth-btn" onclick="addAuthRow()" class="add-auth-btn add-btn">
-                                <span class="material-symbols-outlined">add</span>
-                                Representative
-                            </button>
-                           
-                        </div>
-                    </section>
-                    <section class="group-details">
-                        <p class="group-name">Signatories</p>
-                        <p class="error-text" style="display: none"></p>
-                        <p style="margin: 0; font-size: 13px; color: #666; margin-bottom: 5px;">Authorized signatories to accept deliviries and sign invoices</p>
-                        <p class="error-text" style="display: none"></p>
-                        <div class="form-list" id="signature-container">
-                            
-                            <div class="sign-set" style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px; ">
-                                <div class="input-forms">
-                                    <label for="sign-name"><span class="req-asterisk">*</span> Name</label>
-                                    <div>
-                                        <input id="sign-name" type="text" name="lastname" placeholder="Last name" required maxlength="50">
-                                        <input type="text" name="firstname" placeholder="First name" required maxlength="50">
-                                        <input type="text" name="middlename" placeholder="Middle name" maxlength="50">
-                                    </div>
-                                    <p class="error-text" style="display: none"></p>
-                                </div>
-                                <div class="input-forms">
-                                    <label for="position"><span class="req-asterisk">*</span> Position</label>
-                                    <div>
-                                        <input id="position" type="text" name="position" required maxlength="50">
-                                    </div>
-                                    <p class="error-text" style="display: none"></p>
-                                </div>
-                                <div class="input-forms">
-                                    <label for="id-signature"><span class="req-asterisk">*</span> E-signature</label>
-                                        <input type="file" id="id-signature" name="e_signature" accept="image/*" required>
-                                </div>
-                            </div>
-
-                            <button type="button" id="add-signatory-btn" onclick="addSignatureRow()" class="add-signatory-btn add-btn">
-                                <span class="material-symbols-outlined">add</span>
-                                Signatories
-                            </button>
-
-                        </div>
-                    </section>
-                    <section class="group-details">
-                        <p class="group-name">Bank details</p>
-                        <div class="form-list">
-                            <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px">
-                                <div class="input-forms">
-                                    <label for="account_name"> Account name</label>
-                                    <input type="text" name="account_name" id="account_name" style="width: 300px"  maxlength="255" >
-                                    <p class="error-text" style="display: none"></p>
-                                </div>
-                                <div class="input-forms">
-                                    <label for="bank"> Bank</label>
-                                    <input type="text" name="bank" id="bank" style="width: 80px"  maxlength="255" >
-                                    <p class="error-text" style="display: none"></p>
-                                </div>
-                                <div class="input-forms">
-                                    <label for="branch"> Branch</label>
-                                    <input type="text" name="branch" id="branch" style="width: 150px"  maxlength="200" >
-                                    <p class="error-text" style="display: none"></p>
-                                </div>   
-                                <div class="input-forms">
-                                    <label for="account_number"> Account number</label>
-                                    <input type="text" name="account_number" id="account_number" style="width: 150px"  maxlength="50" >
-                                    <p class="error-text" style="display: none"></p>
-                                </div> 
-                            </div>  
-                           
-                        </div>
-                    </section>
-                    <section class="group-details">
-                        <p class="group-name">Business</p>
-                        <div class="form-list">
-                                <div class="input-forms">
-                                    <label for="years"> How long have you been in the industry?</label>
-                                    <input type="text" name="years" id="years" placeholder="5 years" style="width: 150px"  maxlength="50">
-                                    <p class="error-text" style="display: none"></p>
-                                </div>
-                                <div class="input-forms">
-                                    <label for="reffered_by"> Referred by</label>
-                                    <input type="text" name="reffered_by" id="reffered_by" style="width: 200px"  maxlength="255" >
-                                    <p class="error-text" style="display: none"></p>
-                                </div>
-                                <div class="input-forms">
-                                    <label for="contacted_by"> Contacted by</label>
-                                    <input type="text" name="contacted_by" id="contacted_by" style="width: 200px"  maxlength="200" >
-                                    <p class="error-text" style="display: none"></p>
-                                </div>   
-                         
-                            </div>  
-                     
-                    </section>
-                </div>
-                <div class="step-section" id="step2">
-                    <p class="step-title-info">
-                        <span class="title">2/3 Documents filing</span>
-                        <span class="info">All documents listed are required. Files must be in PDF format and below 2MB.</span>
-                    </p>
-                    <section class="group-details" style="width: 100%">
-                        <p class="group-name" style="margin-bottom: 10px;">Necessary documents</p>
-                        <div class="form-list" style="display: flex; flex-direction: column;">
-                            <div class="input-forms" >
-                                <label for="sec"><span class="req-asterisk">*</span> Securities and Exchange Commission (SEC)</label>
-                                <input type="file" class="docu-file" id="sec" name="SEC" accept="application/pdf" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-                            <div class="input-forms">
-                                <label for="bp"><span class="req-asterisk">*</span> Business permit</label>
-                                <input type="file" class="docu-file" id="bp" name="BP" accept="application/pdf" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-                            <div class="input-forms">
-                                <label for="bir"><span class="req-asterisk">*</span> BIR form 2303</label>
-                                <input type="file" class="docu-file" id="bir" name="BIR" accept="application/pdf" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-                            <div class="input-forms">
-                                <label for="mp"><span class="req-asterisk">*</span> Mayor's permit</label>
-                                <input type="file" class="docu-file" id="mp" name="MP" accept="application/pdf" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-                            <div class="input-forms">
-                                <label><span class="req-asterisk">*</span> Valid ID (2)</label>
-                                <input type="file" class="docu-file" id="valid_one" name="valid_one" accept="application/pdf" required>
-                                <input type="file" class="docu-file" id="valid_two" name="valid_two" accept="application/pdf" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-                            <div class="input-forms">
-                                <label for="bs"><span class="req-asterisk">*</span> Bank statement (min. 6 months)</label>
-                                <input type="file" class="docu-file" id="bs" name="BS" accept="application/pdf" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-                            <div class="input-forms">
-                                <label for="pb"><span class="req-asterisk">*</span> Proof of billing</label>
-                                <input type="file" class="docu-file" id="pb" name="PB" accept="application/pdf" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-                            <div class="input-forms">
-                                <label for="ncc"><span class="req-asterisk">*</span> Notarized corporation certificate (CORP)</label>
-                                <input type="file" class="docu-file" id="ncc" name="NCC" accept="application/pdf" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-                            <div class="input-forms">
-                                <label for="aib"><span class="req-asterisk">*</span> Articles of incorporation and bylaws (CORP)</label>
-                                <input type="file" class="docu-file" id="aib" name="AIB" accept="application/pdf" required>
-                                <p class="error-text" style="display: none"></p>
-                            </div>
-
-                        </div>
-                    </section>
-
-                </div>
-
                 <div class="step-section" id="step4">
                     <p class="step-title-info">
-                        <span class="title">Account security set-up</span>
+                        <span class="title">4/4 Account security set-up</span>
                         <span class="info">Use your official or a private email you don’t share with others. Choose a strong, unique password to keep your account secure.</span>
                     </p>
-                    <section class="group-details">
+                   <section class="group-details" style="border-top-left-radius: 5px; border-top-right-radius: 5px;">
                         <p class="group-name">Email address</p>
                         <div class="form-list">
                             <div class="input-forms">
@@ -657,7 +665,8 @@
                                 </p>
                             </div>
                             <div class="input-forms" style="flex-direction: row">
-                                <input type="checkbox" name="agreement" id="agreement" required style="margin: 0" required>
+                                <span class="req-asterisk">*</span>
+                                <input type="checkbox" name="password" id="agreement" required style="margin: 0" required>
                                 <label for="agreement" style="margin: 0">
                                     I have read and understood the above agreement, and I hereby confirm my acceptance of the terms and conditions stated.
                                 </label>

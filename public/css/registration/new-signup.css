@@ -125,7 +125,6 @@ body{
     flex-direction: column;
     padding: 10px;
     box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-    border-radius: 5px;
     background-color: #ffffff;
     gap: 5px;
 }
@@ -159,14 +158,19 @@ body{
     margin: 0;
 }
 .input-forms input,
-.input-forms select{
+.input-forms select,
+.input-forms textarea{
     border-radius: 5px;
     font-size: 14px;
     color: #333;
     padding: 10px 10px;
     border: none;
     outline: none;
+    background-color: #f9fbfc;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;
+}
+.input-forms textarea{
+    width: 300px;
 }
 .input-forms .error-text{
     font-size: 12px;

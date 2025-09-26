@@ -41,7 +41,7 @@ function addSignatureRow() {
         </div>
         <div class="input-forms">
             <div>
-                <input id="position-${signatureCount}" type="text" name="position" required maxlength="50">
+                <input id="position-${signatureCount}" type="text" name="sign_position" required maxlength="50">
             </div>
             <p class="error-text" style="display: none"></p>
         </div>
