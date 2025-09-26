@@ -11,11 +11,11 @@ class Signatories extends Model
 
     protected $fillable = [
         'supplier_id',
-        'signatory_last_name',
-        'signatory_first_name',
-        'signatory_middle_name',
-        'signatory_relationship',
-        'signatory_contact_no',
+        'lastname', 
+        'firstname', 
+        'middlename', 
+        'sign_position', 
+        'e_signature',
     ];
 
     public function supplier()

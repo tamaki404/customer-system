@@ -8,7 +8,14 @@ class ProductRequirements extends Model
 {
     protected $fillable = [
         'user_id',
-        'supplier_id',
+        'product_id',
+        'condition',
+        'weight_requirement',
+        'primary_packaging',
+        'secondary_packaging',
+        'labeling_requiremen',
+        'rejection_parameter'
+
 
     ];
 }
