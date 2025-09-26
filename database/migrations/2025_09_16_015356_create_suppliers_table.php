@@ -38,11 +38,11 @@ return new class extends Migration
         Schema::create('representatives', function (Blueprint $table) {
             $table->id();
             $table->string('user_id');
-            $table->string('lastname', 50);
-            $table->string('firstname', 50);
-            $table->string('middlename', 50)->nullable();
+            $table->string('rep_lastname', 50);
+            $table->string('rep_firstname', 50);
+            $table->string('rep_middlename', 50)->nullable();
             $table->string('auth_position', 50);
-            $table->string('contact', 15);
+            $table->string('rep_contact', 15);
             $table->timestamps();
         });
 
@@ -50,9 +50,9 @@ return new class extends Migration
         Schema::create('signatories', function (Blueprint $table) {
             $table->id();
             $table->string('user_id');
-            $table->string('lastname', 50);
-            $table->string('firstname', 50);
-            $table->string('middlename', 50)->nullable();
+            $table->string('sign_lastname', 50);
+            $table->string('sign_firstname', 50);
+            $table->string('sign_middlename', 50)->nullable();
             $table->string('sign_position', 50);
 
             $table->string('e_mime_type')->nullable();

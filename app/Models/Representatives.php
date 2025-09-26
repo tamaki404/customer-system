@@ -11,11 +11,11 @@ class Representatives extends Model
 
     protected $fillable = [
         'user_id',
-        'lastname', 
-        'firstname', 
-        'middlename', 
+        'rep_lastname', 
+        'rep_firstname', 
+        'rep_middlename', 
         'auth_position', 
-        'contact',
+        'rep_contact',
     ];
 
     public function supplier()

@@ -11,7 +11,9 @@ use App\Models\Documents;
 use App\Models\Staffs;
 use App\Models\AccountStatus;
 use Illuminate\Support\Facades\Log;
-
+use App\Models\Address;
+use App\Models\DeliveryRequirements;
+use App\Models\ProductRequirements;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +25,15 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-
+        public static function randomBase36String(int $length): string
+        {
+            $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $str = '';
+            for ($i = 0; $i < $length; $i++) {
+                $str .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            return $str;
+        }
     // public function registerSupplier(Request $request)
     // {
     //     // Rate limiting for registration attempts
@@ -368,261 +378,336 @@ class UserController extends Controller
     //     }
 
   
-    public function registerSupplier(Request $request)
-    {
-        // Rate limiting for registration attempts
-        $key = 'registration:' . $request->ip();
-        if (RateLimiter::tooManyAttempts($key, 5)) {
-            $seconds = RateLimiter::availableIn($key);
-            return redirect()->back()->withErrors(['error' => "Too many registration attempts. Please try again in {$seconds} seconds."]);
+public function registerSupplier(Request $request)
+{
+    $request->validate([
+        // User
+        'email_add'       => 'required|email|unique:users,email_address|max:255',
+        'password'        => 'required|string|confirmed|min:6|max:255',
+        'image'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'default_image'   => 'nullable|string|in:true,false',
+        'agreement'       => 'required|accepted',
+
+        // Addresses
+        'home_street'     => 'required|string|max:255',
+        'home_subdivision'=> 'required|string|max:255',
+        'home_barangay'   => 'required|string|max:255',
+        'home_city'       => 'required|string|max:100',
+        'office_street'   => 'required|string|max:255',
+        'office_subdivision'=> 'required|string|max:255',
+        'office_barangay' => 'required|string|max:255',
+        'office_city'     => 'required|string|max:100',
+
+        // Suppliers
+        'company_name'    => 'required|string|max:200',
+        'category'        => 'required|string|in:Wholesale,Distributor,HRI,Dealer',
+        'mobile'          => 'required|string|regex:/^09[0-9]{9}$/|size:11',
+        'citizenship'     => 'required|string|max:100',
+        'payment_method'  => 'required|string|in:Cash,Gcash,Bank transfer',
+        'tele'            => 'nullable|string|regex:/^02-[0-9]{3}-[0-9]{4}$/|size:9',
+        'civil_status'    => 'nullable|string|in:Single,Married,Divorced,Widowed',
+        'id_image'        => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'id_type'         => 'required|string|in:Passport,Driver\'s License,National ID,SSS ID,GSIS ID,UMID,Postal ID,PhilHealth ID,Voter\'s ID,PRC ID',
+        'id_number'       => 'required|string|max:100',
+        'birthdate'       => 'required|date|before:today',
+
+        // Representatives 
+        'rep_lastname'    => 'required|string|max:50',
+        'rep_firstname'   => 'required|string|max:50',
+        'rep_middlename'  => 'nullable|string|max:50',
+        'auth_position'   => 'required|string|max:50',
+        'rep_contact'     => 'required|string|regex:/^09[0-9]{9}$/|size:11',
+
+        // Signatories 
+        'sign_lastname'   => 'required|string|max:50',
+        'sign_firstname'  => 'required|string|max:50',
+        'sign_middlename' => 'nullable|string|max:50',
+        'sign_position'   => 'required|string|max:50',
+        'e_image'         => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+
+        // Banks
+        'account_name'    => 'nullable|string|max:255',
+        'bank'            => 'nullable|string|max:255',
+        'branch'          => 'nullable|string|max:200',
+        'account_number'  => 'nullable|string|max:50',
+
+        // Business
+        'years'           => 'nullable|string|max:50',
+        'reffered_by'     => 'nullable|string|max:255',
+        'contacted_by'    => 'nullable|string|max:200',
+
+        // Documents (all required PDFs)
+        'SEC'             => 'required|file|mimes:pdf|max:2048',
+        'BP'              => 'required|file|mimes:pdf|max:2048',
+        'BIR'             => 'required|file|mimes:pdf|max:2048',
+        'MP'              => 'required|file|mimes:pdf|max:2048',
+        'valid_one'       => 'required|file|mimes:pdf|max:2048',
+        'valid_two'       => 'required|file|mimes:pdf|max:2048',
+        'BS'              => 'required|file|mimes:pdf|max:2048',
+        'PB'              => 'required|file|mimes:pdf|max:2048',
+        'NCC'             => 'required|file|mimes:pdf|max:2048',
+        'AIB'             => 'required|file|mimes:pdf|max:2048',
+
+        // Product Requirements (arrays for multiple products)
+        'product_ids'     => 'required|array|min:1',
+        'product_ids.*'   => 'required|exists:products,id',
+
+        // Delivery Requirements
+        'ppe_requirements'       => 'required|string|max:255',
+        'delivery_frequency'     => 'required|string|max:255',
+        'delivery_address_1'     => 'required|string|max:255',
+        'delivery_address_2'     => 'nullable|string|max:255',
+        'delivery_address_3'     => 'nullable|string|max:255',
+        'delivery_instructions'  => 'nullable|string|max:255',
+    ]);
+
+    // Additional dynamic validation for product requirements
+    $productIds = $request->input('product_ids', []);
+    $dynamicRules = [];
+    
+    foreach ($productIds as $productId) {
+        $dynamicRules["condition_{$productId}"] = 'required|array|min:1';
+        $dynamicRules["condition_{$productId}.*"] = 'in:fresh,frozen';
+        $dynamicRules["weight_requirement_{$productId}"] = 'required|string|max:50';
+        $dynamicRules["primary_packaging_{$productId}"] = 'required|string|max:100';
+        $dynamicRules["secondary_packaging_{$productId}"] = 'required|string|max:100';
+        $dynamicRules["labeling_requirement_{$productId}"] = 'required|string|max:255';
+        $dynamicRules["rejection_parameter_{$productId}"] = 'required|string|max:255';
+    }
+    
+    $request->validate($dynamicRules);
+
+    DB::beginTransaction();
+
+    // ID generation
+    $date = date('Ymd');
+    $user_id = 'USR-' . $date . '-' . $this->randomBase36String(5);
+    $supplier_id = 'SUP-' . $date . '-' . $this->randomBase36String(5);
+
+    // Define document types for later use
+    $documentTypes = [
+        'SEC' => 'Securities and Exchange Commission',
+        'BP' => 'Business Permit',
+        'BIR' => 'BIR Form 2303',
+        'MP' => 'Mayor\'s Permit',
+        'valid_one' => 'Valid ID 1',
+        'valid_two' => 'Valid ID 2',
+        'BS' => 'Bank Statement',
+        'PB' => 'Proof of Billing',
+        'NCC' => 'Notarized Corporation Certificate',
+        'AIB' => 'Articles of Incorporation and Bylaws',
+    ];
+
+    try {
+        // Handle company image upload or use default
+        $companyImagePath = null;
+        if ($request->input('default_image') === 'true' || $request->boolean('use_default')) {
+            $companyImagePath = 'assets/default-company-logo.png'; // Default image path
+        } elseif ($request->hasFile('image')) {
+            $companyImage = $request->file('image');
+            $companyImageName = $supplier_id . '_company_' . time() . '.' . $companyImage->getClientOriginalExtension();
+            $companyImagePath = $companyImage->storeAs('suppliers/company-images', $companyImageName, 'public');
         }
-        RateLimiter::hit($key, 300);
-        $this->validateSecurity($request);
 
-        $request->validate([
-            // User
-            'email_address'   => 'required|email|unique:users,email_address',
-            'password'        => 'required|string|confirmed|min:6',
-            'image'           => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        // Handle ID image upload
+        $idImagePath = null;
+        if ($request->hasFile('id_image')) {
+            $idImage = $request->file('id_image');
+            $idImageName = $supplier_id . '_id_' . time() . '.' . $idImage->getClientOriginalExtension();
+            $idImagePath = $idImage->storeAs('suppliers/id-images', $idImageName, 'public');
+        }
 
-            // Supplier
-            'company_name'    => 'required|string|max:255',
-            'home_street'     => 'required|string|max:255',
-            'home_subdivision'=> 'required|string|max:255',
-            'home_barangay'   => 'required|string|max:255',
-            'home_city'       => 'required|string|max:100',
-            'office_street'   => 'required|string|max:255',
-            'office_subdivision'=> 'required|string|max:255',
-            'office_barangay' => 'required|string|max:255',
-            'office_city'     => 'required|string|max:100',
-            'mobile_no'       => 'required|string|max:15',
-            'telephone_no'    => 'required|string|max:15',
-            'civil_status'    => 'required|string',
-            'citizenship'     => 'required|string',
-            'payment_method'  => 'required|string',
-            'salesman_relationship' => 'nullable|string',
-            'weekly_volume'   => 'nullable|string',
-            'date_required'   => 'nullable|date',
-            'agreement'       => 'required|accepted',
+        // Handle e-signature image upload
+        $eSignaturePath = null;
+        if ($request->hasFile('e_image')) {
+            $eSignature = $request->file('e_image');
+            $eSignatureName = $supplier_id . '_signature_' . time() . '.' . $eSignature->getClientOriginalExtension();
+            $eSignaturePath = $eSignature->storeAs('suppliers/signatures', $eSignatureName, 'public');
+        }
 
-            // Optional fields validation
-            'birthdate'       => 'nullable|date',
-            'valid_id_no'     => 'nullable|string|max:255',
-            'id_type'         => 'nullable|string',
-            'other_products_interest' => 'nullable|string|max:255',
-            'referred_by'     => 'nullable|string|max:255',
-
-            // Representatives (make required since form shows required)
-            'rep_last_name'   => 'required|string|max:50',
-            'rep_first_name'  => 'required|string|max:50',
-            'rep_middle_name' => 'nullable|string|max:50',
-            'rep_relationship'=> 'required|string|max:50',
-            'rep_contact_no'  => 'required|string|max:15',
-
-            // Signatories (make required since form shows required)
-            'signatory_last_name'   => 'required|string|max:50',
-            'signatory_first_name'  => 'required|string|max:50',
-            'signatory_middle_name' => 'nullable|string|max:50',
-            'signatory_relationship'=> 'required|string|max:50',
-            'signatory_contact_no'  => 'required|string|max:15',
-
-            // Bank details (optional)
-            'account_name'    => 'nullable|string|max:255',
-            'bank'            => 'nullable|string|max:255',
-            'branch'          => 'nullable|string|max:255',
-            'account_number'  => 'nullable|string|max:255',
-
-            // File uploads - make required as per form
-            'AOL'             => 'required|array|min:1',
-            'AOL.*'           => 'image|mimes:jpg,jpeg,png,webp|max:2048',
-            'COR'             => 'required|array|min:1',
-            'COR.*'           => 'image|mimes:jpg,jpeg,png,webp|max:2048',
-            'BC'              => 'required|array|min:1',
-            'BC.*'            => 'image|mimes:jpg,jpeg,png,webp|max:2048',
-            'BP'              => 'required|array|min:1',
-            'BP.*'            => 'image|mimes:jpg,jpeg,png,webp|max:2048',
-            'SP'              => 'required|array|min:1',
-            'SP.*'            => 'image|mimes:jpg,jpeg,png,webp|max:2048',
-            'EMP'             => 'required|array|min:1',
-            'EMP.*'           => 'image|mimes:jpg,jpeg,png,webp|max:2048',
-            'CTC'             => 'required|array|min:1',
-            'CTC.*'           => 'image|mimes:jpg,jpeg,png,webp|max:2048',
-            'PR'              => 'required|array|min:1',
-            'PR.*'            => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+        // Create User
+        $user = User::create([
+            'user_id' => $user_id,
+            'email_address' => $request->email_add,
+            'password' => Hash::make($request->password),
+            'role' => 'supplier',
+            'status' => 'pending', // Pending approval
+            'email_verified_at' => null,
         ]);
 
-        DB::beginTransaction();
+        // Create Home Address
+        $homeAddress = Address::create([
+            'user_id' => $user_id,
+            'street' => $request->home_street,
+            'subdivision' => $request->home_subdivision,
+            'barangay' => $request->home_barangay,
+            'city' => $request->home_city,
+            'type' => 'home',
+        ]);
 
-        $date = date('Ymd');
+        // Create Office Address
+        $officeAddress = Address::create([
+            'user_id' => $user_id,
+            'street' => $request->office_street,
+            'subdivision' => $request->office_subdivision,
+            'barangay' => $request->office_barangay,
+            'city' => $request->office_city,
+            'type' => 'office',
+        ]);
 
-                    function randomBase36String(int $length): string {
-                        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                        $str = '';
-                        for ($i = 0; $i < $length; $i++) {
-                            $str .= $chars[random_int(0, strlen($chars) - 1)];
-                        }
-                        return $str;
-                    }
-        $user_id = 'USR-' . $date . '-' . randomBase36String(5);
-        $supplier_id = 'SUP-' . $date . '-' . randomBase36String(5);
-        $status_id = 'STATUS-' . $date . '-' . randomBase36String(5);
+        // Create Supplier
+        $supplier = Suppliers::create([
+            'user_id' => $user_id,
+            'supplier_id' => $supplier_id,
+            'company_name' => $request->company_name,
+            'category' => $request->category,
+            'image' => $companyImagePath,
+            'mobile' => $request->mobile,
+            'telephone' => $request->tele,
+            'civil_status' => $request->civil_status,
+            'citizenship' => $request->citizenship,
+            'payment_method' => $request->payment_method,
+            'id_image' => $idImagePath,
+            'id_type' => $request->id_type,
+            'id_number' => $request->id_number,
+            'birthdate' => $request->birthdate,
+            'years_in_industry' => $request->years,
+            'referred_by' => $request->reffered_by,
+            'contacted_by' => $request->contacted_by,
+            'registration_date' => now(),
+            'status' => 'pending',
+        ]);
 
-        try {
-            // Handle company logo upload as BLOB with metadata
-            $imageBlob = null;
-            $imageMimeType = null;
-            $imageFilename = null;
-            $imageSize = null;
-            
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageBlob = file_get_contents($image->getRealPath());
-                $imageMimeType = $image->getMimeType();
-                $imageFilename = $image->getClientOriginalName();
-                $imageSize = $image->getSize();
-            }
+        // Create Representative
+        $representative = Representatives::create([
+            'user_id' => $user_id,
+            'lastname' => $request->rep_lastname,
+            'firstname' => $request->rep_firstname,
+            'middlename' => $request->rep_middlename,
+            'position' => $request->auth_position,
+            'contact_number' => $request->rep_contact,
+            'is_primary' => true,
+        ]);
 
-            // 1. Create User
-            $user = User::create([
-                'user_id'       => $user_id,
-                'email_address' => $request->email_address,
-                'password' => $request->password,
-                'role'          => 'Supplier',
-                'role_type'     => 'supplier',
-                'image'         => $imageBlob,
-                'image_mime_type' => $imageMimeType,
-                'image_filename' => $imageFilename,
-                'image_size'    => $imageSize,
+        // Create Signatory
+        $signatory = Signatories::create([
+            'user_id' => $user_id,
+            'lastname' => $request->sign_lastname,
+            'firstname' => $request->sign_firstname,
+            'middlename' => $request->sign_middlename,
+            'position' => $request->sign_position,
+            'signature_image' => $eSignaturePath,
+            'is_primary' => true,
+        ]);
+
+        // Create Bank Details (if provided)
+        if ($request->filled('account_name') || $request->filled('bank')) {
+            $bankDetails = Banks::create([
+                'user_id' => $user_id,
+                'account_name' => $request->account_name,
+                'bank_name' => $request->bank,
+                'branch' => $request->branch,
+                'account_number' => $request->account_number,
             ]);
+        }
 
-                AccountStatus::create([
-                    'supplier_id'       => $supplier_id,
-                    'status_id'         => $status_id,
-                    'acc_status'        => $request->acc_status === 'Pending',
-                    'reason_to_decline' => $request->acc_status === 'Declined' ? $request->reason_to_decline : null,
-                    'staff_id'          => $request->staff_id  ? : null,
+        // Handle document uploads
+        foreach ($documentTypes as $key => $description) {
+            if ($request->hasFile($key)) {
+                $file = $request->file($key);
+                $fileName = $supplier_id . '_' . strtolower($key) . '_' . time() . '.pdf';
+                $filePath = $file->storeAs('suppliers/documents', $fileName, 'public');
+                
+                Documents::create([
+                    'user_id' => $user_id,
+                    'document_type' => $key,
+                    'document_name' => $description,
+                    'file_path' => $filePath,
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType(),
+                    'original_filename' => $file->getClientOriginalName(),
+                    'uploaded_at' => now(),
                 ]);
-
-
-
-            // 2. Create Supplier
-            $supplier = Suppliers::create([
-                'user_id'       => $user_id,
-                'supplier_id'   => $supplier_id,
-                'company_name'  => $request->company_name,
-                'home_street'   => $request->input('home_street'),
-                'home_subdivision' => $request->input('home_subdivision'),
-                'home_barangay' => $request->input('home_barangay'),
-                'home_city'     => $request->input('home_city'),
-                'office_street' => $request->input('office_street'),
-                'office_subdivision' => $request->input('office_subdivision'),
-                'office_barangay' => $request->input('office_barangay'),
-                'office_city'   => $request->input('office_city'),
-                'mobile_no'     => $request->mobile_no,
-                'telephone_no'  => $request->telephone_no,
-                'birthdate'     => $request->birthdate,
-                'valid_id_no'   => $request->valid_id_no,
-                'id_type'       => $request->id_type,
-                'civil_status'  => $request->civil_status,
-                'citizenship'   => $request->citizenship,
-                'payment_method'=> $request->payment_method,
-                'salesman_relationship' => $request->salesman_relationship,
-                'weekly_volume' => $request->weekly_volume,
-                'other_products_interest' => $request->other_products_interest,
-                'date_required' => $request->date_required,
-                'referred_by'   => $request->referred_by,
-                'product_requirements' => null, 
-                'agreement'     => true,
-            ]);
-
-            // 3. Authorized Representative
-            Representatives::create([
-                'supplier_id'       => $supplier->supplier_id,
-                'rep_last_name'     => $request->rep_last_name,
-                'rep_first_name'    => $request->rep_first_name,
-                'rep_middle_name'   => $request->rep_middle_name,
-                'rep_relationship'  => $request->rep_relationship,
-                'rep_contact_no'    => $request->rep_contact_no,
-            ]);
-
-            // 4. Authorized Signatory
-            Signatories::create([
-                'supplier_id'           => $supplier->supplier_id,
-                'signatory_last_name'   => $request->signatory_last_name,
-                'signatory_first_name'  => $request->signatory_first_name,
-                'signatory_middle_name' => $request->signatory_middle_name,
-                'signatory_relationship'=> $request->signatory_relationship,
-                'signatory_contact_no'  => $request->signatory_contact_no,
-            ]);
-
-            // 5. Bank Details
-            Banks::create([
-                'supplier_id'   => $supplier->supplier_id,
-                'account_name'  => $request->account_name,
-                'bank'          => $request->bank,
-                'branch'        => $request->branch,
-                'account_number'=> $request->account_number,
-            ]);
-
-            // 6. Upload Documents (loop each group)
-            $docGroups = [
-                'AOL' => 'Affidavit of Loss',
-                'COR' => 'Certificate of Registration',
-                'BC'  => 'Barangay Clearance',
-                'BP'  => 'Business Permit',
-                'SP'  => 'Sanitary Permit',
-                'EMP' => 'Environmental Management Permit',
-                'CTC' => 'Community Tax Certificate',
-                'PR'  => 'Product Requirements',
-            ];
-
-            foreach ($docGroups as $key => $type) {
-                if ($request->hasFile($key)) {
-                    foreach ($request->file($key) as $file) {
-                        Documents::create([
-                            'supplier_id' => $supplier->supplier_id,
-                            'type'        => $type,
-                            'file_name'   => $file->getClientOriginalName(),
-                            'file_mime'   => $file->getMimeType(),
-                            'file_size'   => $file->getSize(),
-                            'file'        => file_get_contents($file->getRealPath()), 
-                        ]);
-                    }
-                }
             }
+        }
 
-            // Create and send verification token
-            $plainToken = Str::random(64);
-            DB::table('email_verification_tokens')->insert([
-                'user_id'    => $user->user_id,
-                'email'      => $user->email_address,
-                'token'      => hash('sha256', $plainToken),
-                'expires_at' => now()->addDay(),
-                'created_at' => now(),
-                'updated_at' => now(),
+        // Create Product Requirements for each selected product
+        foreach ($productIds as $productId) {
+            $conditions = $request->input("condition_{$productId}", []);
+            $conditionString = implode(',', $conditions);
+            
+            ProductRequirements::create([
+                'user_id' => $user_id,
+                'product_id' => $productId,
+                'condition' => $conditionString,
+                'weight_requirement' => $request->input("weight_requirement_{$productId}"),
+                'primary_packaging' => $request->input("primary_packaging_{$productId}"),
+                'secondary_packaging' => $request->input("secondary_packaging_{$productId}"),
+                'labeling_requirement' => $request->input("labeling_requirement_{$productId}"),
+                'rejection_parameter' => $request->input("rejection_parameter_{$productId}"),
             ]);
-
-            $verifyUrl = url('/email/verify?token=' . $plainToken . '&uid=' . urlencode($user->user_id));
-
-            try {
-                Mail::send('emails.verify', ['verifyUrl' => $verifyUrl], function($message) use ($user) {
-                    $message->to($user->email_address)->subject('Verify your email address');
-                });
-            } catch (\Throwable $mailErr) {
-                Log::error('Verification email send failed: ' . $mailErr->getMessage());
-            }
-
-            DB::commit(); 
-
-            return redirect()->route('verification.notice')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Supplier registration error: ' . $e->getMessage());
-            return redirect()->back()->withErrors(['error' => 'Registration failed. Please try again.'])->withInput();
         }
+
+        // Create Delivery Requirements
+        DeliveryRequirements::create([
+            'user_id' => $user_id,
+            'ppe_requirements' => $request->ppe_requirements,
+            'delivery_frequency' => $request->delivery_frequency,
+            'delivery_address_1' => $request->delivery_address_1,
+            'delivery_address_2' => $request->delivery_address_2,
+            'delivery_address_3' => $request->delivery_address_3,
+            'delivery_instructions' => $request->delivery_instructions,
+        ]);
+
+        DB::commit();
+
+        // Send email verification notification
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Exception $emailError) {
+            Log::warning('Email verification failed to send after registration', [
+                'user_id' => $user_id,
+                'email' => $request->email_add,
+                'error' => $emailError->getMessage()
+            ]);
         }
-  
+
+        // Log successful registration
+        Log::info('Supplier registration successful', [
+            'user_id' => $user_id,
+            'supplier_id' => $supplier_id,
+            'email' => $request->email_add,
+            'company_name' => $request->company_name,
+            'registration_time' => now()
+        ]);
+
+        return redirect()->route('signin')->with('success', 
+            'Registration successful! Your supplier account has been created and is pending approval. ' .
+            'Please check your email for verification and wait for admin confirmation.'
+        );
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        
+
+        Log::error('Supplier registration error: ' . $e->getMessage(), [
+            'user_id' => $user_id ?? 'N/A',
+            'supplier_id' => $supplier_id ?? 'N/A',
+            'email' => $request->email_add ?? 'N/A',
+            'company_name' => $request->company_name ?? 'N/A',
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return redirect()->back()
+            ->withErrors(['error' => 'Registration failed due to a system error. Please try again or contact support if the problem persists.'])
+            ->withInput($request->except(['password', 'password_confirmation', 'image', 'id_image', 'e_image']));
+    }
+}
+
+
   
     public function registerStaff(Request $request){
        

@@ -271,9 +271,9 @@
                                 <div class="input-forms">
                                     <label for="id-image"><span class="req-asterisk">*</span> Name</label>
                                     <div>
-                                        <input id="rep-name" type="text" name="lastname" placeholder="Last name" required maxlength="50">
-                                        <input type="text" name="firstname" placeholder="First name" required maxlength="50">
-                                        <input type="text" name="middlename" placeholder="Middle name" maxlength="50">
+                                        <input id="rep-name" type="text" name="rep_lastname" placeholder="Last name" required maxlength="50">
+                                        <input type="text" name="rep_firstname" placeholder="First name" required maxlength="50">
+                                        <input type="text" name="rep_middlename" placeholder="Middle name" maxlength="50">
                                     </div>
                                     <p class="error-text" style="display: none"></p>
                                 </div>
@@ -287,7 +287,7 @@
                                 <div class="input-forms">
                                     <label for="contact"><span class="req-asterisk">*</span> Contact no.</label>
                                     <div>
-                                        <input id="contact" type="text" name="contact" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11">
+                                        <input id="contact" type="text" name="rep_contact" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11">
                                     </div>
                                 </div>
                             </div>
@@ -310,9 +310,9 @@
                                 <div class="input-forms">
                                     <label for="sign-name"><span class="req-asterisk">*</span> Name</label>
                                     <div>
-                                        <input id="sign-name" type="text" name="lastname" placeholder="Last name" required maxlength="50">
-                                        <input type="text" name="firstname" placeholder="First name" required maxlength="50">
-                                        <input type="text" name="middlename" placeholder="Middle name" maxlength="50">
+                                        <input id="sign-name" type="text" name="sign_lastname" placeholder="Last name" required maxlength="50">
+                                        <input type="text" name="sign_firstname" placeholder="First name" required maxlength="50">
+                                        <input type="text" name="sign_middlename" placeholder="Middle name" maxlength="50">
                                     </div>
                                     <p class="error-text" style="display: none"></p>
                                 </div>
