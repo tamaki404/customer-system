@@ -16,81 +16,70 @@ return new class extends Migration
             $table->id();
             $table->string('user_id');
             $table->string('supplier_id');
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('action_at')->nullable();
-
-            $table->string('company_name');
-
-            // Home Address
-            $table->string('home_street');
-            $table->string('home_subdivision');
-            $table->string('home_barangay');
-            $table->string('home_city', 100);
-            // Office Address
-            $table->string('office_street');
-            $table->string('office_subdivision');
-            $table->string('office_barangay');
-            $table->string('office_city', 100); 
-            $table->string('mobile_no', 15);
-            $table->string('telephone_no', 15);
-            $table->date('birthdate')->nullable();
-            $table->string('valid_id_no')->nullable();
-            $table->string('id_type')->nullable();
-            // $table->string('email')->unique();
-            $table->string('civil_status');
+            $table->timestamp('staff_id')->nullable();
+            $table->string('category');
+            $table->string('mobile');
             $table->string('citizenship');
             $table->string('payment_method');
+            $table->string('mobile', 11);
+            $table->string('tele', 11)->nullable();
 
-            // Business Details
-            $table->string('salesman_relationship')->nullable();
-            $table->string('weekly_volume')->nullable();
-            $table->string('other_products_interest')->nullable();
-            $table->date('date_required')->nullable();
-            $table->string('referred_by')->nullable();
-            $table->string('product_requirements')->nullable();
-
-            // Agreement
-            $table->boolean('agreement')->default(false);
-
-            $table->string('staff_id')->nullable();
-
+            $table->string('id_type');
+            $table->string('id_type');
+            $table->string('id_number', 100);
+            $table->date('birthdate')->nullable();
 
             $table->timestamps();
         });
+        DB::statement('ALTER TABLE suppliers ADD id_image MEDIUMBLOB NULL');
 
 
         // authorized_representatives table
         Schema::create('representatives', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier_id');
-            $table->string('rep_last_name', 50);
-            $table->string('rep_first_name', 50);
-            $table->string('rep_middle_name', 50)->nullable();
-            $table->string('rep_relationship', 50);
-            $table->string('rep_contact_no', 15);
+            $table->string('user_id');
+            $table->string('lastname', 50);
+            $table->string('firstname', 50);
+            $table->string('middlename', 50)->nullable();
+            $table->string('auth_position', 50);
+            $table->string('contact', 15);
             $table->timestamps();
         });
 
         // authorized_signatories table
         Schema::create('signatories', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier_id');
-            $table->string('signatory_last_name', 50);
-            $table->string('signatory_first_name', 50);
-            $table->string('signatory_middle_name', 50)->nullable();
-            $table->string('signatory_relationship', 50);
-            $table->string('signatory_contact_no', 15);
+            $table->string('user_id');
+            $table->string('lastname', 50);
+            $table->string('firstname', 50);
+            $table->string('middlename', 50)->nullable();
+            $table->string('sign_position', 50);
+
+            $table->string('e_mime_type')->nullable();
+            $table->string('e_filename')->nullable();
+            $table->unsignedInteger('image_size')->nullable(); 
             $table->timestamps();
         });
+        DB::statement('ALTER TABLE signatories ADD e_image MEDIUMBLOB NULL');
 
         // banks table
         Schema::create('banks', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier_id');
+            $table->string('user_id');
             $table->string('account_name')->nullable();
             $table->string('bank')->nullable();
             $table->string('branch')->nullable();
             $table->string('account_number')->nullable();
+            $table->timestamps();
+        });
+
+        // business table
+        Schema::create('businesses', function (Blueprint $table) {
+            $table->id();
+            $table->string('user_id');
+            $table->string('years')->nullable();
+            $table->string('referred_by')->nullable();
+            $table->string('contacted_by')->nullable();
             $table->timestamps();
         });
 

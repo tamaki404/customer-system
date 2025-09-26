@@ -325,7 +325,7 @@
                                 </div>
                                 <div class="input-forms">
                                     <label for="id-signature"><span class="req-asterisk">*</span> E-signature</label>
-                                        <input type="file" id="id-signature" name="e_signature" accept="image/*" required>
+                                        <input type="file" id="id-signature" name="e_image" accept="image/*" required>
                                 </div>
                             </div>
 

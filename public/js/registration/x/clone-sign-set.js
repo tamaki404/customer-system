@@ -47,7 +47,7 @@ function addSignatureRow() {
         </div>
         <div class="input-forms">
             <div>
-                <input type="file" id="id-signature-${signatureCount}" name="e_signature" accept="image/*" required>
+                <input type="file" id="id-signature-${signatureCount}" name="e_image" accept="image/*" required>
             </div>
             <p class="error-text" style="display: none"></p>
         </div>

@@ -10,12 +10,15 @@ class Signatories extends Model
     use HasFactory;
 
     protected $fillable = [
-        'supplier_id',
+        'user_id',
         'lastname', 
         'firstname', 
         'middlename', 
         'sign_position', 
-        'e_signature',
+        'e_image',
+        'e_size',
+        'e_mime_type', 
+        'e_filename',
     ];
 
     public function supplier()

@@ -20,9 +20,14 @@ return new class extends Migration
             $table->string('status')->default('Pending');
             $table->string('role');
             $table->string('role_type');
+
             $table->string('image_mime_type')->nullable();
             $table->string('image_filename')->nullable();
             $table->unsignedInteger('image_size')->nullable(); 
+            
+            $table->timestamp('email_verified_at')->nullable(); 
+            $table->boolean('agreement')->default(false);
+
 
 
             $table->string('category')->nullable();

@@ -10,7 +10,7 @@ class Representatives extends Model
     use HasFactory;
 
     protected $fillable = [
-        'supplier_id',
+        'user_id',
         'lastname', 
         'firstname', 
         'middlename', 

@@ -11,11 +11,11 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier_id');
+            $table->string('user_id');
             $table->string('type'); 
             $table->string('file_name');
             $table->string('file_mime');
-            $table->unsignedBigInteger('file_size');
+            $table->unsignedBigInteger('file_size'); 
             $table->timestamps();
         });
 
