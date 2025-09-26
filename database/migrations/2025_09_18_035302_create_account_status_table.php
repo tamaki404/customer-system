@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('account_status', function (Blueprint $table) {
             $table->id();
+            $table->string('user_id')->nullable(); 
             $table->string('staff_id')->nullable(); 
             $table->string('status_id')->nullable();
             $table->string('acc_status', 50);
             $table->string('reason_to_decline')->nullable(); 
-            $table->string('acc_status', 50);
 
             $table->timestamps();
 

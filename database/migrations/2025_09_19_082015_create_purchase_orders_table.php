@@ -15,7 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('po_id')->unique(); 
             $table->string('supplier_id');
+            $table->string('staff_id')->nullable(); // Staff who confirmed the order
+            $table->timestamp('confirmed_at')->nullable();
             $table->string('status')->default('Pending');
+             $table->text('notes')->nullable();
+            $table->decimal('total_amount', 10, 2)->default(0);
             $table->string('image_mime_type')->nullable();
             $table->string('image_filename')->nullable();
             $table->unsignedInteger('image_size')->nullable(); 

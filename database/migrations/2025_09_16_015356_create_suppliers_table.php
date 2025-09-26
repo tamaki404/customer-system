@@ -18,13 +18,13 @@ return new class extends Migration
             $table->string('supplier_id');
             $table->timestamp('staff_id')->nullable();
             $table->string('category');
-            $table->string('mobile');
             $table->string('citizenship');
             $table->string('payment_method');
             $table->string('mobile', 11);
             $table->string('tele', 11)->nullable();
-
-            $table->string('id_type');
+            $table->string('id_mime_type')->nullable();
+            $table->string('id_filename')->nullable();
+            $table->unsignedInteger('id_size')->nullable(); 
             $table->string('id_type');
             $table->string('id_number', 100);
             $table->date('birthdate')->nullable();
