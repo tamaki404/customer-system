@@ -28,6 +28,8 @@ return new class extends Migration
             $table->string('id_type');
             $table->string('id_number', 100);
             $table->date('birthdate')->nullable();
+            $table->string('company_name');
+            $table->string('civil_status')->nullable();
 
             $table->timestamps();
         });

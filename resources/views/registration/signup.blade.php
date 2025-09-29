@@ -122,17 +122,17 @@
                         <div class="form-list">
                             <div class="input-forms">
                                 <label for="company_name"><span class="req-asterisk">*</span> Company name</label>
-                                <input type="text" name="company_name" id="company_name" style="width: 250px"  maxlength="200" required>
+                                <input type="text" name="company_name" id="company_name" style="width: 250px"  maxlength="200" required value="{{ old('company_name') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             <div class="input-forms">
                                 <label for="category"><span class="req-asterisk">*</span> Category</label>
                                 <select name="category" id="category" required>
-                                    <option value="" disabled selected>-- Select category --</option>
-                                    <option value="Wholesale">Wholesale</option>
-                                    <option value="Distributor">Distributor</option>
-                                    <option value="HRI">HRI</option>
-                                    <option value="Dealer">Dealer</option>
+                                    <option value="" disabled {{ old('category') ? '' : 'selected' }}>-- Select category --</option>
+                                    <option value="Wholesale" {{ old('category') == 'Wholesale' ? 'selected' : '' }}>Wholesale</option>
+                                    <option value="Distributor" {{ old('category') == 'Distributor' ? 'selected' : '' }}>Distributor</option>
+                                    <option value="HRI" {{ old('category') == 'HRI' ? 'selected' : '' }}>HRI</option>
+                                    <option value="Dealer" {{ old('category') == 'Dealer' ? 'selected' : '' }}>Dealer</option>
                                 </select>
                             </div>
 
@@ -158,20 +158,20 @@
                             <div class="input-forms">
                                 <label for="home_street"><span class="req-asterisk">*</span> Home address</label>
                                 <div class="office-address" >
-                                    <input type="text" name="home_street" id="home_street" required placeholder="Street" maxlength="255">
-                                    <input type="text" name="home_subdivision" id="home-subdivision" required placeholder="Subdivision" maxlength="255">
-                                    <input type="text" name="home_barangay" id="home-barangay" required placeholder="Barangay" maxlength="255">
-                                    <input type="text" name="home_city" id="home-city" required placeholder="City" maxlength="100">
+                                    <input type="text" name="home_street" id="home_street" required placeholder="Street" maxlength="255" value="{{ old('home_street') }}">
+                                    <input type="text" name="home_subdivision" id="home-subdivision" required placeholder="Subdivision" maxlength="255" value="{{ old('home_subdivision') }}">
+                                    <input type="text" name="home_barangay" id="home-barangay" required placeholder="Barangay" maxlength="255" value="{{ old('home_barangay') }}">
+                                    <input type="text" name="home_city" id="home-city" required placeholder="City" maxlength="100" value="{{ old('home_city') }}">
                                 </div>
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             <div class="input-forms">
                                 <label for="office-street"><span class="req-asterisk">*</span> Office address</label>
                                     <div class="office-address">
-                                        <input type="text" name="office_street" id="office-street" required placeholder="Street" maxlength="255">
-                                        <input type="text" name="office_subdivision" id="office-subdivision" required placeholder="Subdivision" maxlength="255">
-                                        <input type="text" name="office_barangay" id="office-barangay" required placeholder="Barangay" maxlength="255">
-                                        <input type="text" name="office_city" id="office-city" required placeholder="City" maxlength="100">
+                                        <input type="text" name="office_street" id="office-street" required placeholder="Street" maxlength="255" value="{{ old('office_street') }}">
+                                        <input type="text" name="office_subdivision" id="office-subdivision" required placeholder="Subdivision" maxlength="255" value="{{ old('office_subdivision') }}">
+                                        <input type="text" name="office_barangay" id="office_barangay" required placeholder="Barangay" maxlength="255" value="{{ old('office_barangay') }}">
+                                        <input type="text" name="office_city" id="office-city" required placeholder="City" maxlength="100" value="{{ old('office_city') }}">
                                     </div>
                                 <p class="error-text" style="display: none"></p>
                             </div>
@@ -182,44 +182,44 @@
                         <div class="form-list">
                             <div class="input-forms">
                                 <label for="mobile"><span class="req-asterisk">*</span> Mobile no.</label>
-                                <input type="text" name="mobile" id="mobile" style="width: 150px" placeholder="ex: 09XX-XXX-XXXX"  maxlength="11" required>
+                                <input type="text" name="mobile" id="mobile" style="width: 150px" placeholder="ex: 09XX-XXX-XXXX"  maxlength="11" required value="{{ old('mobile') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             <div class="input-forms">
                                 <label for="tele"> Telephone no.</label>
-                                <input type="text" name="tele" id="tele" style="width: 150px" placeholder="ex: 02-XXX-XXXX"  maxlength="9" >
+                                <input type="text" name="tele" id="tele" style="width: 150px" placeholder="ex: 02-XXX-XXXX"  maxlength="9" value="{{ old('tele') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             <div class="input-forms">
                                 <label for="civil-status"> Civil status</label>
                                     <select name="civil_status" id="civil-status">
-                                        <option value="" disabled selected>-- Select civil status --</option>
-                                        <option value="Single">Single</option>
-                                        <option value="Married">Married</option>
-                                        <option value="Divorced">Divorced</option>
-                                        <option value="Widowed">Widowed</option>
+                                        <option value="" disabled {{ old('civil_status') ? '' : 'selected' }}>-- Select civil status --</option>
+                                        <option value="Single" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
+                                        <option value="Married" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
+                                        <option value="Divorced" {{ old('civil_status') == 'Divorced' ? 'selected' : '' }}>Divorced</option>
+                                        <option value="Widowed" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
                                     </select>
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             <div class="input-forms">
                                 <label for="citizenship" ><span class="req-asterisk">*</span> Citizenship</label>
                                     <select name="citizenship" id="citizenship" required>
-                                        <option value="" disabled selected>-- Select citizenship --</option>
-                                        <option value="Filipino">Filipino</option>
-                                        <option value="American">American</option>
-                                        <option value="Canadian">Canadian</option>
-                                        <option value="British">British</option>
-                                        <option value="Other">Other</option>
+                                        <option value="" disabled {{ old('citizenship') ? '' : 'selected' }}>-- Select citizenship --</option>
+                                        <option value="Filipino" {{ old('citizenship') == 'Filipino' ? 'selected' : '' }}>Filipino</option>
+                                        <option value="American" {{ old('citizenship') == 'American' ? 'selected' : '' }}>American</option>
+                                        <option value="Canadian" {{ old('citizenship') == 'Canadian' ? 'selected' : '' }}>Canadian</option>
+                                        <option value="British" {{ old('citizenship') == 'British' ? 'selected' : '' }}>British</option>
+                                        <option value="Other" {{ old('citizenship') == 'Other' ? 'selected' : '' }}>Other</option>
                                     </select>
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             <div class="input-forms">
                                 <label for="payment"><span class="req-asterisk">*</span> Payment method</label>
                                     <select name="payment_method" id="payment" required>
-                                        <option value="" disabled selected>-- Select payment method --</option>
-                                        <option value="Cash">Cash</option>
-                                        <option value="Gcash">Gcash</option>
-                                        <option value="Bank transfer">Bank transfer</option>
+                                        <option value="" disabled {{ old('payment_method') ? '' : 'selected' }}>-- Select payment method --</option>
+                                        <option value="Cash" {{ old('payment_method') == 'Cash' ? 'selected' : '' }}>Cash</option>
+                                        <option value="Gcash" {{ old('payment_method') == 'Gcash' ? 'selected' : '' }}>Gcash</option>
+                                        <option value="Bank transfer" {{ old('payment_method') == 'Bank transfer' ? 'selected' : '' }}>Bank transfer</option>
                                     </select>
                                 <p class="error-text" style="display: none"></p>
                             </div>
@@ -255,12 +255,12 @@
                             </div>
                             <div class="input-forms">
                                 <label for="id_number"><span class="req-asterisk">*</span> ID number</label>
-                                <input type="text" name="id_number" id="id_number" style="width: 200px"  maxlength="100" required>
+                                <input type="text" name="id_number" id="id_number" style="width: 200px"  maxlength="100" required value="{{ old('id_number') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             <div class="input-forms">
                                 <label for="birthdate"> Birthdate </label>
-                                <input type="date" name="birthdate" id="birthdate" style="width: 150px" required maxlength="100">
+                                <input type="date" name="birthdate" id="birthdate" style="width: 150px" required maxlength="100" value="{{ old('birthdate') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                         </div>
@@ -275,9 +275,9 @@
                                 <div class="input-forms">
                                     <label for="id-image"><span class="req-asterisk">*</span> Name</label>
                                     <div>
-                                        <input id="rep-name" type="text" name="rep_lastname" placeholder="Last name" required maxlength="50">
-                                        <input type="text" name="rep_firstname" placeholder="First name" required maxlength="50">
-                                        <input type="text" name="rep_middlename" placeholder="Middle name" maxlength="50">
+                                        <input id="rep-name" type="text" name="rep_lastname" placeholder="Last name" required maxlength="50" value="{{ old('rep_lastname') }}">
+                                        <input type="text" name="rep_firstname" placeholder="First name" required maxlength="50" value="{{ old('rep_firstname') }}">
+                                        <input type="text" name="rep_middlename" placeholder="Middle name" maxlength="50" value="{{ old('rep_middlename') }}">
                                     </div>
                                     <p class="error-text" style="display: none"></p>
                                 </div>
@@ -291,7 +291,7 @@
                                 <div class="input-forms">
                                     <label for="contact"><span class="req-asterisk">*</span> Contact no.</label>
                                     <div>
-                                        <input id="contact" type="text" name="rep_contact" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11">
+                                        <input id="contact" type="text" name="rep_contact" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11" value="{{ old('rep_contact') }}">
                                     </div>
                                 </div>
                             </div>
@@ -314,16 +314,16 @@
                                 <div class="input-forms">
                                     <label for="sign-name"><span class="req-asterisk">*</span> Name</label>
                                     <div>
-                                        <input id="sign-name" type="text" name="sign_lastname" placeholder="Last name" required maxlength="50">
-                                        <input type="text" name="sign_firstname" placeholder="First name" required maxlength="50">
-                                        <input type="text" name="sign_middlename" placeholder="Middle name" maxlength="50">
+                                        <input id="sign-name" type="text" name="sign_lastname" placeholder="Last name" required maxlength="50" value="{{ old('sign_lastname') }}">
+                                        <input type="text" name="sign_firstname" placeholder="First name" required maxlength="50" value="{{ old('sign_firstname') }}">
+                                        <input type="text" name="sign_middlename" placeholder="Middle name" maxlength="50" value="{{ old('sign_middlename') }}">
                                     </div>
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
                                     <label for="position"><span class="req-asterisk">*</span> Position</label>
                                     <div>
-                                        <input id="position" type="text" name="sign_position" required maxlength="50">
+                                        <input id="position" type="text" name="sign_position" required maxlength="50" value="{{ old('sign_position') }}">
                                     </div>
                                     <p class="error-text" style="display: none"></p>
                                 </div>
@@ -346,22 +346,22 @@
                             <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px">
                                 <div class="input-forms">
                                     <label for="account_name"> Account name</label>
-                                    <input type="text" name="account_name" id="account_name" style="width: 300px"  maxlength="255" >
+                                    <input type="text" name="account_name" id="account_name" style="width: 300px"  maxlength="255" value="{{ old('account_name') }}">
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
                                     <label for="bank"> Bank</label>
-                                    <input type="text" name="bank" id="bank" style="width: 80px"  maxlength="255" >
+                                    <input type="text" name="bank" id="bank" style="width: 80px"  maxlength="255" value="{{ old('bank') }}">
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
                                     <label for="branch"> Branch</label>
-                                    <input type="text" name="branch" id="branch" style="width: 150px"  maxlength="200" >
+                                    <input type="text" name="branch" id="branch" style="width: 150px"  maxlength="200" value="{{ old('branch') }}">
                                     <p class="error-text" style="display: none"></p>
                                 </div>   
                                 <div class="input-forms">
                                     <label for="account_number"> Account number</label>
-                                    <input type="text" name="account_number" id="account_number" style="width: 150px"  maxlength="50" >
+                                    <input type="text" name="account_number" id="account_number" style="width: 150px"  maxlength="50" value="{{ old('account_number') }}">
                                     <p class="error-text" style="display: none"></p>
                                 </div> 
                             </div>  
@@ -373,17 +373,17 @@
                         <div class="form-list">
                                 <div class="input-forms">
                                     <label for="years"> How long have you been in the industry?</label>
-                                    <input type="text" name="years" id="years" placeholder="5 years" style="width: 150px"  maxlength="50">
+                                    <input type="text" name="years" id="years" placeholder="5 years" style="width: 150px"  maxlength="50" value="{{ old('years') }}">
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
                                     <label for="reffered_by"> Referred by</label>
-                                    <input type="text" name="reffered_by" id="reffered_by" style="width: 200px"  maxlength="255" >
+                                    <input type="text" name="reffered_by" id="reffered_by" style="width: 200px"  maxlength="255" value="{{ old('reffered_by') }}">
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
                                     <label for="contacted_by"> Contacted by</label>
-                                    <input type="text" name="contacted_by" id="contacted_by" style="width: 200px"  maxlength="200" >
+                                    <input type="text" name="contacted_by" id="contacted_by" style="width: 200px"  maxlength="200" value="{{ old('contacted_by') }}">
                                     <p class="error-text" style="display: none"></p>
                                 </div>   
                          
@@ -606,7 +606,7 @@
                         <div class="form-list">
                             <div class="input-forms">
                                 <label for="special-instruc">Special delivery instructions</label>
-                                <textarea id="special-instruc" name="delivery_instructions" rows="3" maxlength="255" style="width: 500px; padding: 8px;  border-radius: 4px; resize: none;"></textarea>
+                                <textarea id="special-instruc" name="delivery_instructions" rows="3" maxlength="255" style="width: 500px; padding: 8px;  border-radius: 4px; resize: none;">{{ old('delivery_instructions') }}</textarea>
                                 <p class="error-text" style="display: none"></p>
                             </div>
                         </div>
@@ -622,7 +622,7 @@
                         <div class="form-list">
                             <div class="input-forms">
                                 <label for="email_add"><span class="req-asterisk">*</span> An email confirmation link will be sen to this address</label>
-                                <input type="text" name="email_add" id="email_add" required placeholder="@gmail.com" maxlength="255">
+                                <input type="text" name="email_add" id="email_add" required placeholder="@gmail.com" maxlength="255" value="{{ old('email_add') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             
