@@ -780,27 +780,27 @@ public function registerSupplier(Request $request)
             'trace' => $e->getTraceAsString()
         ]);
         
-return redirect()->back()
-    ->withErrors(['error' => 'Registration failed due to a system error. Please try again or contact support if the problem persists.'])
-    ->withInput($request->except([
-        'password',
-        'password_confirmation',
-        'image',
-        'id_image',
-        'e_image',
-        'SEC',
-        'BP',
-        'BIR',
-        'MP',
-        'valid_one',
-        'valid_two',
-        'BS',
-        'PB',
-        'NCC',
-        'AIB'
-    ]));
+        return redirect()->back()
+            ->withErrors(['error' => 'Registration failed due to a system error. Please try again or contact support if the problem persists.'])
+            ->withInput($request->except([
+                'password',
+                'password_confirmation',
+                'image',
+                'id_image',
+                'e_image',
+                'SEC',
+                'BP',
+                'BIR',
+                'MP',
+                'valid_one',
+                'valid_two',
+                'BS',
+                'PB',
+                'NCC',
+                'AIB'
+            ]));
 
-    }
+            }
 }
   
     public function registerStaff(Request $request){
@@ -1009,7 +1009,7 @@ return redirect()->back()
         }
 
         if (strtolower($accountStatus->account_status) !== 'accepted') {
-            return redirect()->route('signin')->with('error', 'Your account is not active. Please contact support.');
+            return redirect()->route('signin')->with('error', 'Your account is not active yet. Kidly wait for a verification.');
         }
 
         Auth::login($user, false);

@@ -35,8 +35,7 @@
             <div class="modal fade" id="profile-modify" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <form class="modal-content" method="POST" enctype="multipart/form-data">
-                        <!-- Debug: Route URL -->
-                        <!-- Route URL: {{ route('staff.modify') }} -->
+                        {{ route('staff.modify') }} -->
                         @csrf
                         
                         @if ($errors->any())
@@ -380,47 +379,46 @@
                             <div class="documents-list">
                                 @foreach ($documents as $document)
                                     @php
-                                        $imgSrc = $document->file
+                                        $pdfSrc = $document->file
                                             ? 'data:' . $document->file_mime . ';base64,' . base64_encode($document->file)
-                                            : asset('images/default-avatar.png');
-
+                                            : null;
                                         $modalId = 'documentModal' . ($document->id ?? $loop->index);
                                     @endphp
 
                                     <div class="document-group">
                                         <p>{{ $document->type }}</p>
-                                        <img class="supplier-image"
-                                            src="{{ $imgSrc }}"
-                                            alt="Document"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#{{ $modalId }}">
+                                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#{{ $modalId }}">
+                                            View {{ $document->type }}
+                                        </button>
                                     </div>
 
-                                    <!-- Modal -->
                                     <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg modal-dialog-centered" style="height: 100%">
-                                            <div class="modal-content" >
+                                        <div class="modal-dialog modal-xl modal-dialog-centered">
+                                            <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <p class="modal-title" >{{ $document->type }}</p>
+                                                    <p class="modal-title">{{ $document->type }}</p>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                 </div>
                                                 <div class="modal-body text-center">
-                                                    <img src="{{ $imgSrc }}" class="img-fluid" alt="Document Preview">
+                                                    @if ($pdfSrc)
+                                                        <iframe src="{{ $pdfSrc }}" width="100%" height="600px" style="border: none;"></iframe>
+                                                    @else
+                                                        <p>Document not available.</p>
+                                                    @endif
                                                 </div>
                                                 <div class="modal-footer">
-                                                    {{-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Download</button> --}}
-                                                    <button type="button" class="btn btn-primary" style="align-content: center; justify-content: center; display: flex; gap: 5px">
-                                                        <span class="material-symbols-outlined" style="font-size: 17px">
-                                                            download
-                                                        </span>
-                                                        <span>Download</span>
-                                                    </button>
-                                                    
+                                                    @if ($pdfSrc)
+                                                        <a href="{{ $pdfSrc }}" download="{{ $document->file_name }}" class="btn btn-primary">
+                                                            <span class="material-symbols-outlined" style="font-size: 17px">download</span>
+                                                            <span>Download</span>
+                                                        </a>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 @endforeach
+
 
                             </div>
 

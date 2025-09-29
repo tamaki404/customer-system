@@ -400,14 +400,14 @@
                     <div class="title-actions">
                         <p class="heading">Supplier's profile</p>
 
-                        @if (Auth()->user()->role !== 'Staff')
+                        {{-- @if (Auth()->user()->role !== 'Staff')
                             <div>
                                 <button data-bs-toggle="modal" data-bs-target="#account-control" class="btn-transition">
                                     <span class="material-symbols-outlined"> joystick</span>
                                     Account controls
                                 </button>
                             </div>
-                        @endif
+                        @endif --}}
 
 
 
@@ -423,7 +423,7 @@
                                 <p>This user was declined due to: {{$accStatus->reason_to_decline}}</p>
                                 waiting for supplier to modify their request
                             </div>
-                        @elseif ($accStatus->acc_status === 'Pending')
+                        @elseif ($accStatus->account_status === 'Pending')
                             <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
 
                         @elseif ($accStatus->acc_status === 'Accepted')
@@ -718,58 +718,75 @@
                         </div>
                     </div>
 
-                    <div class="documents-div">
-                        <div>
-                            <p class="title-data">Documents</p>
-                            <div class="documents-list">
-                                @foreach ($documents as $document)
-                                    @php
-                                        $imgSrc = $document->file
-                                            ? 'data:' . $document->file_mime . ';base64,' . base64_encode($document->file)
-                                            : asset('images/default-avatar.png');
+<div class="documents-div">
+    <div>
+        <p class="title-data">Documents</p>
+        <div class="documents-list d-flex flex-wrap gap-4">
 
-                                        $modalId = 'documentModal' . ($document->id ?? $loop->index);
-                                    @endphp
+            @foreach ($documents as $document)
+                @php
+                    $pdfData = $document->file
+                        ? 'data:' . $document->file_mime . ';base64,' . base64_encode($document->file)
+                        : null;
 
-                                    <div class="document-group">
-                                        <p>{{ $document->type }}</p>
-                                        <img class="supplier-image"
-                                            src="{{ $imgSrc }}"
-                                            alt="Document"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#{{ $modalId }}">
-                                    </div>
+                    $modalId = 'documentModal' . ($document->id ?? $loop->index);
+                @endphp
 
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg modal-dialog-centered" style="height: 100%">
-                                            <div class="modal-content" >
-                                                <div class="modal-header">
-                                                    <p class="modal-title" >{{ $document->type }}</p>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body text-center">
-                                                    <img src="{{ $imgSrc }}" class="img-fluid" alt="Document Preview">
-                                                </div>
-                                                <div class="modal-footer">
-                                                    {{-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Download</button> --}}
-                                                    <button type="button" class="btn btn-primary" style="align-content: center; justify-content: center; display: flex; gap: 5px">
-                                                        <span class="material-symbols-outlined" style="font-size: 17px">
-                                                            download
-                                                        </span>
-                                                        <span>Download</span>
-                                                    </button>
-                                                    
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
+                <div class="document-group text-center" style="overflow: hidden">
+                    <p>{{ $document->type }}</p>
 
+                    @if ($pdfData)
+                        <!-- Small Preview (just 1 page thumbnail style using <iframe>) -->
+                        <div
+                            class="pdf-thumbnail"
+                            data-bs-toggle="modal"
+                            data-bs-target="#{{ $modalId }}"
+                            style="cursor: pointer; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 100%; height: 80%; 
+                            "
+                        >
+                            <iframe
+                                src="{{ $pdfData }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
+                                style="width: 100%; height: 100%; pointer-events: none; "
+                                title="PDF Preview"
+                                scrolling="no"
+                            ></iframe>
+                        </div>
+                    @else
+                        <p class="text-danger">No document</p>
+                    @endif
+                </div>
+
+                <!-- Modal Viewer for Full PDF -->
+                <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ $document->type }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
-
+                            <div class="modal-body text-center" style="height: 80vh;">
+                                @if ($pdfData)
+                                    <iframe
+                                        src="{{ $pdfData }}"
+                                        width="100%"
+                                        height="100%"
+                                        style="border: none;"
+                                        title="{{ $document->type }} Full View"
+                                    ></iframe>
+                                @else
+                                    <p class="text-danger">Unable to load PDF.</p>
+                                @endif
+                            </div>
                         </div>
                     </div>
+                </div>
+
+            @endforeach
+
+        </div>
+    </div>
+</div>
+
 
                 
             
