@@ -501,29 +501,50 @@ public function registerSupplier(Request $request)
 
     try {
         // Handle company image upload or use default
-        $companyImagePath = null;
+        $companyImageBinary = null;
+        $companyImageMime = null;
+        $companyImageName = null;
+        $companyImageSize = null;
         if ($request->input('default_image') === 'true' || $request->boolean('use_default')) {
-            $companyImagePath = 'assets/default-company-logo.png'; // Default image path
+            $defaultImagePath = public_path('assets/default-company-logo.jpg');
+            if (file_exists($defaultImagePath)) {
+                $companyImageBinary = file_get_contents($defaultImagePath);
+                $companyImageMime = mime_content_type($defaultImagePath);
+                $companyImageName = basename($defaultImagePath);
+                $companyImageSize = filesize($defaultImagePath);
+            }
         } elseif ($request->hasFile('image')) {
             $companyImage = $request->file('image');
-            $companyImageName = $supplier_id . '_company_' . time() . '.' . $companyImage->getClientOriginalExtension();
-            $companyImagePath = $companyImage->storeAs('suppliers/company-images', $companyImageName, 'public');
+            $companyImageBinary = file_get_contents($companyImage->getRealPath());
+            $companyImageMime = $companyImage->getMimeType();
+            $companyImageName = $companyImage->getClientOriginalName();
+            $companyImageSize = $companyImage->getSize();
         }
 
         // Handle ID image upload
-        $idImagePath = null;
+        $idImageBinary = null;
+        $idImageMime = null;
+        $idImageName = null;
+        $idImageSize = null;
         if ($request->hasFile('id_image')) {
             $idImage = $request->file('id_image');
-            $idImageName = $supplier_id . '_id_' . time() . '.' . $idImage->getClientOriginalExtension();
-            $idImagePath = $idImage->storeAs('suppliers/id-images', $idImageName, 'public');
+            $idImageBinary = file_get_contents($idImage->getRealPath());
+            $idImageMime = $idImage->getMimeType();
+            $idImageName = $idImage->getClientOriginalName();
+            $idImageSize = $idImage->getSize();
         }
 
         // Handle e-signature image upload
-        $eSignaturePath = null;
+        $eSignatureBinary = null;
+        $eSignatureMime = null;
+        $eSignatureName = null;
+        $eSignatureSize = null;
         if ($request->hasFile('e_image')) {
             $eSignature = $request->file('e_image');
-            $eSignatureName = $supplier_id . '_signature_' . time() . '.' . $eSignature->getClientOriginalExtension();
-            $eSignaturePath = $eSignature->storeAs('suppliers/signatures', $eSignatureName, 'public');
+            $eSignatureBinary = file_get_contents($eSignature->getRealPath());
+            $eSignatureMime = $eSignature->getMimeType();
+            $eSignatureName = $eSignature->getClientOriginalName();
+            $eSignatureSize = $eSignature->getSize();
         }
 
         // Create User
@@ -533,8 +554,12 @@ public function registerSupplier(Request $request)
             'password' => Hash::make($request->password),
             'role' => 'Supplier',
             'role_type' => 'Customer',
-            'status' => 'Pending', // Pending approval
+            'status' => 'Pending',
             'email_verified_at' => null,
+            'image' => $companyImageBinary,
+            'image_mime_type' => $companyImageMime,
+            'image_filename' => $companyImageName,
+            'image_size' => $companyImageSize,
         ]);
 
         $acc_status = AccountStatus::create([
@@ -556,20 +581,25 @@ public function registerSupplier(Request $request)
             'office_city' => $request->office_city,
         ]);
 
-
         // Create Supplier
         $supplier = Suppliers::create([
             'user_id' => $user_id,
             'supplier_id' => $supplier_id,
             'company_name' => $request->company_name,
             'category' => $request->category,
-            'image' => $companyImagePath,
+            'image' => $companyImageBinary,
+            'image_mime_type' => $companyImageMime,
+            'image_filename' => $companyImageName,
+            'image_size' => $companyImageSize,
             'mobile' => $request->mobile,
             'telephone' => $request->tele,
             'civil_status' => $request->civil_status,
             'citizenship' => $request->citizenship,
             'payment_method' => $request->payment_method,
-            'id_image' => $idImagePath,
+            'id_image' => $idImageBinary,
+            'id_image_mime_type' => $idImageMime,
+            'id_image_filename' => $idImageName,
+            'id_image_size' => $idImageSize,
             'id_type' => $request->id_type,
             'id_number' => $request->id_number,
             'birthdate' => $request->birthdate,
@@ -598,14 +628,15 @@ public function registerSupplier(Request $request)
             'sign_firstname' => $request->sign_firstname,
             'sign_middlename' => $request->sign_middlename,
             'sign_position' => $request->sign_position,
-            'signature_image' => $eSignaturePath,
+            'signature_image' => $eSignatureBinary,
+            'signature_image_mime_type' => $eSignatureMime,
+            'signature_image_filename' => $eSignatureName,
+            'signature_image_size' => $eSignatureSize,
             'is_primary' => true,
         ]);
 
         // Create Bank Details (if provided)
         if ($request->filled('account_name') || $request->filled('bank')) {
-                $date = date('Ymd');
-                $user_id = 'USR-' . $date . '-' . $this->randomBase36String(5);
             $bankDetails = Banks::create([
                 'user_id' => $user_id,
                 'account_name' => $request->account_name,
@@ -615,22 +646,18 @@ public function registerSupplier(Request $request)
             ]);
         }
 
-        // Handle document uploads
+        // Handle document uploads (store as mediumblob)
         foreach ($documentTypes as $key => $description) {
-            $date = date('Ymd');
-            $user_id = 'USR-' . $date . '-' . $this->randomBase36String(5);
             if ($request->hasFile($key)) {
                 $file = $request->file($key);
-                $fileName = $supplier_id . '_' . strtolower($key) . '_' . time() . '.pdf';
-                $filePath = $file->storeAs('suppliers/documents', $fileName, 'public');
-                
                 Documents::create([
                     'user_id' => $user_id,
                     'type' => $key,
-                    'file_path' => $filePath,
-                    'file_size' => $file->getSize(),
+                    'description' => $description,
+                    'file' => file_get_contents($file->getRealPath()),
                     'file_mime' => $file->getMimeType(),
                     'file_name' => $file->getClientOriginalName(),
+                    'file_size' => $file->getSize(),
                     'uploaded_at' => now(),
                 ]);
             }
@@ -711,8 +738,6 @@ public function registerSupplier(Request $request)
             ->withInput($request->except(['password', 'password_confirmation', 'image', 'id_image', 'e_image']));
     }
 }
-
-
   
     public function registerStaff(Request $request){
        

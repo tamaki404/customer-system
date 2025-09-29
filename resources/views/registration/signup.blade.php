@@ -259,7 +259,7 @@
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             <div class="input-forms">
-                                <label for="birthdate"> Birthdate </label>
+                                <label for="birthdate"> <span class="req-asterisk">*</span> Birthdate </label>
                                 <input type="date" name="birthdate" id="birthdate" style="width: 150px" required maxlength="100" value="{{ old('birthdate') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>

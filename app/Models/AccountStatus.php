@@ -10,7 +10,7 @@ class AccountStatus extends Model
     use HasFactory;
  protected $table = 'account_status';
     protected $fillable = [
-        'supplier_id',
+        'user_id',
         'status_id', 
         'account_status', 
         'reason_to_decline',
