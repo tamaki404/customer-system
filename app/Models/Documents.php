@@ -11,6 +11,7 @@ class Documents extends Model
 
     protected $fillable = [
         'user_id',
+        'supplier_id',
         'type',
         'file_name',
         'file_mime',

@@ -11,6 +11,7 @@ class Signatories extends Model
 
     protected $fillable = [
         'user_id',
+        'supplier_id',
         'sign_lastname', 
         'sign_firstname', 
         'sign_middlename', 

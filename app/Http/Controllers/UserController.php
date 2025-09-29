@@ -12,6 +12,8 @@ use App\Models\Staffs;
 use App\Models\AccountStatus;
 use Illuminate\Support\Facades\Log;
 use App\Models\Address;
+use App\Models\Business;
+
 use App\Models\DeliveryRequirements;
 use App\Models\ProductRequirements;
 use Illuminate\Http\Request;
@@ -433,7 +435,7 @@ public function registerSupplier(Request $request)
 
         // Business
         'years'           => 'nullable|string|max:50',
-        'reffered_by'     => 'nullable|string|max:255',
+        'referred_by'     => 'nullable|string|max:255',
         'contacted_by'    => 'nullable|string|max:200',
 
         // Documents (all required PDFs)
@@ -563,6 +565,7 @@ public function registerSupplier(Request $request)
         ]);
 
         $acc_status = AccountStatus::create([
+            'supplier_id' => $supplier_id,
             'user_id' => $user_id,
             'status_id' => $status_id,
             'account_status' => 'Pending',
@@ -571,6 +574,8 @@ public function registerSupplier(Request $request)
         // Create Home Address
         $homeAddress = Address::create([
             'user_id' => $user_id,
+            'supplier_id' => $supplier_id,
+
             'home_street' => $request->home_street,
             'home_subdivision' => $request->home_subdivision,
             'home_barangay' => $request->home_barangay,
@@ -604,7 +609,7 @@ public function registerSupplier(Request $request)
             'id_number' => $request->id_number,
             'birthdate' => $request->birthdate,
             'years_in_industry' => $request->years,
-            'referred_by' => $request->reffered_by,
+            'referred_by' => $request->referred_by,
             'contacted_by' => $request->contacted_by,
             'registration_date' => now(),
             'status' => 'Pending',
@@ -613,6 +618,8 @@ public function registerSupplier(Request $request)
         // Create Representative
         $representative = Representatives::create([
             'user_id' => $user_id,
+            'supplier_id' => $supplier_id,
+
             'rep_lastname' => $request->rep_lastname,
             'rep_firstname' => $request->rep_firstname,
             'rep_middlename' => $request->rep_middlename,
@@ -624,6 +631,8 @@ public function registerSupplier(Request $request)
         // Create Signatory
         $signatory = Signatories::create([
             'user_id' => $user_id,
+            'supplier_id' => $supplier_id,
+
             'sign_lastname' => $request->sign_lastname,
             'sign_firstname' => $request->sign_firstname,
             'sign_middlename' => $request->sign_middlename,
@@ -639,6 +648,8 @@ public function registerSupplier(Request $request)
         if ($request->filled('account_name') || $request->filled('bank')) {
             $bankDetails = Banks::create([
                 'user_id' => $user_id,
+                'supplier_id' => $supplier_id,
+
                 'account_name' => $request->account_name,
                 'bank_name' => $request->bank,
                 'branch' => $request->branch,
@@ -646,12 +657,22 @@ public function registerSupplier(Request $request)
             ]);
         }
 
+        $business = Business::create([
+            'user_id' => $user_id,
+            'supplier_id' => $supplier_id,
+            'years' => $request->years,
+            'referred_by' => $request->referred_by,
+            'contacted_by' => $request->contacted_by,
+        ]);
+        
         // Handle document uploads (store as mediumblob)
         foreach ($documentTypes as $key => $description) {
             if ($request->hasFile($key)) {
                 $file = $request->file($key);
                 Documents::create([
                     'user_id' => $user_id,
+                    'supplier_id' => $supplier_id,
+
                     'type' => $key,
                     'description' => $description,
                     'file' => file_get_contents($file->getRealPath()),
@@ -670,6 +691,8 @@ public function registerSupplier(Request $request)
             
             ProductRequirements::create([
                 'user_id' => $user_id,
+                'supplier_id' => $supplier_id,
+
                 'product_id' => $productId,
                 'condition' => $conditionString,
                 'weight_requirement' => $request->input("weight_requirement_{$productId}"),
@@ -683,6 +706,8 @@ public function registerSupplier(Request $request)
         // Create Delivery Requirements
         DeliveryRequirements::create([
             'user_id' => $user_id,
+            'supplier_id' => $supplier_id,
+
             'ppe_requirements' => $request->ppe_requirements,
             'delivery_frequency' => $request->delivery_frequency,
             'delivery_address_1' => $request->delivery_address_1,
@@ -690,6 +715,28 @@ public function registerSupplier(Request $request)
             'delivery_address_3' => $request->delivery_address_3,
             'delivery_instructions' => $request->delivery_instructions,
         ]);
+
+        // Create and send verification token
+                    $plainToken = Str::random(64);
+                    DB::table('email_verification_tokens')->insert([
+                        'user_id'    => $user->user_id,
+                        'email'      => $user->email_address,
+                        'token'      => hash('sha256', $plainToken),
+                        'expires_at' => now()->addDay(),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                    $verifyUrl = url('/email/verify?token=' . $plainToken . '&uid=' . urlencode($user->user_id));
+
+                    try {
+                        Mail::send('emails.verify', ['verifyUrl' => $verifyUrl], function($message) use ($user) {
+                            $message->to($user->email_address)->subject('Verify your email address');
+                        });
+                    } catch (\Throwable $mailErr) {
+                        Log::error('Verification email send failed: ' . $mailErr->getMessage());
+                    }
+
 
         DB::commit();
 
@@ -733,9 +780,26 @@ public function registerSupplier(Request $request)
             'trace' => $e->getTraceAsString()
         ]);
         
-        return redirect()->back()
-            ->withErrors(['error' => 'Registration failed due to a system error. Please try again or contact support if the problem persists.'])
-            ->withInput($request->except(['password', 'password_confirmation', 'image', 'id_image', 'e_image']));
+return redirect()->back()
+    ->withErrors(['error' => 'Registration failed due to a system error. Please try again or contact support if the problem persists.'])
+    ->withInput($request->except([
+        'password',
+        'password_confirmation',
+        'image',
+        'id_image',
+        'e_image',
+        'SEC',
+        'BP',
+        'BIR',
+        'MP',
+        'valid_one',
+        'valid_two',
+        'BS',
+        'PB',
+        'NCC',
+        'AIB'
+    ]));
+
     }
 }
   

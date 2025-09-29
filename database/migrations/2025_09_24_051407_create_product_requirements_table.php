@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('secondary_packaging');
             $table->string('labeling_requirement')->nullable();
             $table->string('rejection_parameter')->nullable();
+            $table->string('supplier_id')->required(); 
 
             $table->timestamps();
         });
@@ -34,6 +35,7 @@ return new class extends Migration
             $table->string('delivery_address_2')->nullable();
             $table->string('delivery_address_3')->nullable();
             $table->string('delivery_instructions')->nullable();
+            $table->string('supplier_id')->required(); 
 
             $table->timestamps();
         });

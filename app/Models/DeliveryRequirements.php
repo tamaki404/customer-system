@@ -9,6 +9,7 @@ class DeliveryRequirements extends Model
 
     protected $fillable = [
         'user_id',
+        'supplier_id',
         'ppe_requirements',
         'delivery_frequency',
         'delivery_address_1',

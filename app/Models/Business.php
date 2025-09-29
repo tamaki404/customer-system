@@ -8,8 +8,9 @@ class Business extends Model
 {
     protected $fillable = [
         'user_id',
+        'supplier_id',
         'years', 
-        'reffered_by', 
+        'referred_by', 
         'contacted_by', 
         
     ];

@@ -8,6 +8,7 @@ class ProductRequirements extends Model
 {
     protected $fillable = [
         'user_id',
+        'supplier_id',
         'product_id',
         'condition',
         'weight_requirement',

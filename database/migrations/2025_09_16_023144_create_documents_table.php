@@ -10,7 +10,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('documents', function (Blueprint $table) {
-            $table->id();
+            $table->id();            
+            $table->string('supplier_id')->required(); 
+
+
             $table->string('user_id');
             $table->string('type'); 
             $table->string('file_name');

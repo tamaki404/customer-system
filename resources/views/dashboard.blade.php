@@ -19,7 +19,7 @@
 
 
         </div>
-{{-- 
+
     <div class="content-body" style="padding: 10px; border: none; height: auto; display: flex; flex-direction: row; gap: 5px">
 
         @if(auth()->user()->role === 'Supplier')
@@ -61,7 +61,7 @@
                 </div>
          
             @endif
-    </div> --}}
+    </div>
 
          
        

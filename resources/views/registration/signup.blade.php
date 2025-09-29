@@ -377,8 +377,8 @@
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
-                                    <label for="reffered_by"> Referred by</label>
-                                    <input type="text" name="reffered_by" id="reffered_by" style="width: 200px"  maxlength="255" value="{{ old('reffered_by') }}">
+                                    <label for="referred_by"> Referred by</label>
+                                    <input type="text" name="referred_by" id="referred_by" style="width: 200px"  maxlength="255" value="{{ old('referred_by') }}">
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">

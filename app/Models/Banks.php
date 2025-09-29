@@ -11,6 +11,7 @@ class Banks extends Model
 
     protected $fillable = [
         'user_id',
+        'supplier_id',
         'account_name', 
         'bank', 
         'branch', 

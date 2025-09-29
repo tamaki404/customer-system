@@ -39,6 +39,8 @@ return new class extends Migration
         // authorized_representatives table
         Schema::create('representatives', function (Blueprint $table) {
             $table->id();
+            $table->string('supplier_id')->required(); 
+
             $table->string('user_id');
             $table->string('rep_lastname', 50);
             $table->string('rep_firstname', 50);
@@ -51,6 +53,8 @@ return new class extends Migration
         // authorized_signatories table
         Schema::create('signatories', function (Blueprint $table) {
             $table->id();
+            $table->string('supplier_id')->required(); 
+
             $table->string('user_id');
             $table->string('sign_lastname', 50);
             $table->string('sign_firstname', 50);
@@ -67,6 +71,8 @@ return new class extends Migration
         // banks table
         Schema::create('banks', function (Blueprint $table) {
             $table->id();
+            $table->string('supplier_id')->required(); 
+
             $table->string('user_id');
             $table->string('account_name')->nullable();
             $table->string('bank')->nullable();
@@ -78,6 +84,8 @@ return new class extends Migration
         // business table
         Schema::create('businesses', function (Blueprint $table) {
             $table->id();
+            $table->string('supplier_id')->required(); 
+
             $table->string('user_id');
             $table->string('years')->nullable();
             $table->string('referred_by')->nullable();

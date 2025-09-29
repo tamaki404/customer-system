@@ -15,7 +15,8 @@ class Address extends Model
         'office_street',
         'office_subdivision',
         'office_barangay',
-        'office_city'
+        'office_city',
+        'supplier_id'
         
     ];
 }
