@@ -404,7 +404,7 @@ public function registerSupplier(Request $request)
         'mobile'          => 'required|string|regex:/^09[0-9]{9}$/|size:11',
         'citizenship'     => 'required|string|max:100',
         'payment_method'  => 'required|string|in:Cash,Gcash,Bank transfer',
-        'tele'            => 'nullable|string|regex:/^02-[0-9]{3}-[0-9]{4}$/|size:9',
+        'tele'            => 'nullable|string|size:9',
         'civil_status'    => 'nullable|string|in:Single,Married,Divorced,Widowed',
         'id_image'        => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         'id_type'         => 'required|string|in:Passport,Driver\'s License,National ID,SSS ID,GSIS ID,UMID,Postal ID,PhilHealth ID,Voter\'s ID,PRC ID',
@@ -576,27 +576,29 @@ public function registerSupplier(Request $request)
         // Create Representative
         $representative = Representatives::create([
             'user_id' => $user_id,
-            'lastname' => $request->rep_lastname,
-            'firstname' => $request->rep_firstname,
-            'middlename' => $request->rep_middlename,
-            'position' => $request->auth_position,
-            'contact_number' => $request->rep_contact,
+            'rep_lastname' => $request->rep_lastname,
+            'rep_firstname' => $request->rep_firstname,
+            'rep_middlename' => $request->rep_middlename,
+            'auth_position' => $request->auth_position,
+            'rep_contact' => $request->rep_contact,
             'is_primary' => true,
         ]);
 
         // Create Signatory
         $signatory = Signatories::create([
             'user_id' => $user_id,
-            'lastname' => $request->sign_lastname,
-            'firstname' => $request->sign_firstname,
-            'middlename' => $request->sign_middlename,
-            'position' => $request->sign_position,
+            'sign_lastname' => $request->sign_lastname,
+            'sign_firstname' => $request->sign_firstname,
+            'sign_middlename' => $request->sign_middlename,
+            'sign_position' => $request->sign_position,
             'signature_image' => $eSignaturePath,
             'is_primary' => true,
         ]);
 
         // Create Bank Details (if provided)
         if ($request->filled('account_name') || $request->filled('bank')) {
+                $date = date('Ymd');
+                $user_id = 'USR-' . $date . '-' . $this->randomBase36String(5);
             $bankDetails = Banks::create([
                 'user_id' => $user_id,
                 'account_name' => $request->account_name,
@@ -608,6 +610,8 @@ public function registerSupplier(Request $request)
 
         // Handle document uploads
         foreach ($documentTypes as $key => $description) {
+            $date = date('Ymd');
+            $user_id = 'USR-' . $date . '-' . $this->randomBase36String(5);
             if ($request->hasFile($key)) {
                 $file = $request->file($key);
                 $fileName = $supplier_id . '_' . strtolower($key) . '_' . time() . '.pdf';
@@ -615,12 +619,11 @@ public function registerSupplier(Request $request)
                 
                 Documents::create([
                     'user_id' => $user_id,
-                    'document_type' => $key,
-                    'document_name' => $description,
+                    'type' => $key,
                     'file_path' => $filePath,
                     'file_size' => $file->getSize(),
-                    'mime_type' => $file->getMimeType(),
-                    'original_filename' => $file->getClientOriginalName(),
+                    'file_mime' => $file->getMimeType(),
+                    'file_name' => $file->getClientOriginalName(),
                     'uploaded_at' => now(),
                 ]);
             }

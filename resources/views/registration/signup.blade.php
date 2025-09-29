@@ -566,7 +566,7 @@
                         <div class="form-list">
                             <div class="input-forms">
                                 <label for="ppe-req"><span class="req-asterisk">*</span> PPE requirements during delivery and receiving</label>
-                                <input type="text" id="ppe-req" name="ppe_requirements" required maxlength="255">
+                                <input type="text" id="ppe-req" name="ppe_requirements" required maxlength="255" value="{{ old('ppe_requirements') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                         </div>
@@ -577,25 +577,25 @@
                         <div class="form-list">
                             <div class="input-forms">
                                 <label for="del-freq"><span class="req-asterisk">*</span> Frequency of delivery and receiving time</label>
-                                <input type="text" id="del-freq" name="delivery_frequency" required maxlength="255">
+                                <input type="text" id="del-freq" name="delivery_frequency" required maxlength="255" value="{{ old('delivery_frequency') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             
                             <div class="input-forms">
                                 <label for="del-add-1"><span class="req-asterisk">*</span> Delivery address 1</label>
-                                <input type="text" id="del-add-1" name="delivery_address_1" maxlength="255" required>
+                                <input type="text" id="del-add-1" name="delivery_address_1" maxlength="255" required value="{{ old('delivery_address_1') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             
                             <div class="input-forms">
                                 <label for="del-add-2">Delivery address 2</label>
-                                <input type="text" id="del-add-2" name="delivery_address_2" maxlength="255">
+                                <input type="text" id="del-add-2" name="delivery_address_2" maxlength="255" value="{{ old('delivery_address_2') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                             
                             <div class="input-forms">
                                 <label for="del-add-3">Delivery address 3</label>
-                                <input type="text" id="del-add-3" name="delivery_address_3" maxlength="255">
+                                <input type="text" id="del-add-3" name="delivery_address_3" maxlength="255" value="{{ old('delivery_address_3') }}">
                                 <p class="error-text" style="display: none"></p>
                             </div>
                         </div>
@@ -606,7 +606,7 @@
                         <div class="form-list">
                             <div class="input-forms">
                                 <label for="special-instruc">Special delivery instructions</label>
-                                <textarea id="special-instruc" name="delivery_instructions" rows="3" maxlength="255" style="width: 500px; padding: 8px;  border-radius: 4px; resize: none;">{{ old('delivery_instructions') }}</textarea>
+                                <textarea value="{{ old('delivery_instructions') }}" id="special-instruc" name="delivery_instructions" rows="3" maxlength="255" style="width: 500px; padding: 8px;  border-radius: 4px; resize: none;">{{ old('delivery_instructions') }}</textarea>
                                 <p class="error-text" style="display: none"></p>
                             </div>
                         </div>
