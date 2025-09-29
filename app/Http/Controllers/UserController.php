@@ -386,7 +386,7 @@ public function registerSupplier(Request $request)
         'password'        => 'required|string|confirmed|min:6|max:255',
         'image'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         'default_image'   => 'nullable|string|in:true,false',
-        'agreement'       => 'required|accepted',
+        'agreement'       => 'required',
 
         // Addresses
         'home_street'     => 'required|string|max:255',
@@ -531,6 +531,7 @@ public function registerSupplier(Request $request)
             'email_address' => $request->email_add,
             'password' => Hash::make($request->password),
             'role' => 'supplier',
+            'role_type' => 'customer',
             'status' => 'pending', // Pending approval
             'email_verified_at' => null,
         ]);
@@ -538,22 +539,16 @@ public function registerSupplier(Request $request)
         // Create Home Address
         $homeAddress = Address::create([
             'user_id' => $user_id,
-            'street' => $request->home_street,
-            'subdivision' => $request->home_subdivision,
-            'barangay' => $request->home_barangay,
-            'city' => $request->home_city,
-            'type' => 'home',
+            'home_street' => $request->home_street,
+            'home_subdivision' => $request->home_subdivision,
+            'home_barangay' => $request->home_barangay,
+            'home_city' => $request->home_city,
+            'office_street' => $request->office_street,
+            'office_subdivision' => $request->office_subdivision,
+            'office_barangay' => $request->office_barangay,
+            'office_city' => $request->office_city,
         ]);
 
-        // Create Office Address
-        $officeAddress = Address::create([
-            'user_id' => $user_id,
-            'street' => $request->office_street,
-            'subdivision' => $request->office_subdivision,
-            'barangay' => $request->office_barangay,
-            'city' => $request->office_city,
-            'type' => 'office',
-        ]);
 
         // Create Supplier
         $supplier = Suppliers::create([

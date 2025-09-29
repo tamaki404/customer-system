@@ -669,7 +669,7 @@
                             </div>
                             <div class="input-forms" style="flex-direction: row">
                                 <span class="req-asterisk">*</span>
-                                <input type="checkbox" name="aggrement" id="agreement" required style="margin: 0" required>
+                                <input type="checkbox" name="agreement" id="agreement" required>
                                 <label for="agreement" style="margin: 0">
                                     I have read and understood the above agreement, and I hereby confirm my acceptance of the terms and conditions stated.
                                 </label>
