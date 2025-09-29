@@ -234,3 +234,49 @@
     height: 80%;
     width: 100%;
 }
+
+
+
+
+/* tabs */
+
+
+ .tabs {
+    display: flex;
+    border-bottom: 1px solid #88888834;
+    margin-bottom: 1rem;
+  }
+
+  /* Each tab button */
+  .tab-button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 3px solid transparent;
+    transition: border-color 0.3s;
+    font-size: 13px;
+    color: #888;
+    font-weight: normal;
+  }
+
+  /* Active tab button */
+  .tab-button.active {
+    border-bottom-color: #f8912a;
+    color: #f8912a;
+  }
+
+  /* Content sections */
+  .tab-content {
+    display: none;
+  }
+
+  /* Show active content */
+  .tab-content.active {
+    display: block;
+  }
+
+  .no-staff{
+    color: #666;
+    margin: 5px;
+  }

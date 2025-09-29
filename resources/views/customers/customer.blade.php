@@ -499,7 +499,10 @@
                         </div>
 
                     </div>
+
+                    
                     <div class="sales-person-div">
+                        @if($user->staff_id !== NULL)
                             <p class="sales-title">Sales person</p>
                             <div class="sales-person">
                                     @php
@@ -529,263 +532,292 @@
                                     @endif
 
                             </div>
-
-                    </div>
-
-
-                    <div class="profile-mid">
-                        <div class="authorized-staffs" >
-                            <p style="margin-bottom: 5px">Product requirements</p>
-                            <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
-                                <div class="authorized-rep">
-                                    <button  data-bs-toggle="modal" data-bs-target="#add-product-modal" class="btn-transition btn-span" style="width: 100px;     background-color: #f8912a; color: #fff; font-weight: normal;"> <span class="material-symbols-outlined ">add</span>Add new</button>
-                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                        <thead style="background-color: #f9f9f9;">
-                                            <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                                <th>#</th>
-                                                <th>Category</th>
-                                                <th>Name</th>
-                                                <th>Unit</th>
-                                                <th>Measurement</th>
-                                                <th>Price</th>
-                                                <th></th>
-
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($productRequirements as $productRequirement)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $productRequirement->product->category }}</td>
-                                                <td>{{ $productRequirement->product->name }}</td>
-                                                <td>{{ $productRequirement->product->unit }}</td>
-                                                <td>{{ $productRequirement->product->measurement }}</td>
-                                                <td>{{ $productRequirement->price }}</td>
-                                                <td>
-                                                    <button  
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#edit-row-action" 
-                                                        class="btn-span edit-product-btn"
-                                                        data-set-id="{{ $productRequirement->set_id }}"
-                                                        data-price="{{ $productRequirement->price }}"
-                                                        data-name="{{ $productRequirement->product->name }}"
-                                                        data-supplier-id="{{ $productRequirement->supplier_id }}"
-                                                    >
-                                                        <span class="material-symbols-outlined">edit</span>
-                                                    </button>
-
-
-                                                </td>
-                                            </tr>
-                                            @endforeach
-
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                                        
-
-                            </di>
-                        </div>
-                    </div>
-
-                    <div class="profile-mid">
-
+                        @else()
+                            <p class="no-staff">No sales agent is assigned to you yet.</p>
                         
-                        <div class="authorized-staffs" >
-                            <p style="margin-bottom: 5px">Authorized staffs</p>
-                            <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
-                                <div class="authorized-rep">
-                                    <p style="font-weight: normal; font-size: 13px;">Representative/s </p>
-                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                        <thead style="background-color: #f9f9f9;">
-                                            <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                                <th>#</th>
-                                                <th>Name</th>
-                                                <th>Relationship/position</th>
-                                                <th>Contact number</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
+                        @endif
+                    </div>
+
+
+                    <div class="tab-div">
+
+                        <div class="tabs" role="tablist">
+                            <button class="tab-button active" data-tab="product" role="tab" aria-selected="true" aria-controls="product-content" id="product-tab">
+                            Product requirements
+                            </button>
+                            <button class="tab-button" data-tab="staff" role="tab" aria-selected="false" aria-controls="staff-content" id="staff-tab">
+                            Authorized staffs
+                            </button>
+                            <button class="tab-button" data-tab="documents" role="tab" aria-selected="false" aria-controls="documents-content" id="documents-tab">
+                            Documents
+                            </button>
+                        </div>
+
+                        <div id="product-content" class="tab-content active" role="tabpanel" aria-labelledby="product-tab">
+                            <div class="profile-mid">
+                                <div class="authorized-staffs" >
+                                    <p style="margin-bottom: 5px">Product requirements</p>
+                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep">
+                                            <button  data-bs-toggle="modal" data-bs-target="#add-product-modal" class="btn-transition btn-span" style="width: 100px;     background-color: #f8912a; color: #fff; font-weight: normal;"> <span class="material-symbols-outlined ">add</span>Add new</button>
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Category</th>
+                                                        <th>Name</th>
+                                                        <th>Unit</th>
+                                                        <th>Measurement</th>
+                                                        <th>Price</th>
+                                                        <th></th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($productRequirements as $productRequirement)
+                                                    <tr>
+                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td>{{ $productRequirement->product->category }}</td>
+                                                        <td>{{ $productRequirement->product->name }}</td>
+                                                        <td>{{ $productRequirement->product->unit }}</td>
+                                                        <td>{{ $productRequirement->product->measurement }}</td>
+                                                        <td>{{ $productRequirement->price }}</td>
+                                                        <td>
+                                                            <button  
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#edit-row-action" 
+                                                                class="btn-span edit-product-btn"
+                                                                data-set-id="{{ $productRequirement->set_id }}"
+                                                                data-price="{{ $productRequirement->price }}"
+                                                                data-name="{{ $productRequirement->product->name }}"
+                                                                data-supplier-id="{{ $productRequirement->supplier_id }}"
+                                                            >
+                                                                <span class="material-symbols-outlined">edit</span>
+                                                            </button>
+
+
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                                
+
+                                    </di>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="staff-content" class="tab-content" role="tabpanel" aria-labelledby="staff-tab">
+                            <div class="profile-mid">
+                                <div class="authorized-staffs" >
+                                    <p style="margin-bottom: 5px">Authorized staffs</p>
+                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep">
+                                            <p style="font-weight: normal; font-size: 13px;">Representative/s </p>
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Name</th>
+                                                        <th>Relationship/position</th>
+                                                        <th>Contact number</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>
+                                                            {{ implode(', ', array_filter([
+                                                                $supplier->representative->rep_last_name,
+                                                                $supplier->representative->rep_first_name,
+                                                                $supplier->representative->rep_middle_name,
+                                                            ])) }}
+                                                        </td>
+                                                        <td>{{ $supplier->representative->rep_relationship}}</td>
+                                                        <td>{{ $supplier->representative->rep_contact_no}}</td>
+
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="signatory-rep">
+                                            <p style="font-weight: normal; font-size: 13px;">Signatories to accept deliveries and sign invoices </p>
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Name</th>
+                                                        <th>Relationship/position</th>
+                                                        <th>Contact number</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
                                                 <td>1</td>
                                                 <td>
                                                     {{ implode(', ', array_filter([
-                                                        $supplier->representative->rep_last_name,
-                                                        $supplier->representative->rep_first_name,
-                                                        $supplier->representative->rep_middle_name,
+                                                        $supplier->signatory->signatory_last_name,
+                                                        $supplier->signatory->signatory_first_name,
+                                                        $supplier->signatory->signatory_middle_name,
                                                     ])) }}
                                                 </td>
-                                                <td>{{ $supplier->representative->rep_relationship}}</td>
-                                                <td>{{ $supplier->representative->rep_contact_no}}</td>
+                                                <td>{{ $supplier->signatory->signatory_relationship}}</td>
+                                                <td>{{ $supplier->signatory->signatory_contact_no}}</td>
 
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                                </tr>
+                                            </tbody>
+                                            </table>
+                                        </div>                        
+
+                                    </di>
                                 </div>
-                                <div class="signatory-rep">
-                                    <p style="font-weight: normal; font-size: 13px;">Signatories to accept deliveries and sign invoices </p>
-                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                        <thead style="background-color: #f9f9f9;">
-                                            <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                                <th>#</th>
-                                                <th>Name</th>
-                                                <th>Relationship/position</th>
-                                                <th>Contact number</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                        <td>1</td>
-                                        <td>
-                                            {{ implode(', ', array_filter([
-                                                $supplier->signatory->signatory_last_name,
-                                                $supplier->signatory->signatory_first_name,
-                                                $supplier->signatory->signatory_middle_name,
-                                            ])) }}
-                                        </td>
-                                        <td>{{ $supplier->signatory->signatory_relationship}}</td>
-                                        <td>{{ $supplier->signatory->signatory_contact_no}}</td>
+                                <div class="authorized-staffs" style="margin-top: 10px">
+                                    <p style="margin-bottom: 5px">Bank details</p>
+                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep">
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Account name</th>
+                                                        <th>Bank</th>
+                                                        <th>Branch</th>
+                                                        <th>Account number</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>{{ $supplier->bank->account_number}}</td>
+                                                        <td>{{ $supplier->bank->bank}}</td>
+                                                        <td>{{ $supplier->bank->branch}}</td>
+                                                        <td>{{ $supplier->bank->account_number}}</td>
 
-                                        </tr>
-                                    </tbody>
-                                    </table>
-                                </div>                        
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
 
-                            </di>
-                        </div>
-                        <div class="authorized-staffs" style="margin-top: 10px">
-                            <p style="margin-bottom: 5px">Bank details</p>
-                            <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
-                                <div class="authorized-rep">
-                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                        <thead style="background-color: #f9f9f9;">
-                                            <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                                <th>#</th>
-                                                <th>Account name</th>
-                                                <th>Bank</th>
-                                                <th>Branch</th>
-                                                <th>Account number</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>{{ $supplier->bank->account_number}}</td>
-                                                <td>{{ $supplier->bank->bank}}</td>
-                                                <td>{{ $supplier->bank->branch}}</td>
-                                                <td>{{ $supplier->bank->account_number}}</td>
+                                    </di>
 
-                                            </tr>
-                                        </tbody>
-                                    </table>
+
                                 </div>
+                                <div class="authorized-staffs" style="margin-top: 10px">
+                                    <p style="margin-bottom: 5px">Referral</p>
+                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px; ">
+                                        <div class="questions-list">
+                                            <p>
+                                                <span style="color:#666">How long have you known salesman? </span>
+                                                <span>{{$supplier->salesman_relationship}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Weekly volume (tray/head)</span>
+                                                <span>{{$supplier->weekly_volume}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Date acquired</span>
+                                                <span>{{$supplier->date_required}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Other products interested in</span>
+                                                <span>{{$supplier->other_products_interest}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Referred by</span>
+                                                <span>{{$supplier->referred_by}}</span>
+                                            </p>
+                                    
+                                        </div>
 
-                            </di>
+                                    </di>
 
 
-                        </div>
-                        <div class="authorized-staffs" style="margin-top: 10px">
-                            <p style="margin-bottom: 5px">Referral</p>
-                            <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px; ">
-                                <div class="questions-list">
-                                    <p>
-                                        <span style="color:#666">How long have you known salesman? </span>
-                                        <span>{{$supplier->salesman_relationship}}</span>
-                                    </p>
-                                    <p>
-                                        <span style="color:#666">Weekly volume (tray/head)</span>
-                                        <span>{{$supplier->weekly_volume}}</span>
-                                    </p>
-                                    <p>
-                                        <span style="color:#666">Date acquired</span>
-                                        <span>{{$supplier->date_required}}</span>
-                                    </p>
-                                    <p>
-                                        <span style="color:#666">Other products interested in</span>
-                                        <span>{{$supplier->other_products_interest}}</span>
-                                    </p>
-                                    <p>
-                                        <span style="color:#666">Referred by</span>
-                                        <span>{{$supplier->referred_by}}</span>
-                                    </p>
-                            
                                 </div>
-
-                            </di>
-
-
-                        </div>
-                    </div>
-
-<div class="documents-div">
-    <div>
-        <p class="title-data">Documents</p>
-        <div class="documents-list d-flex flex-wrap gap-4">
-
-            @foreach ($documents as $document)
-                @php
-                    $pdfData = $document->file
-                        ? 'data:' . $document->file_mime . ';base64,' . base64_encode($document->file)
-                        : null;
-
-                    $modalId = 'documentModal' . ($document->id ?? $loop->index);
-                @endphp
-
-                <div class="document-group text-center" style="overflow: hidden">
-                    <p>{{ $document->type }}</p>
-
-                    @if ($pdfData)
-                        <!-- Small Preview (just 1 page thumbnail style using <iframe>) -->
-                        <div
-                            class="pdf-thumbnail"
-                            data-bs-toggle="modal"
-                            data-bs-target="#{{ $modalId }}"
-                            style="cursor: pointer; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 100%; height: 80%; 
-                            "
-                        >
-                            <iframe
-                                src="{{ $pdfData }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
-                                style="width: 100%; height: 100%; pointer-events: none; "
-                                title="PDF Preview"
-                                scrolling="no"
-                            ></iframe>
-                        </div>
-                    @else
-                        <p class="text-danger">No document</p>
-                    @endif
-                </div>
-
-                <!-- Modal Viewer for Full PDF -->
-                <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-xl modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">{{ $document->type }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body text-center" style="height: 80vh;">
-                                @if ($pdfData)
-                                    <iframe
-                                        src="{{ $pdfData }}"
-                                        width="100%"
-                                        height="100%"
-                                        style="border: none;"
-                                        title="{{ $document->type }} Full View"
-                                    ></iframe>
-                                @else
-                                    <p class="text-danger">Unable to load PDF.</p>
-                                @endif
                             </div>
                         </div>
+
+                        <div id="documents-content" class="tab-content" role="tabpanel" aria-labelledby="documents-tab">
+                            <div class="documents-div">
+                                <div>
+                                    <p class="title-data">Documents</p>
+                                    <div class="documents-list d-flex flex-wrap gap-4">
+
+                                        @foreach ($documents as $document)
+                                            @php
+                                                $pdfData = $document->file
+                                                    ? 'data:' . $document->file_mime . ';base64,' . base64_encode($document->file)
+                                                    : null;
+
+                                                $modalId = 'documentModal' . ($document->id ?? $loop->index);
+                                            @endphp
+
+                                            <div class="document-group text-center" style="overflow: hidden">
+                                                <p>{{ $document->type }}</p>
+
+                                                @if ($pdfData)
+                                                    <!-- Small Preview (just 1 page thumbnail style using <iframe>) -->
+                                                    <div
+                                                        class="pdf-thumbnail"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#{{ $modalId }}"
+                                                        style="cursor: pointer; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 100%; height: 80%; 
+                                                        "
+                                                    >
+                                                        <iframe
+                                                            src="{{ $pdfData }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
+                                                            style="width: 100%; height: 100%; pointer-events: none; "
+                                                            title="PDF Preview"
+                                                            scrolling="no"
+                                                        ></iframe>
+                                                    </div>
+                                                @else
+                                                    <p class="text-danger">No document</p>
+                                                @endif
+                                            </div>
+
+                                            <!-- Modal Viewer for Full PDF -->
+                                            <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog modal-xl modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">{{ $document->type }}</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body text-center" style="height: 80vh;">
+                                                            @if ($pdfData)
+                                                                <iframe
+                                                                    src="{{ $pdfData }}"
+                                                                    width="100%"
+                                                                    height="100%"
+                                                                    style="border: none;"
+                                                                    title="{{ $document->type }} Full View"
+                                                                ></iframe>
+                                                            @else
+                                                                <p class="text-danger">Unable to load PDF.</p>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        @endforeach
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+
+
                     </div>
-                </div>
 
-            @endforeach
-
-        </div>
-    </div>
-</div>
 
 
                 
@@ -801,6 +833,11 @@
 
 @push('scripts')
 
+
+    <script src="{{ asset('js/global/x/profile-tab.js') }}"></script>
+
+
+
     <script>
         const filterUrl = "{{ route('products.filter') }}";
     </script>
@@ -808,6 +845,7 @@
     <script src="{{ asset('js/global/filter-products.js') }}"></script>
     <script src="{{ asset('js/global/modal-hide-input.js') }}"></script>
     <script src="{{ asset('js/global/alert-timeout.js') }}"></script>
+
     <script src="{{ asset('js/global/modal/add-product-user.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
