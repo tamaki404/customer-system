@@ -62,7 +62,11 @@
         }
 
     </style>
-
+<script>
+    // Pass PHP session data to JavaScript
+    window.preserveStep = @json(session('preserve_step'));
+    window.validationFailed = @json(session('validation_failed'));
+</script>
 </head>
 <body style="overflow: hidden">
 
@@ -280,7 +284,7 @@
                                 <div class="input-forms">
                                     <label for="auth_position"><span class="req-asterisk">*</span> Position</label>
                                     <div>
-                                        <input id="auth_position" type="text" name="auth_position" value="Admin" disabled required maxlength="50">
+                                        <input id="auth_position" type="text" name="auth_position" value="Admin" readonly  required maxlength="50">
                                     </div>
                                     <p class="error-text" style="display: none"></p>
                                 </div>
@@ -420,7 +424,7 @@
                             </div>
 
                             <div class="input-forms">
-                                <label><span class="req-asterisk">*</span> Valid ID (2)</label>
+                                <label for="valid_one"><span class="req-asterisk">*</span> Valid ID (2)</label>
                                 <input type="file" class="docu-file" id="valid_one" name="valid_one" accept="application/pdf" required>
                                 <input type="file" class="docu-file" id="valid_two" name="valid_two" accept="application/pdf" required>
                                 <p class="error-text" style="display: none"></p>
@@ -492,14 +496,14 @@
 
                                 <div style="display: flex; flex-wrap: wrap; gap: 15px;">
                                     <div class="input-forms">
-                                        <label><span class="req-asterisk">*</span> Name</label>
-                                        <input type="text" name="product_name___PRODUCT_ID__" value="__PRODUCT_NAME__" readonly>
+                                        <label for="product_name"><span class="req-asterisk">*</span> Name</label>
+                                        <input id="product_name" type="text" name="product_name___PRODUCT_ID__" value="__PRODUCT_NAME__" readonly>
 
                                     </div>
 
                                     <div class="input-forms">
-                                        <label><span class="req-asterisk">*</span> Product condition</label>
-                                        <div style="display: flex; gap: 15px; align-items: center;">
+                                        <label for="fresh-__PRODUCT_ID__"><span class="req-asterisk">*</span> Product condition</label>
+                                        <div  style="display: flex; gap: 15px; align-items: center;">
                                             <div style="display: flex; align-items: center; gap: 5px;">
                                                 <input type="checkbox" name="condition___PRODUCT_ID__[]" id="fresh-__PRODUCT_ID__" value="fresh">
                                                 <label for="fresh-__PRODUCT_ID__">Fresh</label>
@@ -513,23 +517,23 @@
                                     </div>
 
                                     <div class="input-forms">
-                                        <label><span class="req-asterisk">*</span> Weight requirement</label>
-                                        <input type="text" name="weight_requirement___PRODUCT_ID__" required maxlength="50">
+                                        <label for="weight_req"><span class="req-asterisk">*</span> Weight requirement</label>
+                                        <input type="text" id="weight_req" name="weight_requirement___PRODUCT_ID__" required maxlength="50">
                                     </div>
 
                                     <div class="input-forms">
-                                        <label><span class="req-asterisk">*</span> Packaging requirement</label>
-                                        <div style="display: flex; gap: 10px;">
+                                        <label for="select_primary"><span class="req-asterisk">*</span> Packaging requirement</label>
+                                        <div  style="display: flex; gap: 10px;">
                                             <div>
-                                                <label style="font-size: 12px; display: block;">Primary</label>
-                                                <select name="primary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
-                                                    <option value="" disabled selected>-- Select primary packaging --</option>
+                                                <label for="select_primary" style="font-size: 12px; display: block;">Primary</label>
+                                                <select id="select_primary" name="primary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
+                                                    <option  value=""  disabled selected>-- Select primary packaging --</option>
                                                     <option value="sunny_plastic">Sunny plastic</option>
                                                 </select>
                                             </div>
                                             <div>
-                                                <label style="font-size: 12px; display: block;">Secondary</label>
-                                                <select name="secondary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
+                                                <label for="sec_packaging" style="font-size: 12px; display: block;">Secondary</label>
+                                                <select id="sec_packaging" name="secondary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
                                                     <option value="" disabled selected>-- Select secondary packaging --</option>
                                                     <option value="sack_wrapper">Sack wrapper</option>
                                                 </select>
@@ -538,13 +542,13 @@
                                     </div>
 
                                     <div class="input-forms">
-                                        <label><span class="req-asterisk">*</span> Labeling requirement</label>
-                                        <input type="text" name="labeling_requirement___PRODUCT_ID__" required maxlength="255">
+                                        <label for="labeling_req"><span class="req-asterisk">*</span> Labeling requirement</label>
+                                        <input id="labeling_req" type="text" name="labeling_requirement___PRODUCT_ID__" required maxlength="255">
                                     </div>
 
                                     <div class="input-forms">
-                                        <label><span class="req-asterisk">*</span> Rejection parameter</label>
-                                        <input type="text" name="rejection_parameter___PRODUCT_ID__" required maxlength="255">
+                                        <label for="reject_param"><span class="req-asterisk">*</span> Rejection parameter</label>
+                                        <input id="reject_param" type="text" name="rejection_parameter___PRODUCT_ID__" required maxlength="255">
                                     </div>
                                 </div>
                             </div>
@@ -639,7 +643,6 @@
                                 <p class="error-text" id="password-match-error"></p>
                             </div>
 
-                        
                         </div>
                             <div id="password-strength" style="margin-top: 5px; font-size: 12px;">
                                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -666,7 +669,7 @@
                             </div>
                             <div class="input-forms" style="flex-direction: row">
                                 <span class="req-asterisk">*</span>
-                                <input type="checkbox" name="password" id="agreement" required style="margin: 0" required>
+                                <input type="checkbox" name="aggrement" id="agreement" required style="margin: 0" required>
                                 <label for="agreement" style="margin: 0">
                                     I have read and understood the above agreement, and I hereby confirm my acceptance of the terms and conditions stated.
                                 </label>
@@ -701,6 +704,7 @@
     <script src="{{ asset('js/registration/password-validation.js') }}"></script>
     <script src="{{ asset('js/registration/x/default-logo.js') }}"></script>
     <script src="{{ asset('js/registration/x/two-mb.js') }}"></script>
+    <script src="{{ asset('js/registration/x/digit-only.js') }}"></script>
 
 <!-- jQuery (must be first) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
