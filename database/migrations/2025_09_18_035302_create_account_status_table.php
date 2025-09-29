@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('user_id')->nullable(); 
             $table->string('staff_id')->nullable(); 
             $table->string('status_id')->nullable();
-            $table->string('acc_status', 50);
+            $table->string('account_status', 50);
             $table->string('reason_to_decline')->nullable(); 
+            $table->timestamp('email_verified_at')->nullable(); 
 
             $table->timestamps();
 

@@ -483,6 +483,7 @@ public function registerSupplier(Request $request)
     $date = date('Ymd');
     $user_id = 'USR-' . $date . '-' . $this->randomBase36String(5);
     $supplier_id = 'SUP-' . $date . '-' . $this->randomBase36String(5);
+    $status_id = 'STAT-' . $date . '-' . $this->randomBase36String(5);
 
     // Define document types for later use
     $documentTypes = [
@@ -530,10 +531,16 @@ public function registerSupplier(Request $request)
             'user_id' => $user_id,
             'email_address' => $request->email_add,
             'password' => Hash::make($request->password),
-            'role' => 'supplier',
-            'role_type' => 'customer',
-            'status' => 'pending', // Pending approval
+            'role' => 'Supplier',
+            'role_type' => 'Customer',
+            'status' => 'Pending', // Pending approval
             'email_verified_at' => null,
+        ]);
+
+        $acc_status = AccountStatus::create([
+            'user_id' => $user_id,
+            'status_id' => $status_id,
+            'account_status' => 'Pending',
         ]);
 
         // Create Home Address
@@ -570,7 +577,7 @@ public function registerSupplier(Request $request)
             'referred_by' => $request->reffered_by,
             'contacted_by' => $request->contacted_by,
             'registration_date' => now(),
-            'status' => 'pending',
+            'status' => 'Pending',
         ]);
 
         // Create Representative
@@ -881,13 +888,12 @@ public function registerSupplier(Request $request)
 
     public function signin(Request $request)
     {
-        // Rate limit login attempts per IP
         $key = 'login:' . $request->ip();
         if (RateLimiter::tooManyAttempts($key, 5)) {
             $seconds = RateLimiter::availableIn($key);
             return redirect()->back()->withErrors(['loginError' => "Too many attempts. Try again in {$seconds} seconds."])->withInput();
         }
-        RateLimiter::hit($key, 300); // 5 minutes
+        RateLimiter::hit($key, 300);
 
         $credentials = $request->validate([
             'email_address' => 'required|email',
@@ -899,30 +905,22 @@ public function registerSupplier(Request $request)
             return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
         }
 
-        // Ensure password matches
         if (!Hash::check($credentials['password'], $user->password)) {
             return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
         }
 
-        $isVerified = false;
+        $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
 
-        // Check supplier verification
-        $supplier = Suppliers::where('user_id', $user->user_id)->first();
-        if ($supplier && !is_null($supplier->email_verified_at)) {
-            $isVerified = true;
+        if (!$accountStatus) {
+            return redirect()->route('signin')->with('error', 'Account status not found. Please contact support.');
         }
 
-        // Check staff verification
-        $staff = Staffs::where('user_id', $user->user_id)->first();
-        if ($staff && !is_null($staff->email_verified_at)) {
-            $isVerified = true;
+        if (is_null($accountStatus->email_verified_at)) {
+            return redirect()->route('signin')->with('error', 'Please verify your email before signing in.');
         }
 
-        if (!$isVerified || strtolower($user->status) !== 'active') {
-            $message = !$isVerified
-                ? 'Please verify your email before signing in.'
-                : 'Your account is not active. Please contact support.';
-            return redirect()->route('signin')->with('error', $message);
+        if (strtolower($accountStatus->account_status) !== 'accepted') {
+            return redirect()->route('signin')->with('error', 'Your account is not active. Please contact support.');
         }
 
         Auth::login($user, false);
@@ -930,6 +928,7 @@ public function registerSupplier(Request $request)
 
         return redirect()->route('dashboard.view');
     }
+
 
     public function verifyEmail(Request $request)
     {
@@ -963,7 +962,7 @@ public function registerSupplier(Request $request)
         // Mark supplier email_verified_at too if exists
         DB::transaction(function() use ($user, $userId) {
  
-            DB::table('suppliers')->where('user_id', $userId)->update([
+            DB::table('account_status')->where('user_id', $userId)->update([
                 'email_verified_at' => now(),
             ]);
 

@@ -12,7 +12,7 @@ class AccountStatus extends Model
     protected $fillable = [
         'supplier_id',
         'status_id', 
-        'acc_status', 
+        'account_status', 
         'reason_to_decline',
         'staff_id',
     ];
