@@ -451,28 +451,29 @@
                             <div>
                                 <p class="company-status" style="margin: 0">
                                     <span class="company-name">{{  $supplier->company_name }}</span>
-                                    <span class="user-status">{{$supplier->user->status}}</span>
+                                    <span class="user-stat">{{$supplier->user->status}}</span>
                                 </p>
                                 <div class="details-address">
                                     <p class="address-div">
                                         <span class="material-symbols-outlined icon" title="Home/ Head office address">home_work</span>
-                                        <span class="div-text">
-                                            {{ implode(', ', array_filter([
-                                                $supplier->home_street,
-                                                $supplier->home_subdivision,
-                                                $supplier->home_barangay,
-                                                $supplier->home_city,
-                                            ])) }}
-                                        </span>
+                                            <span class="div-text">
+                                                {{ implode(', ', array_filter([
+                                                    $address->home_street,
+                                                    $address->home_subdivision,
+                                                    $address->home_barangay,
+                                                    $address->home_city,
+                                                ])) }}
+                                            </span>
+
                                     </p>
                                     <p class="address-div">
                                         <span class="material-symbols-outlined icon" title="Office address">domain</span>
                                         <span class="div-text">
                                             {{ implode(', ', array_filter([
-                                                $supplier->office_street,
-                                                $supplier->office_subdivision,
-                                                $supplier->office_barangay,
-                                                $supplier->office_city, 
+                                                $address->office_street,
+                                                $address->office_subdivision,
+                                                $address->office_barangay,
+                                                $address->office_city, 
                                             ])) }}
                                         </span>
                                     </p>
@@ -480,15 +481,19 @@
                                 <div class="details-contact" style="margin-top: 5px; margin-left: ;">
                                     <p>
                                         <span class="material-symbols-outlined icon" title="Mobile number">mobile</span>
-                                        <span class="div-text">{{$supplier->mobile_no}}</span>
+                                        <span class="div-text">{{$supplier->mobile}}</span>
                                     </p>
                                     <span>|</span>
-                                    <p>
-                                        <span class="material-symbols-outlined icon" title="Telephone number">call</span>
-                                        <span class="div-text">{{$supplier->telephone_no}}</span>
+                                    @if ($supplier->tele !== NULL)
+                                        <p>
+                                            <span class="material-symbols-outlined icon" title="Telephone number">call</span>
+                                            <span class="div-text">{{$supplier->tele}}</span>
 
-                                    </p>
-                                    <span>|</span>
+                                        </p>
+                                        <span>|</span>
+                                    @endif
+
+
                                     <p>
                                         <span class="material-symbols-outlined icon" title="Email address">mail</span>
                                         <span class="div-text">{{$supplier->user->email_address}}</span>
@@ -554,9 +559,10 @@
                         </div>
 
                         <div id="product-content" class="tab-content active" role="tabpanel" aria-labelledby="product-tab">
-                            <div class="profile-mid">
-                                <div class="authorized-staffs" >
-                                    <p style="margin-bottom: 5px">Product requirements</p>
+                            <div class="profile-mid" >
+
+                                <div class="authorized-staffs" style="box-shadow: none">
+                                    <p style="margin-bottom: 5px">Summary list</p>
                                     <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
                                         <div class="authorized-rep">
                                             <button  data-bs-toggle="modal" data-bs-target="#add-product-modal" class="btn-transition btn-span" style="width: 100px;     background-color: #f8912a; color: #fff; font-weight: normal;"> <span class="material-symbols-outlined ">add</span>Add new</button>
@@ -577,7 +583,7 @@
                                                     @foreach ($productRequirements as $productRequirement)
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $productRequirement->product->category }}</td>
+                                                        <td>{{ $productRequirement->condition }}</td>
                                                         <td>{{ $productRequirement->product->name }}</td>
                                                         <td>{{ $productRequirement->product->unit }}</td>
                                                         <td>{{ $productRequirement->product->measurement }}</td>
@@ -608,6 +614,96 @@
 
                                     </di>
                                 </div>
+
+                                <div class="authorized-staffs" style="width: 600px">
+                                    <p style="margin-bottom: 5px">Remarks/Special instructions</p>
+                                        <div class="authorized-rep delivery-req">
+                                            <p class="spec-weight">
+                                                <span style="font-weight: normal; font-size: 13px;">{{ $delivery->delivery_instructions }}</span>
+                                            </p>
+                                        </div>
+                                </div>
+
+                                <div class="authorized-staffs" style="width: 700px">
+                                    <p style="margin-bottom: 5px">Delivery requirements</p>
+                                        <div class="authorized-rep delivery-req">
+                                                    <div class="spec-card" style="100%">
+                                                        <p class="spec-weight">
+                                                            <strong>Delivery frequency:</strong> 
+                                                            <span style="font-weight: bold">{{ $delivery->delivery_frequency }}</span>
+                                                        </p>
+                                                        <p class="spec-weight">
+                                                            <strong>PPE requirements:</strong> 
+                                                            <span style="font-weight: bold">{{ $delivery->ppe_requirements }}</span>
+                                                        </p>
+                                                        <p class="spec-weight">
+                                                            <strong>Address 1:</strong> 
+                                                            <span style="font-weight: bold">{{ $delivery->delivery_address_1 }}</span>
+                                                        </p>
+                                                        <p class="spec-weight">
+                                                            <strong>Address 2:</strong> 
+                                                            <span style="font-weight: bold">{{ $delivery->delivery_address_2 }}</span>
+                                                        </p>
+                                                        <p class="spec-weight">
+                                                            <strong>Address 3:</strong> 
+                                                            <span style="font-weight: bold">{{ $delivery->delivery_address_3 }}</span>
+                                                        </p>
+                                                    </div>
+                       
+                                        </div>
+
+                                                
+
+                                </div>
+
+
+
+                                
+                                <div class="authorized-staffs" style="">
+                                    <p style="margin-bottom: 5px">Specifications</p>
+                                    <di class="rep-sign-tables" >
+                                        <div class="authorized-rep" style="width: 100%; display: flex; flex-direction: row; gap: 5px; flex-wrap: wrap; justify-content:flex-start; background-color: transparent; border: none; box-shadow: none;">
+                                                {{-- @for ($i = 0; $i < 5; $i++) --}}
+                                                @foreach ($prodSpecs as $prodSpec)
+                                                    <div class="spec-card" style="width: 49%">
+                                                        <p class="spec-title" style="display: flex; justify-content: space-between; font-size: 15px; margin-bottom: 10px;">
+                                                            <span class="spec-name" style="font-weight: bold; color: #f8912a;">  {{ $prodSpec->product->name }} </span>
+                                                            @if ($prodSpec->condition === 'frozen')
+                                                                <span class="material-symbols-outlined" title="Frozen">mode_cool</span>
+                                                            @elseif ($prodSpec->condition === 'fresh')
+                                                                <span class="material-symbols-outlined" title="Fresh">air</span>
+                                                            @endif
+                                                        </p>
+
+                                                        <p class="spec-weight">
+                                                            <strong>Weight Requirement:</strong> 
+                                                            <span style="font-weight: bold">{{ $prodSpec->weight_requirement }}</span>
+                                                        </p>
+
+                                                        <p class="spec-packaging">
+                                                            <strong>Packaging Requirement:</strong>
+                                                            <span class="pack-primary" style="font-weight: bold">Prim. {{ $prodSpec->primary_packaging }}</span>
+                                                            <span class="pack-secondary" style="font-weight: bold">Sec. {{ $prodSpec->secondary_packaging }}</span>
+                                                        </p>
+
+                                                        <p class="spec-label-reject">
+                                                        <strong>Labeling:</strong> <span style="font-weight: bold"> {{ $prodSpec->labeling_requirement}}</span> 
+                                                        </p>
+                                                        <p class="spec-label-reject">
+                                                            <strong>Rejection:</strong> <span style="font-weight: bold"> {{ $prodSpec->rejection_parameter }}</span>
+                                                        </p>
+                                                    </div>
+                                                @endforeach
+                                                {{-- @endfor --}}
+
+
+                                        </div>
+
+                                                
+
+                                    </di>
+                                </div>
+
                             </div>
                         </div>
 

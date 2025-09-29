@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\DeliveryRequirements;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Suppliers;
@@ -12,6 +13,9 @@ use App\Models\AccountStatus;
 use App\Models\Staffs;
 use App\Models\Logs;
 use App\Models\Products;
+use App\Models\Address;
+use App\Models\ProductRequirements;
+
 use App\Models\ProductSetting;
 use App\Models\Credits;
 use Illuminate\Support\Facades\Log;
@@ -49,15 +53,23 @@ class CustomersController extends Controller
                                 ->where('role_type', 'sales_representative')
                                 ->where('status', 'Active')
                                 ->get();
+            $delivery = DeliveryRequirements::where('supplier_id', $supplier->supplier_id)->first();
+
+            $address = Address::where('supplier_id', $supplier->supplier_id)->first();
             $staffAgent = Staffs::where('staff_id', $supplier->staff_id)->first();
             $documents  = Documents::where('supplier_id', $supplier_id)->get();
             $products   = Products::where('status', 'Listed')->get();
-            $productRequirements   = ProductSetting::where('supplier_id', $supplier_id)->get();
+            $productRequirements   = ProductRequirements::where('supplier_id', $supplier_id)->get();
+            $prodSpecs   = ProductRequirements::where('supplier_id', $supplier_id)->get();
 
 
             return view('customers.customer', [
                 'user'       => $user,
                 'supplier'   => $supplier,
+                'address'   => $address,
+                'prodSpecs'   => $prodSpecs,
+                'delivery'   => $delivery,
+
                 'staffs'     => $staffs,
                 'accStatus'  => $accStatus,
                 'staffAgent' => $staffAgent,

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Suppliers;
 use App\Models\Staffs;
 use App\Models\Documents;
+use App\Models\Address;
+
 use App\Models\Products;
 use App\Models\ProductSetting;
 class ProfileController extends Controller
@@ -16,6 +18,8 @@ class ProfileController extends Controller
         {
             $user = Auth::user();
             $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
+            $addresses  = Address::where('supplier_id', $supplier->supplier_id)->get();
+
             $staffAgent = Staffs::where('staff_id', $supplier->staff_id)->first();
             $documents  = Documents::where('supplier_id', $supplier->supplier_id)->get();
             $products   = Products::where('status', 'Listed')->get();
@@ -24,6 +28,8 @@ class ProfileController extends Controller
             return view('profile.profile', [
                 'user' => $user,
                 'supplier' => $supplier,
+                'addresses' => $addresses,
+
                 'staffAgent' => $staffAgent,
                 'documents' => $documents,
                 'products' => $products,

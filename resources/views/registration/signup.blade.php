@@ -476,7 +476,7 @@
                             </div>
                             <div id="all-products" style="display:none;">
                                 @foreach($products as $product)
-                                    <div class="product-item" data-id="{{ $product->id }}" data-name="{{ $product->name }}">{{ $product->name }}</div>
+                                    <div class="product-item" data-id="{{ $product->product_id }}" data-name="{{ $product->name }}">{{ $product->name }}</div>
                                 @endforeach
                             </div>
                         </div>
