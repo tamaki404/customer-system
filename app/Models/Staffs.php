@@ -8,6 +8,7 @@ class Staffs extends Model
 {
     protected $fillable = [
         'staff_id',
+        'status',
         'supplier_id',
         'user_id',
         'email_verified_at',

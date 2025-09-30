@@ -67,7 +67,7 @@ class CustomersController extends Controller
             $prodSpecs   = ProductRequirements::where('supplier_id', $supplier_id)->get();
             $representatives   = Representatives::where('supplier_id', $supplier_id)->get();
             $signatories   = Signatories::where('supplier_id', $supplier_id)->get();
-            $business   = Business::where('supplier_id', $supplier_id)->first();
+            $business   = Business::where('supplier_id', operator: $supplier_id)->first();
             $account_status = AccountStatus::where('supplier_id', $supplier_id )->first();
 
 

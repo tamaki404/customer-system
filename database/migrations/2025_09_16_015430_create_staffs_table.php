@@ -15,7 +15,8 @@ return new class extends Migration
         $table->id();
         $table->string('user_id')->unique(); 
         $table->string('staff_id')->unique();
-        $table->string('supplier_id')->nullable();
+        $table->string('status')->required();
+
         $table->string('log_id')->unique();
         $table->string('firstname');
         $table->string('lastname');

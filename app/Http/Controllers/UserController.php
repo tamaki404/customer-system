@@ -634,6 +634,7 @@ class UserController extends Controller
                 'middlename'    => $request->middlename,
                 'mobile_no'    => $request->mobile_no,
                 'telephone_no'    => $request->telephone_no,
+                'status' => 'Pending',
 
             ]);
 
@@ -761,6 +762,7 @@ class UserController extends Controller
         $hashedToken = hash('sha256', $request->query('token'));
         $userId = $request->query('uid');
 
+        // check token exists
         $record = DB::table('email_verification_tokens')
             ->where('user_id', $userId)
             ->where('token', $hashedToken)
@@ -770,29 +772,38 @@ class UserController extends Controller
             return redirect()->route('signin')->with('error', 'Invalid or expired verification link.');
         }
 
+        // check if expired
         if ($record->expires_at && now()->greaterThan($record->expires_at)) {
             return redirect()->route('signin')->with('error', 'Verification link has expired.');
         }
 
-        // Mark verified
+        // find user
         $user = User::where('user_id', $userId)->first();
         if (!$user) {
             return redirect()->route('signin')->with('error', 'User not found.');
         }
 
-        // Mark supplier email_verified_at too if exists
+        // Mark verified in the correct table
         DB::transaction(function() use ($user, $userId) {
- 
-            DB::table('account_status')->where('user_id', $userId)->update([
-                'email_verified_at' => now(),
-            ]);
+            if ($user->role === 'Staff') {
+                // ✅ Update staff table
+                DB::table('staffs')->where('user_id', $userId)->update([
+                    'email_verified_at' => now(),
+                    'status' => 'Accepted',
+                ]);
+            } else {
+                DB::table('account_status')->where('user_id', $userId)->update([
+                    'email_verified_at' => now(),
+                ]);
+            }
 
-            // Remove used tokens
+            // Remove used token
             DB::table('email_verification_tokens')->where('user_id', $userId)->delete();
         });
 
         return redirect()->route('signin')->with('success', 'Email verified successfully. You may now sign in.');
     }
+
 
     private function validateSecurity(Request $request)
     {
