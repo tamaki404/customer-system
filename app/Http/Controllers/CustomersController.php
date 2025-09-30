@@ -32,6 +32,7 @@ class CustomersController extends Controller
             $supplier = Suppliers::where('user_id', $user->user_id)->first() ;
             $suppliers = Suppliers::with('user')
                 ->whereRelation('user', 'role', 'Supplier')
+                ->orderBy('id', 'desc')  
                 ->get();
 
 

@@ -164,6 +164,10 @@
                                 </thead>
                                 <tbody>
                                     <!-- Rows added dynamically -->
+                                    {{-- Each product row must include a hidden input: <input type="hidden" name="product_ids[]" value="PRODUCT_ID"> --}}
+                                    @foreach(request()->old('product_ids', []) as $pid)
+                                        <input type="hidden" name="product_ids[]" value="{{ $pid }}">
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -433,7 +437,7 @@
                   
                         @endif
 
-                    </>
+                        </div>
 
 
                 </div>
@@ -449,10 +453,23 @@
                         
                         <div class="profile-details-div" style="margin-left: 10px">
                             <div>
-                                <p class="company-status" style="margin: 0">
-                                    <span class="company-name">{{  $supplier->company_name }}</span>
-                                    <span class="user-stat">{{$supplier->user->status}}</span>
-                                </p>
+                                <div class="company-status" style="margin: 0; display: flex; align-items: center;">
+                                    <p class="company-name">{{  $supplier->company_name }} <span style="font-size: 14px; font-weight: normal;">({{$supplier->category}})</span></p>
+                                    <p style="margin: 0; cursor: pointer;">
+                                        <span class="material-icons" style="font-size: 14px; color:
+                                            @if($supplier->account_status->account_status === 'Pending') orange
+                                            @elseif($supplier->account_status->account_status === 'Accepted') green
+                                            @elseif($supplier->account_status->account_status === 'Suspended') red
+                                            @else gray
+                                            @endif
+
+                                            
+                                        "
+                                        title="{{$supplier->account_status->account_status}}"
+                                        
+                                        >circle</span>
+                                    </p>
+                                </div>
                                 <div class="details-address">
                                     <p class="address-div">
                                         <span class="material-symbols-outlined icon" title="Home/ Head office address">home_work</span>

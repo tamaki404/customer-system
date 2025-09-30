@@ -452,7 +452,7 @@ public function registerSupplier(Request $request)
 
         // Product Requirements (arrays for multiple products)
         'product_ids'     => 'required|array|min:1',
-        'product_ids.*'   => 'required|exists:products,id',
+        'product_ids.*'   => 'required|exists:products,product_id',
 
         // Delivery Requirements
         'ppe_requirements'       => 'required|string|max:255',
@@ -508,7 +508,7 @@ public function registerSupplier(Request $request)
         $companyImageName = null;
         $companyImageSize = null;
         if ($request->input('default_image') === 'true' || $request->boolean('use_default')) {
-            $defaultImagePath = public_path('assets/default-company-logo.jpg');
+            $defaultImagePath = public_path('assets/default-company-logo.png');
             if (file_exists($defaultImagePath)) {
                 $companyImageBinary = file_get_contents($defaultImagePath);
                 $companyImageMime = mime_content_type($defaultImagePath);

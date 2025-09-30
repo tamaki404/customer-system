@@ -33,7 +33,7 @@
 .company-status{
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    gap: 10px;
 }
 .user-status{
     font-size: 13px;
