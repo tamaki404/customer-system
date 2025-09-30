@@ -858,7 +858,6 @@
                                 <div>
                                     <p class="title-data">Documents</p>
                                     <div class="documents-list d-flex flex-wrap gap-4">
-
                                         @foreach ($documents as $document)
                                             @php
                                                 $pdfData = $document->file
@@ -868,31 +867,32 @@
                                                 $modalId = 'documentModal' . ($document->id ?? $loop->index);
                                             @endphp
 
-                                            <div class="document-group text-center" style="overflow: hidden">
-                                                <p>{{ $document->type }}</p>
-
-                                                @if ($pdfData)
-                                                    <!-- Small Preview (just 1 page thumbnail style using <iframe>) -->
-                                                    <div
-                                                        class="pdf-thumbnail"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#{{ $modalId }}"
-                                                        style="cursor: pointer; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; width: 100%; height: 80%; 
-                                                        "
-                                                    >
-                                                        <iframe
-                                                            src="{{ $pdfData }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
-                                                            style="width: 100%; height: 100%; pointer-events: none; "
-                                                            title="PDF Preview"
-                                                            scrolling="no"
-                                                        ></iframe>
+                                            <div class="document-card text-center" style="width: 220px;">
+                                                <div class="card shadow-sm border-0 rounded-3 overflow-hidden" style="cursor: pointer; height: 300px;"
+                                                    data-bs-toggle="modal" data-bs-target="#{{ $modalId }}">
+                                                    
+                                                    <div class="ratio ratio-4x3 bg-light" style="height: 80%">
+                                                        @if ($pdfData)
+                                                            <iframe
+                                                                src="{{ $pdfData }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
+                                                                style="width: 100%; height: 100%; pointer-events: none; border: none;"
+                                                                title="PDF Preview"
+                                                            ></iframe>
+                                                        @else
+                                                            <p class="text-danger">No document</p>
+                                                        @endif
                                                     </div>
-                                                @else
-                                                    <p class="text-danger">No document</p>
-                                                @endif
+
+                                                    <div class="card-body p-3">
+                                                        <p class="fw-semibold mb-1" style="font-size: 0.9rem;">{{ $document->type }}</p>
+                                                        <small class="text-muted">
+                                                            {{ \Carbon\Carbon::parse($document->updated_at)->format('M d, Y') }} <br>
+                                                            {{-- Opened {{ \Carbon\Carbon::parse($document->updated_at)->format('g:i A') }} --}}
+                                                        </small>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            <!-- Modal Viewer for Full PDF -->
                                             <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
                                                 <div class="modal-dialog modal-xl modal-dialog-centered">
                                                     <div class="modal-content">
@@ -916,10 +916,9 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                         @endforeach
-
                                     </div>
+
                                 </div>
                             </div>
 
