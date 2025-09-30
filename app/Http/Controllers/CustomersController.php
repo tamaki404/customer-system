@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Business;
 use App\Models\DeliveryRequirements;
 use App\Models\Representatives;
 use App\Models\Signatories;
@@ -66,6 +67,7 @@ class CustomersController extends Controller
             $prodSpecs   = ProductRequirements::where('supplier_id', $supplier_id)->get();
             $representatives   = Representatives::where('supplier_id', $supplier_id)->get();
             $signatories   = Signatories::where('supplier_id', $supplier_id)->get();
+            $business   = Business::where('supplier_id', $supplier_id)->first();
 
 
             return view('customers.customer', [
@@ -76,6 +78,7 @@ class CustomersController extends Controller
                 'delivery'   => $delivery,
                 'representatives'   => $representatives,
                 'signatories'   => $signatories,
+                'business'   => $business,
 
                 'staffs'     => $staffs,
                 'accStatus'  => $accStatus,

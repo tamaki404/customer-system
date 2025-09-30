@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('account_status', 50);
             $table->string('reason_to_decline')->nullable(); 
             $table->timestamp('email_verified_at')->nullable(); 
+            $table->string('approved_by')->nullable(); 
+            $table->timestamp('approved_at')->nullable(); 
 
             $table->timestamps();
 

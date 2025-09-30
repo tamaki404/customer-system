@@ -383,7 +383,7 @@ class UserController extends Controller
                     'supplier_id' => $supplier_id,
 
                     'account_name' => $request->account_name,
-                    'bank_name' => $request->bank,
+                    'bank' => $request->bank,
                     'branch' => $request->branch,
                     'account_number' => $request->account_number,
                 ]);

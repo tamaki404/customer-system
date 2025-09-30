@@ -394,6 +394,33 @@
                 </div>
             </div>
 
+            {{-- view e-signature --}}
+            <div class="modal fade" id="view-sign-action" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <p class="modal-title">E-signature</p>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body text-center">
+                            <!-- Signature Preview -->
+                             {{-- @php
+                                $imgSrc =  view-sign-image 
+                                    ? ('data:' . view-sign-image->e_mime_type . ';base64,' . base64_encode(view-sign-image))
+                                    : asset('images/default-avatar.png');
+                            @endphp --}}
+                            <img id="view-sign-image" src="" alt="E-signature" style="max-width: 100%; height: auto;"/>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         <div class="content-bg" >
                 <div class="content-header">
                     <div class="contents-display">
@@ -515,13 +542,20 @@
                                         <span class="div-text">{{$supplier->user->email_address}}</span>
 
                                     </p>
+
+                                    <span>|</span>
+                                    <p>
+                                        <span class="material-symbols-outlined icon" title="Payment method">paid</span>
+                                        <span class="div-text" style="color: green">{{$supplier->payment_method}}</span>
+
+                                    </p>
                                 </div>
+
                             </div>
                         </div>
 
                     </div>
 
-                    
                     <div class="sales-person-div">
                         @if($user->staff_id !== NULL)
                             <p class="sales-title">Sales person</p>
@@ -559,7 +593,6 @@
                         @endif
                     </div>
 
-
                     <div class="tab-div">
 
                         <div class="tabs" role="tablist">
@@ -570,19 +603,20 @@
                             Authorized staffs
                             </button>
                             <button class="tab-button" data-tab="details" role="tab" aria-selected="false" aria-controls="details-content" id="details-tab">
-                            Details
+                            Banks & other details
                             </button>
                             <button class="tab-button" data-tab="documents" role="tab" aria-selected="false" aria-controls="documents-content" id="documents-tab">
                             Documents
                             </button>
                         </div>
 
+                        {{-- product requirements --}}
                         <div id="product-content" class="tab-content active" role="tabpanel" aria-labelledby="product-tab">
                             <div class="profile-mid" >
 
                                 <div class="authorized-staffs" style="box-shadow: none">
                                     <p style="margin-bottom: 5px">Summary list</p>
-                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
                                         <div class="authorized-rep">
                                             <button  data-bs-toggle="modal" data-bs-target="#add-product-modal" class="btn-transition btn-span" style="width: 100px;     background-color: #f8912a; color: #fff; font-weight: normal;"> <span class="material-symbols-outlined ">add</span>Add new</button>
                                             <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
@@ -624,24 +658,24 @@
                                                         </td>
                                                     </tr>
                                                     @endforeach
-
-
                                                 </tbody>
                                             </table>
                                         </div>
-                                                
 
-                                    </di>
+                                    </div>
                                 </div>
 
-                                <div class="authorized-staffs" style="width: 600px">
-                                    <p style="margin-bottom: 5px">Remarks/Special instructions</p>
+                                @if ($delivery->delivery_instructions !== NULL)
+                                    <div class="authorized-staffs" style="width: 600px">
+                                        <p style="margin-bottom: 5px">Remarks/Special instructions</p>
                                         <div class="authorized-rep delivery-req">
                                             <p class="spec-weight">
                                                 <span style="font-weight: normal; font-size: 13px;">{{ $delivery->delivery_instructions }}</span>
                                             </p>
                                         </div>
-                                </div>
+                                    </div>
+                                @endif
+
 
                                 <div class="authorized-staffs" style="width: 700px">
                                     <p style="margin-bottom: 5px">Delivery requirements</p>
@@ -659,14 +693,17 @@
                                                             <strong>Address 1:</strong> 
                                                             <span style="font-weight: bold">{{ $delivery->delivery_address_1 }}</span>
                                                         </p>
-                                                        <p class="spec-weight">
-                                                            <strong>Address 2:</strong> 
-                                                            <span style="font-weight: bold">{{ $delivery->delivery_address_2 }}</span>
-                                                        </p>
-                                                        <p class="spec-weight">
-                                                            <strong>Address 3:</strong> 
-                                                            <span style="font-weight: bold">{{ $delivery->delivery_address_3 }}</span>
-                                                        </p>
+                                                        @if ($delivery->delivery_address_2 !== NULL)
+                                                            <p class="spec-weight">
+                                                                <strong>Address 2:</strong> 
+                                                                <span style="font-weight: bold">{{ $delivery->delivery_address_2 }}</span>
+                                                            </p>
+                                                        @elseif ($delivery->delivery_address_3 !== NULL)
+                                                            <p class="spec-weight">
+                                                                <strong>Address 3:</strong> 
+                                                                <span style="font-weight: bold">{{ $delivery->delivery_address_3 }}</span>
+                                                            </p>
+                                                        @endif
                                                     </div>
                        
                                         </div>
@@ -680,9 +717,9 @@
                                 
                                 <div class="authorized-staffs" style="">
                                     <p style="margin-bottom: 5px">Specifications</p>
-                                    <di class="rep-sign-tables" >
+                                    <div class="rep-sign-tables" >
                                         <div class="authorized-rep" style="width: 100%; display: flex; flex-direction: row; gap: 5px; flex-wrap: wrap; justify-content:flex-start; background-color: transparent; border: none; box-shadow: none;">
-                                                {{-- @for ($i = 0; $i < 5; $i++) --}}
+                                                {{-- @for ($i = 0; $i <div 5; $i++) --}}
                                                 @foreach ($prodSpecs as $prodSpec)
                                                     <div class="spec-card" style="width: 49%">
                                                         <p class="spec-title" style="display: flex; justify-content: space-between; font-size: 15px; margin-bottom: 10px;">
@@ -714,18 +751,19 @@
                                                     </div>
                                                 @endforeach
                                                 {{-- @endfor --}}
-
-
                                         </div>
 
-                                                
+                                    </div>
 
-                                    </di>
+
                                 </div>
+
+                                                
 
                             </div>
                         </div>
 
+                        {{-- authorized staffs requirements --}}
                         <div id="staff-content" class="tab-content" role="tabpanel" aria-labelledby="staff-tab">
                             <div class="profile-mid">
                                 <div class="authorized-staffs" >
@@ -745,7 +783,7 @@
                                                 <tbody>
                                                     @foreach ( $representatives as $rep)
                                                         <tr>
-                                                            <td>1</td>
+                                                            <td>{{$loop->iteration}}</td>
                                                             <td>
                                                                 {{ implode(', ', array_filter([
                                                                     $rep->rep_lastname,
@@ -770,14 +808,14 @@
                                                         <th>#</th>
                                                         <th>Name</th>
                                                         <th>Relationship/position</th>
-                                                        <th>e-signature</th>
+                                                        <th>E-signature</th>
 
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @foreach ($signatories as $sign)
                                                         <tr>
-                                                            <td>1</td>
+                                                            <td>{{$loop->iteration}}</td>
                                                             <td>
                                                                 {{ implode(', ', array_filter([
                                                                     $sign->sign_lastname,
@@ -786,7 +824,20 @@
                                                                 ])) }}
                                                             </td>
                                                             <td>{{ $sign->sign_position}}</td>
-                                                            <td><button>View e-signature</button></td>
+                                                            <td style="display: flex; align-items: center; justify-content: center;">
+                                                                <button  
+                                                                    data-bs-toggle="modal" 
+                                                                    data-bs-target="#view-sign-action" 
+                                                                    class="btn-span edit-product-btn"
+                                                                    data-signature="{{ $sign->e_image }}" 
+                                                                >
+                                                                    <span class="material-symbols-outlined">visibility</span>
+                                                                </button>
+
+                                                                {{-- <img class="supplier-image" src="{{ $sign->e_image }}" alt="Profile Image">    --}}
+
+
+                                                            </td>
 
                                                         </tr>
                                                     @endforeach
@@ -797,71 +848,11 @@
 
                                     </di>
                                 </div>
-                                <div class="authorized-staffs" style="margin-top: 10px">
-                                    <p style="margin-bottom: 5px">Bank details</p>
-                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
-                                        <div class="authorized-rep">
-                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                                <thead style="background-color: #f9f9f9;">
-                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                                        <th>#</th>
-                                                        <th>Account name</th>
-                                                        <th>Bank</th>
-                                                        <th>Branch</th>
-                                                        <th>Account number</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>{{ $supplier->bank->account_number}}</td>
-                                                        <td>{{ $supplier->bank->bank}}</td>
-                                                        <td>{{ $supplier->bank->branch}}</td>
-                                                        <td>{{ $supplier->bank->account_number}}</td>
 
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                    </di>
-
-
-                                </div>
-                                <div class="authorized-staffs" style="margin-top: 10px">
-                                    <p style="margin-bottom: 5px">Referral</p>
-                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px; ">
-                                        <div class="questions-list">
-                                            <p>
-                                                <span style="color:#666">How long have you known salesman? </span>
-                                                <span>{{$supplier->salesman_relationship}}</span>
-                                            </p>
-                                            <p>
-                                                <span style="color:#666">Weekly volume (tray/head)</span>
-                                                <span>{{$supplier->weekly_volume}}</span>
-                                            </p>
-                                            <p>
-                                                <span style="color:#666">Date acquired</span>
-                                                <span>{{$supplier->date_required}}</span>
-                                            </p>
-                                            <p>
-                                                <span style="color:#666">Other products interested in</span>
-                                                <span>{{$supplier->other_products_interest}}</span>
-                                            </p>
-                                            <p>
-                                                <span style="color:#666">Referred by</span>
-                                                <span>{{$supplier->referred_by}}</span>
-                                            </p>
-                                    
-                                        </div>
-
-                                    </di>
-
-
-                                </div>
                             </div>
                         </div>
 
+                        {{-- docs --}}
                         <div id="documents-content" class="tab-content" role="tabpanel" aria-labelledby="documents-tab">
                             <div class="documents-div">
                                 <div>
@@ -933,74 +924,39 @@
 
                         </div>
 
-
+                        {{-- banks and other details --}}
                         <div id="details-content" class="tab-content" role="tabpanel" aria-labelledby="details-tab">
                             <div class="profile-mid">
+
                                 <div class="authorized-staffs" >
-                                    <p style="margin-bottom: 5px">Other details</p>
-                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
-                                        <div class="authorized-rep">
-                                            <p style="font-weight: normal; font-size: 13px;">Representative/s </p>
-                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                                <thead style="background-color: #f9f9f9;">
-                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                                        <th>#</th>
-                                                        <th>Name</th>
-                                                        <th>Relationship/position</th>
-                                                        <th>Contact number</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>
-                                                            {{ implode(', ', array_filter([
-                                                                $supplier->representative->rep_last_name,
-                                                                $supplier->representative->rep_first_name,
-                                                                $supplier->representative->rep_middle_name,
-                                                            ])) }}
-                                                        </td>
-                                                        <td>{{ $supplier->representative->rep_relationship}}</td>
-                                                        <td>{{ $supplier->representative->rep_contact_no}}</td>
-
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                    <p style="margin-bottom: 5px">Account details</p>
+                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px; ">
+                                        <div class="questions-list">
+                                            <p>
+                                                <span style="color:#666">Joined at</span>
+                                                <span>{{ \Carbon\Carbon::parse($supplier->created_at)->format('F j, Y') }}</span>
+                                                
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Verified by</span>
+                                                <span>{{$supplier->account_status->approved_by}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Approved at</span>
+                                                <span>{{$supplier->account_status->approved_at}}</span>
+                                            </p>
+                           
+                                    
                                         </div>
-                                        <div class="signatory-rep">
-                                            <p style="font-weight: normal; font-size: 13px;">Signatories to accept deliveries and sign invoices </p>
-                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                                <thead style="background-color: #f9f9f9;">
-                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                                        <th>#</th>
-                                                        <th>Name</th>
-                                                        <th>Relationship/position</th>
-                                                        <th>Contact number</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr>
-                                                <td>1</td>
-                                                <td>
-                                                    {{ implode(', ', array_filter([
-                                                        $supplier->signatory->signatory_last_name,
-                                                        $supplier->signatory->signatory_first_name,
-                                                        $supplier->signatory->signatory_middle_name,
-                                                    ])) }}
-                                                </td>
-                                                <td>{{ $supplier->signatory->signatory_relationship}}</td>
-                                                <td>{{ $supplier->signatory->signatory_contact_no}}</td>
-
-                                                </tr>
-                                            </tbody>
-                                            </table>
-                                        </div>                        
 
                                     </di>
+
+
                                 </div>
-                                <div class="authorized-staffs" style="margin-top: 10px">
+
+                                <div class="authorized-staffs" >                                                                        
                                     <p style="margin-bottom: 5px">Bank details</p>
-                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
                                         <div class="authorized-rep">
                                             <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
                                                 <thead style="background-color: #f9f9f9;">
@@ -1025,33 +981,64 @@
                                             </table>
                                         </div>
 
+                                    </div>
+
+
+                                </div>
+
+                                <div class="authorized-staffs" >
+                                    <p style="margin-bottom: 5px">Business & contacts</p>
+                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px; ">
+                                        <div class="questions-list">
+                                            <p>
+                                                <span style="color:#666">How long have you been in the industry? </span>
+                                                <span>{{$business->years}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Referred by</span>
+                                                <span>{{$business->referred_by}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Contacted by</span>
+                                                <span>{{$business->contacted_by}}</span>
+                                            </p>
+                           
+                                    
+                                        </div>
+
                                     </di>
 
 
                                 </div>
-                                <div class="authorized-staffs" style="margin-top: 10px">
-                                    <p style="margin-bottom: 5px">Referral</p>
+
+                                <div class="authorized-staffs" >
+                                    <p style="margin-bottom: 5px">Valid ID</p>
                                     <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px; ">
-                                        <div class="questions-list">
+                                        <div class="questions-list" style="width: auto; gap: 2px">
+                                            <div>
+                                                @php
+                                                    $idImg =  $supplier->id_image 
+                                                        ? ('data:' . $supplier->id_mime_type . ';base64,' . base64_encode($supplier->id_image))
+                                                        : asset('images/default-avatar.png');
+                                                @endphp
+                                                <img class="id-image" style="height: 200px" src="{{ $idImg }}" alt="ID Image"> 
+                                            </div>
                                             <p>
-                                                <span style="color:#666">How long have you known salesman? </span>
-                                                <span>{{$supplier->salesman_relationship}}</span>
+                                                <span style="color:#666">Type of ID </span>
+                                                <span>{{$supplier->id_type}}</span>
+                                            </p>
+
+                                            <p>
+                                                <span style="color:#666">Valid ID no.</span>
+                                                <span>{{$supplier->id_number}}</span>
                                             </p>
                                             <p>
-                                                <span style="color:#666">Weekly volume (tray/head)</span>
-                                                <span>{{$supplier->weekly_volume}}</span>
+                                                <span style="color:#666">Civil status</span>
+                                                <span>{{$supplier->civil_status}}</span>
                                             </p>
                                             <p>
-                                                <span style="color:#666">Date acquired</span>
-                                                <span>{{$supplier->date_required}}</span>
-                                            </p>
-                                            <p>
-                                                <span style="color:#666">Other products interested in</span>
-                                                <span>{{$supplier->other_products_interest}}</span>
-                                            </p>
-                                            <p>
-                                                <span style="color:#666">Referred by</span>
-                                                <span>{{$supplier->referred_by}}</span>
+                                                <span style="color:#666">Citizenship</span>
+                                                <span>{{$supplier->citizenship}}</span>
                                             </p>
                                     
                                         </div>
@@ -1060,6 +1047,7 @@
 
 
                                 </div>
+                            
                             </div>
                         </div>
 
@@ -1094,6 +1082,7 @@
     <script src="{{ asset('js/global/filter-products.js') }}"></script>
     <script src="{{ asset('js/global/modal-hide-input.js') }}"></script>
     <script src="{{ asset('js/global/alert-timeout.js') }}"></script>
+    <script src="{{ asset('js/global/view-esignature.js') }}"></script>
 
     <script src="{{ asset('js/global/modal/add-product-user.js') }}"></script>
     <script>

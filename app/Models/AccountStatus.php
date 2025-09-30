@@ -15,7 +15,9 @@ class AccountStatus extends Model
         'account_status', 
         'reason_to_decline',
         'staff_id',
-        'supplier_id'
+        'supplier_id',
+        'approved_at',
+        'approved_by',
     ];
 
     public function supplier()
