@@ -303,12 +303,12 @@
                     <input type="hidden" id="edit-modal-set-id" name="set_id">
                     <input type="hidden" name="supplier_id" id="edit-modal-supplier-id">
                     <div class="mb-3">
-                    <label class="form-label">Product</label>
+                    <label class="form-label" for="modal-product-name">Product</label>
                     <input type="text" class="form-control" id="modal-product-name" disabled>
                     </div>
 
                     <div class="mb-3">
-                    <label class="form-label">Price</label>
+                    <label class="form-label" for="modal-price">Price</label>
                     <input type="number" step="0.01" class="form-control" name="price" id="modal-price">
                     </div>
 
@@ -399,17 +399,11 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <p class="modal-title">E-signature</p>
+                            <p class="modal-title" id="modal-signatory-name">E-signature</p>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
                         <div class="modal-body text-center">
-                            <!-- Signature Preview -->
-                             {{-- @php
-                                $imgSrc =  view-sign-image 
-                                    ? ('data:' . view-sign-image->e_mime_type . ';base64,' . base64_encode(view-sign-image))
-                                    : asset('images/default-avatar.png');
-                            @endphp --}}
                             <img id="view-sign-image" src="" alt="E-signature" style="max-width: 100%; height: auto;"/>
                         </div>
 
@@ -419,6 +413,7 @@
                     </div>
                 </div>
             </div>
+
 
 
         <div class="content-bg" >
@@ -809,13 +804,15 @@
                                                         <th>Name</th>
                                                         <th>Relationship/position</th>
                                                         <th>E-signature</th>
+                                                        <th></th>
 
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @foreach ($signatories as $sign)
                                                         <tr>
-                                                            <td>{{$loop->iteration}}</td>
+
+                                                            <td>{{ $loop->iteration }}</td>
                                                             <td>
                                                                 {{ implode(', ', array_filter([
                                                                     $sign->sign_lastname,
@@ -823,26 +820,33 @@
                                                                     $sign->sign_middlename,
                                                                 ])) }}
                                                             </td>
-                                                            <td>{{ $sign->sign_position}}</td>
-                                                            <td style="display: flex; align-items: center; justify-content: center;">
-                                                                <button  
-                                                                    data-bs-toggle="modal" 
-                                                                    data-bs-target="#view-sign-action" 
-                                                                    class="btn-span edit-product-btn"
-                                                                    data-signature="{{ $sign->e_image }}" 
-                                                                >
-                                                                    <span class="material-symbols-outlined">visibility</span>
-                                                                </button>
-
-                                                                {{-- <img class="supplier-image" src="{{ $sign->e_image }}" alt="Profile Image">    --}}
-
-
+                                                            <td>{{ $sign->sign_position }}</td>
+                                                            <td>
+                                                                @php
+                                                                    $sign_image =  $sign->e_image
+                                                                        ? ('data:' . $sign->e_mime_type . ';base64,' . base64_encode($sign->e_image))
+                                                                        : asset('images/default-avatar.png');
+                                                                @endphp
+                                                                <img src="{{ $sign_image }}" width="60" height="60" class="rounded">
                                                             </td>
-
+                                                            <td style="">
+                                                                <button  
+                                                                    class="viewSignBtn edit-product-btn"
+                                                                    data-bs-toggle="modal" 
+                                                                    data-bs-target="#view-sign-action"
+                                                                    data-image="{{ $sign_image }}"
+                                                                    data-name="{{ implode(', ', array_filter([
+                                                                        $sign->sign_lastname,
+                                                                        $sign->sign_firstname,
+                                                                        $sign->sign_middlename,
+                                                                    ])) }}"
+                                                                    style="height: 40px">
+                                                                    <span class="material-symbols-outlined" style="font-size: 17px">visibility</span>
+                                                                </button>
+                                                            </td>
                                                         </tr>
                                                     @endforeach
-
-                                            </tbody>
+                                                </tbody>
                                             </table>
                                         </div>                        
 
