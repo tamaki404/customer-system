@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('product_id')->unique(); 
             $table->string('name');
-            $table->decimal('srp', 10, 2);
+            $table->decimal('base_price', 10, 2);
             $table->string('category');
             $table->string('unit');
             $table->string('weight')->nullable();

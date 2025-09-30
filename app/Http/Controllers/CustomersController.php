@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Users;
 
 class CustomersController extends Controller
 {
@@ -55,7 +56,6 @@ class CustomersController extends Controller
             $accStatus  = AccountStatus::where('supplier_id', $supplier_id)->first();
             $staffs     = User::where('role', 'Staff')
                                 ->where('role_type', 'sales_representative')
-                                ->where('status', 'Active')
                                 ->get();
             $delivery = DeliveryRequirements::where('supplier_id', $supplier->supplier_id)->first();
 
@@ -68,6 +68,8 @@ class CustomersController extends Controller
             $representatives   = Representatives::where('supplier_id', $supplier_id)->get();
             $signatories   = Signatories::where('supplier_id', $supplier_id)->get();
             $business   = Business::where('supplier_id', $supplier_id)->first();
+            $account_status = AccountStatus::where('supplier_id', $supplier_id )->first();
+
 
 
             return view('customers.customer', [
@@ -79,6 +81,7 @@ class CustomersController extends Controller
                 'representatives'   => $representatives,
                 'signatories'   => $signatories,
                 'business'   => $business,
+                'account_status' => $account_status,
 
                 'staffs'     => $staffs,
                 'accStatus'  => $accStatus,
@@ -103,13 +106,15 @@ class CustomersController extends Controller
             $request->validate([
                 'supplier_id'       => 'required|exists:suppliers,supplier_id',
                 'user_id'       => 'required|exists:users,user_id',
-                'acc_status'        => 'required|string|max:100',
-                'reason_to_decline' => 'nullable|string|max:200|required_if:acc_status,Declined',
+                'account_status'        => 'required|string|max:100',
+                'reason_to_decline' => 'nullable|string|max:200|required_if:account_status,Declined',
                 'staff_id'          => 'required|exists:staffs,staff_id',
                 'credit_limit' => 'required|numeric|min:0',
                 'products'    => 'nullable|array',
                 'products.*.product_id' => 'required|string|exists:products,product_id',
-                'products.*.price'      => 'required|numeric|min:0',
+                'products.*.nego_price'      => 'required|numeric|min:0',
+
+
 
             ]);
 
@@ -119,20 +124,23 @@ class CustomersController extends Controller
 
 
                 $user = User::where('user_id', $request->user_id)->firstOrFail();
-                $acc_status = AccountStatus::firstOrNew(['supplier_id' => $request->supplier_id]);
+                $account_status = AccountStatus::firstOrNew(['supplier_id' => $request->supplier_id]);
 
-                $acc_status->staff_id = $request->staff_id;
-                $acc_status->acc_status = $request->acc_status; 
-                $acc_status->reason_to_decline = $request->acc_status === 'Declined'
+                $account_status->staff_id = $request->staff_id;
+                $account_status->account_status = $request->account_status; 
+                $account_status->reason_to_decline = $request->account_status === 'Declined'
                     ? $request->reason_to_decline
                     : null;
-                $acc_status->save();
+                $account_status->save();
 
-                $user->status = $request->acc_status;
+                $user->status = $request->account_status;
                 $user->save();
 
-                $supplier = Suppliers::where('supplier_id', $request->supplier_id)->firstOrFail();
+                $supplier = AccountStatus::where('supplier_id', $request->supplier_id)->firstOrFail();
                 $supplier->staff_id = $request->staff_id;
+                $supplier->approved_by = $request->user_id;
+                $supplier->approved_at = now();
+
                 $supplier->save();
 
                     $date = date('Ymd');
@@ -150,19 +158,18 @@ class CustomersController extends Controller
 
 
                 // Save product settings only if accepted
-                if ($request->acc_status === 'Accepted' && $request->has('products')) {
-                    foreach ($request->products as $product) {
-                        $set_id = 'SET-' . $date . '-' . randomBase36String(5);
-
-                        ProductSetting::create([
-                            'product_id'  => $product['product_id'],
-                            'set_id'      => $set_id,
-                            'supplier_id' => $request->supplier_id,
-                            'price'       => $product['price'],
-                            'added_by'    => $user->user_id, 
-                        ]);
+                    if ($request->account_status === 'Accepted' && $request->has('products')) {
+                        foreach ($request->products as $productData) {
+                            ProductSetting::create([
+                                'product_id'  => $productData['product_id'],
+                                'set_id'      => 'SET-' . date('Ymd') . '-' . randomBase36String(5),
+                                'supplier_id' => $request->supplier_id,
+                                'nego_price'  => $productData['nego_price'],
+                                'added_by'    => $user->user_id,
+                            ]);
+                        }
                     }
-                }
+
 
                 $credit_id = 'CRDT-' . $date . '-' . randomBase36String(5);
 
@@ -182,13 +189,13 @@ class CustomersController extends Controller
                     'user_id' => Auth::user()->user_id,
                     'action' => 'Supplier registration request',
                     'log_id' => $log_id,
-                    'description' => "Supplier {$request->supplier_id} confirmed with status '{$request->acc_status}', assigned to staff {$request->staff_id} and added products.",
+                    'description' => "Supplier {$request->supplier_id} confirmed with status '{$request->account_status}', assigned to staff {$request->staff_id} and added products.",
                 ]);
 
 
                 DB::commit();
                 return redirect()->back()
-                    ->with('success', "Supplier confirmation saved successfully (status: {$request->acc_status}).");
+                    ->with('success', "Supplier confirmation saved successfully (status: {$request->account_status}).");
 
 
                 

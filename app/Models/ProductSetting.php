@@ -10,7 +10,7 @@ class ProductSetting extends Model
         'set_id',
         'product_id',
         'supplier_id',
-        'price',
+        'nego_price',
         'added_by',
     ];
 

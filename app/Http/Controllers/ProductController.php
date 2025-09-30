@@ -66,7 +66,7 @@ class ProductController extends Controller
                     'product_id' => 'required|string|max:50|unique:products,product_id',
                     'parent_product_id' => 'nullable|string|exists:products,product_id',
                     'name'       => 'required|string|max:255',
-                    'srp'        => 'required|numeric|min:0',
+                    'base_price'        => 'required|numeric|min:0',
                     'category'   => 'nullable|string|max:100',
                     'category_id'=> 'nullable|string|exists:categories,category_id',
                     'unit'       => 'required|string|max:50',

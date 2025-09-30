@@ -10,7 +10,7 @@ class Products extends Model
         'product_id',
         'parent_product_id',
         'name',
-        'srp',
+        'base_price',
         'category',
         'category_id',
         'unit',

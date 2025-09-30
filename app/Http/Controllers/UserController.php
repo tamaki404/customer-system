@@ -244,7 +244,7 @@ class UserController extends Controller
                 'image_size' => $companyImageSize,
             ]);
 
-            $acc_status = AccountStatus::create([
+            $account_status = AccountStatus::create([
                 'supplier_id' => $supplier_id,
                 'user_id' => $user_id,
                 'status_id' => $status_id,

@@ -1,6 +1,6 @@
 
                 document.addEventListener("DOMContentLoaded", function () {
-                    const accStatus = document.getElementById("acc_status");
+                    const accStatus = document.getElementById("account_status");
                     const reasonGroup = document.getElementById("reason_group");
                     const reasonSelect = document.getElementById("reason_to_decline");
 

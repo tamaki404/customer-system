@@ -32,161 +32,132 @@
             @endif
 
 
-            <div class="modal fade" id="request-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-header">
-                        <p class="modal-title">Supplier request action</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    
-                    <div class="modal-body">
-                        <p class="note-notify">
-                            <span class="material-symbols-outlined"> warning </span>
-                            <span>Review the profile before taking any action on this request.</span>
-                        </p>
-
-                        <!-- Status selection -->
-                        <div class="modal-option-groups">
-                            <p>Do you want to accept this supplier's request to join the system?</p>
-                            <select name="acc_status" id="acc_status" required>
-                                <option value="Accepted">Yes, confirm supplier's request</option>
-                                <option value="Declined">No, there's a problem with their request</option>
-                            </select>
+            <div class="modal fade" id="request-action"tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+                <div class="modal-dialog" >
+                    <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-header">
+                            <p class="modal-title">Supplier request action</p>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
+                        
+                        <div class="modal-body">
+                            <p class="note-notify">
+                                <span class="material-symbols-outlined"> warning </span>
+                                <span>Review the profile before taking any action on this request.</span>
+                            </p>
 
-                        <!-- Reason to decline (hidden by default) -->
-                        <div class="modal-option-groups" id="reason_group" style="display: none;">
-                            <p>What seems to be the problem?</p>
-                            <select name="reason_to_decline" id="reason_to_decline">
-                                <option value="">-- Select reason --</option>
-                                <option value="Wrong documents">Wrong documents, need to be changed</option>
-                                <option value="Contact support">Contact support to learn issue</option>
-                            </select>
-                        </div>
-
-
-
-                        <!-- Assign staff -->
-                        <div class="modal-option-groups">
-                            <p>Assign a sales agent</p>
-                            <select name="staff_id" class="form-control" required>
-                                <option value="">-- Select Sales Agent --</option>
-                                @foreach($staffs as $staff)
-                                    <option value="{{ $staff->staff->staff_id }}">
-                                        {{ $staff->staff->firstname }} {{ $staff->staff->lastname }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="modal-option-groups">
-                            <label for="credit_limit" class="block text-sm font-medium text-gray-700">
-                                Add credit limit
-                            </label>
-                            <input 
-                                type="text" 
-                                name="credit_limit" 
-                                id="credit_limit" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                placeholder="Enter credit limit"
-                                required
-                            >
-                        </div>
-
-
-
-                 
-                        <!-- Product requirement section -->
-                        <div class="modal-option-groups">
-                            <p>Select required products for this supplier:</p>
-
-                            <div style="margin-bottom:10px;">
-                                <p>Browse by Product Hierarchy</p>
-                                <div id="supplier_tree" style="max-height:260px; overflow:auto; border:1px solid #eee; border-radius:6px; padding:8px;"></div>
-                                <div id="supplier_breadcrumb" style="margin-top:6px; font-size:12px; color:#666;"></div>
-                                <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
-                                    <input type="hidden" id="supplier_selected_product_id">
-                                    <button type="button" class="btn btn-secondary" onclick="addSelectedHierarchyProduct()">Add selected</button>
-                                </div>
+                            <!-- Status selection -->
+                            <div class="modal-option-groups">
+                                <p>Do you want to accept this supplier's request to join the system?</p>
+                                <select name="account_status" id="account_status" required>
+                                    <option value="">-- Select status --</option>
+                                    <option value="Accepted">Yes, confirm supplier's request</option>
+                                    <option value="Declined">No, there's a problem with their request</option>
+                                </select>
                             </div>
 
-                            <div class="row mb-2">
-                                <div class="col">
-                                    <select id="filter-category" class="form-control">
-                                        <option value="">-- Category --</option>
-                                        <option value="Frozen">Frozen</option>
-                                        <option value="Cuts">Cuts</option>
-                                        <option value="Eggs">Eggs</option>
-                                        <option value="Processed">Processed</option>
-                                    </select>
-                                </div>
-                                <div class="col">
-                                    <select id="filter-unit" class="form-control">
-                                        <option value="">-- Unit --</option>
-                                        <option value="Pack">Pack</option>
-                                        <option value="Box">Box</option>
-                                        <option value="Bag">Bag</option>
-                                        <option value="Piece">Piece</option>
-                                    </select>
-                                </div>
-                                <div class="col">
-                                    <select id="filter-weight" class="form-control">
-                                        <option value="">-- Weight --</option>
-                                        <option value="Kilogram">Kilogram</option>
-                                        <option value="Gram">Gram</option>
-                                        <option value="Piece">Piece</option>
-                                    </select>
-                                </div>
-                                <div class="col">
-                                    <button type="button" class="btn btn-secondary" onclick="filterProducts()">Search</button>
-                                </div>
+                            <!-- Reason to decline (hidden by default) -->
+                            <div class="modal-option-groups" id="reason_group" style="display: none;">
+                                <p>What seems to be the problem?</p>
+                                <select name="reason_to_decline" id="reason_to_decline">
+                                    <option value="">-- Select reason --</option>
+                                    <option value="Wrong documents">Wrong documents, need to be changed</option>
+                                    <option value="Contact support">Contact support to learn issue</option>
+                                </select>
                             </div>
 
-                            <div id="product-results">
-                                <!-- Filtered products will appear here -->
-                            </div>
 
-                            <hr>
 
-                            <h6>Selected Products</h6>
-                            <table class="table" id="selected-products">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Category</th>
-                                        <th>Unit</th>
-                                        <th>Weight</th>
-                                        <th>Price</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Rows added dynamically -->
-                                    {{-- Each product row must include a hidden input: <input type="hidden" name="product_ids[]" value="PRODUCT_ID"> --}}
-                                    @foreach(request()->old('product_ids', []) as $pid)
-                                        <input type="hidden" name="product_ids[]" value="{{ $pid }}">
+                            <!-- Assign staff -->
+                            <div class="modal-option-groups">
+                                <p>Assign a sales agent</p>
+                                <select name="staff_id" class="form-control" required>
+                                    <option value="">-- Select agent --</option>
+                                    @foreach($staffs as $staff)
+                                        <option value="{{ $staff->staff->staff_id }}">
+                                            {{ $staff->staff->firstname }} {{ $staff->staff->lastname }}
+                                        </option>
                                     @endforeach
-                                </tbody>
-                            </table>
+                                </select>
+                            </div>
+
+                    
+                            <div class="modal-option-groups">
+                                <p>Add credit limit</p>
+                                  <input 
+                                    type="text" 
+                                    name="credit_limit" 
+                                    id="credit_limit" 
+                                    placeholder="Enter credit limit"
+                                    class="input-form"
+                                    style="width:300px; font-size: 14px;"
+                                    required
+                                >
+                            </div>
+
+                            <div class="modal-option-groups">
+                                <p>Product requiremnets</p>
+
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>Product ID</td>
+                                            <td>Product name</td>
+                                            <td>Base price</td>
+                                            <td>Agreed price</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ( $productRequirements as $product)
+                                            <tr>
+                                                <td>{{$product->product_id}}</td>
+                                                <td>{{$product->product->name}}</td>
+                                                <td>₱{{$product->product->base_price}}</td>
+                                                <td>₱
+                                                    <input 
+                                                        type="number" 
+                                                        name="products[{{ $product->product_id }}][nego_price]" 
+                                                        class="decimal-input"
+                                                        style="width: 80px"
+                                                        step="0.01"
+                                                        placeholder="0.00"
+                                                    />
+                                                    <input type="hidden" name="products[{{ $product->product_id }}][product_id]" value="{{ $product->product_id }}">
+
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+
+                                </table>
+                                    
+                                
+                               
+                            </div>
+
+
+
+
+
+                    
+                   
                         </div>
-                    </div>
 
-                    <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
-                    <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
+                        <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
+                        <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit action</button>
-                    </div>
-                </form>
-
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit action</button>
+                        </div>
+                    </form>
 
 
 
 
-            </div>
+
+                </div>
             </div>
 
             <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
@@ -438,14 +409,14 @@
 
 
 
-                        {{-- @if (optional($supplier->account_status)->acc_status == null && $accStatus->acc_status === "Pending")
+                        {{-- @if (optional($supplier->account_status)->account_status == null && $accStatus->account_status === "Pending")
                             <div>
                                 <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
                             </div>
                         @endif --}}
 
 
-                        @if ($accStatus->acc_status === 'Declined')
+                        @if ($accStatus->account_status === 'Declined')
                             <div>
                                 <p>This user was declined due to: {{$accStatus->reason_to_decline}}</p>
                                 waiting for supplier to modify their request
@@ -453,7 +424,7 @@
                         @elseif ($accStatus->account_status === 'Pending')
                             <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
 
-                        @elseif ($accStatus->acc_status === 'Accepted')
+                        @elseif ($accStatus->account_status === 'Accepted')
                             <div>
                                 <button class="btn-transition" data-bs-toggle="modal" data-bs-target="#modify-action">File an action</button>
                             </div>
@@ -635,14 +606,14 @@
                                                         <td>{{ $productRequirement->product->name }}</td>
                                                         <td>{{ $productRequirement->product->unit }}</td>
                                                         <td>{{ $productRequirement->product->measurement }}</td>
-                                                        <td>{{ $productRequirement->price }}</td>
+                                                        <td>{{ $productRequirement->settings->nego_price }}</td>
                                                         <td>
                                                             <button  
                                                                 data-bs-toggle="modal" 
                                                                 data-bs-target="#edit-row-action" 
                                                                 class="btn-span edit-product-btn"
                                                                 data-set-id="{{ $productRequirement->set_id }}"
-                                                                data-price="{{ $productRequirement->price }}"
+                                                                data-price="{{ $productRequirement->nego_price }}"
                                                                 data-name="{{ $productRequirement->product->name }}"
                                                                 data-supplier-id="{{ $productRequirement->supplier_id }}"
                                                             >
@@ -938,16 +909,24 @@
                                         <div class="questions-list">
                                             <p>
                                                 <span style="color:#666">Joined at</span>
-                                                <span>{{ \Carbon\Carbon::parse($supplier->created_at)->format('F j, Y') }}</span>
+                                                <span>{{ \Carbon\Carbon::parse($account_status->created_at)->format('F j, Y') }}</span>
                                                 
                                             </p>
                                             <p>
                                                 <span style="color:#666">Verified by</span>
-                                                <span>{{$supplier->account_status->approved_by}}</span>
+                                                <span>
+                                                    {{ implode(', ', array_filter([
+                                                        $account_status->staff->lastname,
+                                                        $account_status->staff->firstname
+                                                        ]))
+                                                    }}
+                                                    
+                                                </span>
+
                                             </p>
                                             <p>
                                                 <span style="color:#666">Approved at</span>
-                                                <span>{{$supplier->account_status->approved_at}}</span>
+                                                <span>{{ \Carbon\Carbon::parse($account_status->approved_at)->format('F j, Y') }}</span>
                                             </p>
                            
                                     
@@ -1076,7 +1055,8 @@
 
 
     <script src="{{ asset('js/global/x/profile-tab.js') }}"></script>
-
+    <script src="{{ asset('js/global/money-format.js') }}"></script>
+    <script src="{{asset('js/global/decimal-input.js')}}"></script>
 
 
     <script>
@@ -1089,108 +1069,7 @@
     <script src="{{ asset('js/global/view-esignature.js') }}"></script>
 
     <script src="{{ asset('js/global/modal/add-product-user.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            buildSupplierTree();
-        });
-
-        function buildSupplierTree() {
-            fetch("{{ route('products.tree') }}")
-                .then(r => r.json())
-                .then(data => {
-                    const root = document.getElementById('supplier_tree');
-                    root.innerHTML = '';
-                    const ul = document.createElement('ul');
-                    ul.style.listStyle = 'none';
-                    ul.style.paddingLeft = '0';
-                    data.forEach(node => ul.appendChild(makeTreeNode(node, [])));
-                    root.appendChild(ul);
-                });
-        }
-
-        function makeTreeNode(node, path) {
-            const li = document.createElement('li');
-            li.style.margin = '2px 0';
-            const row = document.createElement('div');
-            row.style.display = 'flex';
-            row.style.alignItems = 'center';
-            row.style.gap = '6px';
-
-            const toggle = document.createElement('span');
-            toggle.textContent = node.children && node.children.length ? '▸' : '•';
-            toggle.style.cursor = node.children && node.children.length ? 'pointer' : 'default';
-            toggle.style.width = '14px';
-
-            const label = document.createElement('button');
-            label.type = 'button';
-            label.textContent = node.name;
-            label.className = 'btn btn-sm';
-            label.style.padding = '2px 6px';
-            label.style.border = '1px solid #ddd';
-            label.style.background = '#fafafa';
-            label.addEventListener('click', () => {
-                document.getElementById('supplier_selected_product_id').value = node.product_id;
-                const bc = document.getElementById('supplier_breadcrumb');
-                const names = path.concat([node.name]).join(' > ');
-                bc.textContent = names;
-                // highlight selection
-                document.querySelectorAll('#supplier_tree button').forEach(b => b.style.background = '#fafafa');
-                label.style.background = '#e7f1ff';
-            });
-
-            row.appendChild(toggle);
-            row.appendChild(label);
-            li.appendChild(row);
-
-            const childUl = document.createElement('ul');
-            childUl.style.listStyle = 'none';
-            childUl.style.marginLeft = '16px';
-            childUl.style.display = 'none';
-            li.appendChild(childUl);
-
-            if (node.children && node.children.length) {
-                node.children.forEach(ch => childUl.appendChild(makeTreeNode(ch, path.concat([node.name]))));
-                toggle.style.cursor = 'pointer';
-            }
-
-            toggle.addEventListener('click', () => {
-                const open = childUl.style.display !== 'none';
-                if (open) {
-                    childUl.style.display = 'none';
-                    toggle.textContent = '▸';
-                    return;
-                }
-                // expanding
-                childUl.style.display = 'block';
-                toggle.textContent = '▾';
-                // lazy-load if empty
-                if (!childUl.hasChildNodes()) {
-                    fetch(`{{ url('/products') }}/${node.product_id}/children`)
-                        .then(r => r.json())
-                        .then(children => {
-                            if (!children || !children.length) return;
-                            children.forEach(ch => childUl.appendChild(makeTreeNode(ch, path.concat([node.name]))));
-                        });
-                }
-            });
-            return li;
-        }
-
-        function addSelectedHierarchyProduct() {
-            const id = document.getElementById('supplier_selected_product_id').value;
-            if (!id) {
-                alert('Please choose a product.');
-                return;
-            }
-            fetch(`{{ url('/products') }}/${id}/info`)
-                .then(r => r.json())
-                .then(p => {
-                    if (!p || !p.product_id) return;
-                    // uses existing helper from add-product-user.js
-                    addProduct(p.product_id, p.name ?? '', p.category ?? '', p.unit ?? '', p.weight ?? '');
-                });
-        }
-    </script>
+     
     <script src="{{ asset('js/global/format-currency.js') }}"></script>
 
 </script>
