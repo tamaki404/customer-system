@@ -327,6 +327,7 @@
                 </form>
             </div>
             </div>
+
             {{-- account control --}}
             <div class="modal fade" id="account-control" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
@@ -462,8 +463,6 @@
                                             @elseif($supplier->account_status->account_status === 'Suspended') red
                                             @else gray
                                             @endif
-
-                                            
                                         "
                                         title="{{$supplier->account_status->account_status}}"
                                         
@@ -569,6 +568,9 @@
                             </button>
                             <button class="tab-button" data-tab="staff" role="tab" aria-selected="false" aria-controls="staff-content" id="staff-tab">
                             Authorized staffs
+                            </button>
+                            <button class="tab-button" data-tab="details" role="tab" aria-selected="false" aria-controls="details-content" id="details-tab">
+                            Details
                             </button>
                             <button class="tab-button" data-tab="documents" role="tab" aria-selected="false" aria-controls="documents-content" id="documents-tab">
                             Documents
@@ -730,7 +732,7 @@
                                     <p style="margin-bottom: 5px">Authorized staffs</p>
                                     <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
                                         <div class="authorized-rep">
-                                            <p style="font-weight: normal; font-size: 13px;">Representative/s </p>
+                                            <p style="font-weight: normal; font-size: 13px;">Representatives </p>
                                             <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
                                                 <thead style="background-color: #f9f9f9;">
                                                     <tr style="background:#f7f7fa; text-align: center; height: 30px">
@@ -741,19 +743,22 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>
-                                                            {{ implode(', ', array_filter([
-                                                                $supplier->representative->rep_last_name,
-                                                                $supplier->representative->rep_first_name,
-                                                                $supplier->representative->rep_middle_name,
-                                                            ])) }}
-                                                        </td>
-                                                        <td>{{ $supplier->representative->rep_relationship}}</td>
-                                                        <td>{{ $supplier->representative->rep_contact_no}}</td>
+                                                    @foreach ( $representatives as $rep)
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>
+                                                                {{ implode(', ', array_filter([
+                                                                    $rep->rep_lastname,
+                                                                    $rep->rep_firstname,
+                                                                    $rep->rep_middlename,
+                                                                ])) }}
+                                                            </td>
+                                                            <td>{{ $rep->auth_position}}</td>
+                                                            <td>{{ $rep->rep_contact}}</td>
 
-                                                    </tr>
+                                                        </tr>
+                                                    @endforeach
+
                                                 </tbody>
                                             </table>
                                         </div>
@@ -765,23 +770,27 @@
                                                         <th>#</th>
                                                         <th>Name</th>
                                                         <th>Relationship/position</th>
-                                                        <th>Contact number</th>
+                                                        <th>e-signature</th>
+
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr>
-                                                <td>1</td>
-                                                <td>
-                                                    {{ implode(', ', array_filter([
-                                                        $supplier->signatory->signatory_last_name,
-                                                        $supplier->signatory->signatory_first_name,
-                                                        $supplier->signatory->signatory_middle_name,
-                                                    ])) }}
-                                                </td>
-                                                <td>{{ $supplier->signatory->signatory_relationship}}</td>
-                                                <td>{{ $supplier->signatory->signatory_contact_no}}</td>
+                                                    @foreach ($signatories as $sign)
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>
+                                                                {{ implode(', ', array_filter([
+                                                                    $sign->sign_lastname,
+                                                                    $sign->sign_firstname,
+                                                                    $sign->sign_middlename,
+                                                                ])) }}
+                                                            </td>
+                                                            <td>{{ $sign->sign_position}}</td>
+                                                            <td><button>View e-signature</button></td>
 
-                                                </tr>
+                                                        </tr>
+                                                    @endforeach
+
                                             </tbody>
                                             </table>
                                         </div>                        
@@ -925,6 +934,134 @@
                         </div>
 
 
+                        <div id="details-content" class="tab-content" role="tabpanel" aria-labelledby="details-tab">
+                            <div class="profile-mid">
+                                <div class="authorized-staffs" >
+                                    <p style="margin-bottom: 5px">Other details</p>
+                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep">
+                                            <p style="font-weight: normal; font-size: 13px;">Representative/s </p>
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Name</th>
+                                                        <th>Relationship/position</th>
+                                                        <th>Contact number</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>
+                                                            {{ implode(', ', array_filter([
+                                                                $supplier->representative->rep_last_name,
+                                                                $supplier->representative->rep_first_name,
+                                                                $supplier->representative->rep_middle_name,
+                                                            ])) }}
+                                                        </td>
+                                                        <td>{{ $supplier->representative->rep_relationship}}</td>
+                                                        <td>{{ $supplier->representative->rep_contact_no}}</td>
+
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="signatory-rep">
+                                            <p style="font-weight: normal; font-size: 13px;">Signatories to accept deliveries and sign invoices </p>
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Name</th>
+                                                        <th>Relationship/position</th>
+                                                        <th>Contact number</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                <td>1</td>
+                                                <td>
+                                                    {{ implode(', ', array_filter([
+                                                        $supplier->signatory->signatory_last_name,
+                                                        $supplier->signatory->signatory_first_name,
+                                                        $supplier->signatory->signatory_middle_name,
+                                                    ])) }}
+                                                </td>
+                                                <td>{{ $supplier->signatory->signatory_relationship}}</td>
+                                                <td>{{ $supplier->signatory->signatory_contact_no}}</td>
+
+                                                </tr>
+                                            </tbody>
+                                            </table>
+                                        </div>                        
+
+                                    </di>
+                                </div>
+                                <div class="authorized-staffs" style="margin-top: 10px">
+                                    <p style="margin-bottom: 5px">Bank details</p>
+                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep">
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Account name</th>
+                                                        <th>Bank</th>
+                                                        <th>Branch</th>
+                                                        <th>Account number</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>{{ $supplier->bank->account_number}}</td>
+                                                        <td>{{ $supplier->bank->bank}}</td>
+                                                        <td>{{ $supplier->bank->branch}}</td>
+                                                        <td>{{ $supplier->bank->account_number}}</td>
+
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </di>
+
+
+                                </div>
+                                <div class="authorized-staffs" style="margin-top: 10px">
+                                    <p style="margin-bottom: 5px">Referral</p>
+                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px; ">
+                                        <div class="questions-list">
+                                            <p>
+                                                <span style="color:#666">How long have you known salesman? </span>
+                                                <span>{{$supplier->salesman_relationship}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Weekly volume (tray/head)</span>
+                                                <span>{{$supplier->weekly_volume}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Date acquired</span>
+                                                <span>{{$supplier->date_required}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Other products interested in</span>
+                                                <span>{{$supplier->other_products_interest}}</span>
+                                            </p>
+                                            <p>
+                                                <span style="color:#666">Referred by</span>
+                                                <span>{{$supplier->referred_by}}</span>
+                                            </p>
+                                    
+                                        </div>
+
+                                    </di>
+
+
+                                </div>
+                            </div>
+                        </div>
 
 
 

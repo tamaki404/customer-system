@@ -275,23 +275,31 @@
                                 <div class="input-forms">
                                     <label for="id-image"><span class="req-asterisk">*</span> Name</label>
                                     <div>
+{{-- 
                                         <input id="rep-name" type="text" name="rep_lastname" placeholder="Last name" required maxlength="50" value="{{ old('rep_lastname') }}">
                                         <input type="text" name="rep_firstname" placeholder="First name" required maxlength="50" value="{{ old('rep_firstname') }}">
-                                        <input type="text" name="rep_middlename" placeholder="Middle name" maxlength="50" value="{{ old('rep_middlename') }}">
+                                        <input type="text" name="rep_middlename" placeholder="Middle name" maxlength="50" value="{{ old('rep_middlename') }}"> --}}
+                                        <input type="text" name="rep_lastname[]" placeholder="Last name" required maxlength="50" value="{{ old('rep_lastname.0') }}">
+                                        <input type="text" name="rep_firstname[]" placeholder="First name" required maxlength="50" value="{{ old('rep_firstname.0') }}">
+                                        <input type="text" name="rep_middlename[]" placeholder="Middle name" maxlength="50" value="{{ old('rep_middlename.0') }}">
                                     </div>
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
                                     <label for="auth_position"><span class="req-asterisk">*</span> Position</label>
                                     <div>
-                                        <input id="auth_position" type="text" name="auth_position" value="Admin" readonly  required maxlength="50">
+                                        {{-- <input id="auth_position" type="text" name="auth_position" value="Admin" readonly  required maxlength="50"> --}}
+                                        <input id="auth_position" type="text" name="auth_position[]" value="Admin" readonly required maxlength="50">
+
                                     </div>
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
                                     <label for="contact"><span class="req-asterisk">*</span> Contact no.</label>
                                     <div>
-                                        <input id="contact" type="text" name="rep_contact" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11" value="{{ old('rep_contact') }}">
+                                        {{-- <input id="contact" type="text" name="rep_contact" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11" value="{{ old('rep_contact') }}"> --}}
+                                        <input id="contact" type="text" name="rep_contact[]" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11" value="{{ old('rep_contact.0') }}">
+
                                     </div>
                                 </div>
                             </div>
@@ -314,22 +322,31 @@
                                 <div class="input-forms">
                                     <label for="sign-name"><span class="req-asterisk">*</span> Name</label>
                                     <div>
-                                        <input id="sign-name" type="text" name="sign_lastname" placeholder="Last name" required maxlength="50" value="{{ old('sign_lastname') }}">
+                                        {{-- <input id="sign-name" type="text" name="sign_lastname" placeholder="Last name" required maxlength="50" value="{{ old('sign_lastname') }}">
                                         <input type="text" name="sign_firstname" placeholder="First name" required maxlength="50" value="{{ old('sign_firstname') }}">
-                                        <input type="text" name="sign_middlename" placeholder="Middle name" maxlength="50" value="{{ old('sign_middlename') }}">
+                                        <input type="text" name="sign_middlename" placeholder="Middle name" maxlength="50" value="{{ old('sign_middlename') }}"> --}}
+                                        <input type="text" name="sign_lastname[]" placeholder="Last name" required maxlength="50" value="{{ old('sign_lastname.0') }}">
+                                        <input type="text" name="sign_firstname[]" placeholder="First name" required maxlength="50" value="{{ old('sign_firstname.0') }}">
+                                        <input type="text" name="sign_middlename[]" placeholder="Middle name" maxlength="50" value="{{ old('sign_middlename.0') }}">
+
                                     </div>
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
                                     <label for="position"><span class="req-asterisk">*</span> Position</label>
                                     <div>
-                                        <input id="position" type="text" name="sign_position" required maxlength="50" value="{{ old('sign_position') }}">
+                                        {{-- <input id="position" type="text" name="sign_position" required maxlength="50" value="{{ old('sign_position') }}"> --}}
+                                        <input type="text" name="sign_position[]" required maxlength="50" value="{{ old('sign_position.0') }}">
+
                                     </div>
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
                                     <label for="id-signature"><span class="req-asterisk">*</span> E-signature</label>
-                                        <input type="file" id="id-signature" name="e_image" accept="image/*" required>
+                                        {{-- <input type="file" id="id-signature" name="e_image" accept="image/*" required> --}}
+                                        <input type="file" name="e_image[]" accept="image/*" required>
+
+
                                 </div>
                             </div>
 

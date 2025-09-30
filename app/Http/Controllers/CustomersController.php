@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\DeliveryRequirements;
+use App\Models\Representatives;
+use App\Models\Signatories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Suppliers;
@@ -62,6 +64,8 @@ class CustomersController extends Controller
             $products   = Products::where('status', 'Listed')->get();
             $productRequirements   = ProductRequirements::where('supplier_id', $supplier_id)->get();
             $prodSpecs   = ProductRequirements::where('supplier_id', $supplier_id)->get();
+            $representatives   = Representatives::where('supplier_id', $supplier_id)->get();
+            $signatories   = Signatories::where('supplier_id', $supplier_id)->get();
 
 
             return view('customers.customer', [
@@ -70,6 +74,8 @@ class CustomersController extends Controller
                 'address'   => $address,
                 'prodSpecs'   => $prodSpecs,
                 'delivery'   => $delivery,
+                'representatives'   => $representatives,
+                'signatories'   => $signatories,
 
                 'staffs'     => $staffs,
                 'accStatus'  => $accStatus,
