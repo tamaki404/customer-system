@@ -28,4 +28,5 @@ class ProductRequirements extends Model
     {
         return $this->belongsTo(ProductSetting::class, 'supplier_id', 'supplier_id');
     }
+    
 }

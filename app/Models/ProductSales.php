@@ -14,4 +14,14 @@ class ProductSales extends Model
         'start_date',
         'end_date',
     ];
+
+    public function set()
+    {
+        return $this->belongsTo(ProductSetting::class, 'set_id', 'set_id');
+    }
+
+       public function product()
+    {
+        return $this->hasMany(Products::class, 'product_id', 'product_id');
+    } 
 }

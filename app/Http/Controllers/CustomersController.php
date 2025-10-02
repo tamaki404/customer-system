@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Business;
 use App\Models\DeliveryRequirements;
+use App\Models\ProductSales;
 use App\Models\Representatives;
 use App\Models\Signatories;
 use Illuminate\Http\Request;
@@ -77,6 +78,7 @@ $suppliers = Suppliers::select(
             $signatories   = Signatories::where('supplier_id', $supplier_id)->get();
             $business   = Business::where('supplier_id', operator: $supplier_id)->first();
             $account_status = AccountStatus::where('supplier_id', $supplier_id )->first();
+            $sales   = ProductSales::where('supplier_id', $supplier_id)->get();
 
 
 
@@ -90,6 +92,7 @@ $suppliers = Suppliers::select(
                 'signatories'   => $signatories,
                 'business'   => $business,
                 'account_status' => $account_status,
+                'sales' => $sales,
 
                 'staffs'     => $staffs,
                 'accStatus'  => $accStatus,

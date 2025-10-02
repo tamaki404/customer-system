@@ -4,6 +4,7 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/views/customer.css') }}">
     <link rel="stylesheet" href="{{ asset('css/views/customers/forms.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/views/customers/sales.css') }}">
 
 @endpush
 
@@ -303,65 +304,65 @@
                             <button type="submit" class="btn-transition">Update Product</button>
                         </form>
 
-{{-- add price sale form --}}
-<form class="modify-product-form product-form" id="sale-form" style="display:none;" method="POST" action="{{ route('productset.sale') }}">
-    @csrf
-    <input type="hidden" id="sale-form-set-id" name="set_id">
-    <input type="hidden" id="sale-form-supplier-id" name="supplier_id">
+                    {{-- add price sale form --}}
+                    <form class="modify-product-form product-form" id="sale-form" style="display:none;" method="POST" action="{{ route('productset.sale') }}">
+                        @csrf
+                        <input type="hidden" id="sale-form-set-id" name="set_id">
+                        <input type="hidden" id="sale-form-supplier-id" name="supplier_id">
 
-    <p class="note-notify">
-        <span class="material-symbols-outlined">info</span>
-        <span>This promotion will automatically apply starting from the selected date.</span>
-    </p>
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined">info</span>
+                            <span>This promotion will automatically apply starting from the selected date.</span>
+                        </p>
 
-    <div class="form-group">
-        <label class="form-label">Sale product</label>
-        <input type="text" id="sale-product-name" style="width: 300px; color: #333;" disabled>
-    </div>
+                        <div class="form-group">
+                            <label class="form-label">Sale product</label>
+                            <input type="text" id="sale-product-name" style="width: 300px; color: #333;" disabled>
+                        </div>
 
-    <input type="hidden" id="sale-base-price">
+                        <input type="hidden" id="sale-base-price">
 
-    <div class="form-group">
-        <label class="form-label" for="sale_price">Selling price (₱)</label>
-        <input type="number" step="0.01" placeholder="00.00" name="sale_price" id="sale_price" style="width: 200px" required>
-    </div>
+                        <div class="form-group">
+                            <label class="form-label" for="sale_price">Selling price (₱)</label>
+                            <input type="number" step="0.01" placeholder="00.00" name="sale_price" id="sale_price" style="width: 200px" required>
+                        </div>
 
-    <div class="form-group" style="box-shadow: #f8912a30 0px 0px 0px 3px; margin: 5px; border-radius: 5px; padding: 10px;">
-        <label class="form-label">Effectivity</label>
-        <div class="form-calendar" style="gap: 5px">
-            <div>
-                <label for="start_date">Start date</label>
-                <input type="datetime-local" id="start_date" style="font-size: 13px; color: #666;" name="start_date" required>
-            </div>
-            <div>
-                <label for="end_date">End date</label>
-                <input type="datetime-local" id="end_date" style="font-size: 13px; color: #666;" name="end_date" required>
-            </div>
-        </div>
-    </div>
+                        <div class="form-group" style="box-shadow: #f8912a30 0px 0px 0px 3px; margin: 5px; border-radius: 5px; padding: 10px;">
+                            <label class="form-label">Effectivity</label>
+                            <div class="form-calendar" style="gap: 5px">
+                                <div>
+                                    <label for="start_date">Start date</label>
+                                    <input type="datetime-local" id="start_date" style="font-size: 13px; color: #666;" name="start_date" required>
+                                </div>
+                                <div>
+                                    <label for="end_date">End date</label>
+                                    <input type="datetime-local" id="end_date" style="font-size: 13px; color: #666;" name="end_date" required>
+                                </div>
+                            </div>
+                        </div>
 
-    {{-- Live promotion preview --}}
-    <div id="promo-preview" style="display: none; margin: 15px 0; padding: 15px; background: linear-gradient(135deg, #f8912a 0%, #ff6b35 100%); border-radius: 8px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-            <span class="material-symbols-outlined" style="font-size: 24px;">percent_discount</span>
-            <p style="margin: 0; font-weight: bold;">Promotion Preview</p>
-        </div>
-        <div id="promo-content" style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 5px; backdrop-filter: blur(10px);">
-            <p style="margin: 0; font-size: 14px; font-weight: bold;" id="promo-product-name">Product Name</p>
-            <p style="margin: 8px 0; font-size: 14px;">
-                <span style="text-decoration: line-through; opacity: 0.8;">₱<span id="promo-old-price">0.00</span></span>
-                <span style="font-size: 20px; font-weight: bold; margin-left: 10px;">₱<span id="promo-new-price">0.00</span></span>
-                <span id="promo-discount-badge" style="background: rgba(255,255,255,0.3); padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px; font-weight: bold;">0% OFF</span>
-            </p>
-            <p style="margin: 0; font-size: 13px; opacity: 0.9;">
-                <span id="promo-duration">0</span> day/s sale from 
-                <span id="promo-dates">date range</span>
-            </p>
-        </div>
-    </div>
+                        {{-- Live promotion preview --}}
+                        <div id="promo-preview" style="display: none; margin: 15px 0; padding: 15px; background: linear-gradient(135deg, #f8912a 0%, #ff6b35 100%); border-radius: 8px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                <span class="material-symbols-outlined" style="font-size: 24px;">percent_discount</span>
+                                <p style="margin: 0; font-weight: bold;">Promotion Preview</p>
+                            </div>
+                            <div id="promo-content" style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 5px; backdrop-filter: blur(10px);">
+                                <p style="margin: 0; font-size: 14px; font-weight: bold;" id="promo-product-name">Product Name</p>
+                                <p style="margin: 8px 0; font-size: 14px;">
+                                    <span style="text-decoration: line-through; opacity: 0.8;">₱<span id="promo-old-price">0.00</span></span>
+                                    <span style="font-size: 20px; font-weight: bold; margin-left: 10px;">₱<span id="promo-new-price">0.00</span></span>
+                                    <span id="promo-discount-badge" style="background: rgba(255,255,255,0.3); padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px; font-weight: bold;">0% OFF</span>
+                                </p>
+                                <p style="margin: 0; font-size: 13px; opacity: 0.9;">
+                                    <span id="promo-duration">0</span> day/s sale from 
+                                    <span id="promo-dates">date range</span>
+                                </p>
+                            </div>
+                        </div>
 
-    <button type="submit" class="btn-transition">Apply promotion</button>
-</form>
+                        <button type="submit" class="btn-transition">Apply promotion</button>
+                    </form>
 
 
 
@@ -482,8 +483,6 @@
                             </div>
                         @endif --}}
 
-
-
                         {{-- @if (optional($supplier->account_status)->account_status == null && $accStatus->account_status === "Pending")
                             <div>
                                 <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
@@ -506,7 +505,7 @@
                   
                         @endif
 
-                        </div>
+                    </div>
 
 
                 </div>
@@ -650,6 +649,55 @@
                         {{-- product requirements --}}
                         <div id="product-content" class="tab-content active" role="tabpanel" aria-labelledby="product-tab">
                             <div class="profile-mid" >
+
+                                <div class="authorized-staffs" style="box-shadow: none">
+                                    <p style="margin-bottom: 5px">On sale</p>
+                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep sale-div">
+                                            @foreach ( $sales as $sale)
+                                                <div>
+                                                    <p style="display: flex; gap: 5px; align-items: center;">
+                                                        <span class="material-symbols-outlined">
+                                                            percent_discount
+                                                        </span>
+                                                        <span>{{$sale->set->product->name}}</span>
+                                                    </p>
+                                                    <p>
+                                                        {{ \Carbon\Carbon::parse($sale->start_date)->format('M d, Y h:i A') }}
+                                                        -
+                                                        {{ \Carbon\Carbon::parse($sale->end_date)->format('M d, Y h:i A') }}
+                                                    </p>
+                                                    @php
+                                                        $hours = \Carbon\Carbon::parse($sale->start_date)->diffInHours(\Carbon\Carbon::parse($sale->end_date));
+                                                        $days = round($hours / 24, 1);
+                                                    @endphp
+
+                                                    <p>{{ $days }} day/s sale</p>
+
+                                                    @php
+                                                        $original = $sale->set->nego_price;
+                                                        $salePrice = $sale->sale_price;
+                                                        $discount = $original > 0 ? round((($original - $salePrice) / $original) * 100) : 0;
+                                                    @endphp
+
+                                                    <p>
+                                                        <span style="text-decoration: line-through">₱{{ number_format($original, 2) }}</span>
+                                                        <span>₱{{ number_format($salePrice, 2) }}</span>
+                                                        <span>({{ $discount }}% off)</span>
+                                                    </p>
+
+
+
+
+
+                                                </div>
+                                            
+                                            @endforeach
+                                            
+                                        </div>
+
+                                    </div>
+                                </div>
 
                                 <div class="authorized-staffs" style="box-shadow: none">
                                     <p style="margin-bottom: 5px">Price change</p>
