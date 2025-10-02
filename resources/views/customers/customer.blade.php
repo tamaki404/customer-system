@@ -632,8 +632,11 @@
                     <div class="tab-div">
 
                         <div class="tabs" role="tablist">
-                            <button class="tab-button active" data-tab="product" role="tab" aria-selected="true" aria-controls="product-content" id="product-tab">
+                            <button class="tab-button" data-tab="product" role="tab" aria-selected="false" aria-controls="product-content" id="product-tab">
                             Product requirements
+                            </button>
+                            <button class="tab-button active" data-tab="prices" role="tab" aria-selected="true" aria-controls="prices-content" id="prices-tab">
+                            Prices history
                             </button>
                             <button class="tab-button" data-tab="staff" role="tab" aria-selected="false" aria-controls="staff-content" id="staff-tab">
                             Authorized staffs
@@ -646,8 +649,63 @@
                             </button>
                         </div>
 
+                        {{-- prices history --}}
+                        <div id="prices-content" class="tab-content active" role="tabpanel" aria-labelledby="prices-tab">
+                            <div class="profile-mid" >
+                                <div class="authorized-staffs" style="box-shadow: none">
+                                    <p style="margin-bottom: 5px">Prices table</p>
+                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep">
+                                            <button  data-bs-toggle="modal" data-bs-target="#add-product-modal" class="btn-transition btn-span" style="width: 100px;     background-color: #f8912a; color: #fff; font-weight: normal;"> <span class="material-symbols-outlined ">add</span>Add new</button>
+
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Product</th>
+                                                        <th>Product ID</th>
+                                                        <th>New price</th>
+                                                        <th>Past price</th>
+                                                        <th>Percentage</th>
+                                                        <th>Updated by</th>
+                                                        <th>Updated at</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($prices as $price)
+                                                        <tr>
+                                                            <td>{{ $loop->iteration }}</td>
+                                                            <td>{{ $price->set->product->name }}</td>
+                                                            <td>{{ $price->set->product->product_id }}</td>
+                                                            <td>₱{{ $price->new_price }}</td>
+                                                            <td>₱{{ $price->past_price }}</td>
+                                                            <td>
+                                                                @php
+                                                                    $new = $price->new_price;
+                                                                    $old = $price->past_price;
+                                                                    $percent = $old > 0 ? round((($new - $old) / $old) * 100, 2) : 0;
+                                                                @endphp
+                                                                {{ $percent }}%
+                                                            </td>
+
+                                                            
+                                                            <td>{{ $price->staff->lastname}}, {{ $price->staff->firstname}} {{ $price->staff->middlename}}</td>
+                                                            <td>{{ \Carbon\Carbon::parse($price->created_at)->format('M d, Y h:i A') }}</td>
+
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
                         {{-- product requirements --}}
-                        <div id="product-content" class="tab-content active" role="tabpanel" aria-labelledby="product-tab">
+                        <div id="product-content" class="tab-content " role="tabpanel" aria-labelledby="product-tab">
                             <div class="profile-mid" >
                                 @if ($activeSale > '0')
                                     <div class="authorized-staffs">
@@ -710,9 +768,8 @@
                                     <p style="margin-bottom: 5px">Price change</p>
                                     <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
                                         <div class="authorized-rep">
-                                            <div>
-                                                <a href="">See price history</a>
-                                            </div>
+                                            <button  data-bs-toggle="modal" data-bs-target="#add-product-modal" class="btn-transition btn-span" style="width: 100px;     background-color: #f8912a; color: #fff; font-weight: normal;"> <span class="material-symbols-outlined ">add</span>Add new</button>
+
                                             <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
                                                 <thead style="background-color: #f9f9f9;">
                                                     <tr style="background:#f7f7fa; text-align: center; height: 30px">
@@ -778,56 +835,7 @@
                                     </div>
                                 </div>
 
-                                <div class="authorized-staffs" style="box-shadow: none">
-                                    <p style="margin-bottom: 5px">Summary list</p>
-                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
-                                        <div class="authorized-rep">
-                                            <button  data-bs-toggle="modal" data-bs-target="#add-product-modal" class="btn-transition btn-span" style="width: 100px;     background-color: #f8912a; color: #fff; font-weight: normal;"> <span class="material-symbols-outlined ">add</span>Add new</button>
-                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                                <thead style="background-color: #f9f9f9;">
-                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                                        <th>#</th>
-                                                        <th>Category</th>
-                                                        <th>Name</th>
-                                                        <th>Unit</th>
-                                                        <th>Measurement</th>
-                                                        <th>Price</th>
-                                                        <th></th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($productRequirements as $productRequirement)
-                                                    <tr>
-                                                        <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $productRequirement->condition }}</td>
-                                                        <td>{{ $productRequirement->product->name }}</td>
-                                                        <td>{{ $productRequirement->product->unit }}</td>
-                                                        <td>{{ $productRequirement->product->measurement }}</td>
-                                                        <td>{{( $productRequirement->settings->nego_price) ?? "" }}</td>
-                                                        <td>
-                                                            <button  
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#edit-row-action" 
-                                                                class="btn-span edit-product-btn"
-                                                                data-set-id="{{ $productRequirement->set_id }}"
-                                                                data-price="{{ $productRequirement->nego_price }}"
-                                                                data-name="{{ $productRequirement->product->name }}"
-                                                                data-supplier-id="{{ $productRequirement->supplier_id }}"
-                                                            >
-                                                                <span class="material-symbols-outlined">edit</span>
-                                                            </button>
-
-
-                                                        </td>
-                                                    </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                    </div>
-                                </div>
+        
 
                                 @if ($delivery->delivery_instructions !== NULL)
                                     <div class="authorized-staffs" style="width: 600px">

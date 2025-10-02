@@ -29,7 +29,10 @@ class Staffs extends Model
     {
         return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
     }
-
+    public function price()
+    {
+        return $this->belongsTo(PriceHistory::class, 'action_by', 'user_id');
+    }
     public function account_statuses()
     {
         return $this->hasMany(AccountStatus::class, 'staff_id', 'staff_id');

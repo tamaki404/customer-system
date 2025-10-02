@@ -19,6 +19,7 @@ use App\Models\Logs;
 use App\Models\Products;
 use App\Models\Address;
 use App\Models\ProductRequirements;
+use App\Models\PriceHistory;
 
 use App\Models\ProductSetting;
 use App\Models\Credits;
@@ -37,7 +38,7 @@ class CustomersController extends Controller
             $supplier = Suppliers::where('user_id', $user->user_id)->first() ;
 
 
-$suppliers = Suppliers::select(
+        $suppliers = Suppliers::select(
         'suppliers.*',
                 DB::raw("CONCAT_WS(' ', staffs.firstname, staffs.middlename, staffs.lastname) as staff_name"))
                 ->join('account_status', 'account_status.supplier_id', '=', 'suppliers.supplier_id')
@@ -80,6 +81,9 @@ $suppliers = Suppliers::select(
             $account_status = AccountStatus::where('supplier_id', $supplier_id )->first();
             $sales   = ProductSales::where('supplier_id', $supplier_id)->get();
             $activeSale   = ProductSales::where('supplier_id', $supplier_id)->first();
+            $prices   = PriceHistory::where('supplier_id', $supplier_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
 
             return view('customers.customer', [
@@ -94,6 +98,7 @@ $suppliers = Suppliers::select(
                 'account_status' => $account_status,
                 'sales' => $sales,
                 'activeSale' => $activeSale,
+                'prices' => $prices,
 
                 'staffs'     => $staffs,
                 'accStatus'  => $accStatus,

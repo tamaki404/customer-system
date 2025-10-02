@@ -16,7 +16,16 @@ class PriceHistory extends Model
 
         'action',
         'sale_id'
-
-
     ];
+
+    public function set()
+    {
+        return $this->belongsTo(ProductSetting::class, 'set_id', 'set_id');
+    }
+    public function staff()
+    {
+        return $this->belongsTo(Staffs::class, 'action_by', 'user_id');
+    }
+
+
 }

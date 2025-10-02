@@ -48,16 +48,16 @@ class ProductSalesController extends Controller
         ]);
         
         //  2: price history
-        PriceHistory::create([
-            'phistory_id'     => $price,
-            'supplier_id'      => $request->supplier_id,
-            'action' => 'Sale',
-            'sale_id' => $sale_id,
-            'set_id'      => $request->set_id,
-            'new_price' => $request->sale_price,
-            'past_price' => $product->nego_price,
-            'action_by' => $user->user_id,
-        ]);
+        // PriceHistory::create([
+        //     'phistory_id'     => $price,
+        //     'supplier_id'      => $request->supplier_id,
+        //     'action' => 'Sale',
+        //     'sale_id' => $sale_id,
+        //     'set_id'      => $request->set_id,
+        //     'new_price' => $request->sale_price,
+        //     'past_price' => $product->nego_price,
+        //     'action_by' => $user->user_id,
+        // ]);
 
         //  3: price history
         Logs::create([
