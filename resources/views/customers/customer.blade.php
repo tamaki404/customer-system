@@ -257,46 +257,76 @@
 
             {{-- edit products in each product requirements row --}}
             <div class="modal fade" id="edit-row-action" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <form class="modal-content" method="POST" action="{{ route('productset.modify') }}">
-                @csrf
-                <div class="modal-header">
-                    <p class="modal-title">Modify Product Requirement</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <p class="modal-title">Modify Product</p>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
 
-                <div class="modal-body">
-                    <p class="note-notify">
-                    <span class="material-symbols-outlined"> warning </span>
-                    <span>Any action committed will notify the supplier</span>
-                    </p>
-                
-                    <input type="hidden" id="edit-modal-set-id" name="set_id">
-                    <input type="hidden" name="supplier_id" id="edit-modal-supplier-id">
-                    <div class="mb-3">
-                    <label class="form-label" for="modal-product-name">Product</label>
-                    <input type="text" class="form-control" id="modal-product-name" disabled>
+                        <div class="modal-body">
+
+                            <p class="note-notify">
+                                <span class="material-symbols-outlined"> warning </span>
+                                <span>Any action committed will notify the supplier</span>
+                            </p>
+
+                            {{-- modify product form --}}
+                            {{-- <form class="modify-product-form"  method="POST" action="{{ route('productset.modify') }}">
+                                @csrf
+                                <input type="hidden" id="edit-modal-set-id" name="set_id">
+                                <input type="hidden" name="supplier_id" id="edit-modal-supplier-id">
+                                <div class="mb-3">
+                                    <label class="form-label" for="modal-product-name">Product</label>
+                                    <input type="text" class="form-control" id="modal-product-name" disabled>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="modal-price">Price</label>
+                                    <input type="number" step="0.01" class="form-control" name="price" id="modal-price">
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="remove" value="1" id="modal-remove">
+                                    <label class="form-check-label" for="modal-remove">
+                                        Remove this requirement
+                                    </label>
+                                </div>
+                            </form> --}}
+
+                            {{-- add price form --}}
+                            <form class="modify-product-form"  method="POST" action="{{ route('productset.modify') }}">
+                                @csrf
+                                <input type="hidden" id="edit-modal-set-id" name="set_id">
+                                <input type="hidden" name="supplier_id" id="edit-modal-supplier-id">
+                                <div class="mb-3">
+                                    <label class="form-label" for="modal-product-name">Sale</label>
+                                    <input type="text" class="form-control" id="modal-product-name" disabled>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="modal-price">Price</label>
+                                    <input type="number" step="0.01" class="form-control" name="price" id="modal-price">
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="remove" value="1" id="modal-remove">
+                                    <label class="form-check-label" for="modal-remove">
+                                        Remove this requirement
+                                    </label>
+                                </div>
+                            </form>
+
+
+
                     </div>
 
-                    <div class="mb-3">
-                    <label class="form-label" for="modal-price">Price</label>
-                    <input type="number" step="0.01" class="form-control" name="price" id="modal-price">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
-
-                    <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="remove" value="1" id="modal-remove">
-                    <label class="form-check-label" for="modal-remove">
-                        Remove this requirement
-                    </label>
                     </div>
                 </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-                </form>
-            </div>
             </div>
 
             {{-- account control --}}
@@ -523,7 +553,6 @@
                     </div>
 
                     <div class="sales-person-div">
-                        @if($user->staff_id !== NULL)
                             <p class="sales-title">Sales person</p>
                             <div class="sales-person">
                                     @php
@@ -539,8 +568,8 @@
                                     @if ($staffAgent !== NULL)
                                         <p class="name-title">
                                             <span style="font-size: 13px;  color: #333;">
-                                                {{$staffAgent->lastname}}
-                                                {{$staffAgent->firstname}},
+                                                {{$staffAgent->lastname}},
+                                                {{$staffAgent->firstname}}
                                                 {{$staffAgent->middlename}}
 
                                             </span>
@@ -553,10 +582,7 @@
                                     @endif
 
                             </div>
-                        @else()
-                            <p class="no-staff">No sales agent is assigned to you yet.</p>
-                        
-                        @endif
+                    
                     </div>
 
                     <div class="tab-div">
@@ -579,6 +605,59 @@
                         {{-- product requirements --}}
                         <div id="product-content" class="tab-content active" role="tabpanel" aria-labelledby="product-tab">
                             <div class="profile-mid" >
+
+                                <div class="authorized-staffs" style="box-shadow: none">
+                                    <p style="margin-bottom: 5px">Price change</p>
+                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep">
+                                            <div>
+                                                <a href="">See price history</a>
+                                            </div>
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Category</th>
+                                                        <th>Name</th>
+                                                        <th>Unit</th>
+                                                        <th>Measurement</th>
+                                                        <th>Price</th>
+                                                        <th></th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($productRequirements as $productRequirement)
+                                                    <tr>
+                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td>{{ $productRequirement->condition }}</td>
+                                                        <td>{{ $productRequirement->product->name }}</td>
+                                                        <td>{{ $productRequirement->product->unit }}</td>
+                                                        <td>{{ $productRequirement->product->measurement }}</td>
+                                                        <td>{{ $productRequirement->settings->nego_price }}</td>
+                                                        <td>
+                                                            <button  
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#edit-row-action" 
+                                                                class="btn-span edit-product-btn"
+                                                                data-set-id="{{ $productRequirement->set_id }}"
+                                                                data-price="{{ $productRequirement->nego_price }}"
+                                                                data-name="{{ $productRequirement->product->name }}"
+                                                                data-supplier-id="{{ $productRequirement->supplier_id }}"
+                                                            >
+                                                                <span class="material-symbols-outlined">edit</span>
+                                                            </button>
+
+
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
 
                                 <div class="authorized-staffs" style="box-shadow: none">
                                     <p style="margin-bottom: 5px">Summary list</p>
@@ -642,7 +721,6 @@
                                     </div>
                                 @endif
 
-
                                 <div class="authorized-staffs" style="width: 700px">
                                     <p style="margin-bottom: 5px">Delivery requirements</p>
                                         <div class="authorized-rep delivery-req">
@@ -677,9 +755,6 @@
                                                 
 
                                 </div>
-
-
-
                                 
                                 <div class="authorized-staffs" style="">
                                     <p style="margin-bottom: 5px">Specifications</p>

@@ -60,7 +60,7 @@
                         {{-- <tr onclick="window.location.href='{{ route('logs.log', ['staff_id' => $staff->staff_id]) }}'"> --}}
                         <tr >
                             <th>{{ $loop->iteration }}</th>
-                            <th>{{$log->created_at}}</th>
+                            <th>{{ \Carbon\Carbon::parse($log->created_at)->format('F j, Y') }}</th>
                             <th>{{$log->user->user_id}}</th>
                             <th>{{$log->action}}</th>
                             <th style="width: 40%; white-space: normal; word-wrap: break-word;">

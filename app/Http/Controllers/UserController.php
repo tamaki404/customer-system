@@ -731,18 +731,35 @@ class UserController extends Controller
             return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
         }
 
-        $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
+        // ✅ Branch depending on role
+        if ($user->role === 'Staff') {
+            $staff = Staffs::where('user_id', $user->user_id)->first();
 
-        if (!$accountStatus) {
-            return redirect()->route('signin')->with('error', 'Account status not found. Please contact support.');
-        }
+            if (!$staff) {
+                return redirect()->route('signin')->with('error', 'Staff record not found. Please contact support.');
+            }
 
-        if (is_null($accountStatus->email_verified_at)) {
-            return redirect()->route('signin')->with('error', 'Please verify your email before signing in.');
-        }
+            if (is_null($staff->email_verified_at)) {
+                return redirect()->route('signin')->with('error', 'Please verify your email before signing in.');
+            }
 
-        if (strtolower($accountStatus->account_status) !== 'accepted') {
-            return redirect()->route('signin')->with('error', 'Your account is not active yet. Kidly wait for a verification.');
+            if (strtolower($staff->status) !== 'accepted') {
+                return redirect()->route('signin')->with('error', 'Your staff account is not active yet. Kindly wait for verification.');
+            }
+        } else {
+            $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
+
+            if (!$accountStatus) {
+                return redirect()->route('signin')->with('error', 'Account status not found. Please contact support.');
+            }
+
+            if (is_null($accountStatus->email_verified_at)) {
+                return redirect()->route('signin')->with('error', 'Please verify your email before signing in.');
+            }
+
+            if (strtolower($accountStatus->account_status) !== 'accepted') {
+                return redirect()->route('signin')->with('error', 'Your account is not active yet. Kindly wait for verification.');
+            }
         }
 
         Auth::login($user, false);
@@ -750,6 +767,7 @@ class UserController extends Controller
 
         return redirect()->route('dashboard.view');
     }
+
 
 
     public function verifyEmail(Request $request)

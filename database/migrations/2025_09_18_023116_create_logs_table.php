@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('user_id');
             $table->string('action');
             $table->text('description')->nullable();
-            $table->timestamps();
+            $table->ipAddress('ip_address')->nullable();
+            $table->string('entity');
+            $table->string('entity_id');       
         });
     }
 

@@ -27,6 +27,10 @@ class AccountStatus extends Model
     {
         return $this->belongsTo(Staffs::class, 'approved_by', 'user_id');
     }
+    public function assignedStaff()
+    {
+        return $this->belongsTo(Staffs::class, 'staff_id', 'staff_id');
+    }
 
 }
 

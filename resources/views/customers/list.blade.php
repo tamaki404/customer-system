@@ -55,7 +55,6 @@
                         <th>#</th>
                         <th>SUP ID.</th>
                         <th>Supplier</th>
-                        <th>Representative</th>
                         <th>Email</th>
                         <th>Role</th>
                         <th>Sales Agent</th>
@@ -69,19 +68,14 @@
                             <th>{{ $loop->iteration }}</th>
                             <td>{{ $supplier->supplier_id }}</td>
                             <td>{{ $supplier->company_name }}</td>
-                            <td>
-                                {{ $supplier->representative->rep_first_name }}
-                                {{ $supplier->representative->rep_last_name }}
-                                {{ $supplier->representative->rep_middle_name }}
-
-                            </td>
                             <td>{{ $supplier->user->email_address }}</td>
                             <td>{{ $supplier->user->role }}</td>
                             <td>
-                                @if($supplier->staff)
-                                    {{ $supplier->staff->lastname }}, {{ $supplier->staff->firstname }}
-                                @else
+                                @if ($supplier->account_status->staff_id !== NULL)
+                                    {{ $supplier->staff_name }}
+                                @else 
                                     --
+
                                 @endif
                             </td>
 

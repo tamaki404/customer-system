@@ -30,6 +30,10 @@ class Staffs extends Model
         return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
     }
 
-    
+    public function account_statuses()
+    {
+        return $this->hasMany(AccountStatus::class, 'staff_id', 'staff_id');
+    }
+
 
 }

@@ -18,6 +18,9 @@ class Logs extends Model
         'user_id',     
         'action',      
         'description',
+        'ip_address',
+        'entity',
+        'entity_id',
     ];
 
     // Relationship back to user

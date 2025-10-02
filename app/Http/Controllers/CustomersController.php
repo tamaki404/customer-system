@@ -34,10 +34,18 @@ class CustomersController extends Controller
         {
             $user = Auth::user();
             $supplier = Suppliers::where('user_id', $user->user_id)->first() ;
-            $suppliers = Suppliers::with('user')
+
+
+$suppliers = Suppliers::select(
+        'suppliers.*',
+                DB::raw("CONCAT_WS(' ', staffs.firstname, staffs.middlename, staffs.lastname) as staff_name"))
+                ->join('account_status', 'account_status.supplier_id', '=', 'suppliers.supplier_id')
+                ->leftJoin('staffs', 'staffs.staff_id', '=', 'account_status.staff_id')
+                ->with('user')
                 ->whereRelation('user', 'role', 'Supplier')
-                ->orderBy('id', 'desc')  
+                ->orderBy('created_at', 'desc')
                 ->get();
+
 
 
 
@@ -60,7 +68,7 @@ class CustomersController extends Controller
             $delivery = DeliveryRequirements::where('supplier_id', $supplier->supplier_id)->first();
 
             $address = Address::where('supplier_id', $supplier->supplier_id)->first();
-            $staffAgent = Staffs::where('staff_id', $supplier->staff_id)->first();
+            $staffAgent = Staffs::where('staff_id', $accStatus->staff_id)->first();
             $documents  = Documents::where('supplier_id', $supplier_id)->get();
             $products   = Products::where('status', 'Listed')->get();
             $productRequirements   = ProductRequirements::where('supplier_id', $supplier_id)->get();
@@ -189,7 +197,7 @@ class CustomersController extends Controller
                     'user_id' => Auth::user()->user_id,
                     'action' => 'Supplier registration request',
                     'log_id' => $log_id,
-                    'description' => "Supplier {$request->supplier_id} confirmed with status '{$request->account_status}', assigned to staff {$request->staff_id} and added products.",
+                    'description' => "Supplier {$request->supplier_id} confirmed with status '{$request->account_status}', assigned to staff {$request->staff_id} and set negotiated price.",
                 ]);
 
 
