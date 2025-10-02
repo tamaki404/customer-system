@@ -11,8 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('prices_history', function (Blueprint $table) {
+        Schema::create('price_histories', function (Blueprint $table) {
             $table->id();
+            $table->string('phistory_id')->required(); 
+            $table->string('supplier_id')->required(); 
+            $table->string('set_id')->required(); 
+            $table->string('sale_id')->nullable(); 
+            $table->string('action_by')->required(); 
+            $table->string('action')->required(); 
+
+
+            $table->decimal('new_price', 10, 2);
+            $table->decimal('past_price', 10, 2);
             $table->timestamps();
         });
     }
@@ -22,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('prices_history');
+        Schema::dropIfExists('price_histories');
     }
 };

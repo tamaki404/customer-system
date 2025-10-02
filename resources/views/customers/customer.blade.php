@@ -3,6 +3,8 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/views/customer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/views/customers/forms.css') }}">
+
 @endpush
 
 
@@ -43,7 +45,7 @@
                         
                         <div class="modal-body">
                             <p class="note-notify">
-                                <span class="material-symbols-outlined"> warning </span>
+                                <span class="material-symbols-outlined"> info </span>
                                 <span>Review the profile before taking any action on this request.</span>
                             </p>
 
@@ -260,62 +262,106 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <p class="modal-title">Modify Product</p>
+                            <p class="modal-title">Product requirement</p>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
                         <div class="modal-body">
-
-                            <p class="note-notify">
-                                <span class="material-symbols-outlined"> warning </span>
-                                <span>Any action committed will notify the supplier</span>
-                            </p>
-
-                            {{-- modify product form --}}
-                            {{-- <form class="modify-product-form"  method="POST" action="{{ route('productset.modify') }}">
-                                @csrf
-                                <input type="hidden" id="edit-modal-set-id" name="set_id">
-                                <input type="hidden" name="supplier_id" id="edit-modal-supplier-id">
-                                <div class="mb-3">
-                                    <label class="form-label" for="modal-product-name">Product</label>
-                                    <input type="text" class="form-control" id="modal-product-name" disabled>
+                            <div class="modal-action-con">
+                                
+                                <div class="action-buttons" style="border-bottom: #f8912a30 2px solid">
+                                    <button onclick="setActiveButton(this); showModifyForm()">Modify Product</button>
+                                    <button onclick="setActiveButton(this); showSaleForm()">
+                                        <span class="material-symbols-outlined">percent_discount</span>
+                                        Set on Sale
+                                    </button>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label" for="modal-price">Price</label>
-                                    <input type="number" step="0.01" class="form-control" name="price" id="modal-price">
-                                </div>
+                            </div>
 
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remove" value="1" id="modal-remove">
-                                    <label class="form-check-label" for="modal-remove">
-                                        Remove this requirement
-                                    </label>
-                                </div>
-                            </form> --}}
 
-                            {{-- add price form --}}
-                            <form class="modify-product-form"  method="POST" action="{{ route('productset.modify') }}">
-                                @csrf
-                                <input type="hidden" id="edit-modal-set-id" name="set_id">
-                                <input type="hidden" name="supplier_id" id="edit-modal-supplier-id">
-                                <div class="mb-3">
-                                    <label class="form-label" for="modal-product-name">Sale</label>
-                                    <input type="text" class="form-control" id="modal-product-name" disabled>
-                                </div>
+                        <form class="modify-product-form" id="modify-form" style="display:none;" method="POST" action="{{ route('productset.modify') }}">
+                            @csrf
+                            <input type="hidden" id="edit-modal-set-id" name="set_id">
+                            <input type="hidden" id="edit-modal-supplier-id" name="supplier_id">
 
-                                <div class="mb-3">
-                                    <label class="form-label" for="modal-price">Price</label>
-                                    <input type="number" step="0.01" class="form-control" name="price" id="modal-price">
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label">Product</label>
+                                <input type="text" id="modify-product-name" style="width: 300px; color: #333;" disabled>
+                            </div>
 
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remove" value="1" id="modal-remove">
-                                    <label class="form-check-label" for="modal-remove">
-                                        Remove this requirement
-                                    </label>
-                                </div>
-                            </form>
+                            <div class="form-group">
+                                <label class="form-label">Price</label>
+                                <input type="number" step="0.01" placeholder="00.00" name="price" id="modify-price" style="width: 200px">
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="remove" value="1" id="modal-remove">
+                                <label class="form-check-label" for="modal-remove">Remove this requirement</label>
+                            </div>
+
+                            <button type="submit" class="btn-transition">Update Product</button>
+                        </form>
+
+{{-- add price sale form --}}
+<form class="modify-product-form product-form" id="sale-form" style="display:none;" method="POST" action="{{ route('productset.sale') }}">
+    @csrf
+    <input type="hidden" id="sale-form-set-id" name="set_id">
+    <input type="hidden" id="sale-form-supplier-id" name="supplier_id">
+
+    <p class="note-notify">
+        <span class="material-symbols-outlined">info</span>
+        <span>This promotion will automatically apply starting from the selected date.</span>
+    </p>
+
+    <div class="form-group">
+        <label class="form-label">Sale product</label>
+        <input type="text" id="sale-product-name" style="width: 300px; color: #333;" disabled>
+    </div>
+
+    <input type="hidden" id="sale-base-price">
+
+    <div class="form-group">
+        <label class="form-label" for="sale_price">Selling price (₱)</label>
+        <input type="number" step="0.01" placeholder="00.00" name="sale_price" id="sale_price" style="width: 200px" required>
+    </div>
+
+    <div class="form-group" style="box-shadow: #f8912a30 0px 0px 0px 3px; margin: 5px; border-radius: 5px; padding: 10px;">
+        <label class="form-label">Effectivity</label>
+        <div class="form-calendar" style="gap: 5px">
+            <div>
+                <label for="start_date">Start date</label>
+                <input type="datetime-local" id="start_date" style="font-size: 13px; color: #666;" name="start_date" required>
+            </div>
+            <div>
+                <label for="end_date">End date</label>
+                <input type="datetime-local" id="end_date" style="font-size: 13px; color: #666;" name="end_date" required>
+            </div>
+        </div>
+    </div>
+
+    {{-- Live promotion preview --}}
+    <div id="promo-preview" style="display: none; margin: 15px 0; padding: 15px; background: linear-gradient(135deg, #f8912a 0%, #ff6b35 100%); border-radius: 8px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <span class="material-symbols-outlined" style="font-size: 24px;">percent_discount</span>
+            <p style="margin: 0; font-weight: bold;">Promotion Preview</p>
+        </div>
+        <div id="promo-content" style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 5px; backdrop-filter: blur(10px);">
+            <p style="margin: 0; font-size: 14px; font-weight: bold;" id="promo-product-name">Product Name</p>
+            <p style="margin: 8px 0; font-size: 14px;">
+                <span style="text-decoration: line-through; opacity: 0.8;">₱<span id="promo-old-price">0.00</span></span>
+                <span style="font-size: 20px; font-weight: bold; margin-left: 10px;">₱<span id="promo-new-price">0.00</span></span>
+                <span id="promo-discount-badge" style="background: rgba(255,255,255,0.3); padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px; font-weight: bold;">0% OFF</span>
+            </p>
+            <p style="margin: 0; font-size: 13px; opacity: 0.9;">
+                <span id="promo-duration">0</span> day/s sale from 
+                <span id="promo-dates">date range</span>
+            </p>
+        </div>
+    </div>
+
+    <button type="submit" class="btn-transition">Apply promotion</button>
+</form>
 
 
 
@@ -323,7 +369,6 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                     </div>
                 </div>
@@ -640,8 +685,8 @@
                                                                 data-bs-toggle="modal" 
                                                                 data-bs-target="#edit-row-action" 
                                                                 class="btn-span edit-product-btn"
-                                                                data-set-id="{{ $productRequirement->set_id }}"
-                                                                data-price="{{ $productRequirement->nego_price }}"
+                                                                data-set-id="{{ $productRequirement->settings->set_id }}"
+                                                                data-price="{{ $productRequirement->settings->nego_price }}"
                                                                 data-name="{{ $productRequirement->product->name }}"
                                                                 data-supplier-id="{{ $productRequirement->supplier_id }}"
                                                             >
@@ -1132,6 +1177,7 @@
     <script src="{{ asset('js/global/x/profile-tab.js') }}"></script>
     <script src="{{ asset('js/global/money-format.js') }}"></script>
     <script src="{{asset('js/global/decimal-input.js')}}"></script>
+    <script src="{{ asset('js/global/x/switch-form.js') }}"></script>
 
 
     <script>

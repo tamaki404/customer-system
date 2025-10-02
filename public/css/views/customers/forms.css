@@ -1,0 +1,72 @@
+.product-form{
+    display: flex;
+    flex-direction: column;
+     gap: 20px;
+     height: auto;
+}
+
+.product-form .note-notify{
+    margin-bottom: 0;
+}
+
+.product-form .form-group{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+}
+.product-form .form-group .form-label{
+    font-size: 13px;
+    text-decoration: none;
+    color: #666;
+    margin: 0;
+}
+
+.product-form .form-group input{
+    font-size: 14px;
+    color: #333;
+    border-radius: 5px;
+    padding: 5px 10px;
+    min-width: 170px;
+    padding: 5px;
+    border: none;
+    outline: none;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+.form-group .form-calendar{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.form-calendar div{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 45%;
+
+}
+
+.form-calendar div label{
+    font-size: 12px;
+    color: #888;
+}
+.form-title{
+    font-size: 15px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+
+}
+.form-title .head{
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+    margin: 0;
+}
+.form-title .desc{
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0;
+    color: #666;
+}

@@ -19,7 +19,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->ipAddress('ip_address')->nullable();
             $table->string('entity');
-            $table->string('entity_id');       
+            $table->string('entity_id');     
+            $table->timestamps();  
         });
     }
 
