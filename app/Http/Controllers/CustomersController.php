@@ -79,7 +79,7 @@ $suppliers = Suppliers::select(
             $business   = Business::where('supplier_id', operator: $supplier_id)->first();
             $account_status = AccountStatus::where('supplier_id', $supplier_id )->first();
             $sales   = ProductSales::where('supplier_id', $supplier_id)->get();
-
+            $activeSale   = ProductSales::where('supplier_id', $supplier_id)->first();
 
 
             return view('customers.customer', [
@@ -93,6 +93,7 @@ $suppliers = Suppliers::select(
                 'business'   => $business,
                 'account_status' => $account_status,
                 'sales' => $sales,
+                'activeSale' => $activeSale,
 
                 'staffs'     => $staffs,
                 'accStatus'  => $accStatus,

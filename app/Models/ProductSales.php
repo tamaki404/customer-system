@@ -24,4 +24,14 @@ class ProductSales extends Model
     {
         return $this->hasMany(Products::class, 'product_id', 'product_id');
     } 
+         public function supplier()
+    {
+        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+    }   
+    public function scopeActive($query)
+{
+    return $query->where('start_date', '<=', now())
+                 ->where('end_date', '>=', now());
+}
+
 }

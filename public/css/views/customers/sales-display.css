@@ -1,0 +1,161 @@
+
+
+        .sale-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sale-title-wrapper .material-symbols-outlined {
+            color: #f8912a;
+            font-size: 24px;
+        }
+
+        .sale-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sale-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sale-item {
+            padding: 20px;
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #fff9f5 100%);
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid #f8912a;
+        }
+
+        .sale-item:hover {
+            box-shadow: 0 6px 20px rgba(248, 145, 42, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .sale-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f8912a;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            box-shadow: 0 2px 8px rgba(248, 145, 42, 0.3);
+        }
+
+        .sale-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .sale-header .material-symbols-outlined {
+            color: #f8912a;
+            font-size: 22px;
+            background: #fff3e8;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .sale-info {
+            margin-bottom: 12px;
+        }
+
+        .sale-dates {
+            font-size: 13px !important;
+            color: #666 !important;
+            margin: 2px 0;
+            display: flex;
+            align-items: center;
+            font-weight: normal !important;
+            gap: 6px;
+        }
+
+        .sale-dates .material-symbols-outlined {
+            font-size: 16px;
+            color: #999;
+        }
+
+        .sale-duration {
+            font-size: 13px !important;
+            color: #666;
+            margin: 5px 0;
+            background: #fff3e8;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        .sale-pricing {
+            margin: 15px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #f8912a;
+        }
+
+        .price-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 15px;
+        }
+
+        .sale-price {
+            color: #f8912a;
+            font-weight: 700;
+            font-size: 22px;
+        }
+
+        .countdown-box {
+            background: #f8912a;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .countdown {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .sale-section {
+                padding: 16px;
+            }
+
+            .sale-item {
+                padding: 16px;
+            }
+
+            .sale-badge {
+                position: static;
+                display: inline-block;
+                margin-bottom: 10px;
+            }
+        }

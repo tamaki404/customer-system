@@ -34,4 +34,8 @@ class Products extends Model
     {
         return $this->hasMany(Products::class, 'parent_product_id', 'product_id');
     }
+    public function set()
+    {
+        return $this->belongsTo(ProductSetting::class, 'product_id', 'product_id');
+    }
 }

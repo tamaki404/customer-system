@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ asset('css/views/customer.css') }}">
     <link rel="stylesheet" href="{{ asset('css/views/customers/forms.css') }}">
     <link rel="stylesheet" href="{{ asset('css/views/customers/sales.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/views/customers/sales-display.css') }}">
 
 @endpush
 
@@ -602,14 +603,13 @@
                                     @php
                                         $imgSrc = ($staffAgent && $staffAgent->user && $staffAgent->user->image)
                                             ? 'data:' . $staffAgent->user->image_mime_type . ';base64,' . base64_encode($staffAgent->user->image)
-                                            : asset('images/default-avatar.png');
+                                            : asset('assets/default-company-logo.png');
+                                            
                                     @endphp
 
-                                    <img class="supplier-image" src="{{ $imgSrc }}" alt="Staff Profile Image">
-
-
-
                                     @if ($staffAgent !== NULL)
+                                        <img class="supplier-image" src="{{ $imgSrc }}" alt="Staff Profile Image" >
+
                                         <p class="name-title">
                                             <span style="font-size: 13px;  color: #333;">
                                                 {{$staffAgent->lastname}},
@@ -649,55 +649,62 @@
                         {{-- product requirements --}}
                         <div id="product-content" class="tab-content active" role="tabpanel" aria-labelledby="product-tab">
                             <div class="profile-mid" >
-
-                                <div class="authorized-staffs" style="box-shadow: none">
-                                    <p style="margin-bottom: 5px">On sale</p>
-                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
-                                        <div class="authorized-rep sale-div">
-                                            @foreach ( $sales as $sale)
-                                                <div>
-                                                    <p style="display: flex; gap: 5px; align-items: center;">
-                                                        <span class="material-symbols-outlined">
-                                                            percent_discount
-                                                        </span>
-                                                        <span>{{$sale->set->product->name}}</span>
-                                                    </p>
-                                                    <p>
-                                                        {{ \Carbon\Carbon::parse($sale->start_date)->format('M d, Y h:i A') }}
-                                                        -
-                                                        {{ \Carbon\Carbon::parse($sale->end_date)->format('M d, Y h:i A') }}
-                                                    </p>
-                                                    @php
-                                                        $hours = \Carbon\Carbon::parse($sale->start_date)->diffInHours(\Carbon\Carbon::parse($sale->end_date));
-                                                        $days = round($hours / 24, 1);
-                                                    @endphp
-
-                                                    <p>{{ $days }} day/s sale</p>
-
-                                                    @php
-                                                        $original = $sale->set->nego_price;
-                                                        $salePrice = $sale->sale_price;
-                                                        $discount = $original > 0 ? round((($original - $salePrice) / $original) * 100) : 0;
-                                                    @endphp
-
-                                                    <p>
-                                                        <span style="text-decoration: line-through">₱{{ number_format($original, 2) }}</span>
-                                                        <span>₱{{ number_format($salePrice, 2) }}</span>
-                                                        <span>({{ $discount }}% off)</span>
-                                                    </p>
-
-
-
-
-
-                                                </div>
-                                            
-                                            @endforeach
-                                            
+                                @if ($activeSale > '0')
+                                    <div class="authorized-staffs">
+                                        <div class="sale-title-wrapper">
+                                            <span class="material-symbols-outlined" style="font-size: 20px">local_fire_department</span>
+                                            <p>On sale</p>
                                         </div>
+                                        
+                                        <div class="sale-list">
+                                            @foreach ($sales as $sale)
+                                                @php
+                                                    $hours = \Carbon\Carbon::parse($sale->start_date)->diffInHours(\Carbon\Carbon::parse($sale->end_date));
+                                                    $days = round($hours / 24, 1);
+                                                    $original = $sale->set->nego_price;
+                                                    $salePrice = $sale->sale_price;
+                                                    $discount = $original > 0 ? round((($original - $salePrice) / $original) * 100) : 0;
+                                                @endphp
 
+                                                <div class="sale-item" >
+                                                    <div class="sale-badge">{{ $discount }}% OFF</div>
+                                                    
+                                                    <div class="sale-header">
+                                                        <span class="material-symbols-outlined">percent_discount</span>
+                                                        <span class="product-name">{{ $sale->set->product->name }}</span>
+                                                    </div>
+
+                                                    <div class="sale-info">
+                                                        <p class="sale-dates">
+                                                            <span class="material-symbols-outlined">schedule</span>
+                                                            {{ \Carbon\Carbon::parse($sale->start_date)->format('M d, Y h:i A') }}
+                                                            →
+                                                            {{ \Carbon\Carbon::parse($sale->end_date)->format('M d, Y h:i A') }}
+                                                        </p>
+
+                                                        <p class="sale-duration">{{ $days }} day/s sale</p>
+                                                    </div>
+
+                                                    <div class="sale-pricing">
+                                                        <div class="price-wrapper">
+                                                            <span class="original-price">₱{{ number_format($original, 2) }}</span>
+                                                            <span class="sale-price">₱{{ number_format($salePrice, 2) }}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="countdown-box">
+                                                        <p class="countdown"
+                                                        data-start="{{ \Carbon\Carbon::parse($sale->start_date)->timezone('Asia/Manila')->timestamp * 1000 }}"
+                                                        data-end="{{ \Carbon\Carbon::parse($sale->end_date)->timezone('Asia/Manila')->timestamp * 1000 }}">
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
-                                </div>
+
+                                @endif
+
 
                                 <div class="authorized-staffs" style="box-shadow: none">
                                     <p style="margin-bottom: 5px">Price change</p>
@@ -727,14 +734,33 @@
                                                         <td>{{ $productRequirement->product->name }}</td>
                                                         <td>{{ $productRequirement->product->unit }}</td>
                                                         <td>{{ $productRequirement->product->measurement }}</td>
-                                                        <td>{{ $productRequirement->settings->nego_price }}</td>
+                                                 
+                                                        @if ($productRequirement->settings?->sale)
+                                                            {{-- Product is on sale --}}
+                                                            <td style="display: flex; flex-direction: column;">
+                                                                <span style="text-decoration: line-through; font-size: 10px; color: #888;">
+                                                                    ₱{{ number_format($productRequirement->settings->nego_price, 2) }}
+                                                                </span>
+                                                                <span style="font-weight: bold; color: #f8912a;">
+                                                                    ₱{{ number_format($productRequirement->settings->sale->sale_price, 2) }}
+                                                                </span>
+                                                            </td>
+                                                        @else
+                                                            {{-- Normal price --}}
+                                                            <td>
+                                                                ₱{{ number_format($productRequirement->settings->nego_price, 2) }}
+                                                            </td>
+                                                        @endif
+
+
+                                                    
                                                         <td>
                                                             <button  
                                                                 data-bs-toggle="modal" 
                                                                 data-bs-target="#edit-row-action" 
                                                                 class="btn-span edit-product-btn"
-                                                                data-set-id="{{ $productRequirement->settings->set_id }}"
-                                                                data-price="{{ $productRequirement->settings->nego_price }}"
+                                                                data-set-id="{{ ($productRequirement->settings->set_id) ?? "" }}"
+                                                                data-price="{{ ($productRequirement->settings->nego_price) ?? "" }}"
                                                                 data-name="{{ $productRequirement->product->name }}"
                                                                 data-supplier-id="{{ $productRequirement->supplier_id }}"
                                                             >
@@ -778,7 +804,7 @@
                                                         <td>{{ $productRequirement->product->name }}</td>
                                                         <td>{{ $productRequirement->product->unit }}</td>
                                                         <td>{{ $productRequirement->product->measurement }}</td>
-                                                        <td>{{ $productRequirement->settings->nego_price }}</td>
+                                                        <td>{{( $productRequirement->settings->nego_price) ?? "" }}</td>
                                                         <td>
                                                             <button  
                                                                 data-bs-toggle="modal" 
@@ -1082,19 +1108,30 @@
                                             </p>
                                             <p>
                                                 <span style="color:#666">Verified by</span>
-                                                <span>
-                                                    {{ implode(', ', array_filter([
-                                                        $account_status->staff->lastname,
-                                                        $account_status->staff->firstname
-                                                        ]))
-                                                    }}
+                                                @if (@$account_status->user_id === $supplier->user_id > 0 && @$account_status->staff_id !== NULL)
+                                                    <span>
+                                                        {{ implode(', ', array_filter([
+                                                            $account_status->staff->lastname,
+                                                            $account_status->staff->firstname
+                                                            ]))
+                                                        }}
+                                                        
+                                                    </span>
+                                                @else
+                                                <span>--</span>
                                                     
-                                                </span>
+                                                @endif
+                                   
 
                                             </p>
                                             <p>
                                                 <span style="color:#666">Approved at</span>
-                                                <span>{{ \Carbon\Carbon::parse($account_status->approved_at)->format('F j, Y') }}</span>
+                                                @if ($account_status->approved_at !== NULL)
+                                                    <span>{{ \Carbon\Carbon::parse($account_status->approved_at)->format('F j, Y') }}</span>
+                                                @else
+                                                    <span>--</span>
+
+                                                @endif
                                             </p>
                            
                                     
@@ -1226,6 +1263,7 @@
     <script src="{{ asset('js/global/money-format.js') }}"></script>
     <script src="{{asset('js/global/decimal-input.js')}}"></script>
     <script src="{{ asset('js/global/x/switch-form.js') }}"></script>
+    <script src="{{ asset('js/global/x/countdown-sale.js') }}"></script>
 
 
     <script>

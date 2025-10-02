@@ -29,7 +29,10 @@ class Suppliers extends Model
     ];
 
 
-
+    public function set()
+    {
+        return $this->belongsTo( ProductSetting::class, 'supplier_id', 'supplier_id');
+    }
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
