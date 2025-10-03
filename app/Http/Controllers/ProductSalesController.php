@@ -18,12 +18,15 @@ class ProductSalesController extends Controller
     {
         $user = Auth::user();
         $request->validate([
-            'set_id' => 'required|exists:product_settings,set_id',
-            'supplier_id' => 'required|exists:suppliers,supplier_id',
-            'sale_price' => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'start_date' => 'required|date' ,
-            'end_date'  => 'required|date|after:start_date'
+            'method_select' => 'required|in:Fixed,Percentage',
+            'city_selected' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'staff_id' => 'required|integer',
+            'fixed_price' => 'required_if:method_select,Fixed|nullable|numeric|min:0',
+            'percentage_ceiling' => 'required_if:method_select,Percentage|nullable|numeric|min:0|max:100',
         ]);
+
 
         $product = ProductSetting::where('set_id', $request->set_id)->firstOrFail();
 

@@ -7,6 +7,7 @@
 @section('content')
 
     @if (auth()->user()->role !== 'Supplier')
+
         {{-- add product modal --}}
         <div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -127,6 +128,7 @@
                 </form>
             </div>
         </div>
+
         {{-- set ceiling modal --}}
         <div class="modal fade" id="set-ceiling-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -160,7 +162,7 @@
                             <input type="number" step="0.01" name="percentage_ceiling" class="form-control">
                         </div>
 
-                        <input type="hidden" name="method" id="method" value="Fixed">
+                        <input type="hidden" name="method_select" id="method" value="Fixed">
 
                         {{-- City selection --}}
                         <div class="form-group mt-3">
@@ -204,8 +206,6 @@
 
 
     @endif
-
-
         <div class="content-bg">
                 <div class="content-header">
                     <div class="contents-display">
@@ -432,23 +432,7 @@
 </script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const checkbox = document.getElementById("use_percentage");
-    const fixedInput = document.getElementById("fixed-input");
-    const percentageInput = document.getElementById("percentage-input");
-    const methodInput = document.getElementById("method");
 
-    checkbox.addEventListener("change", function () {
-        if (checkbox.checked) {
-            percentageInput.style.display = "block";
-            fixedInput.style.display = "none";
-            methodInput.value = "Percentage";
-        } else {
-            percentageInput.style.display = "none";
-            fixedInput.style.display = "block";
-            methodInput.value = "Fixed";
-        }
-    });
 
     // Supplier count update
     const supplierCounts = @json($supplierCounts);
@@ -460,8 +444,27 @@
         const count = supplierCounts[city] || 0;
         supplierText.textContent = `${count} supplier(s) selected within city`;
     });
-});
 
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const checkbox = document.getElementById('use_percentage');
+    const fixedInput = document.getElementById('fixed-input');
+    const percentInput = document.getElementById('percentage-input');
+    const methodField = document.getElementById('method');
+
+    checkbox.addEventListener('change', () => {
+        if (checkbox.checked) {
+            fixedInput.style.display = 'none';
+            percentInput.style.display = 'block';
+            methodField.value = 'Percentage';
+        } else {
+            fixedInput.style.display = 'block';
+            percentInput.style.display = 'none';
+            methodField.value = 'Fixed';
+        }
+    });
+});
 </script>
 
 

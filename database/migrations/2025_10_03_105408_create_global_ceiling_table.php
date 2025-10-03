@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('global_ceiling', function (Blueprint $table) {
+        Schema::create('global_ceilings', function (Blueprint $table) {
             $table->id();
-
-            $table->string('product_id')->nullable();
+            $table->string('ceiling_id')->required();
             $table->decimal('fixed_price', 10, 2)->nullable();
             $table->decimal('percentage_ceiling', 5, 2)->nullable();
             $table->enum('method', ['Fixed', 'Percentage'])->default('Fixed');
@@ -22,9 +21,11 @@ return new class extends Migration
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->string('staff_id')->nullable();
-
             $table->timestamps();
         });
+
+
+        
     }
 
     /**
