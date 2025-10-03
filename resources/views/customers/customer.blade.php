@@ -635,8 +635,11 @@
                             <button class="tab-button" data-tab="product" role="tab" aria-selected="false" aria-controls="product-content" id="product-tab">
                             Product requirements
                             </button>
-                            <button class="tab-button active" data-tab="prices" role="tab" aria-selected="true" aria-controls="prices-content" id="prices-tab">
+                            <button class="tab-button" data-tab="prices" role="tab" aria-selected="true" aria-controls="prices-content" id="prices-tab">
                             Prices history
+                            </button>
+                            <button class="tab-button active" data-tab="sales" role="tab" aria-selected="true" aria-controls="sales-content" id="sales-tab">
+                            Sales
                             </button>
                             <button class="tab-button" data-tab="staff" role="tab" aria-selected="false" aria-controls="staff-content" id="staff-tab">
                             Authorized staffs
@@ -649,15 +652,67 @@
                             </button>
                         </div>
 
+                        {{-- sale history --}}
+                        <div id="sales-content" class="tab-content active" role="tabpanel" aria-labelledby="sales-tab">
+                            <div class="profile-mid" >
+                                <div class="authorized-staffs" style="box-shadow: none">
+                                    <p style="margin-bottom: 5px">Sales table</p>
+                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep">
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Created At</th>
+                                                        <th>Product</th>
+                                                        <th>Sale ID</th>
+                                                        <th>Sale Price</th>
+                                                        <th>Discount (%)</th>
+                                                        <th>Duration (Days)</th>
+                                                        <th>Start Date</th>
+                                                        <th>End Date</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($salesHistos as $salesHisto)
+                                                        @php
+                                                            $hours = \Carbon\Carbon::parse($salesHisto->start_date)->diffInHours(\Carbon\Carbon::parse($salesHisto->end_date));
+                                                            $days = round($hours / 24, 1);
+                                                            $original = $salesHisto->set->nego_price;
+                                                            $salePrice = $salesHisto->sale_price;
+                                                            $discount = $original > 0 ? round((($original - $salePrice) / $original) * 100) : 0;
+                                                        @endphp
+
+                                                        <tr>
+                                                            <td>{{ $loop->iteration }}</td>
+                                                            <td>{{ \Carbon\Carbon::parse($salesHisto->created_at)->format('M d, Y h:i A') }}</td>
+                                                            <td>{{ $salesHisto->set->product->name }}</td>
+                                                            <td>{{ $salesHisto->set_id }}</td>
+                                                            <td>₱{{ $salesHisto->sale_price }}</td>
+                                                            <td>{{ $discount }}% OFF</td>
+                                                            <td>{{ $days }} day/s sale</td>
+                                                            <td>{{ \Carbon\Carbon::parse($salesHisto->start_date)->format('M d, Y h:i A') }}</td>
+                                                            <td>{{ \Carbon\Carbon::parse($salesHisto->end_date)->format('M d, Y h:i A') }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
                         {{-- prices history --}}
-                        <div id="prices-content" class="tab-content active" role="tabpanel" aria-labelledby="prices-tab">
+                        <div id="prices-content" class="tab-content" role="tabpanel" aria-labelledby="prices-tab">
                             <div class="profile-mid" >
                                 <div class="authorized-staffs" style="box-shadow: none">
                                     <p style="margin-bottom: 5px">Prices table</p>
                                     <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
                                         <div class="authorized-rep">
-                                            <button  data-bs-toggle="modal" data-bs-target="#add-product-modal" class="btn-transition btn-span" style="width: 100px;     background-color: #f8912a; color: #fff; font-weight: normal;"> <span class="material-symbols-outlined ">add</span>Add new</button>
-
                                             <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
                                                 <thead style="background-color: #f9f9f9;">
                                                     <tr style="background:#f7f7fa; text-align: center; height: 30px">

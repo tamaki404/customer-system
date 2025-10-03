@@ -38,15 +38,15 @@ class CustomersController extends Controller
             $supplier = Suppliers::where('user_id', $user->user_id)->first() ;
 
 
-        $suppliers = Suppliers::select(
-        'suppliers.*',
-                DB::raw("CONCAT_WS(' ', staffs.firstname, staffs.middlename, staffs.lastname) as staff_name"))
-                ->join('account_status', 'account_status.supplier_id', '=', 'suppliers.supplier_id')
-                ->leftJoin('staffs', 'staffs.staff_id', '=', 'account_status.staff_id')
-                ->with('user')
-                ->whereRelation('user', 'role', 'Supplier')
-                ->orderBy('created_at', 'desc')
-                ->get();
+            $suppliers = Suppliers::select(
+            'suppliers.*',
+                    DB::raw("CONCAT_WS(' ', staffs.firstname, staffs.middlename, staffs.lastname) as staff_name"))
+                    ->join('account_status', 'account_status.supplier_id', '=', 'suppliers.supplier_id')
+                    ->leftJoin('staffs', 'staffs.staff_id', '=', 'account_status.staff_id')
+                    ->with('user')
+                    ->whereRelation('user', 'role', 'Supplier')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
 
 
@@ -84,7 +84,9 @@ class CustomersController extends Controller
             $prices   = PriceHistory::where('supplier_id', $supplier_id)
             ->orderBy('created_at', 'desc')
             ->get();
-
+            $salesHistos   = ProductSales::where('supplier_id', $supplier_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
             return view('customers.customer', [
                 'user'       => $user,
@@ -99,6 +101,7 @@ class CustomersController extends Controller
                 'sales' => $sales,
                 'activeSale' => $activeSale,
                 'prices' => $prices,
+                'salesHistos' => $salesHistos,
 
                 'staffs'     => $staffs,
                 'accStatus'  => $accStatus,
