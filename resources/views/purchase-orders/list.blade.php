@@ -49,7 +49,6 @@
                                     <tr style="background:#f7f7fa; text-align: center; height: 30px">
                                         <td>Select</td>
                                         <td>#</td>
-                                        <td>Product ID</td>
                                         <td>Product Name</td>
                                         <td>Category</td>
                                         <td>Unit</td>
@@ -80,12 +79,23 @@
                                                 onchange="toggleProductRow(this, '{{ $setProd->set_id }}')">
                                         </td>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $setProd->set_id }}</td>
                                         <td>{{ $setProd->product->name }}</td>
                                         <td>{{ $setProd->product->category }}</td>
                                         <td>{{ $setProd->product->unit }}</td>
                                         <td>{{ $setProd->product->weight }}</td>
-                                        <td>₱{{ number_format($setProd->nego_price, 2) }}</td>
+                                        <td>
+                                            @if($setProd->on_sale)
+                                                <span style="text-decoration: line-through; color: #888;">
+                                                    ₱{{ number_format($setProd->original_price, 2) }}
+                                                </span>
+                                                <span style="color: #fe8d29; font-weight: bold; margin-left: 5px;">
+                                                    ₱{{ number_format($setProd->nego_price, 2) }}
+                                                </span>
+                                            @else
+                                                ₱{{ number_format($setProd->nego_price, 2) }}
+                                            @endif
+                                        </td>
+
                                         <td>
                                             <input type="number" 
                                                 name="quantities[{{ $setProd->set_id }}]" 

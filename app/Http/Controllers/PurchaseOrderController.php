@@ -17,7 +17,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Logs;
 use App\Models\OrderHistory;
 use App\Models\ProductSales;
-
+use Illuminate\Support\Str;
 class PurchaseOrderController extends Controller
 {
 public function purchaseOrderlist(Request $request)
@@ -47,28 +47,33 @@ public function purchaseOrderlist(Request $request)
             if ($request->filled('from_date')) {
                 $query->whereDate('created_at', '>=', $request->from_date);
             }
-            if ($request->filled('to_date')) {
+            if ($request->filled('to_date')) {                                                   
                 $query->whereDate('created_at', '<=', $request->to_date);
             }
 
             $pos = $query->orderBy('created_at', 'desc')->get();
 
-            // Only load setProds if supplier exists
             $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
                 ->with('product')
                 ->get()
-                ->map(function($setProds) {
-                    $activeSale = ProductSales::where('set_id', $setProds->set_id)
+                ->map(function($setProduct) {
+                    $activeSale = ProductSales::where('set_id', $setProduct->set_id)
                         ->whereDate('start_date', '<=', now())
                         ->whereDate('end_date', '>=', now())
                         ->first();
 
+                    // Store both prices
+                    $setProduct->original_price = $setProduct->nego_price;
                     if ($activeSale) {
-                        $setProds->nego_price = $activeSale->sale_price;
+                        $setProduct->nego_price = $activeSale->sale_price;
+                        $setProduct->on_sale = true;
+                    } else {
+                        $setProduct->on_sale = false;
                     }
 
-                    return $setProds;
+                    return $setProduct;
                 });
+
         }
     } 
     elseif ($user->role === "Staff" || $user->role === "Admin") {
@@ -125,91 +130,109 @@ public function purchaseOrderlist(Request $request)
             ]);
         }
 
-        public function createPurchaseOrder(Request $request)
-        {
-            $user = Auth::user();
-            
-            if ($user->role !== "Supplier") {
-                return redirect()->back()->with('error', 'Only suppliers can create purchase orders.');
+public function createPurchaseOrder(Request $request)
+{
+    $user = Auth::user();
+    
+    if ($user->role !== "Supplier") {
+        return redirect()->back()->with('error', 'Only suppliers can create purchase orders.');
+    }
+
+    $supplier = Suppliers::where('user_id', $user->user_id)->first();
+    
+    if (!$supplier) {
+        return redirect()->back()->with('error', 'Supplier profile not found.');
+    }
+
+    try {
+        $request->validate([
+            'selected_products'   => 'required|array|min:1',
+            'selected_products.*' => 'exists:product_settings,set_id',
+            'quantities'          => 'required|array',
+            'quantities.*'        => 'required|integer|min:1',
+            'notes'               => 'nullable|string|max:1000',
+        ]);
+
+        DB::beginTransaction();
+
+        $date = date('Ymd');
+        $po_id = 'PO-' . $date . '-' . Str::upper(Str::random(5));
+
+        // Create purchase order
+        $purchaseOrder = PurchaseOrders::create([
+            'po_id'        => $po_id,
+            'supplier_id'  => $supplier->supplier_id,
+            'status'       => 'Pending',
+            'notes'        => $request->notes,
+            'total_amount' => 0,
+            'placed_at'    => now(),
+        ]);
+
+        $totalAmount = 0;
+
+        foreach ($request->selected_products as $setId) {
+            $productSetting = ProductSetting::with('product')->where('set_id', $setId)->first();
+
+            if (!$productSetting) {
+                throw new \Exception("Invalid product setting for set_id: $setId");
             }
 
-            $supplier = Suppliers::where('user_id', $user->user_id)->first();
-            
-            if (!$supplier) {
-                return redirect()->back()->with('error', 'Supplier profile not found.');
+            $quantity = $request->quantities[$setId] ?? 1;
+
+            // Default to nego_price, but check if sale overrides it
+            $unitPrice = $productSetting->nego_price;
+
+            $activeSale = ProductSales::where('set_id', $setId)
+                ->whereDate('start_date', '<=', now())
+                ->whereDate('end_date', '>=', now())
+                ->first();
+
+            if ($activeSale) {
+                $unitPrice = $activeSale->sale_price;
             }
 
-            try {
-                $request->validate([
-                    'selected_products' => 'required|array|min:1',
-                    'selected_products.*' => 'exists:product_settings,set_id',
-                    'quantities' => 'required|array',
-                    'quantities.*' => 'required|integer|min:1',
-                    'notes' => 'nullable|string|max:1000',
-                ]);
+            $itemTotal = $unitPrice * $quantity;
 
-                DB::beginTransaction();
+            $poItemId = 'POI-' . $date . '-' . Str::upper(Str::random(5));
 
-                $date = date('Ymd');
-                $po_id = 'PO-' . $date . '-' . $this->randomBase36String(5);
+            PurchaseOrderItem::create([
+                'po_item_id'        => $poItemId,
+                'po_id'             => $po_id,
+                'product_id'        => $productSetting->product_id,
+                'set_id'            => $setId,
+                'supplier_quantity' => $quantity,
+                'staff_quantity'    => $quantity, // initially same
+                'unit_price'        => $unitPrice,
+                'total_price'       => $itemTotal,
+                'status'            => 'Pending',
+            ]);
 
-                // Create purchase order
-                $purchaseOrder = PurchaseOrders::create([
-                    'po_id' => $po_id,
-                    'supplier_id' => $supplier->supplier_id,
-                    'status' => 'Pending',
-                    'notes' => $request->notes,
-                    'total_amount' => 0,
-                    'placed_at' => now(),
-                ]);
-
-                $totalAmount = 0;
-
-                // Create purchase order items
-                foreach ($request->selected_products as $setId) {
-                    $productSetting = ProductSetting::where('set_id', $setId)->first();
-                    $quantity = $request->quantities[$setId] ?? 1;
-                    $unitPrice = $productSetting->price;
-                    $itemTotal = $unitPrice * $quantity;
-
-                    $poItemId = 'POI-' . $date . '-' . $this->randomBase36String(5);
-
-                    PurchaseOrderItem::create([
-                        'po_item_id' => $poItemId,
-                        'po_id' => $po_id,
-                        'product_id' => $productSetting->product_id,
-                        'set_id' => $setId,
-                        'supplier_quantity' => $quantity,
-                        'staff_quantity' => $quantity, // Initially same as supplier quantity
-                        'unit_price' => $unitPrice,
-                        'total_price' => $itemTotal,
-                        'status' => 'Pending',
-                    ]);
-
-                    $totalAmount += $itemTotal;
-                }
-
-                // Update total amount
-                $purchaseOrder->update(['total_amount' => $totalAmount]);
-
-                DB::commit();
-
-                return redirect()->route('purchaseorders.purchaseorder', $po_id)
-                    ->with('success', 'Purchase order created successfully! PO ID: ' . $po_id);
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                \Log::error('Purchase order creation failed:', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'request_data' => $request->all(),
-                ]);
-
-                return redirect()->back()
-                    ->with('error', 'Purchase order creation failed: ' . $e->getMessage())
-                    ->withInput();
-            }
+            $totalAmount += $itemTotal;
         }
+
+        // Update total
+        $purchaseOrder->update(['total_amount' => $totalAmount]);
+
+        DB::commit();
+
+        return redirect()
+            ->route('purchaseorders.purchaseorder', ['po_id' => $po_id])
+            ->with('success', 'Purchase order created successfully! PO ID: ' . $po_id);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Purchase order creation failed:', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'request_data' => $request->all(),
+        ]);
+
+        return redirect()->back()
+            ->with('error', 'Purchase order creation failed: ' . $e->getMessage())
+            ->withInput();
+    }
+}
+
 
         public function confirmPurchaseOrder(Request $request, $po_id)
         {
