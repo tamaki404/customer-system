@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\GlobalCeiling;
 use App\Models\PurchaseOrders;
 use App\Models\Suppliers;
 use Illuminate\Http\Request;
@@ -11,12 +12,17 @@ use App\Models\Products;
 use App\Models\Logs;
 use App\Models\ProductSetting;
 use App\Models\Address;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
 
         public function productList(Request $request)
         {
+
+
+            $now = Carbon::now();
+
             $user = Auth::user();
             $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
 
@@ -32,12 +38,17 @@ class ProductController extends Controller
             $supplierCounts = Address::selectRaw('LOWER(office_city) as city, COUNT(DISTINCT supplier_id) as count')
                 ->groupBy('city')
                 ->pluck('count', 'city');
+            
+            $ceilings = GlobalCeiling::orderBy('start_date', 'desc')->get();
+
 
             return view('products.list', [
                 'user' => $user,
                 'products' => $products,
                 'setProducts' => $setProducts,
                 'cities' => $cities,
+                'ceilings' => $ceilings,
+
                 'supplierCounts' => $supplierCounts,
 
             ]);

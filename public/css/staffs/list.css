@@ -33,3 +33,38 @@
     box-shadow: none;
     outline: none;
 }
+
+.main-board{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    gap: 10px;
+}
+.main-board .ceiling-table{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 25%;
+    background-color: transparent;
+    border-radius: 15px;
+    overflow: hidden;
+    border: #8888884c solid 1px;
+    background-color: #fff;
+}
+.main-board .table-div{
+    height: 100%;
+    width: 100%;
+}
+.table-div .content-body{
+    height: 90%;
+}
+.table-div .pagination-div{
+    padding: 10px;
+}
+.table-section{
+    display: flex;
+
+}
+.table-section table{
+    background: #fff;
+}

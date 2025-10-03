@@ -260,50 +260,112 @@
 
 
                 @if (auth()->user()->role !== 'Supplier')
-                    <div class="content-body" style="background: #fff">
+                <div class="main-board">
+                    <div class="ceiling-table">
+                        <div class="table-section">
+                            <table>
+                                <thead style="background-color: #fff; padding: 10px;">
+                                    <tr style="text-align: left;height: 30px;">
 
-                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                            <thead style="background-color: #fff;">
-                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                    <th>#</th>
-                                    <th>Product ID</th>
-                                    <th>Name</th>
-                                    <th>Category</th>
-                                    <th>Base price</th>
-                                    <th>Ceiling price</th>
-                                    <th>Unit</th>
-                                    <th>Weight</th>
-                                    <th>Sold</th>
-
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($products as $product)
-                                    <tr onclick="window.location.href='{{ route('products.product', ['product_id' => $product->product_id]) }}'">
-                                        <th>{{ $loop->iteration }}</th>
-                                        <td>{{ $product->product_id }}</td>
-                                        <td>{{ $product->name }}</td>
-                                        <td>{{ $product->category }}</td>
-                                        <td>₱{{ number_format($product->base_price, 2) }}</td>
-                                        <td>₱</td>
-                                        <td>{{ $product->unit }}</td>
-                                        <td>{{ $product->weight }}</td>
-                                        <td>--</td>
+                                        <th style="display: flex; flex-direction: row; gap: 5px; align-items:center;">
+                                            <span class="material-symbols-outlined" style="font-size: 16px">
+                                                price_change
+                                            </span>
+                                            Ceiling price
+                                        </th>
                                     </tr>
+                                    
+                                </thead>
+                                    <tbody>
+                                        @foreach($ceilings as $ceiling)
+                                            @php
+                                                $now = \Carbon\Carbon::now();
+                                                if($ceiling->start_date <= $now && $ceiling->end_date >= $now) {
+                                                    $status = 'Active';
+                                                    $badge = 'success';
+                                                } elseif($ceiling->start_date > $now) {
+                                                    $status = 'Upcoming';
+                                                    $badge = 'warning';
+                                                } else {
+                                                    $status = 'Expired';
+                                                    $badge = 'secondary';
+                                                }
+                                            @endphp
 
-                                @endforeach
-                            </tbody>
-                        </table>
-                
+                                            <tr>
+                                                <td>
+                                                    <strong>[{{ ucfirst($ceiling->city_selected) }}]</strong> – 
+                                                    @if($ceiling->method === 'Fixed')
+                                                        ₱{{ number_format($ceiling->fixed_price, 2) }}
+                                                    @else
+                                                        {{ $ceiling->percentage_ceiling }}%
+                                                    @endif
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        {{ \Carbon\Carbon::parse($ceiling->start_date)->format('M d, Y') }} → 
+                                                        {{ \Carbon\Carbon::parse($ceiling->end_date)->format('M d, Y') }}
+                                                    </small>
+                                                    &nbsp;&nbsp;
+                                                    <span class="badge bg-{{ $badge }}">{{ $status }}</span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+
+                            </table>
+                        </div>
+                        
+
                     </div>
+                    <div class="table-div">
+                        <div class="content-body" style="background: #fff">
 
-                    <div class="pagination-div">
-                        <p>50 out of 100 <span>2/3</span></p>
-                        <div>
-                            <button>Previous</button>
-                            <button>Next</button>
+                            <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                                <thead style="background-color: #fff;">
+                                    <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                        <th>#</th>
+                                        <th>Product ID</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Base price</th>
+                                        <th>Ceiling price</th>
+                                        <th>Unit</th>
+                                        <th>Weight</th>
+                                        <th>Sold</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($products as $product)
+                                        <tr onclick="window.location.href='{{ route('products.product', ['product_id' => $product->product_id]) }}'">
+                                            <th>{{ $loop->iteration }}</th>
+                                            <td>{{ $product->product_id }}</td>
+                                            <td>{{ $product->name }}</td>
+                                            <td>{{ $product->category }}</td>
+                                            <td>₱{{ number_format($product->base_price, 2) }}</td>
+                                            <td>₱</td>
+                                            <td>{{ $product->unit }}</td>
+                                            <td>{{ $product->weight }}</td>
+                                            <td>--</td>
+                                        </tr>
+
+                                    @endforeach
+                                </tbody>
+                            </table>
+                    
+                        </div>
+
+                        <div class="pagination-div">
+                            <p>50 out of 100 <span>2/3</span></p>
+                            <div>
+                                <button>Previous</button>
+                                <button>Next</button>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+
                 @elseif (auth()->user()->role === 'Supplier')
 
                     <div class="content-body" style="background: #fff">
