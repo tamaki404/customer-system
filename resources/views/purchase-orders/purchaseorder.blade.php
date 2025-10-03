@@ -244,7 +244,19 @@
                                     <td>{{ $item->product->category }}</td>
                                     <td>{{ $item->product->unit }}</td>
                                     <td>{{ $item->product->weight }}</td>
-                                    <td style="text-align: right;">₱{{ number_format($item->unit_price, 2) }}</td>
+                                    <td style="text-align: right;">
+                                        @if($item->original_price && $item->original_price > $item->unit_price)
+                                            <span style="text-decoration: line-through; color: #999;">
+                                                ₱{{ number_format($item->original_price, 2) }}
+                                            </span><br>
+                                            <span style="color: #fe8d29; font-weight: bold;">
+                                                ₱{{ number_format($item->unit_price, 2) }}
+                                            </span>
+                                        @else
+                                            ₱{{ number_format($item->unit_price, 2) }}
+                                        @endif
+                                    </td>
+
                                     <td style="text-align: center;">{{ $item->supplier_quantity }}</td>
                                     <td style="text-align: center;">{{ $item->staff_quantity }}</td>
                                     <td style="text-align: center;">
@@ -256,7 +268,23 @@
                                             {{ $item->status }}
                                         </span>
                                     </td>
-                                    <td style="text-align: right;">₱{{ number_format($item->total_price, 2) }}</td>
+                                    <td style="text-align: right;">
+                                        @php
+                                            $oldTotal = $item->original_price * $item->supplier_quantity;
+                                            $newTotal = $item->total_price;
+                                        @endphp
+
+                                        @if($item->original_price > $item->unit_price)
+                                            <span style="text-decoration: line-through; color: #999;">
+                                                ₱{{ number_format($oldTotal, 2) }}
+                                            </span><br>
+                                            <span style="color: #fe8d29; font-weight: bold;">
+                                                ₱{{ number_format($newTotal, 2) }}
+                                            </span>
+                                        @else
+                                            ₱{{ number_format($newTotal, 2) }}
+                                        @endif
+                                    </td>                                
                                 </tr>
                             @endforeach
                         </tbody>

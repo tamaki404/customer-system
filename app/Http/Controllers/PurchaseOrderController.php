@@ -155,7 +155,7 @@ public function createPurchaseOrder(Request $request)
 
         DB::beginTransaction();
 
-        $date = date('Ymd');
+        $date  = date('Ymd');
         $po_id = 'PO-' . $date . '-' . Str::upper(Str::random(5));
 
         // Create purchase order
@@ -177,21 +177,21 @@ public function createPurchaseOrder(Request $request)
                 throw new \Exception("Invalid product setting for set_id: $setId");
             }
 
-            $quantity = $request->quantities[$setId] ?? 1;
+            $quantity       = $request->quantities[$setId] ?? 1;
+            $originalPrice  = $productSetting->nego_price; // before sale
+            $finalUnitPrice = $originalPrice;
 
-            // Default to nego_price, but check if sale overrides it
-            $unitPrice = $productSetting->nego_price;
-
+            // Check if there's an active sale
             $activeSale = ProductSales::where('set_id', $setId)
                 ->whereDate('start_date', '<=', now())
                 ->whereDate('end_date', '>=', now())
                 ->first();
 
             if ($activeSale) {
-                $unitPrice = $activeSale->sale_price;
+                $finalUnitPrice = $activeSale->sale_price;
             }
 
-            $itemTotal = $unitPrice * $quantity;
+            $itemTotal = $finalUnitPrice * $quantity;
 
             $poItemId = 'POI-' . $date . '-' . Str::upper(Str::random(5));
 
@@ -202,7 +202,8 @@ public function createPurchaseOrder(Request $request)
                 'set_id'            => $setId,
                 'supplier_quantity' => $quantity,
                 'staff_quantity'    => $quantity, // initially same
-                'unit_price'        => $unitPrice,
+                'original_price'    => $originalPrice, // NEW
+                'unit_price'        => $finalUnitPrice, // sale or nego
                 'total_price'       => $itemTotal,
                 'status'            => 'Pending',
             ]);
@@ -232,6 +233,7 @@ public function createPurchaseOrder(Request $request)
             ->withInput();
     }
 }
+
 
 
         public function confirmPurchaseOrder(Request $request, $po_id)
