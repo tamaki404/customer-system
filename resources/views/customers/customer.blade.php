@@ -639,7 +639,7 @@
                             Prices history
                             </button>
                             <button class="tab-button active" data-tab="sales" role="tab" aria-selected="true" aria-controls="sales-content" id="sales-tab">
-                            Sales
+                            Sales record
                             </button>
                             <button class="tab-button" data-tab="staff" role="tab" aria-selected="false" aria-controls="staff-content" id="staff-tab">
                             Authorized staffs

@@ -71,9 +71,9 @@
                             <p><span class="req-asterisk">*</span> Category</p>
                             <select name="category" id="" required>
                                 <option value="">-- Select category --</option>
-                                <option value="frozen">Frozen</option>
-                                <option value="processed">Processed</option>
-                                <option value="chicken">Chicken</option>
+                                <option value="Frozen">Frozen</option>
+                                <option value="Processed">Processed</option>
+                                <option value="Chicken">Chicken</option>
                             </select>                            
                             @error('name')
                                 <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>

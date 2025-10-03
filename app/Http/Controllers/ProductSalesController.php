@@ -42,6 +42,7 @@ class ProductSalesController extends Controller
             'supplier_id'      => $request->supplier_id,
             'set_id'      => $request->set_id,
             'sale_price' => $request->sale_price,
+            'status'    => 'Active',
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'action_by' => $user->user_id

@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_sales', function (Blueprint $table) {
+        Schema::create('global_ceiling', function (Blueprint $table) {
             $table->id();
-            $table->string('sale_id')->required(); 
-            $table->string('supplier_id')->required(); 
-            $table->string('set_id')->required(); 
-            $table->string('status')->nullable(); 
-            $table->decimal('sale_price', 10, 2);
+            $table->string('product_id')->required();
+            $table->decimal('ceiling_price', 10, 2);
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
+            $table->string('customer_id')->nullable();
+            $table->string('staff_id')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_sales');
+        Schema::dropIfExists('global_ceiling');
     }
 };

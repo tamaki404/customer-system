@@ -10,6 +10,7 @@ class ProductSales extends Model
         'sale_id',
         'supplier_id',
         'set_id',
+        'status',
         'sale_price',
         'start_date',
         'end_date',
