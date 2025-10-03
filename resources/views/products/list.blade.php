@@ -387,7 +387,7 @@
                                         <td>{{ $setProduct->product_id }}</td>
                                         <td>{{ $setProduct->product->name }}</td>
                                         <td>{{ $setProduct->product->category }}</td>
-                                        <td>₱{{ number_format($setProduct->price, 2) }}</td>
+                                        <td>₱{{ number_format($setProduct->nego_price, 2) }}</td>
                                         <td>{{ $setProduct->product->unit }}</td>
                                         <td>{{ $setProduct->product->weight }}</td>
                                     </tr>

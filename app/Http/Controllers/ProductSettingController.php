@@ -18,15 +18,13 @@ public function modifyProduct(Request $request)
 
     $request->validate([
         'set_id' => 'required|exists:product_settings,set_id',
-        'price' => 'required|numeric'
+        'price' => 'required|numeric|min:0'
     ]);
 
     $productRequirement = ProductSetting::where('set_id', $request->set_id)->firstOrFail();
 
     $date = date('Ymd');
     $log_id = 'LOG-' . $date . '-' . strtoupper(Str::random(5));
-
-    $description = '';
 
     // Case 1: Removal
     if ($request->has('remove') && $request->remove == 1) {
@@ -35,76 +33,67 @@ public function modifyProduct(Request $request)
 
         Logs::create([
             'user_id'     => $user->user_id,
-            'action'      => 'Modified product requirements of a supplier',
+            'action'      => 'Removed product requirement',
             'log_id'      => $log_id,
             'description' => $description,
+            'entity'      => 'ProductSettings',
+            'entity_id'   => $request->set_id,
         ]);
 
         return back()->with('success', 'Product requirement removed successfully.');
     }
 
-    // Case 2: Price update
-    if ($request->filled('price')) {
-        $oldPrice = $productRequirement->nego_price;
-        $newPrice = $request->price;
+    $oldPrice = $productRequirement->nego_price;
+    $newPrice = $request->price;
 
-        // 🔹 Find active ceiling for this city
-        $city = $productRequirement->supplier->address->office_city ?? null;
-        $now = \Carbon\Carbon::now();
+    $city = $productRequirement->supplier->address->office_city ?? null;
+    $now = \Carbon\Carbon::now();
 
-        $activeCeiling = \App\Models\GlobalCeiling::where('city_selected', strtolower($city))
-            ->where('start_date', '<=', $now)
-            ->where('end_date', '>=', $now)
-            ->first();
+    $activeCeiling = GlobalCeiling::whereRaw('LOWER(city_selected) = ?', [strtolower($city)])
+        ->where('start_date', '<=', $now)
+        ->where('end_date', '>=', $now)
+        ->first();
 
-        if ($activeCeiling) {
-            if ($activeCeiling->method === 'Fixed') {
-                $ceilingLimit = $activeCeiling->fixed_price;
-            } else {
-                // Percentage method → ceiling = sale_price * (1 + percentage/100)
-                $basePrice = $productRequirement->product->sale_price ?? 0;
-                $ceilingLimit = $basePrice + ($basePrice * ($activeCeiling->percentage_ceiling / 100));
-            }
-
-            // 🔹 Check if new price exceeds ceiling
-            if ($newPrice > $ceilingLimit) {
-                return back()->with('error', "Price cannot exceed ceiling limit of ₱" . number_format($ceilingLimit, 2));
-            }
+    if ($activeCeiling) {
+        if ($activeCeiling->method === 'Fixed') {
+            $ceilingLimit = $activeCeiling->fixed_price;
+        } else {
+            // Percentage method → ceiling = sale_price * (1 + percentage/100)
+            $basePrice = $productRequirement->product->sale_price ?? 0;
+            $ceilingLimit = $basePrice + ($basePrice * ($activeCeiling->percentage_ceiling / 100));
         }
 
-        $productRequirement->nego_price = $newPrice;
-        $productRequirement->save();
-
-        $description = "Updated price for product requirement (Set ID: {$productRequirement->set_id}, Product: {$productRequirement->product->name}) from {$oldPrice} to {$newPrice} of supplier {$productRequirement->supplier_id}";
+        if ($newPrice > $ceilingLimit) {
+            return back()->with('error', "Price cannot exceed ceiling limit of ₱" . number_format($ceilingLimit, 2));
+        }
     }
 
-         $date = date('Ymd');
-        $log_id = 'LOG-' . $date . '-' . strtoupper(Str::random(5));
-        $phistory_id = 'PRICE-' . $date . '-' . strtoupper(Str::random(5));
+    $productRequirement->nego_price = $newPrice;
+    $productRequirement->save();
 
-        $description = '';
+    Logs::create([
+        'user_id'     => $user->user_id,
+        'action'      => 'Changed negotiated price',
+        'log_id'      => $log_id,
+        'description' => "Staff ($user->user_id) changed price of {$productRequirement->product->name} (Set ID: {$request->set_id}) from {$oldPrice} to {$newPrice}",
+        'entity'      => 'ProductSettings',
+        'entity_id'   => $productRequirement->id,
+    ]);
 
-        //  2: price history
-        PriceHistory::create([
-            'phistory_id'     => $phistory_id,
-            'supplier_id'      => $request->supplier_id,
-            'action' => 'Change price',
-            'set_id'      => $request->set_id,
-            'new_price' => $request->price,
-            'past_price' => $oldPrice,
-            'action_by' => $user->user_id,
-        ]);
-
-
-    // Logs::create([
-    //     'user_id'     => $user->user_id,
-    //     'action'      => 'Modified product requirements of a supplier',
-    //     'log_id'      => $log_id,
-    //     'description' => $description,
-    // ]);
+    $phistory_id = 'PRICE-' . $date . '-' . strtoupper(Str::random(5));
+    PriceHistory::create([
+        'phistory_id' => $phistory_id,
+        'supplier_id' => $request->supplier_id,
+        'action'      => 'Change price',
+        'set_id'      => $request->set_id,
+        'new_price'   => $newPrice,
+        'past_price'  => $oldPrice,
+        'action_by'   => $user->user_id,
+    ]);
 
     return back()->with('success', 'Product requirement updated successfully.');
 }
+
 
 
 }

@@ -16,74 +16,93 @@ use App\Models\ProductSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Logs;
 use App\Models\OrderHistory;
+use App\Models\ProductSales;
+
 class PurchaseOrderController extends Controller
 {
-        public function purchaseOrderlist(Request $request)
-        {
-            $user = Auth::user();
+public function purchaseOrderlist(Request $request)
+{
+    $user = Auth::user();
+    $supplier = null;
+    $pos = collect();
+    $setProds = collect();
 
-            $supplier = null;
-            $pos = collect();
+    if ($user->role === "Supplier") {
+        $supplier = Suppliers::where('user_id', $user->user_id)->first();
 
-            if ($user->role === "Supplier") {
-                $supplier = Suppliers::where('user_id', $user->user_id)->first();
+        if ($supplier) {
+            $query = PurchaseOrders::where('supplier_id', $supplier->supplier_id)
+                ->with(['items', 'supplier']);
 
-                if ($supplier) {
-                    $query = PurchaseOrders::where('supplier_id', $supplier->supplier_id)
-                        ->with(['items', 'supplier']);
-
-                    // Apply search filter
-                    if ($request->filled('search')) {
-                        $search = $request->search;
-                        $query->where(function($q) use ($search) {
-                            $q->where('po_id', 'like', "%{$search}%")
-                              ->orWhere('status', 'like', "%{$search}%");
-                        });
-                    }
-
-                    // Apply date filter
-                    if ($request->filled('from_date')) {
-                        $query->whereDate('created_at', '>=', $request->from_date);
-                    }
-                    if ($request->filled('to_date')) {
-                        $query->whereDate('created_at', '<=', $request->to_date);
-                    }
-
-                    $pos = $query->orderBy('created_at', 'desc')->get();
-                }
-            } 
-            elseif ($user->role === "Staff" || $user->role === "Admin") {
-                $query = PurchaseOrders::with(['items', 'supplier', 'staff']);
-
-                // Apply search filter
-                if ($request->filled('search')) {
-                    $search = $request->search;
-                    $query->where(function($q) use ($search) {
-                        $q->where('po_id', 'like', "%{$search}%")
-                          ->orWhere('status', 'like', "%{$search}%")
-                          ->orWhereHas('supplier', function($supplierQuery) use ($search) {
-                              $supplierQuery->where('company_name', 'like', "%{$search}%");
-                          });
-                    });
-                }
-
-                // Apply date filter
-                if ($request->filled('from_date')) {
-                    $query->whereDate('created_at', '>=', $request->from_date);
-                }
-                if ($request->filled('to_date')) {
-                    $query->whereDate('created_at', '<=', $request->to_date);
-                }
-
-                $pos = $query->orderBy('created_at', 'desc')->get();
+            // Apply search filter
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('po_id', 'like', "%{$search}%")
+                      ->orWhere('status', 'like', "%{$search}%");
+                });
             }
-            
-            return view('purchase-orders.list', [
-                'user' => $user,
-                'supplier' => $supplier,
-                'pos' => $pos,
-            ]);
+
+            // Apply date filter
+            if ($request->filled('from_date')) {
+                $query->whereDate('created_at', '>=', $request->from_date);
+            }
+            if ($request->filled('to_date')) {
+                $query->whereDate('created_at', '<=', $request->to_date);
+            }
+
+            $pos = $query->orderBy('created_at', 'desc')->get();
+
+            // Only load setProds if supplier exists
+            $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
+                ->with('product')
+                ->get()
+                ->map(function($setProds) {
+                    $activeSale = ProductSales::where('set_id', $setProds->set_id)
+                        ->whereDate('start_date', '<=', now())
+                        ->whereDate('end_date', '>=', now())
+                        ->first();
+
+                    if ($activeSale) {
+                        $setProds->nego_price = $activeSale->sale_price;
+                    }
+
+                    return $setProds;
+                });
         }
+    } 
+    elseif ($user->role === "Staff" || $user->role === "Admin") {
+        $query = PurchaseOrders::with(['items', 'supplier', 'staff']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('po_id', 'like', "%{$search}%")
+                  ->orWhere('status', 'like', "%{$search}%")
+                  ->orWhereHas('supplier', function($supplierQuery) use ($search) {
+                      $supplierQuery->where('company_name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
+
+        $pos = $query->orderBy('created_at', 'desc')->get();
+    }
+
+    return view('purchase-orders.list', [
+        'user' => $user,
+        'supplier' => $supplier,
+        'setProds' => $setProds,
+        'pos' => $pos,
+    ]);
+}
+
 
         
         public function purchaseOrderView($po_id, Request $request)

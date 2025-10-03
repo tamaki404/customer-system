@@ -599,6 +599,7 @@
                                     </p>
                                 </div>
                                 <div class="details-contact" style="margin-top: 5px; margin-left: ;">
+
                                     <p>
                                         <span class="material-symbols-outlined icon" title="Mobile number">mobile</span>
                                         <span class="div-text">{{$supplier->mobile}}</span>
@@ -626,7 +627,13 @@
                                         <span class="div-text" style="color: green">{{$supplier->payment_method}}</span>
 
                                     </p>
+                                    <span>|</span>
+                                    <p>
+                                        <span class="div-text" style="color: #666">{{$supplier->user_id}}</span>
+
+                                    </p>
                                 </div>
+
 
                             </div>
                         </div>

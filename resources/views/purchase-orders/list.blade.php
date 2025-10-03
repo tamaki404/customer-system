@@ -66,38 +66,43 @@
                                             ->with('product')
                                             ->get();
                                     @endphp
-                                    @foreach($setProducts as $setProduct)
-                                    <tr class="product-row" data-set-id="{{ $setProduct->set_id }}" 
-                                        data-product-id="{{ $setProduct->product->product_id }}" 
-                                        data-price="{{ $setProduct->price }}">
+                                    @foreach($setProds as $setProd)
+                                    <tr class="product-row" 
+                                        data-set-id="{{ $setProd->set_id }}" 
+                                        data-product-id="{{ $setProd->product->product_id }}" 
+                                        data-price="{{ $setProd->nego_price }}">
+
                                         <td class="checkbox-cell">
                                             <input type="checkbox" 
                                                 name="selected_products[]" 
-                                                value="{{ $setProduct->set_id }}"
+                                                value="{{ $setProd->set_id }}"
                                                 class="product-checkbox"
-                                                onchange="toggleProductRow(this, '{{ $setProduct->set_id }}')">
+                                                onchange="toggleProductRow(this, '{{ $setProd->set_id }}')">
                                         </td>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $setProduct->set_id }}</td>
-                                        <td>{{ $setProduct->product->name }}</td>
-                                        <td>{{ $setProduct->product->category }}</td>
-                                        <td>{{ $setProduct->product->unit }}</td>
-                                        <td>{{ $setProduct->product->weight }}</td>
-                                        <td>₱{{ number_format($setProduct->price, 2) }}</td>
+                                        <td>{{ $setProd->set_id }}</td>
+                                        <td>{{ $setProd->product->name }}</td>
+                                        <td>{{ $setProd->product->category }}</td>
+                                        <td>{{ $setProd->product->unit }}</td>
+                                        <td>{{ $setProd->product->weight }}</td>
+                                        <td>₱{{ number_format($setProd->nego_price, 2) }}</td>
                                         <td>
                                             <input type="number" 
-                                                name="quantities[{{ $setProduct->set_id }}]" 
+                                                name="quantities[{{ $setProd->set_id }}]" 
                                                 value="1" 
                                                 min="1"
                                                 class="form-control quantity-input"
-                                                onchange="calculateRowTotal('{{ $setProduct->set_id }}')"
+                                                onchange="calculateRowTotal('{{ $setProd->set_id }}')"
                                                 disabled>
                                         </td>
                                         <td>
-                                            <span id="total_{{ $setProduct->set_id }}" class="row-total">₱{{ number_format($setProduct->price, 2) }}</span>
+                                            <span id="total_{{ $setProd->set_id }}" class="row-total">
+                                                ₱{{ number_format($setProd->nego_price, 2) }}
+                                            </span>
                                         </td>
                                     </tr>
                                     @endforeach
+
                                 </tbody>
                             </table>
                         </div>
