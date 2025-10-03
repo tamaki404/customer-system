@@ -34,6 +34,7 @@ class ProductController extends Controller
                 ->distinct()
                 ->pluck('city');
 
+
             // Supplier counts per city
             $supplierCounts = Address::selectRaw('LOWER(office_city) as city, COUNT(DISTINCT supplier_id) as count')
                 ->groupBy('city')

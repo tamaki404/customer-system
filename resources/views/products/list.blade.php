@@ -328,7 +328,6 @@
                                         <th>Name</th>
                                         <th>Category</th>
                                         <th>Base price</th>
-                                        <th>Ceiling price</th>
                                         <th>Unit</th>
                                         <th>Weight</th>
                                         <th>Sold</th>
@@ -343,7 +342,6 @@
                                             <td>{{ $product->name }}</td>
                                             <td>{{ $product->category }}</td>
                                             <td>₱{{ number_format($product->base_price, 2) }}</td>
-                                            <td>₱</td>
                                             <td>{{ $product->unit }}</td>
                                             <td>{{ $product->weight }}</td>
                                             <td>--</td>

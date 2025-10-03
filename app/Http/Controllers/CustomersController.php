@@ -20,6 +20,7 @@ use App\Models\Products;
 use App\Models\Address;
 use App\Models\ProductRequirements;
 use App\Models\PriceHistory;
+use App\Models\GlobalCeiling;
 
 use App\Models\ProductSetting;
 use App\Models\Credits;
@@ -69,6 +70,11 @@ class CustomersController extends Controller
                                 ->get();
             $delivery = DeliveryRequirements::where('supplier_id', $supplier->supplier_id)->first();
 
+
+
+            $address = Address::where('supplier_id', $supplier->supplier_id)->first();
+            $ceilingPrice = GlobalCeiling::whereRaw('LOWER(city_selected) = ?', [strtolower($address->office_city)])->first();
+
             $address = Address::where('supplier_id', $supplier->supplier_id)->first();
             $staffAgent = Staffs::where('staff_id', $accStatus->staff_id)->first();
             $documents  = Documents::where('supplier_id', $supplier_id)->get();
@@ -102,6 +108,7 @@ class CustomersController extends Controller
                 'activeSale' => $activeSale,
                 'prices' => $prices,
                 'salesHistos' => $salesHistos,
+                'ceilingPrice' => $ceilingPrice,
 
                 'staffs'     => $staffs,
                 'accStatus'  => $accStatus,

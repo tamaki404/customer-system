@@ -70,3 +70,9 @@
     margin: 0;
     color: #666;
 }
+
+.alert-info{
+    border-radius: 10px;
+    border: 1px solid #f8912a;
+    background-color: #f8912a30;
+}

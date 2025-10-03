@@ -287,6 +287,34 @@
                             <input type="hidden" id="edit-modal-set-id" name="set_id">
                             <input type="hidden" id="edit-modal-supplier-id" name="supplier_id">
 
+                            <div>
+                                @if ($ceilingPrice)
+                                    <div class="alert-info p-2 mb-3">
+                                        <strong>Ceiling Price Active:</strong><br>
+                                        @php
+                                            if($ceilingPrice->method === 'Fixed') {
+                                                $maxPrice = $ceilingPrice->fixed_price;
+                                            } else {
+                                                $base = $productRequirement->product->sale_price ?? 0;
+                                                $maxPrice = $base + ($base * ($ceilingPrice->percentage_ceiling / 100));
+                                            }
+                                        @endphp
+
+                                        @if($ceilingPrice->method === 'Fixed')
+                                            ₱{{ number_format($ceilingPrice->fixed_price, 2) }}
+                                        @else
+                                            {{ $ceilingPrice->percentage_ceiling }}% above base (₱{{ number_format($maxPrice, 2) }})
+                                        @endif
+                                        <br>
+                                        <small class="text-muted">
+                                            {{ \Carbon\Carbon::parse($ceilingPrice->start_date)->format('M d, Y') }}
+                                            →
+                                            {{ \Carbon\Carbon::parse($ceilingPrice->end_date)->format('M d, Y') }}
+                                        </small>
+                                    </div>
+                                @endif
+                            </div>
+
                             <div class="form-group">
                                 <label class="form-label">Product</label>
                                 <input type="text" id="modify-product-name" style="width: 300px; color: #333;" disabled>
@@ -294,7 +322,15 @@
 
                             <div class="form-group">
                                 <label class="form-label">Price</label>
-                                <input type="number" step="0.01" placeholder="00.00" name="price" id="modify-price" style="width: 200px">
+                                <input 
+                                    type="number" 
+                                    step="0.01" 
+                                    placeholder="00.00" 
+                                    name="price" 
+                                    id="modify-price" 
+                                    style="width: 200px"
+                                    @if(isset($maxPrice)) max="{{ $maxPrice }}" @endif
+                                >
                             </div>
                             
                             <div class="form-check">
@@ -632,13 +668,13 @@
                     <div class="tab-div">
 
                         <div class="tabs" role="tablist">
-                            <button class="tab-button" data-tab="product" role="tab" aria-selected="false" aria-controls="product-content" id="product-tab">
+                            <button class="tab-button active" data-tab="product" role="tab" aria-selected="false" aria-controls="product-content" id="product-tab">
                             Product requirements
                             </button>
                             <button class="tab-button" data-tab="prices" role="tab" aria-selected="true" aria-controls="prices-content" id="prices-tab">
                             Prices history
                             </button>
-                            <button class="tab-button active" data-tab="sales" role="tab" aria-selected="true" aria-controls="sales-content" id="sales-tab">
+                            <button class="tab-button " data-tab="sales" role="tab" aria-selected="true" aria-controls="sales-content" id="sales-tab">
                             Sales record
                             </button>
                             <button class="tab-button" data-tab="staff" role="tab" aria-selected="false" aria-controls="staff-content" id="staff-tab">
@@ -653,7 +689,7 @@
                         </div>
 
                         {{-- sale history --}}
-                        <div id="sales-content" class="tab-content active" role="tabpanel" aria-labelledby="sales-tab">
+                        <div id="sales-content" class="tab-content" role="tabpanel" aria-labelledby="sales-tab">
                             <div class="profile-mid" >
                                 <div class="authorized-staffs" style="box-shadow: none">
                                     <p style="margin-bottom: 5px">Sales table</p>
@@ -797,7 +833,7 @@
                             </div>
                         </div>
                         {{-- product requirements --}}
-                        <div id="product-content" class="tab-content " role="tabpanel" aria-labelledby="product-tab">
+                        <div id="product-content" class="tab-content active" role="tabpanel" aria-labelledby="product-tab">
                             <div class="profile-mid" >
                                 @if ($activeSale > '0')
                                     <div class="authorized-staffs">
