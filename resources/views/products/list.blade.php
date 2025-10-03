@@ -7,125 +7,201 @@
 @section('content')
 
     @if (auth()->user()->role !== 'Supplier')
+        {{-- add product modal --}}
         <div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form class="modal-content"  method="POST" action="{{ route('product.add') }}">
-                @csrf
+            <div class="modal-dialog">
+                <form class="modal-content"  method="POST" action="{{ route('product.add') }}">
+                    @csrf
+            
+                    @if (session('success'))
+                        <div class="alert alert-success" style="margin: 10px;">
+                            <h6 style="margin-bottom: 5px; font-weight: bold;">Success:</h6>
+                            <p style="margin: 0; font-size: 14px;">{{ session('success') }}</p>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger" style="margin: 10px;">
+                            <h6 style="margin-bottom: 5px; font-weight: bold;">Error:</h6>
+                            <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
+                        </div>
+                    @endif
+                
+                    <div class="modal-header">
+                        <p class="modal-title" id="requestActionLabel">Add product form</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined"> info </span>
+                            <span>Products added will be automatically listed.</span>
+
+                        </p>
+
+                        <div class="modal-option-groups">
+                            <div class="form-group">
+                                <p><span class="req-asterisk">*</span> Prie</p>
+                                <input type="text" name="name" maxlength="200" minlength="3" required>
+                                @error('name')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <p><span class="req-asterisk">*</span> Suggested retail price (base_price)</p>
+                                <input type="text" name="base_price" maxlength="200" placeholder="&#8369; 0.00" minlength="3" required>
+                                @error('name')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <p><span class="req-asterisk">*</span> Product ID</p>
+                                <input type="text" name="product_id" maxlength="200" minlength="3" required>
+                                @error('name')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <p>Parent Product (optional)</p>
+                                <div id="parent_tree" style="max-height:220px; overflow:auto; border:1px solid #eee; border-radius:6px; padding:8px;"></div>
+                                <div id="parent_breadcrumb" style="margin-top:6px; font-size:12px; color:#666;"></div>
+                                <input type="hidden" name="parent_product_id" id="final_parent_product_id">
+                            </div>
+                            <div>
+                                <p><span class="req-asterisk">*</span> Category</p>
+                                <select name="category" id="" required>
+                                    <option value="">-- Select category --</option>
+                                    <option value="Frozen">Frozen</option>
+                                    <option value="Processed">Processed</option>
+                                    <option value="Chicken">Chicken</option>
+                                </select>                            
+                                @error('name')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div>
+                                <p><span class="req-asterisk">*</span> Unit</p>
+                                <select name="unit" id="" required>
+                                    <option value="">-- Select unit --</option>
+                                    <option value="Pack">Pack</option>
+                                    <option value="Box">Box</option>
+                                    <option value="Bag">Bag</option>
+                                    <option value="Piece">Piece</option>
+                                </select>                            
+                                @error('name')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div>
+                                <p>Weight (Optional)</p>
+                                <select name="weight" id="">
+                                    <option value="">-- Select weight --</option>
+                                    <option value="Kilogram">Kilogram (kg)</option>
+                                    <option value="Gram">Gram (g)</option>
+                                    <option value="Piece">Piece (pc)</option>
+                                </select>                            @error('name')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div>
+
+                                
+
+
+                            </div>
+                            <input type="hidden" name="status" value="Listed">
+                            <input type="hidden" name="added_by" value="{{ auth()->user()->user_id }}">
+                        </div>
         
-                @if (session('success'))
-                    <div class="alert alert-success" style="margin: 10px;">
-                        <h6 style="margin-bottom: 5px; font-weight: bold;">Success:</h6>
-                        <p style="margin: 0; font-size: 14px;">{{ session('success') }}</p>
-                    </div>
-                @endif
 
-                @if (session('error'))
-                    <div class="alert alert-danger" style="margin: 10px;">
-                        <h6 style="margin-bottom: 5px; font-weight: bold;">Error:</h6>
-                        <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
                     </div>
-                @endif
-            
-                <div class="modal-header">
-                    <p class="modal-title" id="requestActionLabel">Add product form</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="add-staff-submit">List product</button>
+                    </div>
+
+
                 
-                <div class="modal-body">
-                    <p class="note-notify">
-                        <span class="material-symbols-outlined"> info </span>
-                        <span>Products added will be automatically listed.</span>
-
-                    </p>
-
-                    <div class="modal-option-groups">
-                        <div class="form-group">
-                            <p><span class="req-asterisk">*</span> Name</p>
-                            <input type="text" name="name" maxlength="200" minlength="3" required>
-                            @error('name')
-                                <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <p><span class="req-asterisk">*</span> Suggested retail price (base_price)</p>
-                            <input type="text" name="base_price" maxlength="200" placeholder="&#8369; 0.00" minlength="3" required>
-                            @error('name')
-                                <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <p><span class="req-asterisk">*</span> Product ID</p>
-                            <input type="text" name="product_id" maxlength="200" minlength="3" required>
-                            @error('name')
-                                <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <p>Parent Product (optional)</p>
-                            <div id="parent_tree" style="max-height:220px; overflow:auto; border:1px solid #eee; border-radius:6px; padding:8px;"></div>
-                            <div id="parent_breadcrumb" style="margin-top:6px; font-size:12px; color:#666;"></div>
-                            <input type="hidden" name="parent_product_id" id="final_parent_product_id">
-                        </div>
-                        <div>
-                            <p><span class="req-asterisk">*</span> Category</p>
-                            <select name="category" id="" required>
-                                <option value="">-- Select category --</option>
-                                <option value="Frozen">Frozen</option>
-                                <option value="Processed">Processed</option>
-                                <option value="Chicken">Chicken</option>
-                            </select>                            
-                            @error('name')
-                                <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div>
-                            <p><span class="req-asterisk">*</span> Unit</p>
-                            <select name="unit" id="" required>
-                                <option value="">-- Select unit --</option>
-                                <option value="Pack">Pack</option>
-                                <option value="Box">Box</option>
-                                <option value="Bag">Bag</option>
-                                <option value="Piece">Piece</option>
-                            </select>                            
-                            @error('name')
-                                <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div>
-                            <p>Weight (Optional)</p>
-                            <select name="weight" id="">
-                                <option value="">-- Select weight --</option>
-                                <option value="Kilogram">Kilogram (kg)</option>
-                                <option value="Gram">Gram (g)</option>
-                                <option value="Piece">Piece (pc)</option>
-                            </select>                            @error('name')
-                                <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div>
-
-                            
-
-
-                        </div>
-                        <input type="hidden" name="status" value="Listed">
-                        <input type="hidden" name="added_by" value="{{ auth()->user()->user_id }}">
-                    </div>
-      
-
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="add-staff-submit">List product</button>
-                </div>
-
-
-            
-            </form>
-        </div>
+                </form>
             </div>
+        </div>
+        {{-- set ceiling modal --}}
+        <div class="modal fade" id="set-ceiling-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" method="POST" action="{{ route('set.global_ceiling') }}">
+                    @csrf
+
+                    <div class="modal-header">
+                        <p class="modal-title">Set Global Ceiling Price</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined">info</span>
+                            <span>Global ceilings only apply to future price changes. Existing prices remain until edited.</span>
+                        </p>
+
+                        {{-- Toggle between Fixed or Percentage --}}
+                        <div class="form-group checkbox-form">
+                            <input type="checkbox" id="use_percentage" name="use_percentage" style="width:auto;height:auto;">
+                            <label for="use_percentage">Use percentage (%)</label>
+                        </div>
+
+                        <div id="fixed-input">
+                            <p><span class="req-asterisk">*</span> Fixed price</p>
+                            <input type="number" step="0.01" name="fixed_price" class="form-control">
+                        </div>
+
+                        <div id="percentage-input" style="display:none;">
+                            <p><span class="req-asterisk">*</span> Percentage ceiling (%)</p>
+                            <input type="number" step="0.01" name="percentage_ceiling" class="form-control">
+                        </div>
+
+                        <input type="hidden" name="method" id="method" value="Fixed">
+
+                        {{-- City selection --}}
+                        <div class="form-group mt-3">
+                            <p><span class="req-asterisk">*</span> Select city to apply to</p>
+                            <select name="city_selected" id="city_select" class="form-control" required>
+                                <option value="">-- Select city --</option>
+                                @foreach($cities as $city)
+                                    <option value="{{ $city }}">{{ ucfirst($city) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <p id="supplier-count" class="mt-2 text-muted">0 suppliers selected within city</p>
+
+                        {{-- Effectivity --}}
+                        <div class="form-group mt-3 p-2 rounded" style="box-shadow: #f8912a30 0px 0px 0px 3px;">
+                            <label class="form-label">Effectivity</label>
+                            <div class="d-flex gap-3">
+                                <div>
+                                    <label for="start_date">Start date</label>
+                                    <input type="datetime-local" id="start_date" name="start_date" class="form-control" required>
+                                </div>
+                                <div>
+                                    <label for="end_date">End date</label>
+                                    <input type="datetime-local" id="end_date" name="end_date" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="staff_id" value="{{ auth()->id() }}">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Apply Ceiling Price</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
 
     @endif
 
@@ -164,12 +240,19 @@
 
                     <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
                         <p class="heading">Products list</p>
-                        @if ( auth()->user()->role === 'Admin')
-                            <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#add-product-modal">
-                                <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
-                                Add products
-                            </button>
-                        @endif
+                            @if ( auth()->user()->role === 'Admin')
+                                <div style="display: flex; flex-direction: row; margin-left: auto; gap: 10px">
+                                    <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#add-product-modal">
+                                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
+                                        Add products
+                                    </button>
+                                    <button class="set-ceiling-btn btn-transition" data-bs-toggle="modal" data-bs-target="#set-ceiling-modal">
+                                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">price_change</span>
+                                        Ceiling price
+                                    </button>
+                                </div>
+                            @endif
+
 
                     </div>
 
@@ -264,25 +347,25 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    buildParentTree();
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        buildParentTree();
+    });
 
-function buildParentTree() {
-    fetch("{{ route('products.tree') }}")
-        .then(r => r.json())
-        .then(data => {
-            const root = document.getElementById('parent_tree');
-            root.innerHTML = '';
-            const ul = document.createElement('ul');
-            ul.style.listStyle = 'none';
-            ul.style.paddingLeft = '0';
-            data.forEach(node => ul.appendChild(makeParentTreeNode(node, [])));
-            root.appendChild(ul);
-        });
-}
+    function buildParentTree() {
+        fetch("{{ route('products.tree') }}")
+            .then(r => r.json())
+            .then(data => {
+                const root = document.getElementById('parent_tree');
+                root.innerHTML = '';
+                const ul = document.createElement('ul');
+                ul.style.listStyle = 'none';
+                ul.style.paddingLeft = '0';
+                data.forEach(node => ul.appendChild(makeParentTreeNode(node, [])));
+                root.appendChild(ul);
+            });
+    }
 
-function makeParentTreeNode(node, path) {
+    function makeParentTreeNode(node, path) {
     const li = document.createElement('li');
     li.style.margin = '2px 0';
     const row = document.createElement('div');
@@ -347,4 +430,39 @@ function makeParentTreeNode(node, path) {
     return li;
 }
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const checkbox = document.getElementById("use_percentage");
+    const fixedInput = document.getElementById("fixed-input");
+    const percentageInput = document.getElementById("percentage-input");
+    const methodInput = document.getElementById("method");
+
+    checkbox.addEventListener("change", function () {
+        if (checkbox.checked) {
+            percentageInput.style.display = "block";
+            fixedInput.style.display = "none";
+            methodInput.value = "Percentage";
+        } else {
+            percentageInput.style.display = "none";
+            fixedInput.style.display = "block";
+            methodInput.value = "Fixed";
+        }
+    });
+
+    // Supplier count update
+    const supplierCounts = @json($supplierCounts);
+    const citySelect = document.getElementById("city_select");
+    const supplierText = document.getElementById("supplier-count");
+
+    citySelect.addEventListener("change", function () {
+        const city = citySelect.value.toLowerCase();
+        const count = supplierCounts[city] || 0;
+        supplierText.textContent = `${count} supplier(s) selected within city`;
+    });
+});
+
+</script>
+
+
 @endpush

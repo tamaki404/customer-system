@@ -73,4 +73,5 @@ class ProductSalesController extends Controller
         ]);
 
         return back()->with('success', 'Product requirement updated successfully.');
-    }}
+    }
+}

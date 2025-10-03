@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class GlobalCeiling extends Model
 {
     protected $fillable = [
-        'product_id',
-        'ceiling_price',
+        'use_percentage',
+        'fixed_price',
+        'percentage_ceiling',
+        'method',
+        'city_selected',
         'start_date',
         'end_date',
-        'sale_price',
-        'customer_id',
-        'staff_id',
+        'staff_id'
     ];
 }

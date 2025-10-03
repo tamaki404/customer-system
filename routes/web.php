@@ -22,6 +22,7 @@ use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductSalesController;
+use App\Http\Controllers\GlobalCeilingController;
 
 
 Route::get('/registration/signin', function () {
@@ -115,6 +116,10 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
     //product sale
     Route::post('/products/setting/sale', [ProductSalesController::class, 'addSale'])->name('productset.sale');
+
+    //set ceiling
+    Route::post('/products/set/global-ceiling', [GlobalCeilingController::class, 'setGlobalCeiling'])->name('set.global_ceiling');
+
 
     Route::post('/purchase-orders/purchase/view/place', [OrderController::class, 'placeOrderItems'])->name('purchaseorders.place');
     Route::post('/purchase-orders/{po_id}/confirm', [PurchaseOrderController::class, 'confirmPurchaseOrder'])->name('purchaseorders.confirm');

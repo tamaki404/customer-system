@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Products;
 use App\Models\Logs;
 use App\Models\ProductSetting;
+use App\Models\Address;
 
 class ProductController extends Controller
 {
+
         public function productList(Request $request)
         {
             $user = Auth::user();
@@ -22,11 +24,22 @@ class ProductController extends Controller
             $setProducts = $supplier 
                 ? ProductSetting::where('supplier_id', $supplier->supplier_id)->get() 
                 : collect(); 
+            $cities = Address::selectRaw('LOWER(office_city) as city')
+                ->distinct()
+                ->pluck('city');
+
+            // Supplier counts per city
+            $supplierCounts = Address::selectRaw('LOWER(office_city) as city, COUNT(DISTINCT supplier_id) as count')
+                ->groupBy('city')
+                ->pluck('count', 'city');
 
             return view('products.list', [
                 'user' => $user,
                 'products' => $products,
                 'setProducts' => $setProducts,
+                'cities' => $cities,
+                'supplierCounts' => $supplierCounts,
+
             ]);
         }
 

@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('global_ceiling', function (Blueprint $table) {
             $table->id();
-            $table->string('product_id')->required();
-            $table->decimal('ceiling_price', 10, 2);
+
+            $table->string('product_id')->nullable();
+            $table->decimal('fixed_price', 10, 2)->nullable();
+            $table->decimal('percentage_ceiling', 5, 2)->nullable();
+            $table->enum('method', ['Fixed', 'Percentage'])->default('Fixed');
+            $table->string('city_selected')->nullable();
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
-            $table->string('customer_id')->nullable();
             $table->string('staff_id')->nullable();
+
             $table->timestamps();
         });
     }
