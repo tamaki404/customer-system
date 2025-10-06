@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Control;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Orders;
@@ -20,6 +20,16 @@ use App\Models\ProductSales;
 use Illuminate\Support\Str;
 class PurchaseOrderController extends Controller
 {
+
+            public static function randomBase36String(int $length): string
+        {
+            $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $str = '';
+            for ($i = 0; $i < $length; $i++) {
+                $str .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            return $str;
+        }
     public function purchaseOrderlist(Request $request)
     {
         $user = Auth::user();
@@ -107,9 +117,6 @@ class PurchaseOrderController extends Controller
             'pos' => $pos,
         ]);
     }
-
-
-        
         public function purchaseOrderView($po_id, Request $request)
         {
             $user = Auth::user();
@@ -255,15 +262,18 @@ class PurchaseOrderController extends Controller
                     ->withInput();
             }
         }
+
         public function confirmPurchaseOrder(Request $request, $po_id)
         {
             $user = Auth::user();
-
-            $user_id = Auth::user()->user_id;
-
+            
             if (!in_array($user->role, ['Staff', 'Admin'])) {
                 return redirect()->back()->with('error', 'Only staff can confirm purchase orders.');
             }
+
+                $date = date('Ymd');
+                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+
 
             try {
                 $request->validate([
@@ -274,51 +284,78 @@ class PurchaseOrderController extends Controller
                 DB::beginTransaction();
 
                 $purchaseOrder = PurchaseOrders::where('po_id', $po_id)->firstOrFail();
-
+                
                 if ($purchaseOrder->status !== 'Pending') {
                     return redirect()->back()->with('error', 'Purchase order is not in pending status.');
                 }
 
-                $itemStatus = $request->action === 'Accept' ? 'Accepted' : 'Rejected';
-                PurchaseOrderItem::where('po_id', $po_id)->update(['status' => $itemStatus]);
+                $orderId = null;
 
-                $purchaseOrder->update([
-                    'status'        => $request->action === 'Accept' ? 'Accepted' : 'Rejected',
-                    'staff_id'      => $user->user_id,
-                    'confirmed_at'  => now(),
-                    'notes'         => $request->notes,
-                ]);
+                if ($request->action === 'Accept') {
+                    // Get all items for this purchase order
+                    $poItems = PurchaseOrderItem::where('po_id', $po_id)->get();
+                    
+                    // Calculate total amount from existing items
+                    $totalAmount = $poItems->sum('total_price');
+                    
+                    // Update all items status to Accepted
+                    PurchaseOrderItem::where('po_id', $po_id)->update(['status' => 'Accepted']);
 
-                    $date = date('Ymd');
-                    function randomBase36String(int $length): string {
-                        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                        $str = '';
-                        for ($i = 0; $i < $length; $i++) {
-                            $str .= $chars[random_int(0, strlen($chars) - 1)];
-                        }
-                        return $str;
-                    }
-                $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
-                Logs::create([
-                    'user_id'     => $user_id,
-                    'action'      => 'Confirmed a PO',
-                    'log_id'      => $log_id,
-                    'description' => "Staff( $user_id) confirmed" .$po_id,
-                    'entity'      => 'PurchaseOrders',
-                    'entity_id'   => $purchaseOrder->id,
-                ]);
+                    // Update purchase order
+                    $purchaseOrder->update([
+                        'status' => 'Accepted',
+                        'total_amount' => $totalAmount,
+                        'staff_id' => $user->user_id,
+                        'confirmed_at' => now(),
+                        'notes' => $request->notes,
+                    ]);
+
+                    // Create order from all items
+                    $orderId = $this->createOrderFromPurchaseOrder($purchaseOrder, $poItems);
+
+                    Logs::create([
+                        'user_id'     => $user->user_id,
+                        'action'      => 'Accepted a PO',
+                        'log_id'      => $log_id,
+                        'description' => " Staff ($user->user_id)
+                        accepted '($po_id)'",
+                        'entity'      => 'PurchaseOrders',
+                        'entity_id'   => $purchaseOrder->id,
+                    ]);
+                    
+                } else {
+                    // Reject all items
+                    PurchaseOrderItem::where('po_id', $po_id)->update(['status' => 'Rejected']);
+                    
+                    $purchaseOrder->update([
+                        'status' => 'Rejected',
+                        'staff_id' => $user->user_id,
+                        'confirmed_at' => now(),
+                        'notes' => $request->notes,
+                    ]);
+
+                    Logs::create([
+                        'user_id'     => $user->user_id,
+                        'action'      => 'Rejected a PO',
+                        'log_id'      => $log_id,
+                        'description' => " Staff ($user->user_id)
+                        rejected '($po_id)'",
+                        'entity'      => 'PurchaseOrders',
+                        'entity_id'   => $purchaseOrder->id,
+                    ]);
+                    
+                }
 
                 DB::commit();
 
-                $message = $request->action === 'Accept'
-                    ? 'Purchase order has been accepted successfully!'
-                    : 'Purchase order has been rejected successfully!';
-
-                return redirect()->back()->with('success', $message);
+                if ($request->action === 'Accept') {
+                    return redirect()->back()->with('success', "Purchase order has been accepted successfully! Order ID: {$orderId}");
+                } else {
+                    return redirect()->back()->with('success', "Purchase order has been rejected successfully!");
+                }
 
             } catch (\Exception $e) {
                 DB::rollBack();
-
                 \Log::error('Purchase order confirmation failed:', [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
@@ -330,22 +367,15 @@ class PurchaseOrderController extends Controller
             }
         }
 
-        public function purchaseOrderPdf($po_id)
-        {
-            $purchaseOrder = PurchaseOrders::where('po_id', $po_id)
-                ->with(['items.product', 'supplier', 'staff'])
-                ->firstOrFail();
-
-            $pdf = Pdf::loadView('pdf.purchase-orders.purchase_order', compact('purchaseOrder'));
-            return $pdf->stream("purchase-order-{$po_id}.pdf");
-        }
-
-        private function createOrderFromPurchaseOrder($purchaseOrder, $acceptedItems)
+        private function createOrderFromPurchaseOrder($purchaseOrder, $poItems)
         {
             try {
                 $date = date('Ymd');
                 $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
                 
+                // Calculate total amount from items
+                $totalAmount = $poItems->sum('total_price');
+
                 // Create the main order
                 $order = Orders::create([
                     'order_id' => $order_id,
@@ -353,13 +383,12 @@ class PurchaseOrderController extends Controller
                     'supplier_id' => $purchaseOrder->supplier_id,
                     'order_date' => now(),
                     'status' => 'Accepted', 
-                    'total_amount' => $purchaseOrder->total_amount, 
+                    'total_amount' => $totalAmount, 
                     'payment_status' => 'Unpaid', 
-
                 ]);
                 
-                // Create order items from accepted purchase order items
-                foreach ($acceptedItems as $poItem) {
+                // Create order items from purchase order items
+                foreach ($poItems as $poItem) {
                     $orderItemId = 'ORDR_ITEM-' . $date . '-' . $this->randomBase36String(5);
 
                     OrderItem::create([
@@ -367,54 +396,30 @@ class PurchaseOrderController extends Controller
                         'order_id' => $order_id,
                         'product_id' => $poItem->product_id,
                         'set_id' => $poItem->set_id,
-                        'quantity' => $poItem->staff_quantity,
+                        'quantity' => $poItem->quantity,
                         'unit_price' => $poItem->unit_price,
                         'total_price' => $poItem->total_price,
                         'status' => 'Accepted',
                     ]);
                 }
-
-                $date = date('Ymd');
-                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                // Create order history
                 $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
-
-                $order = Orders::where('order_id', $order_id)->firstOrFail();
-                $po = PurchaseOrders::where('po_id', $order->po_id)->firstOrFail();
-
-                $data = [
-                    'status'     => 'Accepted',
-                    'updated_at' =>now(),
-                ];
-
-                $order->update($data);
-                $po->update($data);
-
-
-                $user_id = Auth::user()->user_id;
-
-
-                Logs::create([
-                    'user_id' => Auth::user()->user_id,
-                    'action' => 'Commited on an order',
-                    'log_id' => $log_id,
-                    'description' => "Staff '{$user_id}' Accepted order '$order_id'",
-                ]);
-
+                
                 OrderHistory::create([
                     'action_by' => Auth::user()->user_id,
                     'order_id' => $order_id,
                     'action_at' => now(),
                     'history_id' => $history_id,
                     'label' => 'Order',
-                    'amount' => $order->total_amount,
+                    'amount' => $totalAmount,
                     'status' => 'Accepted',
                 ]);
 
                 \Log::info('Order created from purchase order', [
                     'po_id' => $purchaseOrder->po_id,
                     'order_id' => $order_id,
-                    'items_count' => count($acceptedItems),
-                    'total_amount' => $purchaseOrder->total_amount
+                    'items_count' => $poItems->count(),
+                    'total_amount' => $totalAmount
                 ]);
 
                 return $order_id;
@@ -429,40 +434,95 @@ class PurchaseOrderController extends Controller
             }
         }
 
-        private function randomBase36String($length)
+        // public function confirmPurchaseOrder(Request $request, $po_id)
+        // {
+        //     $user = Auth::user();
+
+        //     $user_id = Auth::user()->user_id;
+
+        //     if (!in_array($user->role, ['Staff', 'Admin'])) {
+        //         return redirect()->back()->with('error', 'Only staff can confirm purchase orders.');
+        //     }
+
+        //     try {
+        //         $request->validate([
+        //             'action' => 'required|in:Accept,Reject',
+        //             'notes' => 'nullable|string|max:1000',
+        //         ]);
+
+        //         DB::beginTransaction();
+
+        //         $purchaseOrder = PurchaseOrders::where('po_id', $po_id)->firstOrFail();
+
+        //         if ($purchaseOrder->status !== 'Pending') {
+        //             return redirect()->back()->with('error', 'Purchase order is not in pending status.');
+        //         }
+
+        //         $itemStatus = $request->action === 'Accept' ? 'Accepted' : 'Rejected';
+        //         PurchaseOrderItem::where('po_id', $po_id)->update(['status' => $itemStatus]);
+
+        //         $purchaseOrder->update([
+        //             'status'        => $request->action === 'Accept' ? 'Accepted' : 'Rejected',
+        //             'staff_id'      => $user->user_id,
+        //             'confirmed_at'  => now(),
+        //             'notes'         => $request->notes,
+        //         ]);
+
+        //             $date = date('Ymd');
+        //             function randomBase36String(int $length): string {
+        //                 $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        //                 $str = '';
+        //                 for ($i = 0; $i < $length; $i++) {
+        //                     $str .= $chars[random_int(0, strlen($chars) - 1)];
+        //                 }
+        //                 return $str;
+        //             }
+        //         $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
+        //         Logs::create([
+        //             'user_id'     => $user_id,
+        //             'action'      => 'Confirmed a PO',
+        //             'log_id'      => $log_id,
+        //             'description' => "Staff( $user_id) confirmed" .$po_id,
+        //             'entity'      => 'PurchaseOrders',
+        //             'entity_id'   => $purchaseOrder->id,
+        //         ]);
+
+        //         DB::commit();
+
+        //         $message = $request->action === 'Accept'
+        //             ? 'Purchase order has been accepted successfully!'
+        //             : 'Purchase order has been rejected successfully!';
+
+        //         return redirect()->back()->with('success', $message);
+
+        //     } catch (\Exception $e) {
+        //         DB::rollBack();
+
+        //         \Log::error('Purchase order confirmation failed:', [
+        //             'error' => $e->getMessage(),
+        //             'trace' => $e->getTraceAsString(),
+        //             'request_data' => $request->all(),
+        //         ]);
+
+        //         return redirect()->back()
+        //             ->with('error', 'Purchase order confirmation failed: ' . $e->getMessage());
+        //     }
+        // }
+
+
+        public function purchaseOrderPdf($po_id)
         {
-            $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $result = '';
-            for ($i = 0; $i < $length; $i++) {
-                $result .= $characters[random_int(0, strlen($characters) - 1)];
-            }
-            return $result;
+            $purchaseOrder = PurchaseOrders::where('po_id', $po_id)
+                ->with(['items.product', 'supplier', 'staff'])
+                ->firstOrFail();
+
+            $pdf = Pdf::loadView('pdf.purchase-orders.purchase_order', compact('purchaseOrder'));
+            return $pdf->stream("purchase-order-{$po_id}.pdf");
         }
 
 
-        // public function storeOrderItems(Request $request, $po_id)
-        // {
-        //     $po = PurchaseOrders::findOrFail($po_id);
 
-        //     // Create a new Order (if not already created)
-        //     $order = Orders::create([
-        //         'purchase_order_id' => $po->po_id,
-        //         'user_id' => auth()->id(),
-        //         // ...other fields as needed
-        //     ]);
 
-        //     foreach ($request->input('products', []) as $product_id => $data) {
-        //         if (!empty($data['selected']) && $data['quantity'] > 0) {
-        //             OrderItem::create([
-        //                 'order_id' => $order->id,
-        //                 'product_id' => $product_id,
-        //                 'quantity' => $data['quantity'],
-        //                 'price' => $data['price'] ?? null,
-        //             ]);
-        //         }
-        //     }
 
-        //     return redirect()->route('purchaseorders.purchaseorder', $po_id)->with('success', 'Order items saved!');
-        // }
 
 }
