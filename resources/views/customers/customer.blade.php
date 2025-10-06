@@ -940,9 +940,13 @@
                                                             </td>
                                                         @else
                                                             {{-- Normal price --}}
-                                                            <td>
-                                                                ₱{{ number_format($productRequirement->settings->nego_price, 2) }}
-                                                            </td>
+                                                            @if ($productRequirement->settings && $productRequirement->settings->nego_price !== null)
+                                                                <td>₱{{ number_format($productRequirement->settings->nego_price, 2) }}</td>
+                                                            @else
+                                                                <td>₱0.00</td>
+                                                            @endif
+
+
                                                         @endif
 
 

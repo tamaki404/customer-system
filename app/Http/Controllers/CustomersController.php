@@ -211,12 +211,13 @@ class CustomersController extends Controller
                 );
 
 
-                
                 Logs::create([
-                    'user_id' => Auth::user()->user_id,
+                    'user_id' => $request->user_id,
                     'action' => 'Supplier registration request',
                     'log_id' => $log_id,
-                    'description' => "Supplier {$request->supplier_id} confirmed with status '{$request->account_status}', assigned to staff {$request->staff_id} and set negotiated price.",
+                    'description' => "Supplier {$request->supplier_id} confirmed with status 'Accepted', assigned to staff {$request->staff_id} and set negotiated price.",
+                    'entity' => 'Supplier', 
+                    'entity_id' => $supplier->id,
                 ]);
 
 

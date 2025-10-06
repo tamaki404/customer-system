@@ -727,7 +727,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-$(function () {
+$(function (handleProductSearch) {
     const $search = $('#product-search');
     const $results = $('#product-search-results');
     const $allProducts = $('#all-products .product-item');
