@@ -11,112 +11,120 @@
         <div class="modal fade" id="confirm-action" tabindex="-1" aria-labelledby="confirmActionLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <form class="modal-content" style="width: 800px" method="POST" action="{{ route('purchaseorders.confirm', $po->po_id) }}">
-                @csrf
-                
-                @if ($errors->any())
-                    <div class="alert alert-danger" style="margin: 10px;">
-                        <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
-                        <ul style="margin: 0; padding-left: 20px;">
-                            @foreach ($errors->all() as $error)
-                                <li style="font-size: 14px;">{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                
-                @if (session('success'))
-                    <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger" style="margin: 10px;">
-                        <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
-                        <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
-                    </div>
-                @endif
-
-                    <div class="modal-header">
-                        <p class="modal-title" id="confirmActionLabel">Confirm Purchase Order</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                
-                    <div class="modal-body">
-                    <p class="note-notify">
-                        <span class="material-symbols-outlined"> info </span>
-                            <span>Review and modify quantities as needed. You can accept or reject this purchase order.</span>
-                        </p>
-
-                        <div class="form-group" style="margin-bottom: 20px; display: flex; flex-direction: column;">
-                            <label for="staff_notes">Staff Notes (Optional)</label>
-                            <textarea name="notes" id="staff_notes" class="" rows="3" style=" border-radius: 5px; outline: none; padding: 5px;" placeholder="Add any notes about this purchase order..."></textarea>
+                    @csrf
+                    
+                    @if ($errors->any())
+                        <div class="alert alert-danger" style="margin: 10px;">
+                            <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
+                            <ul style="margin: 0; padding-left: 20px;">
+                                @foreach ($errors->all() as $error)
+                                    <li style="font-size: 14px;">{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
+                    @endif
+                    
+                    @if (session('success'))
+                        <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
+                    @endif
 
-                        <div style="overflow-x: auto;">
-                        <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                            <thead style="background-color: #f9f9f9;">
-                                <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                    <td>#</td>
-                                    <td>Product ID</td>
-                                    <td>Product Name</td>
-                                    <td>Category</td>
-                                    <td>Unit</td>
-                                    <td>Weight</td>
-                                    <td>Unit Price</td>
-                                    <td>Heads</td>
-                                    <td>Staff Qty</td>
-                                    <td>Total</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                    @foreach($po->items as $item)
-                                    <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->product->product_id }}</td>
-                                        <td>{{ $item->product->name }}</td>
-                                        <td>{{ $item->product->category }}</td>
-                                        <td>{{ $item->product->unit }}</td>
-                                        <td>{{ $item->product->weight }}</td>
-                                        <td>₱{{ number_format($item->unit_price, 2) }}</td>
-                                        <td>{{ $item->supplier_quantity }}</td>
-                                    <td>
-                                        <input type="number" 
-                                                name="staff_quantities[{{ $item->po_item_id }}]" 
-                                                value="{{ $item->supplier_quantity }}" 
-                                                min="0"
-                                                class="form-control staff-quantity-input"
-                                                onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})">
-                                    </td>
-                                    <td>
+                    @if (session('error'))
+                        <div class="alert alert-danger" style="margin: 10px;">
+                            <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
+                            <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
+                        </div>
+                    @endif
+
+                        <div class="modal-header">
+                            <p class="modal-title" id="confirmActionLabel">Confirm Purchase Order</p>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    
+                        <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined"> info </span>
+                                <span>Review and modify quantities as needed. You can accept or reject this purchase order.</span>
+                            </p>
+
+                            <div class="form-group" style="margin-bottom: 20px; display: flex; flex-direction: column;">
+                                <label for="staff_notes">Staff Notes (Optional)</label>
+                                <textarea name="notes" id="staff_notes" class="" rows="3" style=" border-radius: 5px; outline: none; padding: 5px;" placeholder="Add any notes about this purchase order..."></textarea>
+                            </div>
+
+                            <div style="overflow-x: auto;">
+                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                <thead style="background-color: #f9f9f9;">
+                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                        <td>#</td>
+                                        <td>Product ID</td>
+                                        <td>Name</td>
+                                        <td>Measurement</td>
+                                        <td>Unit price</td>
+                                        <td>Quantity</td>
+                                        <td>Total</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        @foreach($po->items as $item)
+                                        <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->product->product_id }}</td>
+                                            <td>{{ $item->product->name }}</td>
+                                            <td>{{ $item->product->measurement_type }}</td>
+                                            <td>₱{{ number_format($item->unit_price, 2) }}</td>
+                                            <td style="display: flex; justify-content: center;">
+                                                @if ($item->product->measurement_type === "Kilos")
+                                                    <input type="number" 
+                                                            name="alt_kilos[{{ $item->po_item_id }}]" 
+                                                            value="{{ $item->placed_kilos }}" 
+                                                            min="0"
+                                                            class="form-control staff-quantity-input"
+                                                            onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
+                                                            style="width:100px"
+                                                            >
+                                                @elseif ($item->product->measurement_type === "Heads")
+                                                    <input type="number" 
+                                                            name="alt_heads[{{ $item->po_item_id }}]" 
+                                                            value="{{ $item->placed_heads }}" 
+                                                            min="0"
+                                                            class="form-control staff-quantity-input"
+                                                            onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
+                                                            style="width:100px"
+                                                            >
+                                                @endif
+
+                                            </td>
+                                        <td>
                                             <span id="staff_total_{{ $item->po_item_id }}" class="staff-row-total">
                                                 ₱{{ number_format($item->unit_price * $item->supplier_quantity, 2) }}
                                             </span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                        <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <strong>Total Items: <span id="totalItems">{{ $po->items->count() }}</span></strong>
-                                </div>
-                                <div>
-                                    <strong>Grand Total: <span id="staffGrandTotal">₱{{ number_format($po->total_amount, 2) }}</span></strong>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                            <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>Total Items: <span id="totalItems">{{ $po->items->count() }}</span></strong>
+                                    </div>
+                                    <div>
+                                        <strong>Grand Total: <span id="staffGrandTotal">₱{{ number_format($po->total_amount, 2) }}</span></strong>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" name="action" value="Reject" style="font-size: 14px" class="btn btn-danger">Reject Order</button>
-                    <button type="submit" name="action" value="Accept" style="font-size: 14px" class="btn btn-success">Accept Order</button>
-                </div>
-            </form>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" name="action" value="Reject" style="font-size: 14px" class="btn btn-danger">Reject Order</button>
+                        <button type="submit" name="action" value="Accept" style="font-size: 14px" class="btn btn-success">Accept Order</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
     @endif
 
     @if ($errors->any())

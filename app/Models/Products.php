@@ -39,4 +39,6 @@ class Products extends Model
     {
         return $this->belongsTo(ProductSetting::class, 'product_id', 'product_id');
     }
+
+    
 }

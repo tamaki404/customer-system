@@ -227,7 +227,10 @@
                                         <td>{{$po->po_id}}</td>
                                         <td>{{ $po->supplier->company_name ?? 'N/A' }}</td>
                                         <td>{{ $po->items->count() }}</td>
-                                        <td>{{ $po->items->sum('supplier_quantity') }}</td>
+                                        <td>
+                                            {{ $po->items->sum(fn($item) => ($item->placed_kilos ?? 0) + ($item->placed_heads ?? 0)) }}
+
+                                        </td>
 
                                         <td>₱{{ number_format($po->total_amount, 2) }}</td>
                                         <td>

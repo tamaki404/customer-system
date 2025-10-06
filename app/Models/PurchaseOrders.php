@@ -13,8 +13,8 @@ class PurchaseOrders extends Model
         'notes',
         'total_amount',
         'staff_id',
-        'placed_kilos',
-        'placed_heads',
+
+
         'placed_at',
         'confirmed_at',
     ];

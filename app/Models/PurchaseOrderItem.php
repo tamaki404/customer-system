@@ -18,6 +18,8 @@ class PurchaseOrderItem extends Model
         'status',
         'placed_heads',
         'placed_kilos',
+        'alt_kilos',
+        'alt_heads',
         'original_price'
     ];
 

@@ -17,8 +17,10 @@ return new class extends Migration
             $table->string('po_id');
             $table->string('product_id');
             $table->string('set_id');
-            $table->integer('supplier_quantity')->default(0);
-            $table->integer('staff_quantity')->default(0);
+            $table->string('placed_heads')->nullable();
+            $table->string('placed_kilos')->nullable();
+            $table->string('alt_heads')->nullable();
+            $table->string('alt_kilos')->nullable();
             $table->decimal('unit_price', 10, 2);
             $table->decimal('total_price', 10, 2);
             $table->string('status')->default('Pending');
