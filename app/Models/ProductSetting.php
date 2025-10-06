@@ -29,4 +29,9 @@ class ProductSetting extends Model
     {
         return $this->belongsTo(ProductSales::class, 'set_id', 'set_id');
     }
+        public function user()
+    {
+        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+    }
+
 }

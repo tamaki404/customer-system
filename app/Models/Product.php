@@ -21,4 +21,7 @@ class Product extends Model
         'unit',
         'category'
     ];
+
+
+    
 }

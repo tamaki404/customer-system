@@ -130,8 +130,7 @@ public function purchaseOrderlist(Request $request)
             ]);
         }
 
-public function createPurchaseOrder(Request $request)
-{
+public function createPurchaseOrder(Request $request) {
     $user = Auth::user();
     
     if ($user->role !== "Supplier") {
@@ -148,8 +147,10 @@ public function createPurchaseOrder(Request $request)
         $request->validate([
             'selected_products'   => 'required|array|min:1',
             'selected_products.*' => 'exists:product_settings,set_id',
-            'quantities'          => 'required|array',
-            'quantities.*'        => 'required|integer|min:1',
+            'placed_heads'        => 'nullable|array',
+            'placed_heads.*'      => 'nullable|numeric|min:0',
+            'placed_kilos'        => 'nullable|array',
+            'placed_kilos.*'      => 'nullable|numeric|min:0',
             'notes'               => 'nullable|string|max:1000',
         ]);
 
@@ -177,8 +178,29 @@ public function createPurchaseOrder(Request $request)
                 throw new \Exception("Invalid product setting for set_id: $setId");
             }
 
-            $quantity       = $request->quantities[$setId] ?? 1;
-            $originalPrice  = $productSetting->nego_price; // before sale
+            // Get placed_heads and placed_kilos from request
+            $placedHeads = $request->placed_heads[$setId] ?? 0;
+            $placedKilos = $request->placed_kilos[$setId] ?? 0;
+
+            // Get the measurement type to determine which value to use for calculation
+            $measurementType = $productSetting->product->measurement_type;
+            
+            // Determine quantity for price calculation based on measurement type
+            if ($measurementType === 'Kilos') {
+                $quantityForCalculation = $placedKilos;
+                
+                if ($quantityForCalculation <= 0) {
+                    throw new \Exception("Invalid kilos for product: {$productSetting->product->name}");
+                }
+            } else {
+                $quantityForCalculation = $placedHeads;
+                
+                if ($quantityForCalculation <= 0) {
+                    throw new \Exception("Invalid heads for product: {$productSetting->product->name}");
+                }
+            }
+
+            $originalPrice  = $productSetting->nego_price;
             $finalUnitPrice = $originalPrice;
 
             // Check if there's an active sale
@@ -191,7 +213,7 @@ public function createPurchaseOrder(Request $request)
                 $finalUnitPrice = $activeSale->sale_price;
             }
 
-            $itemTotal = $finalUnitPrice * $quantity;
+            $itemTotal = $finalUnitPrice * $quantityForCalculation;
 
             $poItemId = 'POI-' . $date . '-' . Str::upper(Str::random(5));
 
@@ -200,10 +222,10 @@ public function createPurchaseOrder(Request $request)
                 'po_id'             => $po_id,
                 'product_id'        => $productSetting->product_id,
                 'set_id'            => $setId,
-                'supplier_quantity' => $quantity,
-                'staff_quantity'    => $quantity, // initially same
-                'original_price'    => $originalPrice, // NEW
-                'unit_price'        => $finalUnitPrice, // sale or nego
+                'placed_heads'      => $placedHeads,
+                'placed_kilos'      => $placedKilos,
+                'original_price'    => $originalPrice,
+                'unit_price'        => $finalUnitPrice,
                 'total_price'       => $itemTotal,
                 'status'            => 'Pending',
             ]);

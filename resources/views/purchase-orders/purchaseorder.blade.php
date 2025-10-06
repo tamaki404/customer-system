@@ -226,8 +226,7 @@
                                 <th>Product ID</th>
                                 <th>Product Name</th>
                                 <th>Category</th>
-                                <th>Unit</th>
-                                <th>Weight</th>
+                                <th>Measurement</th>
                                 <th>Unit Price</th>
                                 <th>Supplier Qty</th>
                                 <th>Staff Qty</th>
@@ -241,7 +240,8 @@
                                     <td style="text-align: center;">{{ $loop->iteration }}</td>
                                     <td style="text-align: center;">{{ $item->set_id }}</td>
                                     <td>{{ $item->product->name }}</td>
-                                    <td>{{ $item->product->category }}</td>
+                                    <td>{{ optional($item->set->user->req($item->product_id)->first())->condition ?? 'N/A' }}</td>
+
                                     <td>{{ $item->product->unit }}</td>
                                     <td>{{ $item->product->weight }}</td>
                                     <td style="text-align: right;">
