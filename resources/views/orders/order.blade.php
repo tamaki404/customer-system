@@ -97,7 +97,7 @@
     {{-- process action --}}
     <div class="modal fade" id="processModal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form class="modal-content" method="POST"  enctype="multipart/form-data" action="{{ route('order.action') }}">
+            <form class="modal-content" method="POST"  enctype="multipart/form-data" action="{{ route('order.process') }}">
 
                 @csrf
                 @if ($errors->any())
@@ -132,39 +132,91 @@
                 <div class="modal-body">
                     <p class="note-notify">
                         <span class="material-symbols-outlined"> info </span>
-                        <span>Committing any changes may be irreversible.</span>
+                        <span>You can edit the heads/kilos just before the delivery.</span>
                     </p>
 
-                    <p>Delivery frequency: <span>{{$order->supplier->delivery->delivery_frequency}}</span></p>
-                    <div class="modal-option-groups">
-                        <p>How many times in a week?</p>
-                        <div>
-                            <input type="date" >
-                        </div>
+                    <p>Delivery details: <span></span></p>
 
-                    </div>
                     
-                    <div class="modal-option-groups">
-                        <p>Status</p>
-                        <select name="status" required>
-                            <option value="">-- Select order status --</option>
-                            <option value="Accepted">Process this order</option>
-                            <option value="Rejected">Cancel this order</option>
-                        </select>
-                    </div>
+                    <table class="order-table" border="1" cellpadding="8" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($items as $item)
+                                <tr>
+                                    <td>{{ $item->product->name }}</td>
+                                    <td>P{{ $item->productSetting->nego_price }}</td>
 
+                                    <td>
+                                        @if($item->product->measurement_type === 'Kilos')
+                                            {{ $item->placed_kilos }} kg
+                                        @else
+                                            {{ $item->placed_heads }} heads
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @foreach($items as $item)
+                        @php
+                            $total = $item->product->measurement_type === 'Kilos'
+                                ? $item->placed_kilos
+                                : $item->placed_heads;
 
+                            $days = count($order->supplier->delivery->delivery_days);
+                            $per_day = $days > 0 ? round($total / $days, 2) : $total;
+                        @endphp
 
-                    <div class="modal-option-groups">
-                        <p>Remarks (Optional)</p>
-                        <input type="text" name="remarks" maxlength="200">
-                    </div>
-            
+                        <div class="order-item">
+                            <p>{{ $item->product->name }}</p>
+                            <p>Total {{ $item->product->measurement_type === 'Kilos' ? 'kg' : 'heads' }}: {{ $total }}</p>
+
+                            @foreach($order->supplier->delivery->delivery_days as $day)
+                                <div class="delivery-day">
+                                    <label>{{ $day }}</label>
+                                    <input type="number"
+                                        name="items[{{ $item->id }}][{{ $day }}]"
+                                        value="{{ $per_day }}"
+                                        step="0.01"
+                                        min="0">
+                                </div>
+                            @endforeach
+                        </div>
+                    @endforeach
+
+                    <script>
+                        document.querySelectorAll('.delivery-day input').forEach(input => {
+                        input.addEventListener('input', (e) => {
+                            const itemDiv = e.target.closest('.order-item');
+                            const inputs = itemDiv.querySelectorAll('.delivery-day input');
+                            const total = parseFloat(itemDiv.dataset.total);
+                            let sumOther = 0;
+
+                            inputs.forEach(i => {
+                                if(i !== e.target) sumOther += parseFloat(i.value) || 0;
+                            });
+
+                            // Automatically adjust last day if needed
+                            const remaining = total - sumOther - parseFloat(e.target.value);
+                            const lastInput = inputs[inputs.length - 1];
+                            if(lastInput !== e.target){
+                                lastInput.value = remaining > 0 ? remaining.toFixed(2) : 0;
+                            }
+                        });
+                    });
+
+                    </script>
                 </div>
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit order status</button>
+                    <button type="submit" class="btn btn-primary">Process this order</button>
                 </div>
             </form>
         </div>

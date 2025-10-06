@@ -126,6 +126,7 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
     Route::post('/receipts/action/{receipt_id}', [ReceiptController::class, 'receiptAction'])->name('receipts.action');
     Route::post('/order/action', [OrderController::class, 'orderAction'])->name('order.action');
+    Route::post('/order/action/process', [OrderController::class, 'orderProcess'])->name('order.process');
 
     // order pdf views
     Route::get('/orders/{order_id}/customer-order', [OrderController::class, 'customerOrderPdf'])->name('orders.customer.pdf');
