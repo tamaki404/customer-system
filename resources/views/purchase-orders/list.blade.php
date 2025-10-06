@@ -54,7 +54,8 @@
                                         <td>Unit</td>
                                         <td>Weight</td>
                                         <td>Price</td>
-                                        <td>Quantity</td>
+                                        <td>Heads</td>
+                                        <td>Kilos</td>
                                         <td>Total</td>
                                     </tr>
                                 </thead>
@@ -95,8 +96,25 @@
                                                 ₱{{ number_format($setProd->nego_price, 2) }}
                                             @endif
                                         </td>
-
                                         <td>
+                                            <input type="number" 
+                                                name="placed_heads[{{ $setProd->set_id }}]" 
+                                                value="0" 
+                                                min="1"
+                                                class="form-control heads-input"
+                                                onchange="calculateRowTotal('{{ $setProd->set_id }}')"
+                                                disabled>
+                                        </td>                                        
+                                        <td>
+                                            <input type="number" 
+                                                name="placed_kilos[{{ $setProd->set_id }}]" 
+                                                value="0" 
+                                                min="1"
+                                                class="form-control kilos-input"
+                                                onchange="calculateRowTotal('{{ $setProd->set_id }}')"
+                                                disabled>
+                                        </td>
+                                        {{-- <td>
                                             <input type="number" 
                                                 name="quantities[{{ $setProd->set_id }}]" 
                                                 value="1" 
@@ -104,7 +122,7 @@
                                                 class="form-control quantity-input"
                                                 onchange="calculateRowTotal('{{ $setProd->set_id }}')"
                                                 disabled>
-                                        </td>
+                                        </td> --}}
                                         <td>
                                             <span id="total_{{ $setProd->set_id }}" class="row-total">
                                                 ₱{{ number_format($setProd->nego_price, 2) }}
@@ -196,6 +214,7 @@
                                     <th>PO ID</th>
                                     <th>Supplier</th>
                                     <th>Items</th>
+                                    <th>Quantity</th>
                                     <th>Total Amount</th>
                                     <th>Status</th>
                                     <th>Confirmed By</th>
@@ -209,6 +228,8 @@
                                         <td>{{$po->po_id}}</td>
                                         <td>{{ $po->supplier->company_name ?? 'N/A' }}</td>
                                         <td>{{ $po->items->count() }}</td>
+                                        <td>{{ $po->items->sum('supplier_quantity') }}</td>
+
                                         <td>₱{{ number_format($po->total_amount, 2) }}</td>
                                         <td>
                                             <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; 
@@ -276,60 +297,71 @@
 
 @push('scripts')
 <script>
-    // Track selected products and their data
     let selectedProducts = new Map();
 
     function toggleProductRow(checkbox, setId) {
         const row = document.querySelector(`tr[data-set-id="${setId}"]`);
-        const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
-        
+        const headsInput = document.querySelector(`input[name="placed_heads[${setId}]"]`);
+        const kilosInput = document.querySelector(`input[name="placed_kilos[${setId}]"]`);
+
         if (checkbox.checked) {
-            // Enable the row
+            // Enable both inputs
             row.classList.remove('disabled');
-            quantityInput.disabled = false;
-            quantityInput.value = quantityInput.value || 1;
-            
+            headsInput.disabled = false;
+            kilosInput.disabled = false;
+
+            // Initialize default values if empty
+            if (!headsInput.value || headsInput.value == 0) headsInput.value = 0;
+            if (!kilosInput.value || kilosInput.value == 0) kilosInput.value = 0;
+
             // Store product data
             selectedProducts.set(setId, {
                 productId: row.dataset.productId,
                 price: parseFloat(row.dataset.price),
-                quantity: parseInt(quantityInput.value) || 1
+                heads: parseInt(headsInput.value) || 0,
+                kilos: parseFloat(kilosInput.value) || 0
             });
-            
+
             calculateRowTotal(setId);
         } else {
-            // Disable the row
+            // Disable both inputs
             row.classList.add('disabled');
-            quantityInput.disabled = true;
-            
+            headsInput.disabled = true;
+            kilosInput.disabled = true;
+
+            // Reset totals
+            document.getElementById(`total_${setId}`).textContent = '₱0.00';
+
             // Remove from selected products
             selectedProducts.delete(setId);
-            
-            // Reset total
-            document.getElementById(`total_${setId}`).textContent = '₱0.00';
         }
-        
+
         updateSummary();
     }
 
     function calculateRowTotal(setId) {
-        const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
+        const row = document.querySelector(`tr[data-set-id="${setId}"]`);
+        const headsInput = document.querySelector(`input[name="placed_heads[${setId}]"]`);
+        const kilosInput = document.querySelector(`input[name="placed_kilos[${setId}]"]`);
         const totalSpan = document.getElementById(`total_${setId}`);
         const checkbox = document.querySelector(`input[name="selected_products[]"][value="${setId}"]`);
-        
-        if (checkbox.checked && quantityInput && !quantityInput.disabled) {
-            const row = document.querySelector(`tr[data-set-id="${setId}"]`);
+
+        if (checkbox.checked && !headsInput.disabled && !kilosInput.disabled) {
             const price = parseFloat(row.dataset.price);
-            const quantity = parseInt(quantityInput.value) || 0;
-            const total = price * quantity;
-            
+            const heads = parseInt(headsInput.value) || 0;
+            const kilos = parseFloat(kilosInput.value) || 0;
+
+            // Example: price is per kilo (adjust as needed)
+            const total = price * kilos;
+
             totalSpan.textContent = `₱${total.toFixed(2)}`;
-            
+
             // Update stored data
             if (selectedProducts.has(setId)) {
-                selectedProducts.get(setId).quantity = quantity;
+                selectedProducts.get(setId).heads = heads;
+                selectedProducts.get(setId).kilos = kilos;
             }
-            
+
             updateSummary();
         } else {
             totalSpan.textContent = '₱0.00';
@@ -339,52 +371,43 @@
     function updateSummary() {
         let totalItems = 0;
         let grandTotal = 0;
-        
+
         selectedProducts.forEach((data, setId) => {
-            const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
-            const currentQuantity = parseInt(quantityInput.value) || 0;
-            
-            totalItems += currentQuantity;
-            grandTotal += data.price * currentQuantity;
+            totalItems += data.heads;
+            grandTotal += data.price * data.kilos;
         });
-        
+
         document.getElementById('selectedCount').textContent = selectedProducts.size;
         document.getElementById('grandTotal').textContent = `₱${grandTotal.toFixed(2)}`;
-        
-        // Enable/disable submit button
+
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = selectedProducts.size === 0;
     }
 
-    // Form validation before submit
     function validateForm() {
         if (selectedProducts.size === 0) {
             alert('Please select at least one product.');
             return false;
         }
-        
+
         let hasErrors = false;
         const errors = [];
-        
+
         selectedProducts.forEach((data, setId) => {
-            const quantityInput = document.querySelector(`input[name="quantities[${setId}]"]`);
-            const quantity = parseInt(quantityInput.value) || 0;
-            
-            if (quantity <= 0) {
-                errors.push(`Quantity for product ${setId} must be greater than 0.`);
+            if (data.heads <= 0 && data.kilos <= 0) {
+                errors.push(`Please enter heads or kilos greater than 0 for product ${setId}.`);
                 hasErrors = true;
             }
         });
-        
+
         if (hasErrors) {
             alert(errors.join('\n'));
             return false;
         }
-        
+
         return true;
     }
 
-    // Add form submit event listener
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('#create-order-modal form');
         if (form) {
@@ -395,7 +418,6 @@
                 }
             });
         }
-        
         updateSummary();
     });
 </script>

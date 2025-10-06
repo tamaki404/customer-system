@@ -46,9 +46,9 @@
                             <span>Review and modify quantities as needed. You can accept or reject this purchase order.</span>
                         </p>
 
-                        <div class="form-group" style="margin-bottom: 20px;">
+                        <div class="form-group" style="margin-bottom: 20px; display: flex; flex-direction: column;">
                             <label for="staff_notes">Staff Notes (Optional)</label>
-                            <textarea name="notes" id="staff_notes" class="form-control" rows="3" placeholder="Add any notes about this purchase order..."></textarea>
+                            <textarea name="notes" id="staff_notes" class="" rows="3" style=" border-radius: 5px; outline: none; padding: 5px;" placeholder="Add any notes about this purchase order..."></textarea>
                         </div>
 
                         <div style="overflow-x: auto;">
@@ -71,7 +71,7 @@
                                     @foreach($po->items as $item)
                                     <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->set_id }}</td>
+                                        <td>{{ $item->product->product_id }}</td>
                                         <td>{{ $item->product->name }}</td>
                                         <td>{{ $item->product->category }}</td>
                                         <td>{{ $item->product->unit }}</td>
@@ -111,8 +111,8 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" name="action" value="Reject" class="btn btn-danger">Reject Order</button>
-                        <button type="submit" name="action" value="Accept" class="btn btn-success">Accept Order</button>
+                    <button type="submit" name="action" value="Reject" style="font-size: 14px" class="btn btn-danger">Reject Order</button>
+                    <button type="submit" name="action" value="Accept" style="font-size: 14px" class="btn btn-success">Accept Order</button>
                 </div>
             </form>
         </div>

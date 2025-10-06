@@ -42,14 +42,14 @@
 
                         <div class="modal-option-groups">
                             <div class="form-group">
-                                <p><span class="req-asterisk">*</span> Prie</p>
+                                <p><span class="req-asterisk">*</span> Name</p>
                                 <input type="text" name="name" maxlength="200" minlength="3" required>
                                 @error('name')
                                     <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="form-group">
-                                <p><span class="req-asterisk">*</span> Suggested retail price (base_price)</p>
+                                <p><span class="req-asterisk">*</span> Base price</p>
                                 <input type="text" name="base_price" maxlength="200" placeholder="&#8369; 0.00" minlength="3" required>
                                 @error('name')
                                     <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
@@ -82,8 +82,19 @@
                                 @enderror
                             </div>
                             <div>
-                                <p><span class="req-asterisk">*</span> Unit</p>
-                                <select name="unit" id="" required>
+                                <p><span class="req-asterisk">*</span> Measuremnt type</p>
+                                <select name="measurement_type" id="" required>
+                                    <option value="">-- Select measurement type --</option>
+                                    <option value="Kilos">Kilos</option>
+                                    <option value="Heads">Heads</option>
+                                </select>                            
+                                @error('name')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div>
+                                <p>Unit (Optional)</p>
+                                <select name="unit" id="" >
                                     <option value="">-- Select unit --</option>
                                     <option value="Pack">Pack</option>
                                     <option value="Box">Box</option>
@@ -105,6 +116,7 @@
                                     <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                                 @enderror
                             </div>
+
                             <div>
 
                                 
@@ -328,6 +340,8 @@
                                         <th>Name</th>
                                         <th>Category</th>
                                         <th>Base price</th>
+                                        <th>Measurement</th>
+
                                         <th>Unit</th>
                                         <th>Weight</th>
                                         <th>Sold</th>
@@ -342,6 +356,7 @@
                                             <td>{{ $product->name }}</td>
                                             <td>{{ $product->category }}</td>
                                             <td>₱{{ number_format($product->base_price, 2) }}</td>
+                                            <td>{{ $product->measurement_type }}</td>
                                             <td>{{ $product->unit }}</td>
                                             <td>{{ $product->weight }}</td>
                                             <td>--</td>
@@ -376,6 +391,8 @@
                                     <th>Name</th>
                                     <th>Category</th>
                                     <th>Price</th>
+                                    <th>Measurement</th>
+
                                     <th>Unit</th>
                                     <th>Weight</th>
                                 </tr>
@@ -388,6 +405,8 @@
                                         <td>{{ $setProduct->product->name }}</td>
                                         <td>{{ $setProduct->product->category }}</td>
                                         <td>₱{{ number_format($setProduct->nego_price, 2) }}</td>
+                                        <td>{{ $setProduct->product->measurement_type }}</td>
+
                                         <td>{{ $setProduct->product->unit }}</td>
                                         <td>{{ $setProduct->product->weight }}</td>
                                     </tr>

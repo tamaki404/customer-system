@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('base_price', 10, 2);
             $table->string('category');
-            $table->string('unit');
+            $table->string('measurement_type');
+            $table->string('unit')->nullable();
             $table->string('weight')->nullable();
             $table->string('added_by')->nullable();
             $table->string('status');

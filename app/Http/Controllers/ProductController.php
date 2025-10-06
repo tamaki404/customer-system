@@ -85,7 +85,7 @@ class ProductController extends Controller
         }
         public function addProduct(Request $request) {
             \Log::info('Request data:', $request->all());
-            
+            $user_id = Auth::user()->user_id;
             try {
                 $validated = $request->validate([
                     'product_id' => 'required|string|max:50|unique:products,product_id',
@@ -94,7 +94,8 @@ class ProductController extends Controller
                     'base_price'        => 'required|numeric|min:0',
                     'category'   => 'nullable|string|max:100',
                     'category_id'=> 'nullable|string|exists:categories,category_id',
-                    'unit'       => 'required|string|max:50',
+                    'unit'       => 'nullable|string|max:50',
+                    'measurement_type' => 'required|string|max:50',
                     'weight'     => 'nullable|string|max:50',
                     'status'     => 'required|string|in:Listed,Unlisted',
                 ]);
@@ -105,7 +106,7 @@ class ProductController extends Controller
                 if (!empty($validated['category_id']) && empty($validated['category'])) {
                     $cat = \App\Models\Category::where('category_id', $validated['category_id'])->first();
                     if ($cat) {
-                        $validated['category'] = $cat->name; // keep legacy text for now
+                        $validated['category'] = $cat->name;
                     }
                 }
                 
@@ -124,10 +125,13 @@ class ProductController extends Controller
 
                     $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
                     Logs::create([
-                        'user_id'     => Auth::user()->user_id,
-                        'action'      => 'Added new product',
+                        'user_id'     => $user_id,
+                        'action'      => 'Added a new product',
                         'log_id'      => $log_id,
-                        'description' => 'Added new product with product_id: ' . $validated['product_id'],
+                        'description' => "Staff( $user_id) added a new product named" .$validated['name'],
+                                         "with base price" .$validated['base_price'],
+                        'entity'      => 'Products',
+                        'entity_id'   => $product->id,
                     ]);
                     
                 return redirect()->route('products.list')

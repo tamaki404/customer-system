@@ -718,6 +718,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    
                                                     @foreach ($salesHistos as $salesHisto)
                                                         @php
                                                             $hours = \Carbon\Carbon::parse($salesHisto->start_date)->diffInHours(\Carbon\Carbon::parse($salesHisto->end_date));
@@ -1084,6 +1085,8 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+
+
                                                     @foreach ( $representatives as $rep)
                                                         <tr>
                                                             <td>{{$loop->iteration}}</td>

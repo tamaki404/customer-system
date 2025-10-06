@@ -17,6 +17,7 @@ class Products extends Model
         'weight',
         'added_by',
         'status',
+        'measurement_type'
 
     ];
 
