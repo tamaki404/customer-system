@@ -225,11 +225,11 @@
                                 <th>#</th>
                                 <th>Product ID</th>
                                 <th>Product Name</th>
-                                <th>Category</th>
+                                <th>Condition</th>
                                 <th>Measurement</th>
                                 <th>Unit Price</th>
-                                <th>Supplier Qty</th>
-                                <th>Staff Qty</th>
+                                <th>Heads</th>
+                                <th>Kilos</th>
                                 <th>Status</th>
                                 <th>Total</th>
                             </tr>
@@ -241,9 +241,7 @@
                                     <td style="text-align: center;">{{ $item->set_id }}</td>
                                     <td>{{ $item->product->name }}</td>
                                     <td>{{ optional($item->set->user->req($item->product_id)->first())->condition ?? 'N/A' }}</td>
-
-                                    <td>{{ $item->product->unit }}</td>
-                                    <td>{{ $item->product->weight }}</td>
+                                    <td>{{ $item->product->measurement_type }}</td>
                                     <td style="text-align: right;">
                                         @if($item->original_price && $item->original_price > $item->unit_price)
                                             <span style="text-decoration: line-through; color: #999;">
@@ -256,9 +254,21 @@
                                             ₱{{ number_format($item->unit_price, 2) }}
                                         @endif
                                     </td>
-
-                                    <td style="text-align: center;">{{ $item->supplier_quantity }}</td>
-                                    <td style="text-align: center;">{{ $item->staff_quantity }}</td>
+                                    <td>
+                                        @if ( $item->placed_heads !== "0")
+                                            {{ $item->placed_heads }}
+                                        @else
+                                            --
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ( $item->placed_kilos !== "0")
+                                            {{ $item->placed_kilos }}
+                                        @else
+                                            --
+                                        @endif
+                                    </td>
+                           
                                     <td style="text-align: center;">
                                         <span style="padding: 2px 6px; border-radius: 3px; font-size: 11px;
                                             @if($item->status === 'Pending') background-color: #fff3cd; color: #856404;
