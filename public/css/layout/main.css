@@ -1,0 +1,143 @@
+.content-bg{
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-content: start;
+    justify-content: start;
+    background-color: #f2f2f2;
+    padding: 60px;
+    gap: 10px;
+    width: 97%;
+    height: 100vh;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 15px;
+    overflow-y: auto;
+    overflow-x: auto; 
+}
+.content-header{
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+}
+.content-header .contents-display{
+    flex-direction: row;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+
+}
+.heading{
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+.content-body {
+    width: 100%;
+    height: 80%;
+    overflow: auto; 
+    padding: 5px;
+    border: #8888884c solid 1px;
+    border-radius: 15px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #f7f7fa;
+}
+
+thead {
+    background-color: #f1f1f1;
+    color: #333;
+}
+thead th {
+    font-weight: normal;
+    font-size: 13px;
+    padding: 10px;
+    font-weight: bold;
+    color: #666;
+}
+
+tbody tr {
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+tbody td, tbody th {
+    padding: 8px 10px; 
+    font-size: 13px;
+    border-bottom: 1px solid #8888882b; 
+}
+
+tr {
+    height: auto; 
+}
+
+                            tbody tr th{
+                                font-weight: normal
+                            }
+
+
+.contents-display p{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+.contents-display p a{
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: normal;
+    color: #888;
+}
+.contents-display p a:hover{
+    color: #666;
+    font-weight: bold;
+}
+.content-header .title-actions{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.content-header .heading{
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+
+
+
+.btn-span{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+}
+.btn-span span{
+    font-size: 15px;
+}
+.edit-product-btn{
+    border-radius: 10px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    padding: 10px 10px;
+    background-color: #f8912a;
+}
+.edit-product-btn span{
+    color: #fff;
+    font-weight: normal;
+}
+.edit-product-btn:hover{
+    background-color: #cb7621;
+}

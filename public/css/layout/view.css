@@ -1,0 +1,13 @@
+body{
+    background-color: #ffde59;
+    padding: 30px;
+}
+
+.mainFrame{
+    background-color: #fff;
+    border-radius: 30px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    height: 100%;
+    width: 100%;
+
+}

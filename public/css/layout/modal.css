@@ -1,0 +1,82 @@
+.modal-content{
+    width: 500px;
+    height: auto;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.modal-header{
+    background-color: #ffde59;
+    padding: 10px;
+}
+.modal-header p{
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+}
+.modal-header button{
+    font-size: 15px;
+    color: #333;
+    font-weight: bold;
+}
+.modal-footer{
+    padding: 5px;
+}
+.modal-footer .btn-secondary,
+.modal-footer .btn-primary{
+    font-size: 14px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    border: none;
+
+    
+}
+.modal-footer .btn-primary{
+    background-color: #ffde59;
+    color: #333;
+    font-weight: bold;
+}
+.modal-footer .btn-primary:hover{
+    background-color: #d7b941; 
+
+}
+
+.modal-body .note-notify{
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    background-color: #ffde5944;
+    padding: 10px;
+    border: 1px solid #ffde59;
+}
+.note-notify span{
+    font-size: 13px;
+    color: #333;
+}
+
+.modal-option-groups{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+.modal-option-groups p{
+    margin: 0;
+    font-size: 14px;
+}
+.modal-option-groups select{
+    border-radius: 10px;
+    padding: 10px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    font-size: 14px;
+    width: 80%;
+    outline: none;
+}
+.modal-option-groups select option{
+    font-size: 14px;
+    color: #333;
+
+}

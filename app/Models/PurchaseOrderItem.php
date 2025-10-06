@@ -2,52 +2,37 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrderItem extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
+        'po_item_id',
         'po_id',
         'product_id',
-        'quantity',
+        'set_id',
+        'supplier_quantity',
+        'staff_quantity',
         'unit_price',
         'total_price',
-        'new_quantity',
-        'poi_id'
+        'status',
+        'placed_heads',
+        'placed_kilos',
+        'original_price'
     ];
-
-    protected $casts = [
-        'quantity' => 'integer',
-        'unit_price' => 'decimal:2',
-        'total_price' => 'decimal:2'
-    ];
-
 
     public function purchaseOrder()
-{
-    return $this->belongsTo(PurchaseOrder::class, 'po_id', 'po_id');
-}
-
-    
-    public function orderItem(){
-        return $this->belongsTo(Orders::class);
+    {
+        return $this->belongsTo(PurchaseOrders::class, 'po_id', 'po_id');
     }
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }
 
-    public function getFormattedUnitPriceAttribute()
+    public function productSetting()
     {
-        return '₱' . number_format($this->unit_price, 2);
-    }
-
-    public function getFormattedTotalPriceAttribute()
-    {
-        return '₱' . number_format($this->total_price, 2);
+        return $this->belongsTo(ProductSetting::class, 'set_id', 'set_id');
     }
 }
