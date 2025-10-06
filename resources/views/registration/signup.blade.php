@@ -592,11 +592,69 @@
                     <section class="group-details">
                         <p class="group-name">Delivery requirements</p>
                         <div class="form-list">
-                            <div class="input-forms">
-                                <label for="del-freq"><span class="req-asterisk">*</span> Frequency of delivery and receiving time</label>
-                                <input type="text" id="del-freq" name="delivery_frequency" required maxlength="255" value="{{ old('delivery_frequency') }}">
-                                <p class="error-text" style="display: none"></p>
-                            </div>
+
+
+                                    <!-- Frequency type -->
+                                    <div class="input-forms">
+                                        <label for="delivery_frequency">
+                                        <span class="req-asterisk">*</span> Frequency of delivery
+                                        </label>
+                                        <select id="delivery_frequency" name="delivery_frequency" required>
+                                        <option value="">-- Select Frequency --</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="biweekly">Bi-weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="custom">Custom</option>
+                                        </select>
+                                        <p class="error-message"></p>
+                                    </div>
+
+                                    <!-- Number of deliveries -->
+                                    <div class="input-forms" >
+                                        <label for="deliveries_per_week">
+                                        <span class="req-asterisk">*</span> How many times per week?
+                                        </label>
+                                        <input type="number" id="deliveries_per_week" name="deliveries_per_week" min="1" max="7" placeholder="e.g. 2" required>
+                                        <p class="error-message"></p>
+                                    </div>
+
+                                    <!-- Select delivery days -->
+                                    <div class="input-forms" style="width: auto">
+                                        <label for="delivery_days">
+                                            <span class="req-asterisk">*</span> Select days of the week for delivery
+                                        </label>
+                                        <div id="delivery_days" class="checkbox-group" style="display: flex; width: auto; flex-direction: row; flex-wrap: wrap;">
+                                            <label><input type="checkbox" name="delivery_days[]" value="Monday" > Monday</label>
+                                            <label><input type="checkbox" name="delivery_days[]" value="Tuesday"> Tuesday</label>
+                                            <label><input type="checkbox" name="delivery_days[]" value="Wednesday"> Wednesday</label>
+                                            <label><input type="checkbox" name="delivery_days[]" value="Thursday"> Thursday</label>
+                                            <label><input type="checkbox" name="delivery_days[]" value="Friday"> Friday</label>
+                                            <label><input type="checkbox" name="delivery_days[]" value="Saturday"> Saturday</label>
+                                            <label><input type="checkbox" name="delivery_days[]" value="Sunday"> Sunday</label>
+                                        </div>
+                                        <p class="error-message"></p>
+                                    </div>
+
+                                    <!-- If monthly -->
+                                    <div class="input-forms" id="monthly_frequency_group" style="display:none;">
+                                        <label for="deliveries_per_month">
+                                        <span class="req-asterisk">*</span> If monthly, how many times per month?
+                                        </label>
+                                        <input type="number" id="deliveries_per_month" name="deliveries_per_month" min="1" max="31" placeholder="e.g. 4">
+                                        <p class="error-message"></p>
+                                    </div>
+
+                                    <!-- Receiving time -->
+                                    <div class="input-forms">
+                                        <label for="receiving_time">
+                                        <span class="req-asterisk">*</span> Preferred receiving time
+                                        </label>
+                                        <input type="time" id="receiving_time" name="receiving_time" required>
+                                        <p class="error-message"></p>
+                                    </div>
+
+
+
                             
                             <div class="input-forms">
                                 <label for="del-add-1"><span class="req-asterisk">*</span> Delivery address 1</label>

@@ -94,7 +94,81 @@
             </form>
         </div>
     </div>
+    {{-- process action --}}
+    <div class="modal fade" id="processModal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" method="POST"  enctype="multipart/form-data" action="{{ route('order.action') }}">
 
+                @csrf
+                @if ($errors->any())
+                    <div class="alert alert-danger" style="margin: 10px;">
+                        <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            @foreach ($errors->all() as $error)
+                                <li style="font-size: 14px;">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                
+                @if (session('success'))
+                    <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger" style="margin: 10px;">
+                        <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
+                        <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
+                    </div>
+                @endif
+                
+                <div class="modal-header">
+                    <p class="modal-title" id="requestActionLabel">Process order</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <input type="hidden" name="order_id" value="{{$order->order_id}}" required>
+                
+                <div class="modal-body">
+                    <p class="note-notify">
+                        <span class="material-symbols-outlined"> info </span>
+                        <span>Committing any changes may be irreversible.</span>
+                    </p>
+
+                    <p>Delivery frequency: <span>{{$order->supplier->delivery->delivery_frequency}}</span></p>
+                    <div class="modal-option-groups">
+                        <p>How many times in a week?</p>
+                        <div>
+                            <input type="date" >
+                        </div>
+
+                    </div>
+                    
+                    <div class="modal-option-groups">
+                        <p>Status</p>
+                        <select name="status" required>
+                            <option value="">-- Select order status --</option>
+                            <option value="Accepted">Process this order</option>
+                            <option value="Rejected">Cancel this order</option>
+                        </select>
+                    </div>
+
+
+
+                    <div class="modal-option-groups">
+                        <p>Remarks (Optional)</p>
+                        <input type="text" name="remarks" maxlength="200">
+                    </div>
+            
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit order status</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 
 
@@ -133,12 +207,11 @@
             <div>
 
             <!-- Buttons -->
-            @if ($order->status !== 'Pending' && Auth()->user()->role !== 'Supplier')
+            @if ($order->status === 'Processing' && Auth()->user()->role !== 'Supplier')
                 <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
                     <p style="margin: 0"><span>Print</span></p>
                     <div style="display: flex; flex-direction: row; gap: 10px">
-            
-                                        <button type="button" 
+                        <button type="button" 
                                                 data-bs-toggle="modal" data-bs-target="#pdfModal" 
                                                 data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
                                                 class="btn-transition">
@@ -160,6 +233,18 @@
                                         </button>
                     </div>
                 </div>
+            @elseif ($order->status === 'Accepted' && Auth()->user()->role !== 'Supplier')
+                <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
+                    <div style="display: flex; flex-direction: row; gap: 10px">
+                        <button type="button" 
+                            data-bs-toggle="modal" data-bs-target="#processModal" 
+                            data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                            class="btn-transition">
+                                Process order
+                        </button>
+                    </div>
+                </div>
+
             @endif
                      
 
@@ -190,6 +275,11 @@
 
         </div>
 
+
+        <div>
+           <p>Delivery frequency: <span>{{$order->supplier->delivery->delivery_frequency}}</span></p>
+        </div>
+
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
           
                             <div class="table-body" style="margin-top: 50px">
@@ -201,7 +291,7 @@
                                                 <th>#</th>
                                                 <th>Name</th>
                                                 <th>Unit price</th>
-                                                <th>Quantity</th>
+                                                <th>Heads/Kilos</th>
                                                 <th>Total amount</th>                                                
                                             </tr>
                                         </thead>
@@ -210,12 +300,16 @@
                                                 <tr >
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ $item->product->name }}</td>
-                                                    <td>{{ $item->productSetting?->price ?? 'N/A' }}</td>
-                                                    <td>{{ $item->quantity }}</td>
-                                                    <td>{{ $item->total_price }}</td>
-                                      
-                                                  
-                                         
+                                                    <td>₱{{ number_format($item->productSetting?->nego_price ?? '--', 2) }}</td>
+                                                    <td>
+                                                        @if ($item->product->measurement_type === "Kilos")
+                                                            {{ $item->placed_kilos }}kg
+                                                        @elseif ($item->product->measurement_type === "Heads")
+                                                            {{ $item->placed_heads }}
+                                                        @endif
+
+                                                    </td>
+                                                    <td>₱{{ number_format($item->total_price, 2) }}</td>
                                                 </tr>
                                             @endforeach
 

@@ -26,19 +26,29 @@ return new class extends Migration
             $table->timestamps();
         });
 
+
+
         Schema::create('delivery_requirements', function (Blueprint $table) {
             $table->id();
+
             $table->string('user_id');
-            $table->string('ppe_requirements')->nullable(); 
-            $table->string('delivery_frequency')->nullable();
+            $table->string('supplier_id')->required(); 
+
+            // Delivery setup
+            $table->string('delivery_frequency')->nullable(); // weekly, monthly, etc.
+            $table->integer('deliveries_per_week')->nullable(); // number of deliveries per week
+            $table->json('delivery_days')->nullable(); // store selected days as array
+            $table->integer('deliveries_per_month')->nullable(); // number of deliveries per month
+            $table->time('receiving_time')->nullable(); // e.g. 09:00
             $table->string('delivery_address_1')->nullable();
             $table->string('delivery_address_2')->nullable();
             $table->string('delivery_address_3')->nullable();
-            $table->string('delivery_instructions')->nullable();
-            $table->string('supplier_id')->required(); 
+            $table->text('delivery_instructions')->nullable();
+            $table->string('ppe_requirements')->nullable(); // optional PPE requirement info
 
             $table->timestamps();
         });
+
     }
 
     /**

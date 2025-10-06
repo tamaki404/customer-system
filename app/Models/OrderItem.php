@@ -13,6 +13,8 @@ class OrderItem extends Model
         'unit_price',
         'total_price',
         'status',
+        'placed_heads',
+        'placed_kilos',
         
     ];
 

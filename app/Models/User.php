@@ -52,6 +52,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Staffs::class, 'user_id', 'user_id');
     }
 
+
+
+
     /**
      * Get the attributes that should be cast.
      *
