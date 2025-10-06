@@ -147,8 +147,6 @@ class PurchaseOrderController extends Controller
                 $request->validate([
                     'selected_products'   => 'required|array|min:1',
                     'selected_products.*' => 'exists:product_settings,set_id',
-                    'placed_heads'        => 'nullable|array',
-                    'placed_heads.*'      => 'nullable|numeric|min:0',
                     'placed_kilos'        => 'nullable|array',
                     'placed_kilos.*'      => 'nullable|numeric|min:0',
                     'notes'               => 'nullable|string|max:1000',
@@ -256,22 +254,19 @@ class PurchaseOrderController extends Controller
                     ->with('error', 'Purchase order creation failed: ' . $e->getMessage())
                     ->withInput();
             }
-            }
-
-
-
+        }
         public function confirmPurchaseOrder(Request $request, $po_id)
         {
             $user = Auth::user();
-            
+
+            $user_id = Auth::user()->user_id;
+
             if (!in_array($user->role, ['Staff', 'Admin'])) {
                 return redirect()->back()->with('error', 'Only staff can confirm purchase orders.');
             }
 
             try {
                 $request->validate([
-                    'alt_heads' => 'nullable|array',
-                    'alt_heads.*' => 'nullable|integer|min:0',
                     'action' => 'required|in:Accept,Reject',
                     'notes' => 'nullable|string|max:1000',
                 ]);
@@ -279,62 +274,51 @@ class PurchaseOrderController extends Controller
                 DB::beginTransaction();
 
                 $purchaseOrder = PurchaseOrders::where('po_id', $po_id)->firstOrFail();
-                
+
                 if ($purchaseOrder->status !== 'Pending') {
                     return redirect()->back()->with('error', 'Purchase order is not in pending status.');
                 }
 
-                $totalAmount = 0;
+                $itemStatus = $request->action === 'Accept' ? 'Accepted' : 'Rejected';
+                PurchaseOrderItem::where('po_id', $po_id)->update(['status' => $itemStatus]);
 
-                if ($request->action === 'Accept') {
-                    $acceptedItems = [];
-                    foreach ($request->staff_quantities as $poItemId => $quantity) {
-                        $item = PurchaseOrderItem::where('po_item_id', $poItemId)->first();
-                        if ($item) {
-                            $item->update([
-                                'alt_kilos' => $quantity,
-                                'alt_heads' => $quantity,
-                                'total_price' => $item->unit_price * $quantity,
-                                'status' => $quantity > 0 ? 'Accepted' : 'Rejected',
-                            ]);
-                            
-                            if ($quantity > 0) {
-                                $totalAmount += $item->total_price;
-                                $acceptedItems[] = $item;
-                            }
+                $purchaseOrder->update([
+                    'status'        => $request->action === 'Accept' ? 'Accepted' : 'Rejected',
+                    'staff_id'      => $user->user_id,
+                    'confirmed_at'  => now(),
+                    'notes'         => $request->notes,
+                ]);
+
+                    $date = date('Ymd');
+                    function randomBase36String(int $length): string {
+                        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        $str = '';
+                        for ($i = 0; $i < $length; $i++) {
+                            $str .= $chars[random_int(0, strlen($chars) - 1)];
                         }
+                        return $str;
                     }
-
-                    $purchaseOrder->update([
-                        'status' => 'Accepted',
-                        'total_amount' => $totalAmount,
-                        'staff_id' => $user->user_id,
-                        'confirmed_at' => now(),
-                        'notes' => $request->notes,
-                    ]);
-
-                    $orderId = $this->createOrderFromPurchaseOrder($purchaseOrder, $acceptedItems);
-                } else {
-                    PurchaseOrderItem::where('po_id', $po_id)->update(['status' => 'Rejected']);
-                    
-                    $purchaseOrder->update([
-                        'status' => 'Rejected',
-                        'staff_id' => $user->user_id,
-                        'confirmed_at' => now(),
-                        'notes' => $request->notes,
-                    ]);
-                }
+                $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
+                Logs::create([
+                    'user_id'     => $user_id,
+                    'action'      => 'Confirmed a PO',
+                    'log_id'      => $log_id,
+                    'description' => "Staff( $user_id) confirmed" .$po_id,
+                    'entity'      => 'PurchaseOrders',
+                    'entity_id'   => $purchaseOrder->id,
+                ]);
 
                 DB::commit();
 
-                if ($request->action === 'Accept') {
-                    return redirect()->back()->with('success', "Purchase order has been accepted successfully! Order ID: {$orderId}");
-                } else {
-                    return redirect()->back()->with('success', "Purchase order has been rejected successfully!");
-                }
+                $message = $request->action === 'Accept'
+                    ? 'Purchase order has been accepted successfully!'
+                    : 'Purchase order has been rejected successfully!';
+
+                return redirect()->back()->with('success', $message);
 
             } catch (\Exception $e) {
                 DB::rollBack();
+
                 \Log::error('Purchase order confirmation failed:', [
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
