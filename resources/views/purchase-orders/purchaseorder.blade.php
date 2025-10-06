@@ -57,13 +57,13 @@
                                 <tr style="background:#f7f7fa; text-align: center; height: 30px">
                                     <td>#</td>
                                     <td>Product ID</td>
-                                        <td>Product Name</td>
+                                    <td>Product Name</td>
                                     <td>Category</td>
                                     <td>Unit</td>
                                     <td>Weight</td>
-                                        <td>Unit Price</td>
-                                        <td>Supplier Qty</td>
-                                        <td>Staff Qty</td>
+                                    <td>Unit Price</td>
+                                    <td>Heads</td>
+                                    <td>Staff Qty</td>
                                     <td>Total</td>
                                 </tr>
                             </thead>
@@ -227,9 +227,8 @@
                                 <th>Product Name</th>
                                 <th>Condition</th>
                                 <th>Measurement</th>
+                                <th>Quantity</th>
                                 <th>Unit Price</th>
-                                <th>Heads</th>
-                                <th>Kilos</th>
                                 <th>Status</th>
                                 <th>Total</th>
                             </tr>
@@ -242,7 +241,16 @@
                                     <td>{{ $item->product->name }}</td>
                                     <td>{{ optional($item->set->user->req($item->product_id)->first())->condition ?? 'N/A' }}</td>
                                     <td>{{ $item->product->measurement_type }}</td>
-                                    <td style="text-align: right;">
+                                    <td>
+                                        @if ($item->product->measurement_type === "Kilos" && $item->product->measurement_type !== "0")
+                                            {{ $item->placed_kilos }}kg
+                                        @elseif ($item->product->measurement_type === "Heads" && $item->product->measurement_type !== "0")
+                                            {{ $item->placed_heads }}
+                                        @else
+                                            --
+                                        @endif
+                                    </td>
+                                    <td style="text-align: center;">
                                         @if($item->original_price && $item->original_price > $item->unit_price)
                                             <span style="text-decoration: line-through; color: #999;">
                                                 ₱{{ number_format($item->original_price, 2) }}
@@ -254,21 +262,8 @@
                                             ₱{{ number_format($item->unit_price, 2) }}
                                         @endif
                                     </td>
-                                    <td>
-                                        @if ( $item->placed_heads !== "0")
-                                            {{ $item->placed_heads }}
-                                        @else
-                                            --
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ( $item->placed_kilos !== "0")
-                                            {{ $item->placed_kilos }}
-                                        @else
-                                            --
-                                        @endif
-                                    </td>
-                           
+
+
                                     <td style="text-align: center;">
                                         <span style="padding: 2px 6px; border-radius: 3px; font-size: 11px;
                                             @if($item->status === 'Pending') background-color: #fff3cd; color: #856404;
@@ -278,7 +273,7 @@
                                             {{ $item->status }}
                                         </span>
                                     </td>
-                                    <td style="text-align: right;">
+                                    <td style="text-align: center;">
                                         @php
                                             $oldTotal = $item->original_price * $item->supplier_quantity;
                                             $newTotal = $item->total_price;
