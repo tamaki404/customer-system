@@ -27,7 +27,8 @@
         <div class="content-header">
             <div class="contents-display">
                 <p>
-                    <a href="{{ route('orders.list') }}">< Delivery list</a>
+                    <a href="{{ route('orders.order', ['order_id' => $delivery->order_id]) }}">< Order view</a>
+
                 </p>
             </div>
 

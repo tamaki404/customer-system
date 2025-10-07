@@ -12,6 +12,7 @@ use App\Models\Delivery;
 use App\Models\DeliveryItems;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Auth;
+use App\Models\OrderHistory;
 
 class DeliveryController extends Controller
 {
@@ -85,6 +86,7 @@ class DeliveryController extends Controller
 
                     $deliveryItemId = 'DELI-' . $dateNow . '-' . strtoupper(Str::random(5));
                     $log_id = 'LOG-' . $dateNow . '-' . strtoupper(Str::random(5));
+                    $history_id = 'OH-' . $dateNow . '-' . strtoupper(Str::random(5));
 
                     DeliveryItems::create([
                         'delivery_item_id' => $deliveryItemId,
@@ -100,8 +102,6 @@ class DeliveryController extends Controller
                     ]);
                     
                 }
-
-
                     Logs::create([
                         'user_id'     => $user->user_id,
                         'action'      => 'Proccesed and save schedule for a PO',
@@ -109,6 +109,16 @@ class DeliveryController extends Controller
                         'description' => " Staff ($user->user_id) processed ('$order->order_id') for '($supplier_id)' ",
                         'entity'      => 'Delivery',
                         'entity_id'   => $delivery->id,
+                    ]);
+
+                    OrderHistory::create([
+                        'action_by' => Auth::user()->user_id,
+                        'order_id' => $request->order_id,
+                        'action_at' => now(),
+                        'history_id' => $history_id,
+                        'label' => 'Order',
+                        'amount' => $order->total_amount,
+                        'status' => $delivery->status,
                     ]);
             }
 

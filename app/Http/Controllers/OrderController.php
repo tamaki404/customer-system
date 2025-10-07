@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Delivery;
+use App\Models\DeliveryItems;
 use App\Models\Staffs;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
@@ -415,12 +416,12 @@ class OrderController extends Controller
         }
 
 
-        public function deliveryReceiptPdf($order_id)
+        public function deliveryReceiptPdf($delivery_id)
         {
-            $order = Orders::where('order_id', $order_id)->firstOrFail();
-            $items = $order->items;
-            $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('order', 'items'));
-            return $pdf->stream("delivery-receipt-{$order_id}.pdf");
+            $delivery = Delivery::where('delivery_id', $delivery_id)->firstOrFail();
+            $items = DeliveryItems::where('delivery_id', $delivery_id)->get();
+            $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('delivery', 'items'));
+            return $pdf->stream("delivery-receipt-{$delivery_id}.pdf");
         }
 
         public function salesInvoicePdf($order_id)

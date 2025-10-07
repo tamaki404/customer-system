@@ -1,139 +1,194 @@
+{{-- resources/views/pdf/orders/delivery_receipt.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery receipt</title>
+    <title>Delivery Receipt - {{ $delivery->delivery_id }}</title>
     <style>
-    body {
-        font-family: 'DejaVu Sans', sans-serif;
-    }
-</style>
-
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            font-size: 13px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            text-transform: uppercase;
+        }
+        .sub-header {
+            text-align: center;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .info-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .info-box {
+            width: 48%;
+            border: 1px solid #999;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .info-box h3 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            text-decoration: underline;
+        }
+        .info-box p {
+            margin: 2px 0;
+            line-height: 1.3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #666;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+        }
+        th {
+            background: #f3f3f3;
+        }
+        .totals {
+            text-align: right;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+        }
+        .signature-box {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature {
+            width: 45%;
+            text-align: center;
+        }
+        .signature p {
+            margin-top: 60px;
+            border-top: 1px solid #000;
+            display: inline-block;
+            padding-top: 5px;
+            font-size: 12px;
+        }
+        .note {
+            margin-top: 25px;
+            border-top: 1px dashed #aaa;
+            padding-top: 10px;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
 
-    <div>
-        <div class="header">
+    {{-- HEADER --}}
+    <div class="header">
+        <h1>Delivery Receipt</h1>
+        <p><strong>Sunny & Scramble</strong></p>
+        <p class="sub-header">Official record of goods delivered to the customer</p>
+    </div>
 
-            <div>
-                <h1>Delivery receipt</h1>
-                <p>Sunny & Scramble</p>
-                <p>Created at {{ $order->created_at}}</p>
+    {{-- BASIC DETAILS --}}
+    <div class="info-grid">
+        <div class="info-box">
+            <h3>Delivery Details</h3>
+            <p><strong>Company name:</strong> {{$delivery->order->supplier->company_name}}</p>
+            <p><strong>Delivery ID:</strong> {{ $delivery->delivery_id }}</p>
+            <p><strong>Order ID:</strong> {{ $delivery->order_id }}</p>
+            <p><strong>Scheduled Date:</strong> {{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</p>
+            <p><strong>Status:</strong> {{ ucfirst($delivery->status) }}</p>
+            @if($delivery->order->supplier->delivery)
+                <p><strong>Frequency:</strong> {{ $delivery->order->supplier->delivery->delivery_frequency ?? '—' }}</p>
+                <p><strong>Receiving Time:</strong>{{ \Carbon\Carbon::parse($delivery->order->supplier->delivery->receiving_time)->format(' g:i A') }}</p>
+                <p><strong>Delivery address 1:</strong> {{ $delivery->order->supplier->delivery->delivery_address_1 ?? '—' }}</p>
+                <p><strong>Delivery address 2:</strong> {{ $delivery->order->supplier->delivery->delivery_address_2 ?? '—' }}</p>
+                <p><strong>Delivery address 3:</strong> {{ $delivery->order->supplier->delivery->delivery_address_3 ?? '—' }}</p>
 
-                <style>
-                    .details-box p{
-                        margin: 0;
-                        font-size: 14px;
-                    }
-                </style>
-                <div class="details-box" style="display: flex; flex-direction: column; ">
-                    <p><strong>Delivery Information:</strong></p>
-                    <p>Delivery Receipt #: {{ $order->order_id }}</p>
-                    <p>Order ID: {{ $order->order_id }}</p>
-                    <p>PO ID: {{ $order->po_id }}</p>
-                    <p>Delivery Date: {{ $order->created_at->format('F j, Y') }}</p>
-                    
-                    <p style="margin-top: 15px;"><strong>Deliver To:</strong></p>
-                    <p>{{ $order->supplier->company_name }}</p>
-                    <p>
-                        <span>Mobile# {{ $order->supplier->mobile_no }}</span>
-                        <span>Telephone# {{ $order->supplier->telephone_no }}</span>
-                        <span>Email {{ $order->supplier->user->email_address }}</span>
-                    </p>
-                    <p>
-                        <span><strong>Delivery Address:</strong>
-                              {{ implode(', ', array_filter([
-                                    $order->supplier->home_street,
-                                    $order->supplier->home_subdivision,
-                                    $order->supplier->home_barangay,
-                                    $order->supplier->home_city,
-                                ])) }}
-                        </span>
-                    </p>
-                    <p>
-                        <span><strong>Billing Address:</strong>
-                              {{ implode(', ', array_filter([
-                                    $order->supplier->office_street,
-                                    $order->supplier->office_subdivision,
-                                    $order->supplier->office_barangay,
-                                    $order->supplier->office_city,
-                                ])) }}
-                        </span>
-                    </p>
-                </div>
-               
-
-            </div>
-
-        </div>
-        <div class="body">
-
-        <div class="content-body" style="padding: 10px; border: none; height: auto;">
-          
-            <div class="table-body" style="margin-top: 50px">
-                <p style="margin: 5px; font-weight: bold;">Delivered Items</p>
-                <div class="table-content" style="background: #fff; border-radius: 10px; overflow: hidden;">
-                    <table style="width:100%; border-collapse:collapse; border: 1px solid #fff; text-align: center;">
-                        <thead style="background-color: #fff;">
-                            <tr style="background:#fff; height: 30px; border-bottom: 1px solid #ccc;">
-                                <th style="vertical-align: middle;">#</th>
-                                <th style="vertical-align: middle;">Product ID</th>
-                                <th style="vertical-align: middle;">Description</th>
-                                <th style="vertical-align: middle;">Quantity Delivered</th>
-                            </tr>
-                        </thead>
-                        <tbody>                                
-                            @foreach ($items as $item)
-                                <tr>
-                                    <td style="vertical-align: middle;">{{$loop->iteration}}</td>
-                                    <td style="vertical-align: middle;">{{ $item->product_id }}</td>
-                                    <td style="vertical-align: middle;">{{ $item->product->name }}</td>
-                                    <td style="vertical-align: middle;">{{ $item->quantity }}</td>
-                                </tr>
-                            @endforeach
-
-                  
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
-       
-        </div>
-        </div>
-        <div class="footer" style="margin-top: 50px;">
-            {{-- <div style="display: flex; justify-content: space-between; margin-top: 30px;">
-                <div style="width: 45%;">
-                    <p><strong>Delivery Confirmation:</strong></p>
-                    <p>I acknowledge receipt of the above items in good condition.</p>
-                    <p>Date: _________________</p>
-                    <p>Signature: _________________</p>
-                </div>
-                <div style="width: 45%; text-align: right;">
-                    <p><strong>Delivery Personnel:</strong></p>
-                    <p>Name: _________________</p>
-                    <p>Signature: _________________</p>
-                    <p>Date: _________________</p>
-                </div>
-            </div> --}}
-            <div style="margin-top: 20px; text-align: center; font-size: 12px;">
-                    <p><strong>Authorized signatories to accept deliveries & sign invoices:</strong></p>
-                    <p>Name: 
-                            {{ implode(', ', array_filter([
-                                    $order->signatory->signatory_first_name,
-                                    $order->signatory->signatory_middle_name,
-                                    $order->signatory->signatory_last_name,
-
-                                ])) }}
-                    </p>
-                    <p>Signature: _________________</p>
-                    <p>Date: _________________</p>
-            </div>
+            @endif
         </div>
     </div>
 
-    
+    {{-- DELIVERY ITEMS TABLE --}}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th>Condition</th>
+                <th>Packaging</th>
+
+                <th>Heads/Kilos</th>
+                <th>Received</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($items as $item)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $item->orderItem->product->name ?? '—' }}</td>
+                    <td>{{ $item->orderItem->product->req->condition ?? '—' }}</td>
+                    <td>
+                        <div>
+                            <strong>prim:</strong>  {{ $item->orderItem->product->req->primary_packaging ?? '—' }},
+                        </div>
+                        <div>
+                            <strong>sec:</strong>  {{ $item->orderItem->product->req->secondary_packaging ?? '—' }},
+                        </div>                
+                    </td>
+
+                    <td>
+                        @if ($item->orderItem->product->measurement_type === "Kilos")
+                            {{ number_format($item->planned_kilos ?? 0, 2)  }}kg
+                        @else
+                            {{ $item->planned_heads }} heads
+                        @endif
+                    </td>
+                    <td></td>
+                    <td>{{ $item->remarks ?? '—' }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+
+    {{-- SIGNATURES --}}
+    <div class="signature-box">
+        <div class="signature">
+            <p>Delivered By<br><small>(Supplier Representative)</small></p>
+        </div>
+        <div class="signature">
+            <p>Received By<br><small>(Customer Representative)</small></p>
+        </div>
+    </div>
+
+    {{-- NOTES --}}
+    <div class="note">
+ 
+        <p><strong>Delivery Instructions:</strong> {{ $delivery->order->supplier->delivery->delivery_instructions ?? 'None provided' }}</p>
+        <p><strong>PPE Requirements:</strong> {{ $delivery->order->supplier->delivery->ppe_requirements ?? 'N/A' }}</p>
+        <p><em>Please verify all goods upon receipt. Discrepancies should be reported immediately to the supplier.</em></p>
+    </div>
+
+    <div class="footer" style="text-align:center; margin-top:30px;">
+        <p>Generated on {{ now()->format('F j, Y h:i A') }}</p>
+        <p>© {{ date('Y') }} Sunny & Scramble. All rights reserved.</p>
+    </div>
+
 </body>
 </html>

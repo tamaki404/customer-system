@@ -257,70 +257,49 @@
             <div>
                 <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
                     <div style="display: flex; flex-direction: row; gap: 10px">
-            <!-- Buttons -->
-            @if ($order->status === 'Processing' && Auth()->user()->role !== 'Supplier')
+                        <!-- Buttons -->
+                        @if ($order->status === 'Accepted' && Auth()->user()->role !== 'Supplier')
+                            <button type="button" 
+                                data-bs-toggle="modal" data-bs-target="#processModal" 
+                                data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                                class="btn-transition">
+                                    Process order
+                            </button>
+                        @elseif ($order->status === 'Processed' && Auth()->user()->role !== 'Supplier')
+                            <button type="button" 
+                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                                class="btn-transition">
+                                    Customer Order
+                            </button>
 
-                        <button type="button" 
-                            data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                            data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
-                            class="btn-transition">
-                                Customer Order
-                        </button>
 
-                        <button type="button" 
-                            data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                            data-url="{{ route('orders.delivery.pdf', $order->order_id) }}"
-                            class="btn-transition">
-                                Delivery Receipt
-                        </button>
 
-                                        <button type="button" 
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                                data-url="{{ route('orders.invoice.pdf', $order->order_id) }}"
-                                                class="btn-transition">
-                                            Sales Invoice
-                                        </button>
-            @elseif ($order->status === 'Accepted' && Auth()->user()->role !== 'Supplier')
-                        <button type="button" 
-                            data-bs-toggle="modal" data-bs-target="#processModal" 
-                            data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
-                            class="btn-transition">
-                                Process order
-                        </button>
-            @elseif ($order->status === 'Processed' && Auth()->user()->role !== 'Supplier')
-                        <button type="button" 
-                            data-bs-toggle="modal" data-bs-target="#processModal" 
-                            data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
-                            class="btn-transition">
-                                Action
-                        </button>
-            @endif
+                            <button type="button" 
+                                    data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                    data-url="{{ route('orders.invoice.pdf', $order->order_id) }}"
+                                    class="btn-transition">
+                                Sales Invoice
+                            </button>
+                        @endif
 
                     </div>
                 </div>
 
-
-                     
-
-
-            <!-- Modal -->
-            <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content" style="width: 100%">
-                <div class="modal-header">
-                    <p class="modal-title">PDF Preview</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" style="height: 80vh;">
-                    <iframe id="pdfFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+                <!-- Modal -->
+                <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content" style="width: 100%">
+                    <div class="modal-header">
+                        <p class="modal-title">PDF Preview</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" style="height: 80vh;">
+                        <iframe id="pdfFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+                    </div>
+                    </div>
                 </div>
                 </div>
-            </div>
-            </div>
-
-
-
-
 
                 <p>Status: {{$order->status}}</p>
               
@@ -357,7 +336,8 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($deliveries as $delivery)
-                                            <tr onclick="window.location.href='{{ route('order.delivery_items', ['delivery_id' => $delivery->delivery_id]) }}'">
+                                            {{-- <tr onclick="window.location.href='{{ route('order.delivery_items', ['delivery_id' => $delivery->delivery_id]) }}'"> --}}
+                                                <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $delivery->delivery_id }}</td>
                                                     <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
@@ -397,9 +377,17 @@
                                                     </td>
                                                     <td>{{ $delivery->remarks ?? '—' }}</td>
                                                     <td>
-                                                        {{-- <a href="{{ route('delivery.view', ['delivery_id' => $delivery->delivery_id]) }}" 
-                                                        class="btn btn-sm btn-primary">View</a> --}}
-                                                        <button>View delivery receipt</button>
+                                                        @if($delivery->status === "Scheduled" )
+                                                            <button type="button" 
+                                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                                                data-url="{{ route('orders.delivery.pdf', $delivery->delivery_id) }}"
+                                                                class="btn-transition">
+                                                                    Print DR
+                                                            </button>  
+                                                        @elseif($delivery->status === "Delivered" )
+                                                                Completed
+                                                        @endif
+
                                                     </td>
                                                 </tr>
                                             @endforeach
