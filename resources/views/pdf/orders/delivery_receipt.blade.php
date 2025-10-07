@@ -20,24 +20,73 @@
         }
         
         .header {
-            text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 25px;
             border-bottom: 3px solid #333;
             padding-bottom: 15px;
         }
         
+        .header-top {
+            display: table;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .logo-section {
+            display: table-cell;
+            width: 20%;
+            vertical-align: middle;
+            text-align: left;
+        }
+        
+        .logo-placeholder {
+            border: 2px solid #000;
+            padding: 10px;
+            text-align: center;
+            font-size: 10px;
+            color: #555;
+            height: 60px;
+            line-height: 40px;
+        }
+        
+        .header-center {
+            display: table-cell;
+            width: 50%;
+            vertical-align: middle;
+            text-align: center;
+        }
+        
+        .header-right {
+            display: table-cell;
+            width: 30%;
+            vertical-align: middle;
+            text-align: right;
+        }
+        
+        .header-info-box {
+            border: 2px solid #000;
+            padding: 8px;
+            background: #f9f9f9;
+            text-align: left;
+            font-size: 10px;
+            line-height: 1.6;
+        }
+        
+        .header-info-box div {
+            margin: 2px 0;
+        }
+        
         .header h1 {
-            font-size: 20px;
+            font-size: 28px;
             font-weight: bold;
-            color: #333;
-            margin-bottom: 2px;
+            color: #000;
+            margin-bottom: 5px;
             letter-spacing: 1px;
         }
         
         .company-name {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
-            color: #333;
+            color: #000;
             margin: 8px 0;
         }
         
@@ -47,23 +96,30 @@
             font-style: italic;
         }
         
+        .company-details {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ccc;
+        }
+        
         .info-section {
             margin-bottom: 20px;
         }
         
         .info-box {
-            border: 1px solid #333;
-            border-radius: 5px;
+            border: 2px solid #000;
             padding: 15px;
             background: #f9f9f9;
         }
         
         .info-box h3 {
             font-size: 13px;
-            color: #333;
+            color: #000;
             margin-bottom: 10px;
             padding-bottom: 5px;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid #000;
             font-weight: bold;
         }
         
@@ -77,25 +133,23 @@
             display: table-cell;
             width: 40%;
             font-weight: bold;
-            color: #333;
+            color: #000;
         }
         
         .info-value {
             display: table-cell;
             width: 60%;
-            color: #333;
+            color: #000;
         }
         
         .table-container {
-            margin: 10px 0;
-            border-radius: 5px;
+            margin: 20px 0;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            border: 1px solid #333;
-            border-radius: 5px;
+            border: 2px solid #000;
         }
         
         thead {
@@ -107,13 +161,13 @@
             text-align: center;
             font-size: 11px;
             font-weight: bold;
-            border: 1px solid #333;
+            border: 1px solid #000;
         }
         
         td {
             padding: 10px 6px;
             text-align: center;
-            border: 1px solid #333;
+            border: 1px solid #000;
             font-size: 10px;
         }
         
@@ -146,7 +200,7 @@
         }
         
         .signature-line {
-            border-top: 2px solid #333;
+            border-top: 2px solid #000;
             margin-top: 70px;
             padding-top: 8px;
             font-size: 11px;
@@ -161,7 +215,7 @@
         }
         
         .notes-section {
-            border-top: 2px dashed #333;
+            border-top: 2px dashed #000;
             padding-top: 15px;
             margin-top: 20px;
             background: #f9f9f9;
@@ -170,7 +224,7 @@
         
         .notes-section h4 {
             font-size: 12px;
-            color: #333;
+            color: #000;
             margin-bottom: 10px;
             font-weight: bold;
         }
@@ -182,7 +236,7 @@
         
         .note-label {
             font-weight: bold;
-            color: #333;
+            color: #000;
         }
         
         .disclaimer {
@@ -190,7 +244,7 @@
             font-style: italic;
             color: #555;
             font-size: 9px;
-            border-left: 3px solid #333;
+            border-left: 3px solid #000;
             padding-left: 10px;
         }
         
@@ -198,7 +252,7 @@
             text-align: center;
             margin-top: 40px;
             padding-top: 15px;
-            border-top: 2px solid #333;
+            border-top: 2px solid #000;
             font-size: 9px;
             color: #555;
         }
@@ -210,7 +264,7 @@
         .status-badge {
             display: inline-block;
             padding: 2px 8px;
-            border: 1px solid #333;
+            border: 1px solid #000;
             font-size: 10px;
             font-weight: bold;
         }
@@ -225,9 +279,24 @@
 
     {{-- HEADER --}}
     <div class="header">
-        <h1>DELIVERY RECEIPT</h1>
-        <p class="company-name">Sunny & Scramble</p>
-        <p class="sub-header">Official Record of Goods Delivered</p>
+        <div class="header-top">
+
+            <div class="header-center">
+                <h1>DELIVERY RECEIPT</h1>
+                <p class="company-name">Sunny & Scramble</p>
+                <p class="sub-header">Official Record of Goods Delivered</p>
+            </div>
+            <div class="header-right">
+                <div class="header-info-box">
+                    <div><strong>Delivery ID:</strong> {{ $delivery->delivery_id }}</div>
+                    <div><strong>Order ID:</strong> {{ $delivery->order_id }}</div>
+                    <div><strong>Date:</strong> {{ \Carbon\Carbon::parse($delivery->delivery_date)->format('M d, Y') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="company-details">
+            <strong>From:</strong> {{ $delivery->order->supplier->company_name }}
+        </div>
     </div>
 
     {{-- DELIVERY INFORMATION --}}
