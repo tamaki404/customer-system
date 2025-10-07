@@ -26,29 +26,21 @@ class Delivery extends Model
     ];
 
 
-    // A delivery belongs to a single order
     public function order()
     {
         return $this->belongsTo(Orders::class, 'order_id', 'order_id');
     }
 
-    // A delivery has many delivery items
     public function items()
     {
         return $this->hasMany(DeliveryItems::class, 'delivery_id', 'delivery_id');
     }
 
-    // A delivery belongs to a supplier (optional but useful)
     public function supplier()
     {
         return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Scopes
-    |--------------------------------------------------------------------------
-    */
 
     public function scopeScheduled($query)
     {
@@ -60,11 +52,6 @@ class Delivery extends Model
         return $query->where('status', 'Delivered');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Helpers
-    |--------------------------------------------------------------------------
-    */
 
     public function isDelivered()
     {

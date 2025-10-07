@@ -23,7 +23,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductSalesController;
 use App\Http\Controllers\GlobalCeilingController;
-
+use App\Http\Controllers\DeliveryController;
 
 Route::get('/registration/signin', function () {
     return view('registration.signin');
@@ -126,7 +126,10 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
     Route::post('/receipts/action/{receipt_id}', [ReceiptController::class, 'receiptAction'])->name('receipts.action');
     Route::post('/order/action', [OrderController::class, 'orderAction'])->name('order.action');
-    Route::post('/order/action/process', [OrderController::class, 'orderProcess'])->name('order.process');
+
+
+    //delivery
+    Route::post('/order/action/delivery/process', [DeliveryController::class, 'orderProcess'])->name('order.process');
 
     // order pdf views
     Route::get('/orders/{order_id}/customer-order', [OrderController::class, 'customerOrderPdf'])->name('orders.customer.pdf');
