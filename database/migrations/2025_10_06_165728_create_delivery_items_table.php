@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('product_id');                 
             $table->string('set_id')->nullable();
 
-            $table->decimal('planned_heads', 10, 2)->nullable();
             $table->decimal('planned_kilos', 10, 2)->nullable();
-            $table->decimal('received_heads', 10, 2)->nullable();
             $table->decimal('received_kilos', 10, 2)->nullable();
+            $table->integer('planned_heads')->nullable();
+            $table->integer('received_heads')->nullable();
 
             // Status (Pending, Delivered, Partial, Cancelled)
             $table->enum('status', ['Pending', 'Delivered', 'Partial', 'Cancelled'])->default('Pending');

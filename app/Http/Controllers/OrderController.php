@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Delivery;
 use App\Models\Staffs;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
@@ -58,11 +59,20 @@ class OrderController extends Controller
             } 
             elseif ($user->role === "Supplier") {
                 $supplier = Suppliers::where('user_id', $user->user_id)->first();
+
                 $orders = Orders::where('supplier_id', $supplier->supplier_id)
-                    ->withSum('receipts', 'total_amount') 
+                    ->with([
+                        'receipts', 
+                        'deliveries' => function ($q) {
+                            $q->with('deliveryItems');
+                        }
+                    ])
+                    ->withSum('receipts', 'total_amount')
                     ->get()
                     ->map(function ($order) {
+                        // --- Payment Status ---
                         $paid = $order->receipts_sum_total_amount ?? 0;
+                        $order->running_balance = max($order->total_amount - $paid, 0);
 
                         if ($paid >= $order->total_amount) {
                             $order->payment_status = 'Fully Paid';
@@ -72,9 +82,18 @@ class OrderController extends Controller
                             $order->payment_status = 'Unpaid';
                         }
 
+                        // --- Delivery Completion ---
+                        $total = $order->deliveries->count();
+                        $completed = $order->deliveries->where('status', 'Completed')->count();
+                        $completionRatio = $total > 0 ? "{$completed}/{$total}" : "0/0";
+
+
+
                         return $order;
                     });
             }
+
+
 
             return view('orders.list', [
                 'user' => $user,
@@ -173,11 +192,17 @@ class OrderController extends Controller
          
             $order = Orders::with(['items.productSetting'])->where('order_id', $order_id)->first();
             $items = $order->items;
+            $deliveries = Delivery::when($order_id, function ($query) use ($order_id) {
+                    $query->where('order_id', $order_id);
+                })
+                ->orderBy('delivery_date', 'asc')
+                ->get();
 
             return view('orders.order', [
                 'user' => $user,
                 'order' => $order,
                 'items' => $items,
+                'deliveries' => $deliveries,
 
             ]);
         }
@@ -307,81 +332,6 @@ class OrderController extends Controller
         public function orderAction(Request $request)
         {
             \Log::info('Placing purchase order items - Request Data:', $request->all());
-            
-            try {
-                $validated = $request->validate([
-                    'order_id' => 'required|exists:orders,order_id',
-                    'status'   => 'required|in:Accepted,Rejected',
-                ]);
-                
-            } catch (\Illuminate\Validation\ValidationException $e) {
-                \Log::error('Purchase order submission failed:', $e->errors());
-                return redirect()->back()
-                    ->withErrors($e->validator)
-                    ->withInput();
-            }
-            
-            try {
-                DB::beginTransaction();
-
-                $date = date('Ymd');
-                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
-                $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
-
-                $order = Orders::where('order_id', $validated['order_id'])->firstOrFail();
-                $po = PurchaseOrders::where('po_id', $order->po_id)->firstOrFail();
-
-                $data = [
-                    'status'     => $validated['status'],
-                    'updated_at' =>now(),
-                ];
-
-                $order->update($data);
-                $po->update($data);
-
-
-                $user_id = Auth::user()->user_id;
-
-
-                Logs::create([
-                    'user_id' => Auth::user()->user_id,
-                    'action' => 'Commited on an order',
-                    'log_id' => $log_id,
-                    'description' => "Staff '{$user_id}' {$request->status} order '{$request->order_id}'",
-                ]);
-
-                OrderHistory::create([
-                    'action_by' => Auth::user()->user_id,
-                    'order_id' => $request->order_id,
-                    'action_at' => now(),
-                    'history_id' => $history_id,
-                    'label' => 'Order',
-                    'amount' => $order->total_amount,
-                    'status' => $request->status,
-                ]);
-                
-                DB::commit();
-                
-                return back()->with('success', 'Order status updated successfully.');
-
-                    
-            } catch (\Exception $e) {
-                DB::rollBack();
-                \Log::error('Order update failed:', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'request_data' => $request->all(),
-                ]);
-                
-                return redirect()->back()
-                    ->with('error', 'Order update failed: ' . $e->getMessage() . 
-                        '. Please check the logs for more details.')
-                    ->withInput();
-            }
-        }
-
-        public function orderProcess(Request $request)
-        {
             
             try {
                 $validated = $request->validate([

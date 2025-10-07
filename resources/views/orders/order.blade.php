@@ -255,25 +255,24 @@
 
             </div>
             <div>
-
+                <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
+                    <div style="display: flex; flex-direction: row; gap: 10px">
             <!-- Buttons -->
             @if ($order->status === 'Processing' && Auth()->user()->role !== 'Supplier')
-                <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
-                    <p style="margin: 0"><span>Print</span></p>
-                    <div style="display: flex; flex-direction: row; gap: 10px">
-                        <button type="button" 
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                                data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
-                                                class="btn-transition">
-                                            Customer Order
-                                        </button>
 
-                                        <button type="button" 
-                                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                                data-url="{{ route('orders.delivery.pdf', $order->order_id) }}"
-                                                class="btn-transition">
-                                            Delivery Receipt
-                                        </button>
+                        <button type="button" 
+                            data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                            data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                            class="btn-transition">
+                                Customer Order
+                        </button>
+
+                        <button type="button" 
+                            data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                            data-url="{{ route('orders.delivery.pdf', $order->order_id) }}"
+                            class="btn-transition">
+                                Delivery Receipt
+                        </button>
 
                                         <button type="button" 
                                                 data-bs-toggle="modal" data-bs-target="#pdfModal" 
@@ -281,21 +280,26 @@
                                                 class="btn-transition">
                                             Sales Invoice
                                         </button>
-                    </div>
-                </div>
             @elseif ($order->status === 'Accepted' && Auth()->user()->role !== 'Supplier')
-                <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
-                    <div style="display: flex; flex-direction: row; gap: 10px">
                         <button type="button" 
                             data-bs-toggle="modal" data-bs-target="#processModal" 
                             data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
                             class="btn-transition">
                                 Process order
                         </button>
+            @elseif ($order->status === 'Processed' && Auth()->user()->role !== 'Supplier')
+                        <button type="button" 
+                            data-bs-toggle="modal" data-bs-target="#processModal" 
+                            data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                            class="btn-transition">
+                                Action
+                        </button>
+            @endif
+
                     </div>
                 </div>
 
-            @endif
+
                      
 
 
@@ -331,7 +335,81 @@
         </div>
 
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
-          
+                            <div class="table-body" style="margin-top: 50px">
+                                <p style="margin: 5px; font-weight: bold;">Scheduled deliveries</p>
+                                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
+
+
+                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                                        <thead style="background-color: #f8f8f8;">
+                                            <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                                <th>#</th>
+                                                <th>Delivery ID</th>
+                                                <th>Scheduled Date</th>
+                                                <th>Delivered Date</th>
+                                                <th>Items</th>
+                                                <th>Total Heads</th>
+                                                <th>Total Kilos</th>
+                                                <th>Status</th>
+                                                <th>Remarks</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($deliveries as $delivery)
+                                            <tr onclick="window.location.href='{{ route('order.delivery_items', ['delivery_id' => $delivery->delivery_id]) }}'">
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $delivery->delivery_id }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
+                                                    <td>
+                                                        
+                                                    </td>
+                                                    <td>{{($delivery->deliveryItems)->count()}}</td>
+                                                    <td>
+                                                        @php
+                                                            $totalHeads = $delivery->deliveryItems->sum('planned_heads');
+                                                        @endphp
+
+                                                        @if ($totalHeads > 0)
+                                                            {{ $totalHeads }} heads
+                                                        @else
+                                                            —
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @php
+                                                            $totalKilos = $delivery->deliveryItems->sum('planned_kilos');
+                                                        @endphp
+                                                        @if ($totalKilos > 0)
+                                                            {{ $totalKilos }} kg
+                                                        @else
+                                                            —
+                                                        @endif
+                                                    </td>
+
+                                                    <td>
+                                                        <span style=" color:
+                                                            {{ $delivery->status === 'Completed' ? 'green' :
+                                                            ($delivery->status === 'Scheduled' ? 'orange' :
+                                                            ($delivery->status === 'In Transit' ? 'blue' : 'gray')) }}">
+                                                            {{ $delivery->status }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ $delivery->remarks ?? '—' }}</td>
+                                                    <td>
+                                                        {{-- <a href="{{ route('delivery.view', ['delivery_id' => $delivery->delivery_id]) }}" 
+                                                        class="btn btn-sm btn-primary">View</a> --}}
+                                                        <button>View delivery receipt</button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+                        
+                            </div>
                             <div class="table-body" style="margin-top: 50px">
                                 <p style="margin: 5px; font-weight: bold;">Order items</p>
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">

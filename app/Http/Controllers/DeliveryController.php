@@ -10,13 +10,26 @@ use Carbon\Carbon;
 use App\Models\Orders;
 use App\Models\Delivery;
 use App\Models\DeliveryItems;
+use App\Models\Logs;
+use Illuminate\Support\Facades\Auth;
 
 class DeliveryController extends Controller
 {
 
-
+        public static function randomBase36String(int $length): string
+        {
+            $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $str = '';
+            for ($i = 0; $i < $length; $i++) {
+                $str .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            return $str;
+        }
     public function orderProcess(Request $request)
     {
+
+        $user = Auth()->user();
+
         $request->validate([
             'order_id' => 'required|exists:orders,order_id',
             'items' => 'required|array',
@@ -26,6 +39,7 @@ class DeliveryController extends Controller
             DB::beginTransaction();
 
             $order = Orders::with(['supplier.delivery', 'items'])->where('order_id', $request->order_id)->firstOrFail();
+            $supplier_id = $order->supplier_id;
             $supplierDelivery = $order->supplier->delivery;
 
             if (!$supplierDelivery) {
@@ -41,7 +55,6 @@ class DeliveryController extends Controller
 
             $dateNow = now()->format('Ymd');
 
-            // 🔹 Create a delivery for each day
             foreach ($deliveryDays as $dayName) {
                 $deliveryDate = Carbon::parse("next $dayName");
 
@@ -64,7 +77,6 @@ class DeliveryController extends Controller
                     'delivery_instructions' => $supplierDelivery->delivery_instructions,
                 ]);
 
-                // 🔹 For each order item, get the user-input per-day distribution
                 foreach ($order->items as $item) {
                     $inputValue = $request->input("items.{$item->id}.{$dayName}");
                     $quantity = $inputValue ? floatval($inputValue) : 0;
@@ -72,6 +84,7 @@ class DeliveryController extends Controller
                     if ($quantity <= 0) continue;
 
                     $deliveryItemId = 'DELI-' . $dateNow . '-' . strtoupper(Str::random(5));
+                    $log_id = 'LOG-' . $dateNow . '-' . strtoupper(Str::random(5));
 
                     DeliveryItems::create([
                         'delivery_item_id' => $deliveryItemId,
@@ -85,10 +98,20 @@ class DeliveryController extends Controller
                         'received_kilos'   => 0,
                         'status'           => 'Pending',
                     ]);
+                    
                 }
+
+
+                    Logs::create([
+                        'user_id'     => $user->user_id,
+                        'action'      => 'Proccesed and save schedule for a PO',
+                        'log_id'      => $log_id,
+                        'description' => " Staff ($user->user_id) processed ('$order->order_id') for '($supplier_id)' ",
+                        'entity'      => 'Delivery',
+                        'entity_id'   => $delivery->id,
+                    ]);
             }
 
-            // Update order status
             $order->update(['status' => 'Processed']);
 
             DB::commit();
@@ -101,5 +124,22 @@ class DeliveryController extends Controller
             return back()->with('error', 'Failed to process order: ' . $e->getMessage());
         }
     }
+
+
+        public function deliveryView($delivery_id, Request $request)
+        {
+            $user = Auth::user();
+            $delivery = Delivery::where('delivery_id', $delivery_id)->first();
+            $items = DeliveryItems::where('delivery_id', $delivery_id) 
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+            return view('deliveries.items', [
+                'user' => $user,
+                'items' => $items,
+                'delivery' => $delivery,
+
+            ]);
+        }
 }
 

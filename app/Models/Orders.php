@@ -20,7 +20,10 @@ class Orders extends Model
     'order_date' => 'datetime',
 ];
     
-
+    public function item()
+    {
+        return $this->hasOne(OrderItem::class, 'order_id', 'order_id');
+    }
     public function items()
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'order_id');
@@ -44,6 +47,10 @@ class Orders extends Model
     public function signatory()
 {
     return $this->belongsTo(Signatories::class, 'supplier_id', 'supplier_id');
+}
+public function deliveries()
+{
+    return $this->hasMany(Delivery::class, 'order_id', 'order_id');
 }
 
 

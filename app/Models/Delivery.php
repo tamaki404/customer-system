@@ -40,6 +40,10 @@ class Delivery extends Model
     {
         return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
     }
+    public function deliveryItems()
+    {
+        return $this->hasMany(DeliveryItems::class, 'delivery_id', 'delivery_id');
+    }
 
 
     public function scopeScheduled($query)
@@ -57,4 +61,6 @@ class Delivery extends Model
     {
         return $this->status === 'Delivered';
     }
+
+
 }

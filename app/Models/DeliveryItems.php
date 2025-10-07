@@ -25,15 +25,6 @@ class DeliveryItems extends Model
         'status',
     ];
 
-    protected $casts = [
-        'planned_heads' => 'decimal:2',
-        'planned_kilos' => 'decimal:2',
-        'received_heads' => 'decimal:2',
-        'received_kilos' => 'decimal:2',
-    ];
-
-
-
     // A delivery item belongs to a delivery
     public function delivery()
     {
