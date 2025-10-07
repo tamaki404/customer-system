@@ -270,7 +270,7 @@
                                 <div><strong>S:</strong> {{ $item->product->req->secondary_packaging ?? '—' }}</div>
                             </td>
                             <td>{{ $item->product->req->labeling_requirement ?? '—' }}</td>
-                            <td>{{ $item->product->req->rejection_parameters ?? '—' }}</td>
+                            <td>{{ $item->product->req->rejection_parameter ?? '—' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
