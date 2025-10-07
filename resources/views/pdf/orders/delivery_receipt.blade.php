@@ -5,92 +5,219 @@
     <meta charset="UTF-8">
     <title>Delivery Receipt - {{ $delivery->delivery_id }}</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            margin: 0;
-            padding: 20px;
+            padding: 30px;
             color: #333;
-            font-size: 13px;
+            font-size: 11px;
+            line-height: 1.5;
         }
+        
         .header {
             text-align: center;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #333;
+            padding-bottom: 15px;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2px;
+            letter-spacing: 1px;
+        }
+        
+        .company-name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            margin: 8px 0;
+        }
+        
+        .sub-header {
+            font-size: 11px;
+            color: #555;
+            font-style: italic;
+        }
+        
+        .info-section {
             margin-bottom: 20px;
         }
-        .header h1 {
-            margin: 0;
-            font-size: 22px;
-            text-transform: uppercase;
-        }
-        .sub-header {
-            text-align: center;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-        .info-grid {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
+        
         .info-box {
-            width: 48%;
-            border: 1px solid #999;
-            padding: 10px;
-            border-radius: 4px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            background: #f9f9f9;
         }
+        
         .info-box h3 {
-            margin: 0 0 5px 0;
-            font-size: 14px;
-            text-decoration: underline;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #333;
+            font-weight: bold;
         }
-        .info-box p {
-            margin: 2px 0;
-            line-height: 1.3;
+        
+        .info-row {
+            display: table;
+            width: 100%;
+            margin: 5px 0;
         }
+        
+        .info-label {
+            display: table-cell;
+            width: 40%;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .info-value {
+            display: table-cell;
+            width: 60%;
+            color: #333;
+        }
+        
+        .table-container {
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            border: 1px solid #333;
+            border-radius: 5px;
         }
-        th, td {
-            border: 1px solid #666;
-            padding: 8px;
-            text-align: center;
-            font-size: 12px;
+        
+        thead {
+            background: #e0e0e0;
         }
+        
         th {
-            background: #f3f3f3;
+            padding: 10px 6px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid #333;
         }
-        .totals {
-            text-align: right;
+        
+        td {
+            padding: 10px 6px;
+            text-align: center;
+            border: 1px solid #333;
+            font-size: 10px;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        
+        .packaging-details {
+            text-align: left;
+            font-size: 9px;
+            line-height: 1.4;
+        }
+        
+        .packaging-details div {
+            margin: 2px 0;
+        }
+        
+        .signature-section {
+            display: table;
+            width: 100%;
+            margin-top: 50px;
+            margin-bottom: 30px;
+        }
+        
+        .signature-box {
+            display: table-cell;
+            width: 50%;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .signature-line {
+            border-top: 2px solid #333;
+            margin-top: 70px;
+            padding-top: 8px;
+            font-size: 11px;
             font-weight: bold;
         }
+        
+        .signature-role {
+            font-size: 9px;
+            color: #555;
+            font-style: italic;
+            margin-top: 3px;
+        }
+        
+        .notes-section {
+            border-top: 2px dashed #333;
+            padding-top: 15px;
+            margin-top: 20px;
+            background: #f9f9f9;
+            padding: 15px;
+        }
+        
+        .notes-section h4 {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .note-item {
+            margin: 8px 0;
+            font-size: 10px;
+        }
+        
+        .note-label {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .disclaimer {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+            font-size: 9px;
+            border-left: 3px solid #333;
+            padding-left: 10px;
+        }
+        
         .footer {
-            margin-top: 40px;
-            font-size: 12px;
-        }
-        .signature-box {
-            margin-top: 50px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .signature {
-            width: 45%;
             text-align: center;
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 2px solid #333;
+            font-size: 9px;
+            color: #555;
         }
-        .signature p {
-            margin-top: 60px;
-            border-top: 1px solid #000;
+        
+        .footer p {
+            margin: 3px 0;
+        }
+        
+        .status-badge {
             display: inline-block;
-            padding-top: 5px;
-            font-size: 12px;
+            padding: 2px 8px;
+            border: 1px solid #333;
+            font-size: 10px;
+            font-weight: bold;
         }
-        .note {
-            margin-top: 25px;
-            border-top: 1px dashed #aaa;
-            padding-top: 10px;
-            font-size: 12px;
+        
+        .empty-cell {
+            background: #f0f0f0;
+            color: #888;
         }
     </style>
 </head>
@@ -98,95 +225,152 @@
 
     {{-- HEADER --}}
     <div class="header">
-        <h1>Delivery Receipt</h1>
-        <p><strong>Sunny & Scramble</strong></p>
-        <p class="sub-header">Official record of goods delivered to the customer</p>
+        <h1>DELIVERY RECEIPT</h1>
+        <p class="company-name">Sunny & Scramble</p>
+        <p class="sub-header">Official Record of Goods Delivered</p>
     </div>
 
-    {{-- BASIC DETAILS --}}
-    <div class="info-grid">
+    {{-- DELIVERY INFORMATION --}}
+    <div class="info-section">
         <div class="info-box">
-            <h3>Delivery Details</h3>
-            <p><strong>Company name:</strong> {{$delivery->order->supplier->company_name}}</p>
-            <p><strong>Delivery ID:</strong> {{ $delivery->delivery_id }}</p>
-            <p><strong>Order ID:</strong> {{ $delivery->order_id }}</p>
-            <p><strong>Scheduled Date:</strong> {{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</p>
-            <p><strong>Status:</strong> {{ ucfirst($delivery->status) }}</p>
+            <h3>Delivery Information</h3>
+            
+            <div class="info-row">
+                <span class="info-label">Company Name:</span>
+                <span class="info-value">{{ $delivery->order->supplier->company_name }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Delivery ID:</span>
+                <span class="info-value">{{ $delivery->delivery_id }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Order ID:</span>
+                <span class="info-value">{{ $delivery->order_id }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Scheduled Date:</span>
+                <span class="info-value">{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Status:</span>
+                <span class="info-value">
+                    <span class="status-badge">{{ ucfirst($delivery->status) }}</span>
+                </span>
+            </div>
+            
             @if($delivery->order->supplier->delivery)
-                <p><strong>Frequency:</strong> {{ $delivery->order->supplier->delivery->delivery_frequency ?? '—' }}</p>
-                <p><strong>Receiving Time:</strong>{{ \Carbon\Carbon::parse($delivery->order->supplier->delivery->receiving_time)->format(' g:i A') }}</p>
-                <p><strong>Delivery address 1:</strong> {{ $delivery->order->supplier->delivery->delivery_address_1 ?? '—' }}</p>
-                <p><strong>Delivery address 2:</strong> {{ $delivery->order->supplier->delivery->delivery_address_2 ?? '—' }}</p>
-                <p><strong>Delivery address 3:</strong> {{ $delivery->order->supplier->delivery->delivery_address_3 ?? '—' }}</p>
-
+                <div class="info-row">
+                    <span class="info-label">Delivery Frequency:</span>
+                    <span class="info-value">{{ $delivery->order->supplier->delivery->delivery_frequency ?? '—' }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Receiving Time:</span>
+                    <span class="info-value">{{ \Carbon\Carbon::parse($delivery->order->supplier->delivery->receiving_time)->format('g:i A') }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Delivery Address:</span>
+                    <span class="info-value">
+                        {{ $delivery->order->supplier->delivery->delivery_address_1 ?? '' }}
+                        @if($delivery->order->supplier->delivery->delivery_address_2)
+                            <br>{{ $delivery->order->supplier->delivery->delivery_address_2 }}
+                        @endif
+                        @if($delivery->order->supplier->delivery->delivery_address_3)
+                            <br>{{ $delivery->order->supplier->delivery->delivery_address_3 }}
+                        @endif
+                    </span>
+                </div>
             @endif
         </div>
     </div>
 
     {{-- DELIVERY ITEMS TABLE --}}
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Product</th>
-                <th>Condition</th>
-                <th>Packaging</th>
-
-                <th>Heads/Kilos</th>
-                <th>Received</th>
-                <th>Remarks</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($items as $item)
+    <div class="table-container">
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->orderItem->product->name ?? '—' }}</td>
-                    <td>{{ $item->orderItem->product->req->condition ?? '—' }}</td>
-                    <td>
-                        <div>
-                            <strong>prim:</strong>  {{ $item->orderItem->product->req->primary_packaging ?? '—' }},
-                        </div>
-                        <div>
-                            <strong>sec:</strong>  {{ $item->orderItem->product->req->secondary_packaging ?? '—' }},
-                        </div>                
-                    </td>
-
-                    <td>
-                        @if ($item->orderItem->product->measurement_type === "Kilos")
-                            {{ number_format($item->planned_kilos ?? 0, 2)  }}kg
-                        @else
-                            {{ $item->planned_heads }} heads
-                        @endif
-                    </td>
-                    <td></td>
-                    <td>{{ $item->remarks ?? '—' }}</td>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 20%;">Product</th>
+                    <th style="width: 12%;">Condition</th>
+                    <th style="width: 18%;">Packaging</th>
+                    <th style="width: 12%;">Quantity</th>
+                    <th style="width: 13%;">Received</th>
+                    <th style="width: 20%;">Remarks</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-
+            </thead>
+            <tbody>
+                @foreach ($items as $item)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td style="text-align: left; font-weight: bold;">
+                            {{ $item->orderItem->product->name ?? '—' }}
+                        </td>
+                        <td>{{ $item->orderItem->product->req->condition ?? '—' }}</td>
+                        <td>
+                            <div class="packaging-details">
+                                <div><strong>Primary:</strong> {{ $item->orderItem->product->req->primary_packaging ?? '—' }}</div>
+                                <div><strong>Secondary:</strong> {{ $item->orderItem->product->req->secondary_packaging ?? '—' }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            @if ($item->orderItem->product->measurement_type === "Kilos")
+                                <strong>{{ number_format($item->planned_kilos ?? 0, 2) }}</strong> kg
+                            @else
+                                <strong>{{ $item->planned_heads }}</strong> heads
+                            @endif
+                        </td>
+                        <td class="empty-cell">___________</td>
+                        <td style="text-align: left;">{{ $item->remarks ?? '—' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
     {{-- SIGNATURES --}}
-    <div class="signature-box">
-        <div class="signature">
-            <p>Delivered By<br><small>(Supplier Representative)</small></p>
+    <div class="signature-section">
+        <div class="signature-box">
+            <div class="signature-line">
+                Delivered By
+            </div>
+            <div class="signature-role">SNS Representative</div>
         </div>
-        <div class="signature">
-            <p>Received By<br><small>(Customer Representative)</small></p>
+        <div class="signature-box">
+            <div class="signature-line">
+                Received By
+            </div>
+            <div class="signature-role">Authorized Signatory</div>
         </div>
     </div>
 
-    {{-- NOTES --}}
-    <div class="note">
- 
-        <p><strong>Delivery Instructions:</strong> {{ $delivery->order->supplier->delivery->delivery_instructions ?? 'None provided' }}</p>
-        <p><strong>PPE Requirements:</strong> {{ $delivery->order->supplier->delivery->ppe_requirements ?? 'N/A' }}</p>
-        <p><em>Please verify all goods upon receipt. Discrepancies should be reported immediately to the supplier.</em></p>
+    {{-- NOTES & INSTRUCTIONS --}}
+    <div class="notes-section">
+        <h4>Additional Information</h4>
+        
+        <div class="note-item">
+            <span class="note-label">Delivery Instructions:</span> 
+            {{ $delivery->order->supplier->delivery->delivery_instructions ?? 'None provided' }}
+        </div>
+        
+        <div class="note-item">
+            <span class="note-label">PPE Requirements:</span> 
+            {{ $delivery->order->supplier->delivery->ppe_requirements ?? 'N/A' }}
+        </div>
+        
+        <div class="disclaimer">
+            Please verify all goods upon receipt. Any discrepancies must be reported immediately to the supplier. 
+            This document serves as proof of delivery and acceptance of goods.
+        </div>
     </div>
 
-    <div class="footer" style="text-align:center; margin-top:30px;">
-        <p>Generated on {{ now()->format('F j, Y h:i A') }}</p>
+    {{-- FOOTER --}}
+    <div class="footer">
+        <p>Generated on {{ now()->format('F j, Y \a\t h:i A') }}</p>
         <p>© {{ date('Y') }} Sunny & Scramble. All rights reserved.</p>
     </div>
 
