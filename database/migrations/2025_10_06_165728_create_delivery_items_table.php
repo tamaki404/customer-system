@@ -21,8 +21,6 @@ return new class extends Migration
             $table->integer('planned_heads')->nullable();
             $table->integer('received_heads')->nullable();
 
-
-
             // Status (Pending, Delivered, Partial, Cancelled)
             $table->enum('status', ['Pending', 'Delivered', 'Partial', 'Cancelled'])->default('Pending');
 

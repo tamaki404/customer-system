@@ -131,6 +131,8 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     //delivery
     Route::post('/order/action/delivery/process', [DeliveryController::class, 'orderProcess'])->name('order.process');
     Route::get('/order/deliveries/{delivery_id}',  [DeliveryController::class, 'deliveryView'])->name('order.delivery_items');
+    Route::post('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
+
 
     // order pdf views
     Route::get('/orders/{order_id}/customer-order', [OrderController::class, 'customerOrderPdf'])->name('orders.customer.pdf');

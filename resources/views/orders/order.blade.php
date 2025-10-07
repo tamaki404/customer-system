@@ -222,9 +222,9 @@
         </div>
     </div>
     {{-- file an action --}}
-    <div class="modal fade" id="fileanaction" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+    <div class="modal fade" id="fileanaction" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true" >
         <div class="modal-dialog">
-            <form class="modal-content" method="POST"  enctype="multipart/form-data" >
+            <form class="modal-content" method="POST"  enctype="multipart/form-data" action="{{ route('delivery.confirm') }}">
 
                 @csrf
                 @if ($errors->any())
@@ -296,25 +296,26 @@
                                     </thead>
                                     <tbody>
                                         @foreach($items as $item)
-                                            <tr>
-                                                <td>{{ $item->product_id }}</td>
-                                                <td>{{ $item->product->name }}</td>
-                                                <td>
-                                                    @if ($item->product->measurement_type === "Kilos")
-                                                        {{ $item->placed_kilos }} kilos
-                                                    @elseif ($item->product->measurement_type === "Heads")
-                                                        {{ $item->placed_heads }} heads
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if ($item->product->measurement_type === "Kilos")
-                                                        <input type="text" name="received_kilos">
-                                                    @elseif ($item->product->measurement_type === "Heads")
-                                                        <input type="text" name="received_heads">
-                                                    @endif                                                
-                                                </td>
-                                            </tr>
+                                        <tr>
+                                            <td>{{ $item->product_id }}</td>
+                                            <td>{{ $item->product->name }}</td>
+                                            <td>
+                                                @if ($item->product->measurement_type === "Kilos")
+                                                    {{ $item->placed_kilos }} kilos
+                                                @elseif ($item->product->measurement_type === "Heads")
+                                                    {{ $item->placed_heads }} heads
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($item->product->measurement_type === "Kilos")
+                                                    <input type="number" name="received_kilos[{{ $item->delivery_item_id }}]" step="0.01">
+                                                @elseif ($item->product->measurement_type === "Heads")
+                                                    <input type="number" name="received_heads[{{ $item->delivery_item_id }}]">
+                                                @endif
+                                            </td>
+                                        </tr>
                                         @endforeach
+
                                     </tbody>
                                 </table>
                             </div>

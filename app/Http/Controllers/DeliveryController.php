@@ -135,6 +135,49 @@ class DeliveryController extends Controller
         }
     }
 
+    public function confirmDelivery(Request $request)
+{
+    $request->validate([
+        'order_id' => 'required|string',
+        'status' => 'required|string|in:Delivered',
+        'feedback' => 'nullable|string|max:200',
+        'images' => 'required|array',
+        'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+    ]);
+
+    $delivery = Delivery::where('order_id', $request->order_id)->firstOrFail();
+
+    // ✅ Handle images
+    $imagePaths = [];
+    foreach ($request->file('images') as $image) {
+        $filename = time().'_'.$image->getClientOriginalName();
+        $path = $image->storeAs('public/pod_images', $filename);
+        $imagePaths[] = $path;
+    }
+
+    // ✅ Update delivery table
+    $delivery->update([
+        'status' => $request->status,
+        'feedback' => $request->feedback,
+        'delivered_at' => now(),
+        'image_filename' => json_encode($imagePaths), // store multiple file paths
+        'image_mime_type' => 'multiple',
+    ]);
+
+    // ✅ Update each delivery_item
+    foreach ($request->received_heads ?? [] as $id => $value) {
+        DeliveryItems::where('delivery_item_id', $id)
+            ->update(['received_heads' => $value, 'status' => 'Delivered']);
+    }
+
+    foreach ($request->received_kilos ?? [] as $id => $value) {
+        DeliveryItems::where('delivery_item_id', $id)
+            ->update(['received_kilos' => $value, 'status' => 'Delivered']);
+    }
+
+    return redirect()->back()->with('success', 'Delivery updated successfully.');
+}
+
 
         public function deliveryView($delivery_id, Request $request)
         {
@@ -151,5 +194,9 @@ class DeliveryController extends Controller
 
             ]);
         }
+
+
+
+
 }
 
