@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('delivery_date');            
             $table->enum('status', ['Scheduled', 'In Transit', 'Delivered', 'Cancelled'])->default('Scheduled');
             $table->text('notes')->nullable();
+            $table->string('feedback')->nullable();
 
             $table->string('image_mime_type')->nullable();
             $table->string('image_filename')->nullable();
@@ -24,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
         });
         
-        DB::statement('ALTER TABLE receipts ADD image MEDIUMBLOB NULL');
+        DB::statement('ALTER TABLE deliveries ADD image MEDIUMBLOB NULL');
 
     }
 
