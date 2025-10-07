@@ -222,8 +222,6 @@
         </div>
     </div>
 
-
-
    <div class="content-bg" >
         <div class="content-header">
             <div class="contents-display">

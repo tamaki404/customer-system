@@ -6,29 +6,30 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('delivery_items', function (Blueprint $table) {
             $table->id();
-            $table->string('order_item_id')->unique();
-            $table->string('order_id');
-            $table->string('product_id');
-            $table->string('set_id');
-            $table->string('placed_heads')->nullable();
-            $table->string('placed_kilos')->nullable();
+            $table->string('delivery_item_id')->unique(); 
+            $table->string('delivery_id');               
+            $table->string('order_item_id');             
+            $table->string('product_id');                 
+            $table->string('set_id')->nullable();
 
+            $table->decimal('planned_heads', 10, 2)->nullable();
+            $table->decimal('planned_kilos', 10, 2)->nullable();
+            $table->decimal('received_heads', 10, 2)->nullable();
+            $table->decimal('received_kilos', 10, 2)->nullable();
 
+            // Status (Pending, Delivered, Partial, Cancelled)
+            $table->enum('status', ['Pending', 'Delivered', 'Partial', 'Cancelled'])->default('Pending');
 
             $table->timestamps();
+
+
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('delivery_items');
