@@ -213,7 +213,7 @@
                                     <th>PO ID</th>
                                     <th>Supplier</th>
                                     <th>Items</th>
-                                    <th>Quantity</th>
+                                    <th>Heads/Kilos</th>
                                     <th>Total Amount</th>
                                     <th>Status</th>
                                     <th>Confirmed By</th>
@@ -227,10 +227,37 @@
                                         <td>{{$po->po_id}}</td>
                                         <td>{{ $po->supplier->company_name ?? 'N/A' }}</td>
                                         <td>{{ $po->items->count() }}</td>
-                                        <td>
-                                            {{ $po->items->sum(fn($item) => ($item->placed_kilos ?? 0) + ($item->placed_heads ?? 0)) }}
+                                                @php
+                                                    $totalHeads = 0;
+                                                    $totalKilos = 0;
 
-                                        </td>
+                                                    foreach ($po->items as $item) {
+                                                        if ($item->product->measurement_type === 'Kilos') {
+                                                            $totalKilos += $item->placed_kilos ?? 0;
+                                                        } elseif ($item->product->measurement_type === 'Heads') {
+                                                            $totalHeads += $item->placed_heads ?? 0;
+                                                        } elseif ($item->product->measurement_type === 'Heads&Kilos') {
+                                                            $totalHeads += $item->placed_heads ?? 0;
+                                                            $totalKilos += $item->placed_kilos ?? 0;
+                                                        }
+                                                    }
+                                                @endphp
+
+
+                                                    <td>
+                                                        @if ($totalHeads > 0 && $totalKilos > 0)
+                                                            {{ $totalHeads }} pcs | {{ $totalKilos }} kg
+                                                        @elseif ($totalHeads > 0)
+                                                            {{ $totalHeads }} pcs
+                                                        @elseif ($totalKilos > 0)
+                                                            {{ $totalKilos }} kg
+                                                        @else
+                                                            --
+                                                        @endif
+                                                    </td>
+
+
+
 
                                         <td>₱{{ number_format($po->total_amount, 2) }}</td>
                                         <td>
@@ -309,25 +336,32 @@
 
         if (checkbox.checked) {
             row.classList.remove('disabled');
-            
-            // Enable/disable inputs based on measurement type
+
+            // Enable inputs based on measurement type
             if (measurementType === 'Kilos') {
-                // Only enable kilos input
                 kilosInput.disabled = false;
                 headsInput.disabled = true;
                 headsInput.value = 0;
                 kilosInput.value = kilosInput.value || 1;
                 kilosInput.required = true;
-            } else {
-                // Only enable heads input
+                headsInput.required = false;
+            } else if (measurementType === 'Heads') {
                 headsInput.disabled = false;
                 kilosInput.disabled = true;
                 kilosInput.value = 0;
                 headsInput.value = headsInput.value || 1;
                 headsInput.required = true;
+                kilosInput.required = false;
+            } else if (measurementType === 'Heads&Kilos') {
+                // ✅ Enable both
+                headsInput.disabled = false;
+                kilosInput.disabled = false;
+                headsInput.value = headsInput.value || 1;
+                kilosInput.value = kilosInput.value || 1;
+                headsInput.required = true;
+                kilosInput.required = true;
             }
 
-            // Store product data
             selectedProducts.set(setId, {
                 productId: row.dataset.productId,
                 price: parseFloat(row.dataset.price),
@@ -344,70 +378,72 @@
             headsInput.required = false;
             kilosInput.required = false;
 
-            // Reset totals
             document.getElementById(`total_${setId}`).textContent = '₱0.00';
-
-            // Remove from selected products
             selectedProducts.delete(setId);
         }
 
         updateSummary();
     }
 
-    function calculateRowTotal(setId) {
-        const row = document.querySelector(`tr[data-set-id="${setId}"]`);
-        const headsInput = document.querySelector(`input[name="placed_heads[${setId}]"]`);
-        const kilosInput = document.querySelector(`input[name="placed_kilos[${setId}]"]`);
-        const totalSpan = document.getElementById(`total_${setId}`);
-        const checkbox = document.querySelector(`input[name="selected_products[]"][value="${setId}"]`);
-        const measurementType = row.dataset.measurementType;
+function calculateRowTotal(setId) {
+    const row = document.querySelector(`tr[data-set-id="${setId}"]`);
+    const headsInput = document.querySelector(`input[name="placed_heads[${setId}]"]`);
+    const kilosInput = document.querySelector(`input[name="placed_kilos[${setId}]"]`);
+    const totalSpan = document.getElementById(`total_${setId}`);
+    const checkbox = document.querySelector(`input[name="selected_products[]"][value="${setId}"]`);
+    const measurementType = row.dataset.measurementType;
 
-        if (checkbox.checked) {
-            const price = parseFloat(row.dataset.price);
-            const heads = parseInt(headsInput.value) || 0;
-            const kilos = parseFloat(kilosInput.value) || 0;
+    if (checkbox.checked) {
+        const price = parseFloat(row.dataset.price);
+        const heads = parseInt(headsInput.value) || 0;
+        const kilos = parseFloat(kilosInput.value) || 0;
 
-            let total = 0;
-            if (measurementType === 'Kilos') {
-                total = price * kilos;
-            } else {
-                total = price * heads;
-            }
-
-            totalSpan.textContent = `₱${total.toFixed(2)}`;
-
-            // Update stored data
-            if (selectedProducts.has(setId)) {
-                selectedProducts.get(setId).heads = heads;
-                selectedProducts.get(setId).kilos = kilos;
-            }
-
-            updateSummary();
-        } else {
-            totalSpan.textContent = '₱0.00';
+        let total = 0;
+        if (measurementType === 'Kilos') {
+            total = price * kilos;
+        } else if (measurementType === 'Heads') {
+            total = price * heads;
+        } else if (measurementType === 'Heads&Kilos') {
+            // ✅ Only count kilos for total calculation
+            total = price * kilos;
         }
+
+        totalSpan.textContent = `₱${total.toFixed(2)}`;
+
+        if (selectedProducts.has(setId)) {
+            selectedProducts.get(setId).heads = heads;
+            selectedProducts.get(setId).kilos = kilos;
+        }
+
+        updateSummary();
+    } else {
+        totalSpan.textContent = '₱0.00';
     }
+}
 
-    function updateSummary() {
-        let totalItems = 0;
-        let grandTotal = 0;
 
-        selectedProducts.forEach((data, setId) => {
-            if (data.measurementType === 'Kilos') {
-                totalItems += data.kilos;
-                grandTotal += data.price * data.kilos;
-            } else {
-                totalItems += data.heads;
-                grandTotal += data.price * data.heads;
-            }
-        });
+function updateSummary() {
+    let totalItems = 0;
+    let grandTotal = 0;
 
-        document.getElementById('selectedCount').textContent = selectedProducts.size;
-        document.getElementById('grandTotal').textContent = `₱${grandTotal.toFixed(2)}`;
+    selectedProducts.forEach((data) => {
+        if (data.measurementType === 'Kilos') {
+            totalItems += data.kilos;
+            grandTotal += data.price * data.kilos;
+        } else if (data.measurementType === 'Heads') {
+            totalItems += data.heads;
+            grandTotal += data.price * data.heads;
+        } else if (data.measurementType === 'Heads&Kilos') {
+            // ✅ Total is based on kilos only
+            totalItems += data.kilos;
+            grandTotal += data.price * data.kilos;
+        }
+    });
 
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = selectedProducts.size === 0;
-    }
+    document.getElementById('selectedCount').textContent = selectedProducts.size;
+    document.getElementById('grandTotal').textContent = `₱${grandTotal.toFixed(2)}`;
+    document.getElementById('submitBtn').disabled = selectedProducts.size === 0;
+}
 
     function validateForm() {
         if (selectedProducts.size === 0) {
@@ -419,14 +455,15 @@
         const errors = [];
 
         selectedProducts.forEach((data, setId) => {
-            if (data.measurementType === 'Kilos') {
-                if (data.kilos <= 0) {
-                    errors.push(`Please enter kilos greater than 0 for product ${setId}.`);
-                    hasErrors = true;
-                }
-            } else {
-                if (data.heads <= 0) {
-                    errors.push(`Please enter heads greater than 0 for product ${setId}.`);
+            if (data.measurementType === 'Kilos' && data.kilos <= 0) {
+                errors.push(`Please enter kilos greater than 0 for product ${setId}.`);
+                hasErrors = true;
+            } else if (data.measurementType === 'Heads' && data.heads <= 0) {
+                errors.push(`Please enter heads greater than 0 for product ${setId}.`);
+                hasErrors = true;
+            } else if (data.measurementType === 'Heads&Kilos') {
+                if (data.kilos <= 0 || data.heads <= 0) {
+                    errors.push(`Please enter heads and kilos greater than 0 for product ${setId}.`);
                     hasErrors = true;
                 }
             }
@@ -440,17 +477,17 @@
         return true;
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('#create-order-modal form');
         if (form) {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function (e) {
                 if (!validateForm()) {
                     e.preventDefault();
-                    return false;
                 }
             });
         }
         updateSummary();
     });
 </script>
+
 @endpush

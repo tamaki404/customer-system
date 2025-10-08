@@ -122,6 +122,8 @@
                                 <p class="company-status" style="margin: 0">
                                     <span class="company-name">{{  $supplier->company_name }}</span>
                                     <span class="user-status">{{$supplier->user->status}}</span>
+                                    <span>{{$supplier->user->user_id}}</span>
+
                                 </p>
                                 <div class="details-address">
                                     <p class="address-div">

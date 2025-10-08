@@ -87,6 +87,7 @@
                                     <option value="">-- Select measurement type --</option>
                                     <option value="Kilos">Kilos</option>
                                     <option value="Heads">Heads</option>
+                                    <option value="Heads&Kilos">Heads & Kilos</option>
                                 </select>                            
                                 @error('name')
                                     <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>

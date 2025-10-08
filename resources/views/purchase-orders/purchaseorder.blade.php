@@ -253,7 +253,9 @@
                                         @if ($item->product->measurement_type === "Kilos" && $item->product->measurement_type !== "0")
                                             {{ $item->placed_kilos }}kg
                                         @elseif ($item->product->measurement_type === "Heads" && $item->product->measurement_type !== "0")
-                                            {{ $item->placed_heads }}
+                                            {{ $item->placed_heads }}pcs
+                                        @elseif ($item->product->measurement_type === "Heads&Kilos" && $item->product->measurement_type !== "0")
+                                            {{ $item->placed_heads }}pcs | {{ $item->placed_kilos }}kg
                                         @else
                                             --
                                         @endif
