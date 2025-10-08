@@ -18,14 +18,10 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->string('feedback')->nullable();
 
-            $table->string('image_mime_type')->nullable();
-            $table->string('image_filename')->nullable();
-            $table->unsignedInteger('image_size')->nullable(); 
-
             $table->timestamps();
         });
         
-        DB::statement('ALTER TABLE deliveries ADD image MEDIUMBLOB NULL');
+        DB::statement('ALTER TABLE deliveries ADD pod_file MEDIUMBLOB NULL');
 
     }
 

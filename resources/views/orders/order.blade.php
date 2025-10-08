@@ -224,9 +224,12 @@
     {{-- file an action --}}
     <div class="modal fade" id="fileanaction" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true" >
         <div class="modal-dialog">
-            <form class="modal-content" method="POST"  enctype="multipart/form-data" action="{{ route('delivery.confirm') }}">
 
+            <form class="modal-content" method="POST" enctype="multipart/form-data" action="{{ route('delivery.confirm') }}">
                 @csrf
+                <input type="hidden" name="order_id" value="{{ $order->order_id }}">
+
+                {{-- Display validation and success/error messages --}}
                 @if ($errors->any())
                     <div class="alert alert-danger" style="margin: 10px;">
                         <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
@@ -237,7 +240,7 @@
                         </ul>
                     </div>
                 @endif
-                
+
                 @if (session('success'))
                     <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
                 @endif
@@ -248,96 +251,94 @@
                         <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
                     </div>
                 @endif
-                
+
                 <div class="modal-header">
                     <p class="modal-title" id="requestActionLabel">File an action for this order</p>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <input type="hidden" name="order_id" value="{{$order->order_id}}" required>
-                
                 <div class="modal-body">
                     <p class="note-notify">
                         <span class="material-symbols-outlined"> info </span>
                         <span>Committing any changes may be irreversible.</span>
                     </p>
-                    
+
+                    {{-- STATUS --}}
                     <div class="modal-option-groups">
-                        <p>
-                            <span class="req-asterisk">*</span>
-                            What action would you like to do with thsi order?
-                        </p>
+                        <p><span class="req-asterisk">*</span> What action would you like to do with this order?</p>
                         <select name="status" required>
                             <option value="">-- Select order status --</option>
                             <option value="Delivered">Mark as delivered</option>
                         </select>
                     </div>
 
+                    {{-- FILE UPLOAD --}}
                     <div class="form-group">
-                        <p style="margin: 0"><span class="req-asterisk">*</span>Upload signed POD</p>
-                        <input type="file" name="images[]" id="images" required accept="image/*" multiple>
-                        <div id="file-preview" style="margin-top:10px;"></div>
+                        <p style="margin: 0"><span class="req-asterisk">*</span>Upload signed POD (PDF only)</p>
+                        <input type="file" name="pod_file" required accept="application/pdf">
                         <div id="file-error" style="color:#dc3545; font-size:13px; margin-top:5px;"></div>
                     </div>
 
+                    {{-- RECEIVED QUANTITIES --}}
+                    @if(isset($items) && count($items) > 0)
+                        <div class="table-responsive mt-3">
+                            <table class="table table-bordered table-striped">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Product ID</th>
+                                        <th>Product</th>
+                                        <th>Planned</th>
+                                        <th>Received</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($items as $item)
+                                    <tr>
+                                        <td>{{ $item->product_id }}</td>
+                                        <td>{{ $item->product->name }}</td>
+                                        <td>
+                                            @if ($item->product->measurement_type === "Kilos")
+                                                {{ $item->planned_kilos ?? $item->placed_kilos ?? 0 }} kilos
+                                            @else
+                                                {{ $item->planned_heads ?? $item->placed_heads ?? 0 }} heads
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if ($item->product->measurement_type === "Kilos")
+                                                <input type="number" 
+                                                    name="received_kilos[{{ $item->delItem->delivery_item_id }}]" 
+                                                    step="0.01"
+                                                    placeholder="Enter kilos">
+                                            @else
+                                                <input type="number" 
+                                                    name="received_heads[{{ $item->delItem->delivery_item_id }}]" 
+                                                    placeholder="Enter heads">
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-muted mt-3">No delivery items found for this order.</p>
+                    @endif
 
-                    <div class="form-group">
-
-                        @if(isset($items) && count($items) > 0)
-                            <div class="table-responsive mt-3">
-                                <table class="table table-bordered table-striped">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Product ID</th>
-                                            <th>Product</th>
-                                            <th>Heads/Kilos</th>
-                                            <th>Received</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($items as $item)
-                                        <tr>
-                                            <td>{{ $item->product_id }}</td>
-                                            <td>{{ $item->product->name }}</td>
-                                            <td>
-                                                @if ($item->product->measurement_type === "Kilos")
-                                                    {{ $item->placed_kilos }} kilos
-                                                @elseif ($item->product->measurement_type === "Heads")
-                                                    {{ $item->placed_heads }} heads
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if ($item->product->measurement_type === "Kilos")
-                                                    <input type="number" name="received_kilos[{{ $item->delivery_item_id }}]" step="0.01">
-                                                @elseif ($item->product->measurement_type === "Heads")
-                                                    <input type="number" name="received_heads[{{ $item->delivery_item_id }}]">
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        @endforeach
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <p class="text-muted mt-3">No delivery items found for this order.</p>
-                        @endif
-
-                        
-                    </div>
-
+                    {{-- FEEDBACK --}}
                     <div class="modal-option-groups">
                         <p>Feedback (Optional)</p>
                         <input type="text" name="feedback" maxlength="200">
                     </div>
-            
+
                 </div>
-                
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Submit order status</button>
                 </div>
             </form>
+
+
         </div>
     </div>
    <div class="content-bg" >

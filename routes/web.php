@@ -92,6 +92,7 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     Route::get('/orders/list/view/{order_id}',  [OrderController::class, 'orderView'])->name('orders.order');
 
     Route::get('/profile/view', [ProfileController::class, 'profileView'])->name('profile.view');
+    Route::post('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
 
 });
 
@@ -131,8 +132,6 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     //delivery
     Route::post('/order/action/delivery/process', [DeliveryController::class, 'orderProcess'])->name('order.process');
     Route::get('/order/deliveries/{delivery_id}',  [DeliveryController::class, 'deliveryView'])->name('order.delivery_items');
-    Route::post('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
-    Route::get('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
 
 
     // order pdf views

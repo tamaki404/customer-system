@@ -52,6 +52,9 @@ public function deliveries()
 {
     return $this->hasMany(Delivery::class, 'order_id', 'order_id');
 }
-
+public function delitem()
+{
+    return $this->hasMany(DeliveryItems::class, 'order_id', 'order_id');
+}
 
 }

@@ -19,6 +19,7 @@ class Delivery extends Model
         'delivery_date',
         'status',
         'notes',
+        'pod_file',
     ];
 
     protected $casts = [
@@ -35,7 +36,10 @@ class Delivery extends Model
     {
         return $this->hasMany(DeliveryItems::class, 'delivery_id', 'delivery_id');
     }
-
+    public function delitem()
+    {
+        return $this->hasOne(DeliveryItems::class, 'delivery_id', 'delivery_id');
+    }
     public function supplier()
     {
         return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');

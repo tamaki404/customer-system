@@ -32,4 +32,8 @@ class OrderItem extends Model
     {
         return $this->hasOne(ProductSetting::class, 'set_id', 'set_id');
     }
+    public function delItem()
+    {
+        return $this->belongsTo(DeliveryItems::class, 'order_item_id', 'order_item_id');
+    }
 }
