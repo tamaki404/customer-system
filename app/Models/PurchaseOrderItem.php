@@ -15,8 +15,17 @@ class PurchaseOrderItem extends Model
         'quantity',
         'unit_price',
         'total_price',
+<<<<<<< HEAD
+        'status',
+        'placed_heads',
+        'placed_kilos',
+        'alt_kilos',
+        'alt_heads',
+        'original_price'
+=======
         'new_quantity',
         'poi_id'
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
     ];
 
     protected $casts = [
@@ -46,8 +55,20 @@ class PurchaseOrderItem extends Model
         return '₱' . number_format($this->unit_price, 2);
     }
 
+<<<<<<< HEAD
+    public function req()
+    {
+        return $this->belongsTo(ProductRequirements::class, 'user_id', 'user_id');
+    }
+    public function set() {
+        return $this->belongsTo(ProductSetting::class, 'set_id', 'set_id');
+    }
+
+}
+=======
     public function getFormattedTotalPriceAttribute()
     {
         return '₱' . number_format($this->total_price, 2);
     }
 }
+>>>>>>> parent of 54b5d0c3 (Add revised system code)

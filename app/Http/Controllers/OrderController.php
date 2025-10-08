@@ -2,6 +2,14 @@
 
 namespace App\Http\Controllers;
 
+<<<<<<< HEAD
+use App\Models\Delivery;
+use App\Models\DeliveryItems;
+use App\Models\Staffs;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+=======
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
 use Illuminate\Http\Request;
 use App\Models\Orders;
 use App\Models\Product;
@@ -11,6 +19,90 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
+<<<<<<< HEAD
+{   
+    
+        public static function randomBase36String(int $length): string
+        {
+            $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $str = '';
+            for ($i = 0; $i < $length; $i++) {
+                $str .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            return $str;
+        }
+        public function orderList(Request $request)
+        {
+            $user = Auth::user();
+
+            $supplier = null;
+            $orders = collect(); 
+
+            if ($user->role !== "Supplier") {
+                $orders = Orders::withSum('receipts', 'total_amount')
+                    ->get()
+                    ->map(function ($order) {
+                        $paid = $order->receipts_sum_total_amount ?? 0;
+                        $balance = $order->total_amount - $paid;
+
+
+                        if ($paid >= $order->total_amount) {
+                            $order->payment_status = 'Fully paid';
+                        } elseif ($paid > 0) {
+                            $order->payment_status = 'Partially settled';
+                        } else {
+                            $order->payment_status = 'Unpaid';
+                        }
+
+                        $order->paid_amount = $paid;
+                        $order->balance = max($balance, 0);
+
+                        return $order;
+                    });
+            } 
+            elseif ($user->role === "Supplier") {
+                $supplier = Suppliers::where('user_id', $user->user_id)->first();
+
+                $orders = Orders::where('supplier_id', $supplier->supplier_id)
+                    ->with([
+                        'receipts', 
+                        'deliveries' => function ($q) {
+                            $q->with('deliveryItems');
+                        }
+                    ])
+                    ->withSum('receipts', 'total_amount')
+                    ->get()
+                    ->map(function ($order) {
+                        // --- Payment Status ---
+                        $paid = $order->receipts_sum_total_amount ?? 0;
+                        $order->running_balance = max($order->total_amount - $paid, 0);
+
+                        if ($paid >= $order->total_amount) {
+                            $order->payment_status = 'Fully Paid';
+                        } elseif ($paid > 0) {
+                            $order->payment_status = 'Partially settled';
+                        } else {
+                            $order->payment_status = 'Unpaid';
+                        }
+
+                        // --- Delivery Completion ---
+                        $total = $order->deliveries->count();
+                        $completed = $order->deliveries->where('status', 'Completed')->count();
+                        $completionRatio = $total > 0 ? "{$completed}/{$total}" : "0/0";
+
+
+
+                        return $order;
+                    });
+            }
+
+
+
+            return view('orders.list', [
+                'user' => $user,
+                'supplier' => $supplier,
+                'orders' => $orders,
+=======
 {
     public function checkout(Request $request)
     {
@@ -21,6 +113,7 @@ class OrderController extends Controller
                 'items.*.id' => 'required|exists:products,id',
                 'items.*.qty' => 'required|integer|min:1|max:999',
                 'total' => 'nullable|numeric|min:0',
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
             ]);
             $items = $validated['items'];
             $total = $validated['total'] ?? 0;
@@ -39,6 +132,137 @@ class OrderController extends Controller
             DB::beginTransaction();
 
             try {
+<<<<<<< HEAD
+                $imageBlob = null;
+                $imageMimeType = null;
+                $imageFilename = null;
+                $imageSize = null;
+                
+                if ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    
+                    $imageBlob = file_get_contents($image->getRealPath());
+                    $imageMimeType = $image->getMimeType();
+                    $imageFilename = $image->getClientOriginalName();
+                    $imageSize = $image->getSize();
+                }
+
+                if ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    \Log::info('Uploaded file details:', [
+                        'name' => $image->getClientOriginalName(),
+                        'mime' => $image->getMimeType(),
+                        'size' => $image->getSize(),
+                        'path' => $image->getRealPath(),
+                    ]);
+                }
+
+
+                $purchaseOrder = PurchaseOrders::create([
+                    'po_id'       => $po_id,
+                    'supplier_id' => $request->supplier_id,
+                    'status' => $request->status,
+                    'image'         => $imageBlob,
+                    'image_mime_type' => $imageMimeType,
+                    'image_filename' => $imageFilename,
+                    'image_size'    => $imageSize,
+
+                ]);
+
+            
+
+                DB::commit();
+
+                return redirect()->route('purchaseorders.list')
+                    ->with('success', 'Purchase order has been created!');
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                \Log::error('Purchase order submission error: ' . $e->getMessage(), [
+                    'trace' => $e->getTraceAsString(),
+                    'request_data' => $request->all()
+                ]);
+                
+                
+                return redirect()->back()
+                    ->with('error', 'Purchase order creating failed: ' . $e->getMessage() . '. Please check the logs for more details.')
+                    ->withInput();
+            }
+            }
+
+        public function orderView($order_id, Request $request)
+        {
+            $user = Auth::user();
+         
+            $order = Orders::with(['items.productSetting'])->where('order_id', $order_id)->first();
+            $items = $order->items;
+            $deliveries = Delivery::when($order_id, function ($query) use ($order_id) {
+                    $query->where('order_id', $order_id);
+                })
+                ->orderBy('delivery_date', 'asc')
+                ->get();
+
+            return view('orders.order', [
+                'user' => $user,
+                'order' => $order,
+                'items' => $items,
+                'deliveries' => $deliveries,
+
+            ]);
+        }
+
+        public function placeOrderItems(Request $request)
+        {
+            \Log::info('Placing purchase order items - Request Data:', $request->all());
+            
+            try {
+                // Validate the request
+                $request->validate([
+                    'po_id' => 'required|exists:purchase_orders,po_id',
+                    'supplier_id' => 'required|exists:suppliers,supplier_id',
+                    'selected_products' => 'required|array|min:1',
+                    'selected_products.*' => 'required|exists:product_settings,set_id', 
+                    'quantities' => 'required|array',
+                    'quantities.*' => 'required|numeric|min:1',
+                    'product_ids' => 'required|array',
+                    'unit_prices' => 'required|array',
+                ]);
+                
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                \Log::error('Purchase order submission failed:', $e->errors());
+                return redirect()->back()
+                    ->withErrors($e->validator)
+                    ->withInput();
+            }
+            
+            try {
+                DB::beginTransaction();
+                
+                // Get the purchase order
+                $purchaseOrder = PurchaseOrders::where('po_id', $request->po_id)->firstOrFail();
+                
+                // Create the main order first
+                $date = date('Ymd');
+                $order_id = 'ORD-' . $date . '-' . $this->randomBase36String(5);
+                
+                $order = Orders::create([
+                    'order_id' => $order_id,
+                    'po_id' => $request->po_id,
+                    'supplier_id' => $request->supplier_id,
+                    'order_date' => now(),
+                    'status' => 'Pending', 
+                    'total_amount' => 0, 
+                ]);
+                
+                $totalOrderAmount = 0;
+                $orderItemsCreated = [];
+                
+                foreach (array_unique($request->selected_products) as $setId) {
+                    if (!isset($request->quantities[$setId]) || 
+                        !isset($request->product_ids[$setId]) || 
+                        !isset($request->unit_prices[$setId])) {
+                        continue;
+=======
                 // Validate stock availability
                 foreach ($items as $item) {
                     $product = Product::find($item['id']);
@@ -48,6 +272,7 @@ class OrderController extends Controller
                             'success' => false,
                             'message' => "Product {$item['name']} not found."
                         ], 400);
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
                     }
                     
                     if ($product->quantity < $item['qty']) {
@@ -229,6 +454,14 @@ class OrderController extends Controller
         }
     }
 
+<<<<<<< HEAD
+        public function deliveryReceiptPdf($delivery_id)
+        {
+            $delivery = Delivery::where('delivery_id', $delivery_id)->firstOrFail();
+            $items = DeliveryItems::where('delivery_id', $delivery_id)->get();
+            $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('delivery', 'items'));
+            return $pdf->stream("delivery-receipt-{$delivery_id}.pdf");
+=======
     public function store() {
         $user = auth()->user();
         $search = request('search');
@@ -331,6 +564,7 @@ class OrderController extends Controller
         // Status filter (tabs)
         if ($status && in_array($status, ['Pending', 'Processing', 'Completed', 'Cancelled', 'Rejected'])) {
             $query->where('status', $status);
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
         }
 
         // Date range filter aligned with status state

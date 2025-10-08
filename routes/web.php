@@ -17,11 +17,51 @@ use App\Http\Controllers\ProductController;
 use App\Models\Product;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PurchaseOrderController;
+<<<<<<< HEAD
+use App\Http\Controllers\CreditsController;
+use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductSalesController;
+use App\Http\Controllers\GlobalCeilingController;
+use App\Http\Controllers\DeliveryController;
+
+Route::get('/registration/signin', function () {
+    return view('registration.signin');
+})->name('signin');
+
+
+Route::post('/logout-user', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('login'); 
+})->name('logout');
+
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+Route::get('/account/registration', [RegistrationController::class, 'showSignupForm'])->name('registration.signup');
+Route::post('/account/supplier/registration', [UserController::class, 'registerSupplier'])->name('registration.supplier.register');
+Route::post('/account.signin', [UserController::class, 'signin'])->name('account.signin');
+Route::post('/check-email', [UserController::class, 'checkEmail'])->name('check.email');
+
+// Email verification
+Route::get('/email/verify/notice', function () {
+    return view('verification.notice');
+})->name('verification.notice');
+
+Route::get('/email/verify', [UserController::class, 'verifyEmail'])->name('verification.verify');
+
+// Login alias
+=======
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\PurchaseOrderItemController;
 // ================================
 // PUBLIC ROUTES (No Authentication Required)
 // ================================
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
 Route::get('/login', function () {
     return view('login');
 })->name('login');
@@ -30,8 +70,66 @@ Route::get('/', function () {
     return view('login');
 });
 
+<<<<<<< HEAD
+Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
+    Route::get('/customers/list',  [CustomersController::class, 'customersList'])->name('customers.list');
+    Route::get('/customers/list/customer/{supplier_id}',  [CustomersController::class, 'customerView'])->name('customers.customer');
+
+    Route::get('/staffs/list',  [StaffsController::class, 'staffsList'])->name('staffs.list');
+    Route::get('/staffs/list/staff/{staff_id}',  [StaffsController::class, 'staffView'])->name('staffs.staff');
+    Route::post('/supplier/confirm', [CustomersController::class, 'supplierConfirm'])->name('supplier.confirm');
+
+    Route::get('/logs/list',  [LogsController::class, 'logsList'])->name('logs.list');
+
+    Route::post('/products/add', [ProductController::class, 'addProduct'])->name('product.add');
+    // Category management
+    Route::get('/categories/manage', [CategoryController::class, 'manage'])->name('categories.manage');
+    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    
+    Route::get('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
+    Route::post('/products/setting/modify', [ProductSettingController::class, 'modifyProduct'])->name('productset.modify');
+
+
+    //product sale
+    Route::post('/products/setting/sale', [ProductSalesController::class, 'addSale'])->name('productset.sale');
+
+    //set ceiling
+    Route::post('/products/set/global-ceiling', [GlobalCeilingController::class, 'setGlobalCeiling'])->name('set.global_ceiling');
+
+
+    Route::post('/purchase-orders/purchase/view/place', [OrderController::class, 'placeOrderItems'])->name('purchaseorders.place');
+    Route::post('/purchase-orders/{po_id}/confirm', [PurchaseOrderController::class, 'confirmPurchaseOrder'])->name('purchaseorders.confirm');
+
+    Route::post('/receipts/action/{receipt_id}', [ReceiptController::class, 'receiptAction'])->name('receipts.action');
+    Route::post('/order/action', [OrderController::class, 'orderAction'])->name('order.action');
+
+
+    //delivery
+    Route::post('/order/action/delivery/process', [DeliveryController::class, 'orderProcess'])->name('order.process');
+    Route::get('/order/deliveries/{delivery_id}',  [DeliveryController::class, 'deliveryView'])->name('order.delivery_items');
+    Route::post('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
+    Route::get('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
+
+
+    // order pdf views
+    Route::get('/orders/{order_id}/customer-order', [OrderController::class, 'customerOrderPdf'])->name('orders.customer.pdf');
+    Route::get('/orders/{delivery_id}/delivery-receipt', [OrderController::class, 'deliveryReceiptPdf'])->name('orders.delivery.pdf');
+    Route::get('/orders/{order_id}/sales-invoice', [OrderController::class, 'salesInvoicePdf'])->name('orders.invoice.pdf');
+    
+    // purchase order pdf view
+    Route::get('/purchase-orders/{po_id}/pdf', [PurchaseOrderController::class, 'purchaseOrderPdf'])->name('purchaseorders.pdf');
+
+    Route::post('/products/add-sub/{product_id}', [ProductController::class, 'addSub'])->name(name: 'add.subproduct');
+
+    // Product parent update
+    Route::post('/products/update-parent', [ProductController::class, 'updateParent'])->name('products.updateParent');
+
+
+
+=======
 Route::get('/register-view', function () {
     return view('registration');
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
 });
 
 Route::get('/success-signup', function () {

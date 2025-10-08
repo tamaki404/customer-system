@@ -54,6 +54,21 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
+<<<<<<< HEAD
+        public function supplier()
+    {
+        return $this->belongsTo(Suppliers::class, 'user_id', 'user_id');
+    }
+    public function staff()
+    {
+        return $this->belongsTo(Staffs::class, 'user_id', 'user_id');
+    }
+
+
+
+
+=======
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
     /**
      * Get the attributes that should be cast.
      *

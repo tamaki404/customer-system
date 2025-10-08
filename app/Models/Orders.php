@@ -25,6 +25,16 @@ class Orders extends Model
     ];
 
     protected $casts = [
+<<<<<<< HEAD
+    'order_date' => 'datetime',
+];
+    
+    public function item()
+    {
+        return $this->hasOne(OrderItem::class, 'order_id', 'order_id');
+    }
+    public function items()
+=======
         'unit_price' => 'decimal:2',
         'total_price' => 'decimal:2',
         
@@ -36,6 +46,7 @@ class Orders extends Model
      * Note: Adjust the foreign key type based on your products table
      */
     public function product()
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
     {
         // If product_id is string (ULID/UUID):
         return $this->belongsTo(Product::class, 'product_id', 'id');
@@ -46,9 +57,23 @@ class Orders extends Model
     }
 
     public function user()
+<<<<<<< HEAD
+{
+    return $this->belongsTo(User::class, 'supplier_id', 'supplier_id');
+}
+    public function signatory()
+{
+    return $this->belongsTo(Signatories::class, 'supplier_id', 'supplier_id');
+}
+public function deliveries()
+{
+    return $this->hasMany(Delivery::class, 'order_id', 'order_id');
+}
+=======
     {
         return $this->belongsTo(User::class, 'customer_id');
     }
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
 
 
     /**
