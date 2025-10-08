@@ -478,58 +478,87 @@
                     {{-- RECEIVED QUANTITIES --}}
                     @if(isset($items) && count($items) > 0)
                         <div class="table-responsive mt-3">
-                            <table class="table table-bordered table-striped align-middle">
+                            <table class="table table-bordered table-striped align-middle text-center">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Product ID</th>
-                                        <th>Product</th>
-                                        <th>Planned</th>
-                                        <th>Received</th>
-                                        <th>Variance</th>
+                                        <th style="width: 120px;">Product ID</th>
+                                        <th style="width: 200px;">Product</th>
+                                        <th style="width: 160px;">Planned</th>
+                                        <th style="width: 200px;">Received</th>
+                                        <th style="width: 140px;">Variance</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($items as $item)
                                     @php
-                                        $isKilos = $item->product->measurement_type === "Kilos";
-                                        $plannedValue = $isKilos
-                                            ? ($item->planned_kilos ?? $item->placed_kilos ?? 0)
-                                            : ($item->planned_heads ?? $item->placed_heads ?? 0);
+                                        $measurement = $item->product->measurement_type;
+                                        $plannedHeads = $item->delitem->planned_heads ?? $item->delitem->placed_heads ?? 0;
+                                        $plannedKilos = $item->delitem->planned_kilos ?? $item->delitem->placed_kilos ?? 0;
                                     @endphp
+
                                     <tr>
                                         <td>{{ $item->product_id }}</td>
-                                        <td>{{ $item->product->name }}</td>
+                                        <td class="text-start">
+                                            <strong>{{ $item->product->name }}</strong><br>
+                                            <small class="text-muted">{{ $measurement }}</small>
+                                        </td>
 
                                         {{-- PLANNED --}}
                                         <td>
-                                            <span class="planned-value" data-measure="{{ $isKilos ? 'kilos' : 'heads' }}">
-                                                {{ $plannedValue }}
-                                            </span>
-                                            {{ $isKilos ? 'kilos' : 'heads' }}
+                                            @if ($measurement === 'Kilos')
+                                                <div><strong>{{ $plannedKilos }}</strong> <small>kg</small></div>
+                                            @elseif ($measurement === 'Heads')
+                                                <div><strong>{{ $plannedHeads }}</strong> <small>heads</small></div>
+                                            @elseif ($measurement === 'Heads&Kilos')
+                                                <div><strong>{{ $plannedHeads }}</strong> <small>heads</small></div>
+                                                <div><strong>{{ $plannedKilos }}</strong> <small>kg</small></div>
+                                            @endif
                                         </td>
 
                                         {{-- RECEIVED --}}
                                         <td>
-                                            @if ($isKilos)
+                                            @if ($measurement === 'Kilos')
                                                 <input type="number"
                                                     name="received_kilos[{{ $item->delItem->delivery_item_id ?? '' }}]"
-                                                    class="form-control received-input"
-                                                    data-planned="{{ $plannedValue }}"
+                                                    class="form-control received-input mb-1"
+                                                    data-planned="{{ $plannedKilos }}"
                                                     step="0.01"
                                                     placeholder="Enter kilos">
-                                            @else
+
+                                            @elseif ($measurement === 'Heads')
                                                 <input type="number"
                                                     name="received_heads[{{ $item->delItem->delivery_item_id ?? '' }}]"
-
-                                                    class="form-control received-input"
-                                                    data-planned="{{ $plannedValue }}"
+                                                    class="form-control received-input mb-1"
+                                                    data-planned="{{ $plannedHeads }}"
+                                                    step="1"
                                                     placeholder="Enter heads">
+
+                                            @elseif ($measurement === 'Heads&Kilos')
+                                                <div class="d-flex flex-column gap-2">
+                                                    <input type="number"
+                                                        name="received_heads[{{ $item->delItem->delivery_item_id ?? '' }}]"
+                                                        class="form-control received-input"
+                                                        data-planned="{{ $plannedHeads }}"
+                                                        step="1"
+                                                        placeholder="Enter heads">
+                                                    <input type="number"
+                                                        name="received_kilos[{{ $item->delItem->delivery_item_id ?? '' }}]"
+                                                        class="form-control received-input"
+                                                        data-planned="{{ $plannedKilos }}"
+                                                        step="0.01"
+                                                        placeholder="Enter kilos">
+                                                </div>
                                             @endif
                                         </td>
 
                                         {{-- VARIANCE --}}
                                         <td>
-                                            <p class="variance-text text-muted m-0">—</p>
+                                            @if ($measurement === 'Heads&Kilos')
+                                                <div class="variance-text-heads text-muted mb-1">—</div>
+                                                <div class="variance-text-kilos text-muted">—</div>
+                                            @else
+                                                <p class="variance-text text-muted m-0">—</p>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -539,6 +568,7 @@
                     @else
                         <p class="text-muted mt-3">No delivery items found for this order.</p>
                     @endif
+
 
 
 

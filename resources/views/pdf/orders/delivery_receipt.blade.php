@@ -367,7 +367,8 @@
                     <th style="width: 20%;">Product</th>
                     <th style="width: 12%;">Condition</th>
                     <th style="width: 18%;">Packaging</th>
-                    <th style="width: 12%;">Quantity</th>
+                    <th style="width: 6%;">Heads</th>
+                    <th style="width: 6%;">Kilos</th>
                     <th style="width: 13%;">Received</th>
                     <th style="width: 20%;">Remarks</th>
                 </tr>
@@ -387,11 +388,12 @@
                             </div>
                         </td>
                         <td>
-                            @if ($item->orderItem->product->measurement_type === "Kilos")
-                                <strong>{{ number_format($item->planned_kilos ?? 0, 2) }}</strong> kg
-                            @else
+
                                 <strong>{{ $item->planned_heads }}</strong> heads
-                            @endif
+                        </td>
+                        <td>
+                                <strong>{{ number_format($item->planned_kilos ?? 0, 2) }}</strong> kg
+                      
                         </td>
                         <td class="empty-cell">___________</td>
                         <td style="text-align: left;">{{ $item->remarks ?? '—' }}</td>

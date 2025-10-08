@@ -43,7 +43,10 @@ class DeliveryItems extends Model
         return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }
 
-
+    public function orderProd()
+    {
+        return $this->belongsTo(OrderItem::class, 'product_id', 'product_id');
+    }
 
     public function totalDelivered()
     {

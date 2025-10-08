@@ -245,7 +245,9 @@
                     <tr>
                         <th style="width: 5%;">#</th>
                         <th style="width: 25%;">Product</th>
-                        <th style="width: 15%;">Quantity</th>
+                        <th style="width: 7%;">Heads</th>
+                        <th style="width: 7%;">Kilos</th>
+
                         <th style="width: 13%;">Condition</th>
                         <th style="width: 14%;">Packaging</th>
                         <th style="width: 14%;">Labeling Req.</th>
@@ -257,13 +259,10 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td style="text-align: left; font-weight: bold;">{{ $item->product->name }}</td>
-                            <td>
-                                <strong>
-                                {{ $item->product->measurement_type === 'Kilos'
-                                    ? number_format($item->placed_kilos, 2) . ' kg'
-                                    : $item->placed_heads . ' heads' }}
-                                </strong>
-                            </td>
+                 
+                            <td>{{number_format($item->placed_kilos, 2) }}kg</td>
+                            <td>{{ $item->placed_heads ?? '—' }} pcs</td>
+
                             <td>{{ $item->product->req->condition ?? '—' }}</td>
                             <td style="text-align: left; font-size: 9px;">
                                 <div><strong>P:</strong> {{ $item->product->req->primary_packaging ?? '—' }}</div>
@@ -311,7 +310,18 @@
                             <td>{{ $delivery->delivery_id }}</td>
                             <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('M j, Y') }}</td>
                             <td>{{ $delivery->delivered_date ? \Carbon\Carbon::parse($delivery->delivered_date)->format('M j, Y') : '—' }}</td>
-                            <td><strong>{{ $totalPlanned }}</strong></td>
+                            <td>
+                                @if ($delivery->delitem->product->measurement_type == "Heads")
+                                    {{$plannedHeads}}pcs 
+                                @elseif ($delivery->delitem->product->measurement_type == "Kilos")
+                                    {{$plannedHeads}}kg
+
+                                @elseif ($delivery->delitem->product->measurement_type == "Heads&Kilos")
+                                    {{$plannedHeads}}pcs |
+                                    {{$plannedHeads}}kg
+                                @endif
+
+                            </td>
                             <td>
                                 <span style="border: 1px solid #000; padding: 2px 6px; font-size: 9px;">
                                     {{ ucfirst($delivery->status) }}
