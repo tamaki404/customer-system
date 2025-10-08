@@ -38,6 +38,7 @@ class OrderController extends Controller
 
             if ($user->role !== "Supplier") {
                 $orders = Orders::withSum('receipts', 'total_amount')
+                    ->orderBy('created_at', 'desc') 
                     ->get()
                     ->map(function ($order) {
                         $paid = $order->receipts_sum_total_amount ?? 0;
@@ -56,19 +57,22 @@ class OrderController extends Controller
                         $order->balance = max($balance, 0);
 
                         return $order;
-                    });
+                    })
+
+                    ;
             } 
             elseif ($user->role === "Supplier") {
                 $supplier = Suppliers::where('user_id', $user->user_id)->first();
 
                 $orders = Orders::where('supplier_id', $supplier->supplier_id)
                     ->with([
-                        'receipts', 
+                        'receipts',
                         'deliveries' => function ($q) {
                             $q->with('deliveryItems');
                         }
                     ])
                     ->withSum('receipts', 'total_amount')
+                    ->orderBy('created_at', 'desc') 
                     ->get()
                     ->map(function ($order) {
                         // --- Payment Status ---
@@ -86,15 +90,12 @@ class OrderController extends Controller
                         // --- Delivery Completion ---
                         $total = $order->deliveries->count();
                         $completed = $order->deliveries->where('status', 'Completed')->count();
-                        $completionRatio = $total > 0 ? "{$completed}/{$total}" : "0/0";
-
-
+                        $order->completion_ratio = $total > 0 ? "{$completed}/{$total}" : "0/0";
 
                         return $order;
-                    })
-                    ->orderBy('created_at', 'desc')
-                    ;
+                    });
             }
+
 
 
 
