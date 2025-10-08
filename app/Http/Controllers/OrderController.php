@@ -91,7 +91,9 @@ class OrderController extends Controller
 
 
                         return $order;
-                    });
+                    })
+                    ->orderBy('created_at', 'desc')
+                    ;
             }
 
 

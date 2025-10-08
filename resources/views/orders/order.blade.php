@@ -97,9 +97,10 @@
     {{-- process action --}}
     <div class="modal fade" id="processModal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form class="modal-content" method="POST"  enctype="multipart/form-data" action="{{ route('order.process') }}">
-
+            <form class="modal-content" method="POST" enctype="multipart/form-data" action="{{ route('order.process') }}">
                 @csrf
+
+                {{-- Validation & Flash Messages --}}
                 @if ($errors->any())
                     <div class="alert alert-danger" style="margin: 10px;">
                         <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
@@ -110,7 +111,7 @@
                         </ul>
                     </div>
                 @endif
-                
+
                 @if (session('success'))
                     <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
                 @endif
@@ -121,23 +122,20 @@
                         <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
                     </div>
                 @endif
-                
+
                 <div class="modal-header">
                     <p class="modal-title" id="requestActionLabel">Process order</p>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <input type="hidden" name="order_id" value="{{$order->order_id}}" required>
-                
+                <input type="hidden" name="order_id" value="{{ $order->order_id }}" required>
+
                 <div class="modal-body">
                     <p class="note-notify">
-                        <span class="material-symbols-outlined"> info </span>
+                        <span class="material-symbols-outlined">info</span>
                         <span>You can edit the heads/kilos just before the delivery.</span>
                     </p>
 
-                    <p>Delivery details: <span></span></p>
-
-                    
                     <table class="order-table" border="1" cellpadding="8" cellspacing="0">
                         <thead>
                             <tr>
@@ -151,74 +149,272 @@
                                 <tr>
                                     <td>{{ $item->product->name }}</td>
                                     <td>P{{ $item->productSetting->nego_price }}</td>
-
                                     <td>
-                                        @if($item->product->measurement_type === 'Kilos')
+                                        @if ($item->product->measurement_type === 'Kilos')
                                             {{ $item->placed_kilos }} kg
+                                        @elseif ($item->product->measurement_type === 'Heads')
+                                            {{ $item->placed_heads }} pcs
+                                        @elseif ($item->product->measurement_type === 'Heads&Kilos')
+                                            {{ $item->placed_heads }} pcs | {{ $item->placed_kilos }} kg
                                         @else
-                                            {{ $item->placed_heads }} heads
+                                            --
                                         @endif
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+
                     @foreach($items as $item)
                         @php
-                            $total = $item->product->measurement_type === 'Kilos'
-                                ? $item->placed_kilos
-                                : $item->placed_heads;
-
                             $days = count($order->supplier->delivery->delivery_days);
-                            $per_day = $days > 0 ? round($total / $days, 2) : $total;
+
+                            if ($item->product->measurement_type === 'Kilos') {
+                                $total_kilos = $item->placed_kilos;
+                                $per_day_kilos = $days > 0 ? round($total_kilos / $days, 2) : $total_kilos;
+                            } elseif ($item->product->measurement_type === 'Heads') {
+                                $total_heads = $item->placed_heads;
+                                $per_day_heads = $days > 0 ? round($total_heads / $days, 2) : $total_heads;
+                            } elseif ($item->product->measurement_type === 'Heads&Kilos') {
+                                $total_heads = $item->placed_heads;
+                                $total_kilos = $item->placed_kilos;
+                                $per_day_heads = $days > 0 ? round($total_heads / $days, 2) : $total_heads;
+                                $per_day_kilos = $days > 0 ? round($total_kilos / $days, 2) : $total_kilos;
+                            }
                         @endphp
 
-                        <div class="order-item">
-                            <p>{{ $item->product->name }}</p>
-                            <p>Total {{ $item->product->measurement_type === 'Kilos' ? 'kg' : 'heads' }}: {{ $total }}</p>
 
-                            @foreach($order->supplier->delivery->delivery_days as $day)
-                                <div class="delivery-day">
-                                    <label>{{ $day }}</label>
-                                    <input type="number"
-                                        name="items[{{ $item->id }}][{{ $day }}]"
-                                        value="{{ $per_day }}"
-                                        step="0.01"
-                                        min="0">
-                                </div>
-                            @endforeach
+
+                        <style>
+                            .order-item {
+                                border: 1px solid #ddd;
+                                border-radius: 6px;
+                                margin-bottom: 20px;
+                                background: #fff;
+                                font-size: 14px;
+                                overflow: hidden;
+                            }
+
+                            .order-item-header {
+                                background: #f5f5f5;
+                                padding: 10px 15px;
+                                font-weight: 600;
+                                border-bottom: 1px solid #ddd;
+                            }
+
+                            .order-item-header span {
+                                display: inline-block;
+                                margin-right: 10px;
+                            }
+
+                            .order-item-total {
+                                padding: 10px 15px;
+                                background: #fafafa;
+                                border-bottom: 1px solid #ddd;
+                                font-weight: 500;
+                            }
+
+                            .order-item-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                            }
+
+                            .order-item-table th,
+                            .order-item-table td {
+                                border: 1px solid #e2e2e2;
+                                padding: 8px 10px;
+                                text-align: center;
+                                font-size: 14px;
+                            }
+
+                            .order-item-table th {
+                                background: #f0f0f0;
+                                font-weight: 600;
+                            }
+
+                            .order-item-table input[type="number"] {
+                                width: 90px;
+                                padding: 5px;
+                                font-size: 14px;
+                                border: 1px solid #bbb;
+                                border-radius: 4px;
+                                text-align: right;
+                            }
+
+                            .order-item-table input[type="number"]:focus {
+                                border-color: #007bff;
+                                outline: none;
+                                box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+                            }
+                        </style>
+
+                        <div class="order-item" 
+                            data-total-heads="{{ $total_heads ?? 0 }}"
+                            data-total-kilos="{{ $total_kilos ?? 0 }}"
+                            data-type="{{ $item->product->measurement_type }}">
+
+                            <div class="order-item-header">
+                                <span>{{ $item->product->name }}</span>
+                            </div>
+
+                            <div class="order-item-total">
+                                @if ($item->product->measurement_type === 'Kilos')
+                                    Total: {{ $total_kilos }} kg
+                                @elseif ($item->product->measurement_type === 'Heads')
+                                    Total: {{ $total_heads }} pcs
+                                @elseif ($item->product->measurement_type === 'Heads&Kilos')
+                                    Total: {{ $total_heads }} pcs | {{ $total_kilos }} kg
+                                @endif
+                            </div>
+
+                            <table class="order-item-table">
+                                <thead>
+                                    <tr>
+                                        <th>Delivery Day</th>
+                                        @if ($item->product->measurement_type === 'Kilos')
+                                            <th>Kilos</th>
+                                        @elseif ($item->product->measurement_type === 'Heads')
+                                            <th>Heads</th>
+                                        @elseif ($item->product->measurement_type === 'Heads&Kilos')
+                                            <th>Heads</th>
+                                            <th>Kilos</th>
+                                        @endif
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($order->supplier->delivery->delivery_days as $day)
+                                        <tr>
+                                            <td>{{ $day }}</td>
+
+                                            @if ($item->product->measurement_type === 'Kilos')
+                                                <td>
+                                                    <input type="number" 
+                                                        name="items[{{ $item->id }}][{{ $day }}][kilos]"
+                                                        value="{{ $per_day_kilos }}"
+                                                        step="0.01" min="0">
+                                                </td>
+                                            @elseif ($item->product->measurement_type === 'Heads')
+                                                <td>
+                                                    <input type="number" 
+                                                        name="items[{{ $item->id }}][{{ $day }}][heads]"
+                                                        value="{{ $per_day_heads }}"
+                                                        step="1" min="0">
+                                                </td>
+                                            @elseif ($item->product->measurement_type === 'Heads&Kilos')
+                                                <td>
+                                                    <input type="number" 
+                                                        name="items[{{ $item->id }}][{{ $day }}][heads]"
+                                                        value="{{ $per_day_heads }}"
+                                                        step="1" min="0" placeholder="pcs">
+                                                </td>
+                                                <td>
+                                                    <input type="number" 
+                                                        name="items[{{ $item->id }}][{{ $day }}][kilos]"
+                                                        value="{{ $per_day_kilos }}"
+                                                        step="0.01" min="0" placeholder="kg">
+                                                </td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
+
                     @endforeach
 
-                    <script>
-                        document.querySelectorAll('.delivery-day input').forEach(input => {
-                        input.addEventListener('input', (e) => {
-                            const itemDiv = e.target.closest('.order-item');
-                            const inputs = itemDiv.querySelectorAll('.delivery-day input');
-                            const total = parseFloat(itemDiv.dataset.total);
-                            let sumOther = 0;
+<script>
+document.querySelectorAll('.order-item').forEach(itemDiv => {
+    const type = itemDiv.dataset.type;
+    const totalHeads = parseFloat(itemDiv.dataset.totalHeads || 0);
+    const totalKilos = parseFloat(itemDiv.dataset.totalKilos || 0);
 
-                            inputs.forEach(i => {
-                                if(i !== e.target) sumOther += parseFloat(i.value) || 0;
-                            });
+    if (type.includes('Heads')) {
+        setupAutoAdjust(itemDiv, 'heads', totalHeads);
+    }
+    if (type.includes('Kilos')) {
+        setupAutoAdjust(itemDiv, 'kilos', totalKilos);
+    }
+});
 
-                            // Automatically adjust last day if needed
-                            const remaining = total - sumOther - parseFloat(e.target.value);
-                            const lastInput = inputs[inputs.length - 1];
-                            if(lastInput !== e.target){
-                                lastInput.value = remaining > 0 ? remaining.toFixed(2) : 0;
-                            }
-                        });
-                    });
+function setupAutoAdjust(itemDiv, key, total) {
+    const inputs = Array.from(itemDiv.querySelectorAll(`input[name*="[${key}]"]`));
 
-                    </script>
+    // ✅ Distribute initial values properly (handle decimals nicely)
+    distributeInitial(inputs, total);
+
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            adjustRemaining(itemDiv, key, total, index);
+        });
+    });
+}
+
+function distributeInitial(inputs, total) {
+    const count = inputs.length;
+    let base = Math.floor(total / count);
+    let remainder = total % count;
+
+    inputs.forEach((input, i) => {
+        let value = base;
+        if (remainder > 0) {
+            value += 1;
+            remainder -= 1;
+        }
+        input.value = value;
+    });
+}
+
+function adjustRemaining(itemDiv, key, total, changedIndex) {
+    const inputs = Array.from(itemDiv.querySelectorAll(`input[name*="[${key}]"]`));
+    let sumExceptChanged = 0;
+
+    inputs.forEach((i, idx) => {
+        if (idx !== changedIndex) {
+            sumExceptChanged += parseFloat(i.value) || 0;
+        }
+    });
+
+    const remaining = total - sumExceptChanged;
+    const changedInput = inputs[changedIndex];
+    let changedValue = parseFloat(changedInput.value) || 0;
+
+    // ✅ Prevent exceeding total
+    if (changedValue > remaining) {
+        changedValue = remaining;
+        changedInput.value = changedValue;
+    }
+
+    // ✅ Recalculate other fields proportionally
+    const diff = total - (changedValue + sumExceptChanged);
+    if (diff !== 0) {
+        distributeDiff(inputs, changedIndex, diff);
+    }
+}
+
+function distributeDiff(inputs, changedIndex, diff) {
+    const otherInputs = inputs.filter((_, idx) => idx !== changedIndex);
+    let remainingDiff = diff;
+
+    // Adjust each input evenly to absorb or give back the difference
+    otherInputs.forEach((input, i) => {
+        if (remainingDiff === 0) return;
+
+        let value = parseFloat(input.value) || 0;
+        const adjustment = Math.sign(remainingDiff); // +1 or -1
+        input.value = value + adjustment;
+        remainingDiff -= adjustment;
+    });
+}
+</script>
+
                 </div>
-                
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Process this order</button>
                 </div>
             </form>
+
         </div>
     </div>
     {{-- file an action --}}
@@ -280,68 +476,69 @@
                     </div>
 
                     {{-- RECEIVED QUANTITIES --}}
-@if(isset($items) && count($items) > 0)
-    <div class="table-responsive mt-3">
-        <table class="table table-bordered table-striped align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Product ID</th>
-                    <th>Product</th>
-                    <th>Planned</th>
-                    <th>Received</th>
-                    <th>Variance</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach($items as $item)
-                @php
-                    $isKilos = $item->product->measurement_type === "Kilos";
-                    $plannedValue = $isKilos
-                        ? ($item->planned_kilos ?? $item->placed_kilos ?? 0)
-                        : ($item->planned_heads ?? $item->placed_heads ?? 0);
-                @endphp
-                <tr>
-                    <td>{{ $item->product_id }}</td>
-                    <td>{{ $item->product->name }}</td>
+                    @if(isset($items) && count($items) > 0)
+                        <div class="table-responsive mt-3">
+                            <table class="table table-bordered table-striped align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Product ID</th>
+                                        <th>Product</th>
+                                        <th>Planned</th>
+                                        <th>Received</th>
+                                        <th>Variance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($items as $item)
+                                    @php
+                                        $isKilos = $item->product->measurement_type === "Kilos";
+                                        $plannedValue = $isKilos
+                                            ? ($item->planned_kilos ?? $item->placed_kilos ?? 0)
+                                            : ($item->planned_heads ?? $item->placed_heads ?? 0);
+                                    @endphp
+                                    <tr>
+                                        <td>{{ $item->product_id }}</td>
+                                        <td>{{ $item->product->name }}</td>
 
-                    {{-- PLANNED --}}
-                    <td>
-                        <span class="planned-value" data-measure="{{ $isKilos ? 'kilos' : 'heads' }}">
-                            {{ $plannedValue }}
-                        </span>
-                        {{ $isKilos ? 'kilos' : 'heads' }}
-                    </td>
+                                        {{-- PLANNED --}}
+                                        <td>
+                                            <span class="planned-value" data-measure="{{ $isKilos ? 'kilos' : 'heads' }}">
+                                                {{ $plannedValue }}
+                                            </span>
+                                            {{ $isKilos ? 'kilos' : 'heads' }}
+                                        </td>
 
-                    {{-- RECEIVED --}}
-                    <td>
-                        @if ($isKilos)
-                            <input type="number"
-                                   name="received_kilos[{{ $item->delItem->delivery_item_id }}]"
-                                   class="form-control received-input"
-                                   data-planned="{{ $plannedValue }}"
-                                   step="0.01"
-                                   placeholder="Enter kilos">
-                        @else
-                            <input type="number"
-                                   name="received_heads[{{ $item->delItem->delivery_item_id }}]"
-                                   class="form-control received-input"
-                                   data-planned="{{ $plannedValue }}"
-                                   placeholder="Enter heads">
-                        @endif
-                    </td>
+                                        {{-- RECEIVED --}}
+                                        <td>
+                                            @if ($isKilos)
+                                                <input type="number"
+                                                    name="received_kilos[{{ $item->delItem->delivery_item_id ?? '' }}]"
+                                                    class="form-control received-input"
+                                                    data-planned="{{ $plannedValue }}"
+                                                    step="0.01"
+                                                    placeholder="Enter kilos">
+                                            @else
+                                                <input type="number"
+                                                    name="received_heads[{{ $item->delItem->delivery_item_id ?? '' }}]"
 
-                    {{-- VARIANCE --}}
-                    <td>
-                        <p class="variance-text text-muted m-0">—</p>
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-    </div>
-@else
-    <p class="text-muted mt-3">No delivery items found for this order.</p>
-@endif
+                                                    class="form-control received-input"
+                                                    data-planned="{{ $plannedValue }}"
+                                                    placeholder="Enter heads">
+                                            @endif
+                                        </td>
+
+                                        {{-- VARIANCE --}}
+                                        <td>
+                                            <p class="variance-text text-muted m-0">—</p>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-muted mt-3">No delivery items found for this order.</p>
+                    @endif
 
 
 
