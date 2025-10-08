@@ -225,7 +225,7 @@
     <div class="modal fade" id="fileanaction" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true" >
         <div class="modal-dialog">
 
-            <form class="modal-content" method="POST" enctype="multipart/form-data" action="{{ route('delivery.confirm') }}">
+            <form class="modal-content" style="width: 700px;" method="POST" enctype="multipart/form-data" action="{{ route('delivery.confirm') }}">
                 @csrf
                 <input type="hidden" name="order_id" value="{{ $order->order_id }}">
 
@@ -280,49 +280,71 @@
                     </div>
 
                     {{-- RECEIVED QUANTITIES --}}
-                    @if(isset($items) && count($items) > 0)
-                        <div class="table-responsive mt-3">
-                            <table class="table table-bordered table-striped">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Product ID</th>
-                                        <th>Product</th>
-                                        <th>Planned</th>
-                                        <th>Received</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                @foreach($items as $item)
-                                    <tr>
-                                        <td>{{ $item->product_id }}</td>
-                                        <td>{{ $item->product->name }}</td>
-                                        <td>
-                                            @if ($item->product->measurement_type === "Kilos")
-                                                {{ $item->planned_kilos ?? $item->placed_kilos ?? 0 }} kilos
-                                            @else
-                                                {{ $item->planned_heads ?? $item->placed_heads ?? 0 }} heads
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($item->product->measurement_type === "Kilos")
-                                                <input type="number" 
-                                                    name="received_kilos[{{ $item->delItem->delivery_item_id }}]" 
-                                                    step="0.01"
-                                                    placeholder="Enter kilos">
-                                            @else
-                                                <input type="number" 
-                                                    name="received_heads[{{ $item->delItem->delivery_item_id }}]" 
-                                                    placeholder="Enter heads">
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <p class="text-muted mt-3">No delivery items found for this order.</p>
-                    @endif
+@if(isset($items) && count($items) > 0)
+    <div class="table-responsive mt-3">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Product ID</th>
+                    <th>Product</th>
+                    <th>Planned</th>
+                    <th>Received</th>
+                    <th>Variance</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach($items as $item)
+                @php
+                    $isKilos = $item->product->measurement_type === "Kilos";
+                    $plannedValue = $isKilos
+                        ? ($item->planned_kilos ?? $item->placed_kilos ?? 0)
+                        : ($item->planned_heads ?? $item->placed_heads ?? 0);
+                @endphp
+                <tr>
+                    <td>{{ $item->product_id }}</td>
+                    <td>{{ $item->product->name }}</td>
+
+                    {{-- PLANNED --}}
+                    <td>
+                        <span class="planned-value" data-measure="{{ $isKilos ? 'kilos' : 'heads' }}">
+                            {{ $plannedValue }}
+                        </span>
+                        {{ $isKilos ? 'kilos' : 'heads' }}
+                    </td>
+
+                    {{-- RECEIVED --}}
+                    <td>
+                        @if ($isKilos)
+                            <input type="number"
+                                   name="received_kilos[{{ $item->delItem->delivery_item_id }}]"
+                                   class="form-control received-input"
+                                   data-planned="{{ $plannedValue }}"
+                                   step="0.01"
+                                   placeholder="Enter kilos">
+                        @else
+                            <input type="number"
+                                   name="received_heads[{{ $item->delItem->delivery_item_id }}]"
+                                   class="form-control received-input"
+                                   data-planned="{{ $plannedValue }}"
+                                   placeholder="Enter heads">
+                        @endif
+                    </td>
+
+                    {{-- VARIANCE --}}
+                    <td>
+                        <p class="variance-text text-muted m-0">—</p>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+@else
+    <p class="text-muted mt-3">No delivery items found for this order.</p>
+@endif
+
+
+
 
                     {{-- FEEDBACK --}}
                     <div class="modal-option-groups">
@@ -580,6 +602,7 @@
     <script src="{{ asset('js/global/password.js') }}"></script>
     <script src="{{ asset('js/global/two_mb.js') }}"></script>
     <script src="{{ asset('js/global/pdf_view.js') }}"></script>
+    <script src="{{ asset('js/order/variance.js') }}"></script>
 
 
 
