@@ -2,189 +2,157 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\GlobalCeiling;
-use App\Models\PurchaseOrders;
-use App\Models\Suppliers;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Products;
-use App\Models\Logs;
-use App\Models\ProductSetting;
-use App\Models\Address;
-use Carbon\Carbon;
+use App\Traits\ImageHandler;
 
 class ProductController extends Controller
 {
+    use ImageHandler;
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
+            'status' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'product_id' => 'nullable|string|max:255',
+            'unit'=> 'nullable|string|max:25'
+        ]);
 
-        public function productList(Request $request)
-        {
+        $validated['status'] = $validated['status'] ?? 'Available';
 
-
-            $now = Carbon::now();
-
-            $user = Auth::user();
-            $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
-
-            $products = Products::where('status', 'Listed')->get(); 
-            $setProducts = $supplier 
-                ? ProductSetting::where('supplier_id', $supplier->supplier_id)->get() 
-                : collect(); 
-            $cities = Address::selectRaw('LOWER(office_city) as city')
-                ->distinct()
-                ->pluck('city');
-
-
-            // Supplier counts per city
-            $supplierCounts = Address::selectRaw('LOWER(office_city) as city, COUNT(DISTINCT supplier_id) as count')
-                ->groupBy('city')
-                ->pluck('count', 'city');
-            
-            $ceilings = GlobalCeiling::orderBy('start_date', 'desc')->get();
-
-
-            return view('products.list', [
-                'user' => $user,
-                'products' => $products,
-                'setProducts' => $setProducts,
-                'cities' => $cities,
-                'ceilings' => $ceilings,
-
-                'supplierCounts' => $supplierCounts,
-
-            ]);
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            [$base64, $mime] = $this->convertImageToBase64($request->file('image'));
+            $validated['image'] = $base64;
+            $validated['image_mime'] = $mime;
         }
 
-        public function productView($product_id, Request $request)
-        {
-            $user = Auth::user();
-            $product = Products::where('product_id', $product_id)->first(); 
-
-            $products = Products::all(); 
-
-            return view('products.product', [
-                'user' => $user,
-                'products' => $products,
-                'product' => $product,
-
-
-            ]);
-        }
-        public function updateParent(Request $request)
-        {
-            $data = $request->validate([
-                'product_id' => 'required|string|exists:products,product_id',
-                'parent_product_id' => 'nullable|string|exists:products,product_id',
-            ]);
-
-            $product = Products::where('product_id', $data['product_id'])->firstOrFail();
-            $product->parent_product_id = $data['parent_product_id'] ?? null;
-            $product->save();
-
-            return back()->with('success', 'Product parent updated.');
-        }
-        public function addProduct(Request $request) {
-            \Log::info('Request data:', $request->all());
-            $user_id = Auth::user()->user_id;
-            try {
-                $validated = $request->validate([
-                    'product_id' => 'required|string|max:50|unique:products,product_id',
-                    'parent_product_id' => 'nullable|string|exists:products,product_id',
-                    'name'       => 'required|string|max:255',
-                    'base_price'        => 'required|numeric|min:0',
-                    'category'   => 'nullable|string|max:100',
-                    'category_id'=> 'nullable|string|exists:categories,category_id',
-                    'unit'       => 'nullable|string|max:50',
-                    'measurement_type' => 'required|string|max:50',
-                    'weight'     => 'nullable|string|max:50',
-                    'status'     => 'required|string|in:Listed,Unlisted',
-                ]);
-                
-                \Log::info('Validated data:', $validated);
-                
-                $validated['added_by'] = auth()->user()->user_id;
-                if (!empty($validated['category_id']) && empty($validated['category'])) {
-                    $cat = \App\Models\Category::where('category_id', $validated['category_id'])->first();
-                    if ($cat) {
-                        $validated['category'] = $cat->name;
-                    }
-                }
-                
-                \Log::info('Final data for creation:', $validated);
-                
-                $product = Products::create($validated); 
-                    $date = date('Ymd');
-                    function randomBase36String(int $length): string {
-                        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                        $str = '';
-                        for ($i = 0; $i < $length; $i++) {
-                            $str .= $chars[random_int(0, strlen($chars) - 1)];
-                        }
-                        return $str;
-                    }
-
-                    $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
-                    Logs::create([
-                        'user_id'     => $user_id,
-                        'action'      => 'Added a new product',
-                        'log_id'      => $log_id,
-                        'description' => "Staff( $user_id) added a new product named" .$validated['name'],
-                                         "with base price" .$validated['base_price'],
-                        'entity'      => 'Products',
-                        'entity_id'   => $product->id,
-                    ]);
-                    
-                return redirect()->route('products.list')
-                    ->with('success', 'Product added successfully!');
-                    
-            } catch (\Illuminate\Validation\ValidationException $e) {
-                \Log::error('Validation failed:', $e->errors());
-                return redirect()->back()
-                    ->withErrors($e->errors())
-                    ->withInput();
-            } catch (\Exception $e) {
-                \Log::error('Exception in addProduct: ' . $e->getMessage(), [
-                    'trace' => $e->getTraceAsString(),
-                    'request_data' => $request->all()
-                ]);
-                
-                return redirect()->back()
-                    ->with('error', 'An error occurred while adding the product: ' . $e->getMessage())
-                    ->withInput();
-            }
+        if ($validated['quantity'] === '0') {
+            $validated['status'] = "No stock";
+        } elseif ($validated['quantity'] < 20) {
+            $validated['status'] = "Low stock";
+        } else {
+            $validated['status'] = "Available";
         }
 
-        public function filter(Request $request)
-        {
-            $query = Products::where('status', 'Listed');
+        Product::create($validated);
 
-            if ($request->filled('category')) {
-                $query->where('category', $request->category);
-            }
-            if ($request->filled('unit')) {
-                $query->where('unit', $request->unit);
-            }
-            if ($request->filled('weight')) {
-                $query->where('weight', $request->weight);
-            }
+        return redirect()->back()->with('success', 'Product added successfully!');
+    }
 
-            $products = $query->get();
 
-            return view('customers.partials.filter_results', compact('products'));
+    /**
+     * Display product image stored in database
+     */
+    public function showImage($id)
+    {
+        $product = Product::findOrFail($id);
+        if (!$product->image || !$product->image_mime) {
+            abort(404);
+        }
+        return response($product->image)->header('Content-Type', $product->image_mime);
+    }
+
+    
+    public function unlistProduct($product_id)
+    {
+        $product = Product::findOrFail($product_id);
+        $product->status = 'Unlisted';
+        $product->save();
+        return redirect()->route('product_view.view', $product_id)->with('success', 'Product unlisted successfully!');
+    }
+
+    public function addStock($product_id)
+    {
+        $validated = request()->validate([
+            'addedStock' => 'required|integer|min:1|max:999'
+        ]);
+
+        $product = Product::findOrFail($product_id);
+        $product->quantity += $validated['addedStock'];
+
+        if ($product->quantity === 0) {
+            $product->status = "No stock";
+        } elseif ($product->quantity < 20) {
+            $product->status = "Low stock";
+        } else {
+            $product->status = "Available";
         }
 
-        public function info($product_id)
-        {
-            $product = Products::where('product_id', $product_id)->firstOrFail();
-            return response()->json([
-                'product_id' => $product->product_id,
-                'name' => $product->name,
-                'category' => $product->category,
-                'unit' => $product->unit,
-                'weight' => $product->weight,
-            ]);
+        $product->save();
+
+        return redirect()->route('product_view.view', $product_id)
+                        ->with('success', 'Stock added successfully!');
+    }
+
+    public function productView($id)
+    {
+        $product = Product::findOrFail($id);
+
+        $soldQuantity = \DB::table('orders')
+            ->where('product_id', $product->id)
+            ->where('status', 'Completed')
+            ->sum('quantity');
+
+        return view('product_view', compact('product', 'soldQuantity'));
+    }
+
+    public function editProduct(Request $request, $product_id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'category' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'product_id' => 'nullable|string|max:255',
+            'unit'=> 'nullable|string|max:25'
+        ]);
+
+        $product = Product::findOrFail($product_id);
+        
+        $product->name        = $validated['name'];
+        $product->description = $validated['description'];
+        $product->price       = $validated['price'];
+        $product->unit        = $validated['unit'];
+        $product->category    = $validated['category'];
+        $product->product_id    = $validated['product_id'];
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $product->image = base64_encode(file_get_contents($file->getRealPath()));
+            $product->image_mime = $file->getMimeType();
         }
 
+        $product->save();
 
+        return redirect()->route('product_view.view', $product_id)->with('success', 'Product listed successfully!');
+    }
+
+    public function listProduct($product_id)
+    {
+        $product = Product::findOrFail($product_id);
+        $product->status = 'Available';
+        $product->save();
+        return redirect()->route('product_view.view', $product_id)->with('success', 'Product listed successfully!');
+    }
+
+
+    public function deleteProduct($product_id)
+    {
+        $product = Product::findOrFail($product_id);
+
+        if (auth()->user()->user_type !== 'Admin') {
+            abort(403, 'Unauthorized access');
+        }
+        $product->delete();
+
+        return redirect()->route('store', $product_id)->with('success', 'Product deleted successfully!');
+    }
 
 }

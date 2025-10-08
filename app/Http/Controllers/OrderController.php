@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers;
 
+<<<<<<< HEAD
 use App\Models\Delivery;
 use App\Models\DeliveryItems;
 use App\Models\Staffs;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+=======
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Models\Orders;
-use App\Models\PurchaseOrders;
-use App\Models\Suppliers;
-use App\Models\OrderItem;
-use App\Models\Logs;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\OrderHistory;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
+<<<<<<< HEAD
 {   
     
         public static function randomBase36String(int $length): string
@@ -100,36 +102,37 @@ class OrderController extends Controller
                 'user' => $user,
                 'supplier' => $supplier,
                 'orders' => $orders,
+=======
+{
+    public function checkout(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $validated = $request->validate([
+                'items' => 'required|array|min:1',
+                'items.*.id' => 'required|exists:products,id',
+                'items.*.qty' => 'required|integer|min:1|max:999',
+                'total' => 'nullable|numeric|min:0',
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
             ]);
-        }
+            $items = $validated['items'];
+            $total = $validated['total'] ?? 0;
 
-        public function createorder(Request $request){
-        
-            \Log::info('Staff Registration Request Data:', $request->all());
-
-            try {
-                $request->validate([
-                    'supplier_id' => 'required|exists:suppliers,supplier_id',
-                    'status'    => 'required|string',
-                    'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-                ]);
-
-            } catch (\Illuminate\Validation\ValidationException $e) {
-                \Log::error('Puchase order submission failed:', $e->errors());
-                return redirect()->back()
-                    ->withErrors($e->validator)
-                    ->withInput();
+            // Validate user
+            if (!$user || $user->user_type !== 'Customer') {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
             }
 
+            // Validate cart
+            if (empty($items)) {
+                return response()->json(['success' => false, 'message' => 'Cart is empty.'], 400);
+            }
 
+            // Use database transaction for data consistency
             DB::beginTransaction();
 
-            $date = date('Ymd');
-
-
-            $po_id = 'PO-' . $date . '-' . $this->randomBase36String(5);
-
             try {
+<<<<<<< HEAD
                 $imageBlob = null;
                 $imageMimeType = null;
                 $imageFilename = null;
@@ -259,181 +262,435 @@ class OrderController extends Controller
                         !isset($request->product_ids[$setId]) || 
                         !isset($request->unit_prices[$setId])) {
                         continue;
+=======
+                // Validate stock availability
+                foreach ($items as $item) {
+                    $product = Product::find($item['id']);
+                    if (!$product) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Product {$item['name']} not found."
+                        ], 400);
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
                     }
-
-                    $quantity = (int) $request->quantities[$setId];
-                    $unitPrice = (float) $request->unit_prices[$setId];
-                    $productId = $request->product_ids[$setId];
-                    $totalPrice = $quantity * $unitPrice;
-
-                    $orderItemId = 'ORDR_ITEM-' . $date . '-' . $this->randomBase36String(5);
-
-                    OrderItem::create([
-                        'order_item_id' => $orderItemId,
-                        'order_id' => $order_id,
-                        'product_id' => $productId,
-                        'set_id' => $setId,
-                        'quantity' => $quantity,
-                        'unit_price' => $unitPrice,
-                        'total_price' => $totalPrice,
-                        'status' => 'Pending',
-                    ]);
-
-                    $totalOrderAmount += $totalPrice;
-                }
-
-                
-                $order->update(['total_amount' => $totalOrderAmount]);
-                
-                // Handle file upload if present
-                if ($request->hasFile('order_document')) {
-                    $file = $request->file('order_document');
-                    $filename = 'order_doc_' . $order_id . '_' . time() . '.' . $file->getClientOriginalExtension();
-                    $filePath = $file->storeAs('order_documents', $filename, 'public');
                     
-                    // Update order with document path
-                    $order->update(['document_path' => $filePath]);
+                    if ($product->quantity < $item['qty']) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => "{$item['name']} is out of stock or not enough quantity. Available: {$product->quantity}"
+                        ], 400);
+                    }
                 }
-                
-                $purchaseOrder->update([
-                    'status' => 'Placed',
-                    'placed_at' => now(),
-                ]);
-            
-
-                \Log::info('Processing order items:', [
-                    'selected_products' => $request->selected_products,
-                    'quantities' => $request->quantities,
-                    'product_ids' => $request->product_ids,
-                    'unit_prices' => $request->unit_prices,
-                ]);
-
-                
-                DB::commit();
-                
-                return redirect()->back()->with('success', 
-                    'Purchase order has been placed successfully! Order ID: ' . $order_id . 
-                    '. Total items: ' . count($orderItemsCreated));
-                    
-            } catch (\Exception $e) {
-                DB::rollBack();
-                \Log::error('Purchase order placement failed:', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'request_data' => $request->all(),
-                ]);
-                
-                return redirect()->back()
-                    ->with('error', 'Purchase order placement failed: ' . $e->getMessage() . 
-                        '. Please check the logs for more details.')
-                    ->withInput();
-            }
-        }
-    
-        public function orderAction(Request $request)
-        {
-            \Log::info('Placing purchase order items - Request Data:', $request->all());
-            
-            try {
-                $validated = $request->validate([
-                    'order_id' => 'required|exists:orders,order_id',
-                    'status'   => 'required|in:Accepted,Rejected',
-                ]);
-                
-            } catch (\Illuminate\Validation\ValidationException $e) {
-                \Log::error('Purchase order submission failed:', $e->errors());
-                return redirect()->back()
-                    ->withErrors($e->validator)
-                    ->withInput();
-            }
-            
-            try {
-                DB::beginTransaction();
-
                 $date = date('Ymd');
-                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
-                $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
+                function randomBase36String(int $length): string {
+                    $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    $str = '';
+                    for ($i = 0; $i < $length; $i++) {
+                        $str .= $chars[random_int(0, strlen($chars) - 1)];
+                    }
+                    return $str;
+                }
 
-                $order = Orders::where('order_id', $validated['order_id'])->firstOrFail();
-                $po = PurchaseOrders::where('po_id', $order->po_id)->firstOrFail();
-
-                $data = [
-                    'status'     => $validated['status'],
-                    'updated_at' =>now(),
-                ];
-
-                $order->update($data);
-                $po->update($data);
+                $order_id = 'ORD-' . $date . '-' . randomBase36String(5);
 
 
-                $user_id = Auth::user()->user_id;
+                // Process each item
+                foreach ($items as $item) {
+                    $product = Product::find($item['id']);
+                    
+                    // Update product quantity
+                    $product->quantity -= $item['qty'];
+                    $product->save();
 
+                    // Create order record
+                    Orders::create([
+                        'order_id'    => $order_id,
+                        'customer_id' => $user->id,
+                        'product_id'  => $product->id,
+                        'quantity'    => $item['qty'],
+                        'unit_price'  => $product->price,
+                        'total_price' => $product->price * $item['qty'],
+                        'status'      => 'Pending',  
 
-                Logs::create([
-                    'user_id' => Auth::user()->user_id,
-                    'action' => 'Commited on an order',
-                    'log_id' => $log_id,
-                    'description' => "Staff '{$user_id}' {$request->status} order '{$request->order_id}'",
-                ]);
+                        
+                    ]);
+                }
 
-                OrderHistory::create([
-                    'action_by' => Auth::user()->user_id,
-                    'order_id' => $request->order_id,
-                    'action_at' => now(),
-                    'history_id' => $history_id,
-                    'label' => 'Order',
-                    'amount' => $order->total_amount,
-                    'status' => $request->status,
-                ]);
-                
                 DB::commit();
                 
-                return back()->with('success', 'Order status updated successfully.');
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Order placed successfully!',
+                    'order_id' => $order_id
+                ]);
 
-                    
             } catch (\Exception $e) {
                 DB::rollBack();
-                \Log::error('Order update failed:', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'request_data' => $request->all(),
-                ]);
-                
-                return redirect()->back()
-                    ->with('error', 'Order update failed: ' . $e->getMessage() . 
-                        '. Please check the logs for more details.')
-                    ->withInput();
+                Log::error('Checkout transaction failed: ' . $e->getMessage());
+                throw $e;
             }
+
+        } catch (\Exception $e) {
+            Log::error('Checkout error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your order. Please try again.'
+            ], 500);
         }
+    }
+    public function customerOrders()
+    {
+        $user = auth()->user();
+        $search = request('search');
+        $status = request('status');
+        $from = request('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $to = request('to_date', now()->endOfMonth()->format('Y-m-d'));
+
+        $query = Orders::with('product')->where('customer_id', $user->id);
+
+        // Status filter (tabs)
+        if ($status && in_array($status, ['Pending', 'Processing', 'Completed', 'Cancelled', 'Rejected'])) {
+            $query->where('status', $status);
+        }
+
+        // Date range filter aligned with status
+        $dateColumn = ($status && in_array($status, ['Processing', 'Completed', 'Cancelled', 'Rejected']))
+            ? 'action_at'
+            : 'created_at';
+        $query->whereBetween($dateColumn, [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()]);
+
+        // Search filter
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('order_id', 'like', "%$search%")
+                  ->orWhere('status', 'like', "%$search%")
+                  ->orWhere('created_at', 'like', "%$search%")
+                  ->orWhere('action_at', 'like', "%$search%");
+            });
+        }
+
+        $allOrders = $query->orderByDesc($dateColumn)->get();
+
+        $orders = $allOrders->groupBy('order_id')->map(function ($orderItems) {
+            $firstItem = $orderItems->first();
+            return (object) [
+                'order_id' => $firstItem->order_id,
+                'customer_id' => $firstItem->customer_id,
+                'status' => $firstItem->status,
+                'created_at' => $firstItem->created_at,
+                'action_at' => $firstItem->action_at,
+                'total_amount' => $orderItems->sum('total_price'),
+                'item_count' => $orderItems->count(),
+                'total_quantity' => $orderItems->sum('quantity'),
+                'items' => $orderItems
+            ];
+        })->sortByDesc('created_at')->values();
+
+        return view('customer_orders', compact('orders', 'user', 'search', 'status', 'from', 'to'));
+    }
+
+
+    public function viewOrder($id)
+    {
+        $orders = Orders::where('order_id', $id)->with('product')->get();
+
+        if ($orders->isEmpty()) {
+            return redirect()->back()->with('error', 'Order not found.');
+        }
+
+        $total = $orders->sum('total_price');
+        $user = auth()->user();
+        $ownerId = optional($orders->first())->customer_id;
+        if (!in_array($user->user_type, ['Admin', 'Staff']) && $ownerId !== $user->id) {
+            abort(403, 'Unauthorized access');
+        }
+
+        return view('view-order', compact('orders', 'total', 'user'));
+    }
+
     
-        public function customerOrderPdf($order_id)
-        {
-            $order = Orders::where('order_id', $order_id)->firstOrFail();
-            $items = $order->items;
-
-            $pdf = Pdf::loadView('pdf.orders.customer_order', compact('order', 'items'));
-            return $pdf->stream("customer-order-{$order_id}.pdf");
+    public function cancelOrder($order_id)
+    {
+        $user = auth()->user();
+        $ownerId = Orders::where('order_id', $order_id)->value('customer_id');
+        if (!in_array($user->user_type, ['Admin', 'Staff']) && $ownerId !== $user->id) {
+            abort(403, 'Unauthorized action');
         }
 
+        try {
+            DB::beginTransaction();
+            
+            // Get all order items for this order
+            $orderItems = Orders::where('order_id', $order_id)->get();
+            
+            // Restore product quantities
+            foreach ($orderItems as $orderItem) {
+                $product = Product::find($orderItem->product_id);
+                if ($product) {
+                    $product->quantity += $orderItem->quantity;
+                    $product->save();
+                }
+            }
+            
+            // Update order status
+            Orders::where('order_id', $order_id)->update([
+                'status' => 'Cancelled',
+                'action_at' => now(),
+                'action_by' => $user->name,
+            ]);
+            
+            DB::commit();
+            
+            return redirect()->route('orders.view', $order_id)
+                ->with('success', 'Order cancelled successfully! Product quantities have been restored.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error cancelling order: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to cancel order. Please try again.');
+        }
+    }
 
+<<<<<<< HEAD
         public function deliveryReceiptPdf($delivery_id)
         {
             $delivery = Delivery::where('delivery_id', $delivery_id)->firstOrFail();
             $items = DeliveryItems::where('delivery_id', $delivery_id)->get();
             $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('delivery', 'items'));
             return $pdf->stream("delivery-receipt-{$delivery_id}.pdf");
+=======
+    public function store() {
+        $user = auth()->user();
+        $search = request('search');
+        $status = request('status');
+        $filter = request('filter'); 
+        
+        $query = Product::query();
+        
+        $statuses = ['Available', 'Low stock', 'No stock', 'Unlisted'];
+        $statusCounts = [];
+        foreach ($statuses as $s) {
+            $statusCounts[$s] = Product::where('status', $s)->count();
+        }
+        $statusCounts['All'] = Product::count();
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                ->orWhere('id', 'like', "%$search%")
+                ->orWhere('status', 'like', "%$search%")
+                ->orWhere('product_id', 'like', "%$search%")
+                ->orWhere('category', 'like', "%$search%");
+            });
+        }
+        
+        if ($status && $status !== 'All') {
+            $query->where('status', $status);
+        }
+        
+        $products = $query
+            ->select('products.*')
+            ->selectSub(function ($q) {
+                $q->from('orders')
+                ->selectRaw('COALESCE(SUM(quantity), 0)')
+                ->whereColumn('orders.product_id', 'products.id')
+                ->where('status', 'Completed');
+            }, 'sold_quantity');
+        
+        switch ($filter) {
+            case 'asc':
+                $products = $products->orderBy('name', 'asc');
+                break;
+            case 'desc':
+                $products = $products->orderBy('name', 'desc');
+                break;
+            case 'new':
+                $products = $products->orderBy('created_at', 'desc');
+                break;
+            case 'old':
+                $products = $products->orderBy('created_at', 'asc');
+                break;
+            case 'sold-most':
+                $products = $products->orderByDesc('sold_quantity');
+                break;
+            case 'sold-least':
+                $products = $products->orderBy('sold_quantity', 'asc');
+                break;
+            default:
+                $products = $products->orderByRaw("
+                    CASE 
+                        WHEN quantity > 0 AND status != 'Unlisted' THEN 1
+                        WHEN quantity = 0 THEN 2
+                        WHEN status = 'Unlisted' THEN 3
+                        ELSE 4
+                    END
+                ")->orderByDesc('created_at');
+                break;
+        }
+        
+        $products = $products->paginate(15);
+        
+        $appendParams = [];
+        if ($search) {
+            $appendParams['search'] = $search;
+        }
+        if ($status) {
+            $appendParams['status'] = $status;
+        }
+        if ($filter) {
+            $appendParams['filter'] = $filter;
+        }
+        
+        if (!empty($appendParams)) {
+            $products->appends($appendParams);
+        }
+        
+        return view('store', compact('user', 'products', 'search', 'statusCounts', 'filter'));
+    }
+    
+    public function orders()
+    {
+        $user = auth()->user();
+        $search = request('search');
+        $status = request('status');
+        $from = request('from_date', now()->startOfMonth()->format('Y-m-d'));
+        $to = request('to_date', now()->endOfMonth()->format('Y-m-d'));
+
+        $query = Orders::with(['product', 'user']);
+
+        // Status filter (tabs)
+        if ($status && in_array($status, ['Pending', 'Processing', 'Completed', 'Cancelled', 'Rejected'])) {
+            $query->where('status', $status);
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
         }
 
-        public function salesInvoicePdf($order_id)
-        {
-            $order = Orders::with([
-                'supplier.user',
-                'items.product'
-            ])->where('order_id', $order_id)->firstOrFail();
-            $items = $order->items;
-            $pdf = PDF::loadView('pdf.orders.sales_invoice', compact('order', 'items'));
-            return $pdf->stream("sales-invoice-{$order_id}.pdf");
+        // Date range filter aligned with status state
+        $dateColumn = ($status && in_array($status, ['Processing', 'Completed', 'Cancelled', 'Rejected']))
+            ? 'action_at'
+            : 'created_at';
+        $query->whereBetween($dateColumn, [Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay()]);
+
+        // Search filter
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('order_id', 'like', "%$search%")
+                  ->orWhere('status', 'like', "%$search%")
+                  ->orWhere('created_at', 'like', "%$search%")
+                  ->orWhere('action_at', 'like', "%$search%");
+            })
+            ->orWhereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('store_name', 'like', "%$search%");
+            });
         }
+
+        $allOrders = $query->orderByDesc($dateColumn)->get();
+
+        $orders = $allOrders->groupBy('order_id')->map(function ($orderItems) {
+            $firstItem = $orderItems->first();
+            return (object) [
+                'order_id' => $firstItem->order_id,
+                'customer_id' => $firstItem->customer_id,
+                'status' => $firstItem->status,
+                'created_at' => $firstItem->created_at,
+                'action_at' => $firstItem->action_at,
+                'total_amount' => $orderItems->sum('total_price'),
+                'item_count' => $orderItems->count(),
+                'total_quantity' => $orderItems->sum('quantity'),
+                'user' => $firstItem->user,
+                'items' => $orderItems
+            ];
+        })->sortByDesc('created_at')->values();
+
+        return view('orders', compact('orders', 'user', 'search', 'status', 'from', 'to'));
+    }
+
+    public function orderView($id)
+    {
+        $orderItems = Orders::with(['product', 'user'])
+            ->where('order_id', $id)
+            ->get();
+
+        if ($orderItems->isEmpty()) {
+            return redirect()->back()->with('error', 'Order not found.');
+        }
+
+        $user = auth()->user();
+
+        return view('order_view', compact('orderItems', 'user'));
+    }
+
+    public function acceptOrder($order_id)
+    {
+        $user = auth()->user();
+
+        Orders::where('order_id', $order_id)->update([
+            'status' => 'Processing',
+            'action_at' => now(),
+            'action_by' => $user->name,
+        ]);
+
+        return redirect()->route('order.view', $order_id)
+            ->with('success', 'Order accepted successfully!');
+    }
+
+    public function markOrderDone($order_id)
+    {
+        $user = auth()->user();
+
+        Orders::where('order_id', $order_id)->update([
+            'status' => 'Completed',
+            'action_at' => now(),
+            'action_by' => $user->name,
+        ]);
+
+        return redirect()->route('order.view', $order_id)
+            ->with('success', 'Order marked as done successfully!');
+    }
+
+    public function rejectOrder($order_id)
+    {
+        $user = auth()->user();
+        $ownerId = Orders::where('order_id', $order_id)->value('customer_id');
+        if (!in_array($user->user_type, ['Admin', 'Staff']) && $ownerId !== $user->id) {
+            abort(403, 'Unauthorized action');
+        }
+
+        try {
+            DB::beginTransaction();
+            
+            // Get all order items for this order
+            $orderItems = Orders::where('order_id', $order_id)->get();
+            
+            // Restore product quantities (only for non-completed items)
+            foreach ($orderItems->where('status', '!=', 'Completed') as $orderItem) {
+                $product = Product::find($orderItem->product_id);
+                if ($product) {
+                    $product->quantity += $orderItem->quantity;
+                    $product->save();
+                }
+            }
+            
+            // Update order status
+            Orders::where('order_id', $order_id)->update([
+                'status' => 'Rejected',
+                'action_at' => now(),
+                'action_by' => $user->name,
+            ]);
+            
+            DB::commit();
+            
+            return redirect()->route('orders.view', $order_id)
+                ->with('success', 'Order rejected successfully! Product quantities have been restored.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error rejecting order: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to reject order. Please try again.');
+        }
+    }
 
 
 }

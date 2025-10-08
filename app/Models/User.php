@@ -2,13 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Str;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -18,20 +24,25 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var list<string>
      */
     protected $fillable = [
-        'user_id',
-        'email_address', 
+        'name',
+        'username',
+        'email',
+        'mobile',
+        'telephone',
+        'address',
         'password',
         'image',
-        'image_mime_type', 
-        'image_filename',
-        'image_size',
-        'status',
-        'role',
-        'role_type',
-        'email_verified_at',
-        'agreement'
-        
+        'image_mime',
+        'user_type',
+        'acc_status',
+        'action_by',
+        'store_name',
+        'email_verified_at'
     ];
+        public function orders()
+    {
+        return $this->hasMany(Orders::class, 'customer_id', 'id');
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -43,6 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
+<<<<<<< HEAD
         public function supplier()
     {
         return $this->belongsTo(Suppliers::class, 'user_id', 'user_id');
@@ -55,6 +67,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
 
+=======
+>>>>>>> parent of 54b5d0c3 (Add revised system code)
     /**
      * Get the attributes that should be cast.
      *
@@ -67,16 +81,29 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    
+
+    public function hasVerifiedEmail()
+    {
+        return !is_null($this->email_verified_at);
+    }
+
+    public function markEmailAsVerified()
+    {
+        return $this->forceFill([
+            'email_verified_at' => $this->freshTimestamp(),
+        ])->save();
+    }
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = Str::ulid(); 
+            }
+        });
+    }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
