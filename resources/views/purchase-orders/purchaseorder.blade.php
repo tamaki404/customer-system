@@ -73,25 +73,46 @@
                                             <td>{{ $item->product->measurement_type }}</td>
                                             <td>₱{{ number_format($item->unit_price, 2) }}</td>
                                             <td style="display: flex; justify-content: center;">
-                                                @if ($item->product->measurement_type === "Kilos")
-                                                    <input type="number" 
-                                                            name="alt_kilos[{{ $item->po_item_id }}]" 
-                                                            value="{{ $item->placed_kilos }}" 
-                                                            min="0"
-                                                            class="form-control staff-quantity-input"
-                                                            onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
-                                                            style="width:100px"
-                                                            >
-                                                @elseif ($item->product->measurement_type === "Heads")
-                                                    <input type="number" 
-                                                            name="alt_heads[{{ $item->po_item_id }}]" 
-                                                            value="{{ $item->placed_heads }}" 
-                                                            min="0"
-                                                            class="form-control staff-quantity-input"
-                                                            onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
-                                                            style="width:100px"
-                                                            >
-                                                @endif
+@if ($item->product->measurement_type === "Kilos")
+    {{-- Kilos only --}}
+    <input type="number" 
+        name="alt_kilos[{{ $item->po_item_id }}]" 
+        value="{{ $item->placed_kilos }}" 
+        min="0"
+        class="form-control staff-quantity-input"
+        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
+        style="width:100px">
+@elseif ($item->product->measurement_type === "Heads")
+    {{-- Heads only --}}
+    <input type="number" 
+        name="alt_heads[{{ $item->po_item_id }}]" 
+        value="{{ $item->placed_heads }}" 
+        min="0"
+        class="form-control staff-quantity-input"
+        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
+        style="width:100px">
+@elseif ($item->product->measurement_type === "Heads&Kilos")
+    {{-- Heads --}}
+    <input type="number" 
+        name="alt_heads[{{ $item->po_item_id }}]" 
+        value="{{ $item->placed_heads }}" 
+        min="0"
+        class="form-control staff-quantity-input mb-1"
+        placeholder="Heads"
+        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
+        style="width:100px">
+
+    {{-- Kilos --}}
+    <input type="number" 
+        name="alt_kilos[{{ $item->po_item_id }}]" 
+        value="{{ $item->placed_kilos }}" 
+        min="0"
+        class="form-control staff-quantity-input"
+        placeholder="Kilos"
+        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
+        style="width:100px">
+@endif
+
 
                                             </td>
                                         <td>
@@ -332,18 +353,37 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function calculateStaffTotal(poItemId, unitPrice) {
-        const quantityInput = document.querySelector(`input[name="staff_quantities[${poItemId}]"]`);
+        // Get inputs
+        const headsInput = document.querySelector(`input[name="alt_heads[${poItemId}]"]`);
+        const kilosInput = document.querySelector(`input[name="alt_kilos[${poItemId}]"]`);
+        const quantityInput = document.querySelector(`input[name="staff_quantities[${poItemId}]"]`); // fallback for old single field
         const totalSpan = document.getElementById(`staff_total_${poItemId}`);
-        
-        if (quantityInput && totalSpan) {
-            const quantity = parseInt(quantityInput.value) || 0;
-            const total = unitPrice * quantity;
-            
-            totalSpan.textContent = `₱${total.toFixed(2)}`;
-            
-            // Update grand total
-            updateStaffGrandTotal();
+
+        const heads = headsInput ? parseFloat(headsInput.value) || 0 : 0;
+        const kilos = kilosInput ? parseFloat(kilosInput.value) || 0 : 0;
+        const quantity = quantityInput ? parseFloat(quantityInput.value) || 0 : 0;
+
+        let total = 0;
+
+        // 💡 Logic:
+        // - Heads&Kilos → use only kilos for price
+        // - Kilos only → use kilos
+        // - Heads only → use heads
+        if (headsInput && kilosInput) {
+            total = unitPrice * kilos; // only kilos used for computation
+        } else if (kilosInput) {
+            total = unitPrice * kilos;
+        } else if (headsInput) {
+            total = unitPrice * heads;
+        } else {
+            total = unitPrice * quantity;
         }
+
+        if (totalSpan) {
+            totalSpan.textContent = `₱${total.toFixed(2)}`;
+        }
+
+        updateStaffGrandTotal();
     }
 
     function updateStaffGrandTotal() {
@@ -376,4 +416,5 @@
         }
     });
 </script>
+
 @endpush
