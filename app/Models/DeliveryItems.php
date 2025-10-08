@@ -23,6 +23,8 @@ class DeliveryItems extends Model
         'received_heads',
         'received_kilos',
         'status',
+        'variance_kilos',
+        'variance_heads',
     ];
 
     // A delivery item belongs to a delivery

@@ -126,7 +126,7 @@ class DeliveryController extends Controller
                 'order_id' => 'required|string',
                 'status' => 'required|string|in:Delivered',
                 'feedback' => 'nullable|string|max:200',
-                'pod_file' => 'required|file|mimes:pdf|max:2048', // 2MB max
+                'pod_file' => 'required|file|mimes:pdf|max:2048',
                 'received_kilos' => 'array',
                 'received_heads' => 'array',
             ]);
@@ -139,27 +139,41 @@ class DeliveryController extends Controller
                 'status' => $request->status,
                 'feedback' => $request->feedback,
                 'delivered_at' => now(),
-                'pod_file' => $pdfContent,   
+                'pod_file' => $pdfContent,
                 'pod_mime' => 'application/pdf',
             ]);
 
-            foreach ($request->input('received_kilos', []) as $deliveryItemId => $kilos) {
-                DeliveryItems::where('delivery_item_id', $deliveryItemId)
-                    ->update([
-                        'received_kilos' => $kilos,
-                        'status' => $request->status,
-                    ]);
+            // Get all unique delivery item IDs from both arrays
+            $receivedKilos = $request->input('received_kilos', []);
+            $receivedHeads = $request->input('received_heads', []);
+            $allItemIds = array_unique(array_merge(array_keys($receivedKilos), array_keys($receivedHeads)));
+
+            // Process all items in a single loop
+            foreach ($allItemIds as $deliveryItemId) {
+                $deliveryItem = DeliveryItems::where('delivery_item_id', $deliveryItemId)->first();
+                
+                if ($deliveryItem) {
+                    $updateData = ['status' => $request->status];
+
+                    // Process kilos if provided
+                    if (isset($receivedKilos[$deliveryItemId])) {
+                        $plannedKilos = $deliveryItem->planned_kilos ?? $deliveryItem->placed_kilos ?? 0;
+                        $updateData['received_kilos'] = $receivedKilos[$deliveryItemId];
+                        $updateData['variance_kilos'] = $receivedKilos[$deliveryItemId] - $plannedKilos;
+                    }
+
+                    // Process heads if provided
+                    if (isset($receivedHeads[$deliveryItemId])) {
+                        $plannedHeads = $deliveryItem->planned_heads ?? $deliveryItem->placed_heads ?? 0;
+                        $updateData['received_heads'] = $receivedHeads[$deliveryItemId];
+                        $updateData['variance_heads'] = $receivedHeads[$deliveryItemId] - $plannedHeads;
+                    }
+
+                    $deliveryItem->update($updateData);
+                }
             }
 
-            foreach ($request->input('received_heads', []) as $deliveryItemId => $heads) {
-                DeliveryItems::where('delivery_item_id', $deliveryItemId)
-                    ->update([
-                        'received_heads' => $heads,
-                        'status' => $request->status,
-                    ]);
-            }
-
-            return back()->with('success', 'Delivery successfully confirmed.');
+            return back()->with('success', 'Delivery successfully confirmed with variance recorded.');
         }
         public function deliveryView($delivery_id, Request $request)
         {

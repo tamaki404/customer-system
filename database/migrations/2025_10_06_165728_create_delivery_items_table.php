@@ -20,7 +20,8 @@ return new class extends Migration
             $table->decimal('received_kilos', 10, 2)->nullable();
             $table->integer('planned_heads')->nullable();
             $table->integer('received_heads')->nullable();
-
+            $table->integer('variance_heads')->nullable()->after('received_heads');
+            $table->decimal('variance_kilos', 10, 2)->nullable()->after('received_kilos');
             // Status (Pending, Delivered, Partial, Cancelled)
             $table->enum('status', ['Pending', 'Delivered', 'Partial', 'Cancelled'])->default('Pending');
 
