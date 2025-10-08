@@ -39,4 +39,11 @@ class Products extends Model
     {
         return $this->belongsTo(ProductSetting::class, 'product_id', 'product_id');
     }
+
+    public function req()
+    {
+        return $this->belongsTo(ProductRequirements::class, 'product_id', 'product_id');
+    }
+
+    
 }

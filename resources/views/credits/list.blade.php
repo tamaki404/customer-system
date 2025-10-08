@@ -194,7 +194,7 @@
                             </div>
 
                             <div class="table-body" style="margin-top: 10px">
-                                <p style="margin: 5px; font-weight: bold;">Outstanding Payments</p>
+                                <p style="margin: 5px; font-weight: bold;">Outstanding balance</p>
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
                                     <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                                         <thead style="background-color: #fff;">

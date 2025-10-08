@@ -17,13 +17,12 @@ return new class extends Migration
             $table->string('order_id');
             $table->string('product_id');
             $table->string('set_id');
-            $table->integer('quantity');           
             $table->string('placed_heads')->nullable();
             $table->string('placed_kilos')->nullable();
 
             $table->decimal('unit_price', 10, 2);
             $table->decimal('total_price', 10, 2);
-            $table->string('status')->default('Pending');
+            $table->string('status')->default('Processing');
             $table->timestamps();
         });
     }

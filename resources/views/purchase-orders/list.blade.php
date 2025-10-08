@@ -51,8 +51,7 @@
                                         <td>#</td>
                                         <td>Product Name</td>
                                         <td>Category</td>
-                                        <td>Unit</td>
-                                        <td>Weight</td>
+                                        <td>Measurements</td>
                                         <td>Price</td>
                                         <td>Heads</td>
                                         <td>Kilos</td>
@@ -70,8 +69,8 @@
                                     <tr class="product-row" 
                                         data-set-id="{{ $setProd->set_id }}" 
                                         data-product-id="{{ $setProd->product->product_id }}" 
-                                        data-price="{{ $setProd->nego_price }}">
-
+                                        data-price="{{ $setProd->nego_price }}"
+                                        data-measurement-type="{{ $setProd->product->measurement_type }}">                                   
                                         <td class="checkbox-cell">
                                             <input type="checkbox" 
                                                 name="selected_products[]" 
@@ -82,8 +81,8 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $setProd->product->name }}</td>
                                         <td>{{ $setProd->product->category }}</td>
-                                        <td>{{ $setProd->product->unit }}</td>
-                                        <td>{{ $setProd->product->weight }}</td>
+
+                                        <td>{{ $setProd->product->measurement_type }}</td>
                                         <td>
                                             @if($setProd->on_sale)
                                                 <span style="text-decoration: line-through; color: #888;">
@@ -228,7 +227,10 @@
                                         <td>{{$po->po_id}}</td>
                                         <td>{{ $po->supplier->company_name ?? 'N/A' }}</td>
                                         <td>{{ $po->items->count() }}</td>
-                                        <td>{{ $po->items->sum('supplier_quantity') }}</td>
+                                        <td>
+                                            {{ $po->items->sum(fn($item) => ($item->placed_kilos ?? 0) + ($item->placed_heads ?? 0)) }}
+
+                                        </td>
 
                                         <td>₱{{ number_format($po->total_amount, 2) }}</td>
                                         <td>
@@ -303,31 +305,44 @@
         const row = document.querySelector(`tr[data-set-id="${setId}"]`);
         const headsInput = document.querySelector(`input[name="placed_heads[${setId}]"]`);
         const kilosInput = document.querySelector(`input[name="placed_kilos[${setId}]"]`);
+        const measurementType = row.dataset.measurementType;
 
         if (checkbox.checked) {
-            // Enable both inputs
             row.classList.remove('disabled');
-            headsInput.disabled = false;
-            kilosInput.disabled = false;
-
-            // Initialize default values if empty
-            if (!headsInput.value || headsInput.value == 0) headsInput.value = 0;
-            if (!kilosInput.value || kilosInput.value == 0) kilosInput.value = 0;
+            
+            // Enable/disable inputs based on measurement type
+            if (measurementType === 'Kilos') {
+                // Only enable kilos input
+                kilosInput.disabled = false;
+                headsInput.disabled = true;
+                headsInput.value = 0;
+                kilosInput.value = kilosInput.value || 1;
+                kilosInput.required = true;
+            } else {
+                // Only enable heads input
+                headsInput.disabled = false;
+                kilosInput.disabled = true;
+                kilosInput.value = 0;
+                headsInput.value = headsInput.value || 1;
+                headsInput.required = true;
+            }
 
             // Store product data
             selectedProducts.set(setId, {
                 productId: row.dataset.productId,
                 price: parseFloat(row.dataset.price),
+                measurementType: measurementType,
                 heads: parseInt(headsInput.value) || 0,
                 kilos: parseFloat(kilosInput.value) || 0
             });
 
             calculateRowTotal(setId);
         } else {
-            // Disable both inputs
             row.classList.add('disabled');
             headsInput.disabled = true;
             kilosInput.disabled = true;
+            headsInput.required = false;
+            kilosInput.required = false;
 
             // Reset totals
             document.getElementById(`total_${setId}`).textContent = '₱0.00';
@@ -345,14 +360,19 @@
         const kilosInput = document.querySelector(`input[name="placed_kilos[${setId}]"]`);
         const totalSpan = document.getElementById(`total_${setId}`);
         const checkbox = document.querySelector(`input[name="selected_products[]"][value="${setId}"]`);
+        const measurementType = row.dataset.measurementType;
 
-        if (checkbox.checked && !headsInput.disabled && !kilosInput.disabled) {
+        if (checkbox.checked) {
             const price = parseFloat(row.dataset.price);
             const heads = parseInt(headsInput.value) || 0;
             const kilos = parseFloat(kilosInput.value) || 0;
 
-            // Example: price is per kilo (adjust as needed)
-            const total = price * kilos;
+            let total = 0;
+            if (measurementType === 'Kilos') {
+                total = price * kilos;
+            } else {
+                total = price * heads;
+            }
 
             totalSpan.textContent = `₱${total.toFixed(2)}`;
 
@@ -373,8 +393,13 @@
         let grandTotal = 0;
 
         selectedProducts.forEach((data, setId) => {
-            totalItems += data.heads;
-            grandTotal += data.price * data.kilos;
+            if (data.measurementType === 'Kilos') {
+                totalItems += data.kilos;
+                grandTotal += data.price * data.kilos;
+            } else {
+                totalItems += data.heads;
+                grandTotal += data.price * data.heads;
+            }
         });
 
         document.getElementById('selectedCount').textContent = selectedProducts.size;
@@ -394,9 +419,16 @@
         const errors = [];
 
         selectedProducts.forEach((data, setId) => {
-            if (data.heads <= 0 && data.kilos <= 0) {
-                errors.push(`Please enter heads or kilos greater than 0 for product ${setId}.`);
-                hasErrors = true;
+            if (data.measurementType === 'Kilos') {
+                if (data.kilos <= 0) {
+                    errors.push(`Please enter kilos greater than 0 for product ${setId}.`);
+                    hasErrors = true;
+                }
+            } else {
+                if (data.heads <= 0) {
+                    errors.push(`Please enter heads greater than 0 for product ${setId}.`);
+                    hasErrors = true;
+                }
             }
         });
 

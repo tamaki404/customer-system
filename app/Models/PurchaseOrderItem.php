@@ -18,6 +18,8 @@ class PurchaseOrderItem extends Model
         'status',
         'placed_heads',
         'placed_kilos',
+        'alt_kilos',
+        'alt_heads',
         'original_price'
     ];
 
@@ -35,4 +37,13 @@ class PurchaseOrderItem extends Model
     {
         return $this->belongsTo(ProductSetting::class, 'set_id', 'set_id');
     }
+
+    public function req()
+    {
+        return $this->belongsTo(ProductRequirements::class, 'user_id', 'user_id');
+    }
+    public function set() {
+        return $this->belongsTo(ProductSetting::class, 'set_id', 'set_id');
+    }
+
 }

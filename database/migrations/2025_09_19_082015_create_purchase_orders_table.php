@@ -20,10 +20,6 @@ return new class extends Migration
             $table->string('status')->default('Pending');
              $table->text('notes')->nullable();
             $table->decimal('total_amount', 10, 2)->default(0);
-
-            $table->string('placed_heads')->nullable();
-            $table->string('placed_kilos')->nullable();
-
             $table->string('image_mime_type')->nullable();
             $table->string('image_filename')->nullable();
             $table->unsignedInteger('image_size')->nullable(); 

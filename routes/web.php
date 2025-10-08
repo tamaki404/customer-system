@@ -23,7 +23,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductSalesController;
 use App\Http\Controllers\GlobalCeilingController;
-
+use App\Http\Controllers\DeliveryController;
 
 Route::get('/registration/signin', function () {
     return view('registration.signin');
@@ -127,9 +127,17 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::post('/receipts/action/{receipt_id}', [ReceiptController::class, 'receiptAction'])->name('receipts.action');
     Route::post('/order/action', [OrderController::class, 'orderAction'])->name('order.action');
 
+
+    //delivery
+    Route::post('/order/action/delivery/process', [DeliveryController::class, 'orderProcess'])->name('order.process');
+    Route::get('/order/deliveries/{delivery_id}',  [DeliveryController::class, 'deliveryView'])->name('order.delivery_items');
+    Route::post('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
+    Route::get('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
+
+
     // order pdf views
     Route::get('/orders/{order_id}/customer-order', [OrderController::class, 'customerOrderPdf'])->name('orders.customer.pdf');
-    Route::get('/orders/{order_id}/delivery-receipt', [OrderController::class, 'deliveryReceiptPdf'])->name('orders.delivery.pdf');
+    Route::get('/orders/{delivery_id}/delivery-receipt', [OrderController::class, 'deliveryReceiptPdf'])->name('orders.delivery.pdf');
     Route::get('/orders/{order_id}/sales-invoice', [OrderController::class, 'salesInvoicePdf'])->name('orders.invoice.pdf');
     
     // purchase order pdf view

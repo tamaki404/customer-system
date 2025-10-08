@@ -54,10 +54,10 @@
                                     <th>#</th>
                                     <th>Date</th>
                                     <th>Order ID</th>
-                                    <th>Quantity</th>
+                                    <th>Heads/Kilos</th>
                                     <th>Amount</th>
                                     <th>Payment</th>
-                                    <th>Balance</th>
+                                    <th>Running balance</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -65,14 +65,26 @@
                                 @foreach ($orders as $order)
                                     <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">
                                         <td>{{$loop->iteration}}</td>
-                                        <td>{{$order->created_at}}</td>
+                                        <td>{{ $order->created_at->format('F j, Y') }}</td>
+
                                         <td>{{$order->order_id}}</td>
-                                        <td>--</td>
-                                        <td>{{$order->total_amount}}</td>
+                                        <td>{{$order->item->product->measurement_type}}</td>
+                                        <td>₱{{ number_format($order->total_amount, 2) }}</td>
                                         <td>{{$order->payment_status}}</td>
-                                        <td>--</td>
+                                        <td>₱{{ number_format($order->total_amount, 2) }}</td>
 
                                         <td>{{$order->status}}</td>
+                                        <td>
+                                            @if($order->delivery_ratio !== '0/0')
+                                                {{ $order->delivery_ratio }} {{ $order->delivery_note }}
+                                            @else
+                                                No deliveries yet
+                                            @endif
+                                        </td>
+
+
+
+
 
                                     </tr>
                                 @endforeach
@@ -89,18 +101,34 @@
                                     <th>#</th>
                                     <th>Date</th>
                                     <th>Order ID</th>
-                                    <th>Grand total</th>
-                                    <th>Payment status</th>
+                                    <th>Heads/Kilos</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody>                                
                                 @foreach ($orders as $order)
-                                    <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'" style="cursor: pointer;">
-                                        <td>{{ $loop->iteration }}</td>
+                                    <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">
+                                        <td>{{$loop->iteration}}</td>
                                         <td>{{ $order->created_at->format('F j, Y') }}</td>
-                                        <td>{{ $order->order_id }}</td>
-                                        <td>₱{{ number_format($order->total_amount, 2) }}</td>
-                                        <td>{{ $order->payment_status }}</td>
+
+                                        <td>{{$order->order_id}}</td>
+                                        <td>{{$order->item->product->measurement_type}}</td>
+                                        <td>{{$order->payment_status}}</td>
+
+                                        <td>{{$order->status}}</td>
+                                        <td>
+                                            @if($order->delivery_ratio !== '0/0')
+                                                {{ $order->delivery_ratio }} {{ $order->delivery_note }}
+                                            @else
+                                                No deliveries yet
+                                            @endif
+                                        </td>
+                                        
+
+
+
+
 
                                     </tr>
                                 @endforeach

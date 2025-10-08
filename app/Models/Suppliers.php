@@ -59,6 +59,15 @@ class Suppliers extends Model
     {
         return $this->belongsTo( Banks::class, 'supplier_id', 'supplier_id');
     }
+    public function delivery()
+    {
+        return $this->belongsTo(DeliveryRequirements::class, 'supplier_id', 'supplier_id');
+    }
+    public function req($productId)
+    {
+        return $this->hasOne(ProductRequirements::class, 'user_id', 'user_id')
+            ->where('product_id', $productId);
+    }
 }
 
 

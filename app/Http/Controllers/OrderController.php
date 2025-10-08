@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Delivery;
+use App\Models\DeliveryItems;
 use App\Models\Staffs;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
@@ -58,11 +60,20 @@ class OrderController extends Controller
             } 
             elseif ($user->role === "Supplier") {
                 $supplier = Suppliers::where('user_id', $user->user_id)->first();
+
                 $orders = Orders::where('supplier_id', $supplier->supplier_id)
-                    ->withSum('receipts', 'total_amount') 
+                    ->with([
+                        'receipts', 
+                        'deliveries' => function ($q) {
+                            $q->with('deliveryItems');
+                        }
+                    ])
+                    ->withSum('receipts', 'total_amount')
                     ->get()
                     ->map(function ($order) {
+                        // --- Payment Status ---
                         $paid = $order->receipts_sum_total_amount ?? 0;
+                        $order->running_balance = max($order->total_amount - $paid, 0);
 
                         if ($paid >= $order->total_amount) {
                             $order->payment_status = 'Fully Paid';
@@ -72,9 +83,18 @@ class OrderController extends Controller
                             $order->payment_status = 'Unpaid';
                         }
 
+                        // --- Delivery Completion ---
+                        $total = $order->deliveries->count();
+                        $completed = $order->deliveries->where('status', 'Completed')->count();
+                        $completionRatio = $total > 0 ? "{$completed}/{$total}" : "0/0";
+
+
+
                         return $order;
                     });
             }
+
+
 
             return view('orders.list', [
                 'user' => $user,
@@ -173,11 +193,17 @@ class OrderController extends Controller
          
             $order = Orders::with(['items.productSetting'])->where('order_id', $order_id)->first();
             $items = $order->items;
+            $deliveries = Delivery::when($order_id, function ($query) use ($order_id) {
+                    $query->where('order_id', $order_id);
+                })
+                ->orderBy('delivery_date', 'asc')
+                ->get();
 
             return view('orders.order', [
                 'user' => $user,
                 'order' => $order,
                 'items' => $items,
+                'deliveries' => $deliveries,
 
             ]);
         }
@@ -390,12 +416,12 @@ class OrderController extends Controller
         }
 
 
-        public function deliveryReceiptPdf($order_id)
+        public function deliveryReceiptPdf($delivery_id)
         {
-            $order = Orders::where('order_id', $order_id)->firstOrFail();
-            $items = $order->items;
-            $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('order', 'items'));
-            return $pdf->stream("delivery-receipt-{$order_id}.pdf");
+            $delivery = Delivery::where('delivery_id', $delivery_id)->firstOrFail();
+            $items = DeliveryItems::where('delivery_id', $delivery_id)->get();
+            $pdf = PDF::loadView('pdf.orders.delivery_receipt', compact('delivery', 'items'));
+            return $pdf->stream("delivery-receipt-{$delivery_id}.pdf");
         }
 
         public function salesInvoicePdf($order_id)
