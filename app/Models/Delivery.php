@@ -17,6 +17,9 @@ class Delivery extends Model
         'order_id',
         'supplier_id',
         'delivery_date',
+        'delivered_at',
+        'feedback',
+
         'status',
         'notes',
         'pod_file',

@@ -590,6 +590,33 @@
 
         </div>
     </div>
+    {{-- view POD --}}
+    <div class="modal fade" id="viewPOD" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <p class="modal-title" id="requestActionLabel">POD</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <p class="note-notify">
+                        <span class="material-symbols-outlined"> info </span>
+                        <span></span>
+                    </p>
+                    
+                   
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
    <div class="content-bg" >
         <div class="content-header">
             <div class="contents-display">
@@ -688,42 +715,99 @@
                     <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                         <thead style="background-color: #f8f8f8;">
                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                                <th>#</th>
-                                                <th>Delivery ID</th>
-                                                <th>Scheduled Date</th>
-                                                <th>Delivered Date</th>
-                                                <th>Items</th>
-                                                <th>Total Heads</th>
-                                                <th>Total Kilos</th>
-                                                <th>Status</th>
-                                                <th>Remarks</th>
-                                                <th>Actions</th>
+                                <th>#</th>
+                                <th>Delivery ID</th>
+                                <th>Scheduled Date</th>
+                                <th>Delivered Date</th>
+                                <th>Items</th>
+                                <th>Planned</th>
+                                <th>Received</th>
+                                <th>Variance</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($deliveries as $delivery)
-                                {{-- <tr onclick="window.location.href='{{ route('order.delivery_items', ['delivery_id' => $delivery->delivery_id]) }}'"> --}}
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $delivery->delivery_id }}</td>
                                     <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
                                     <td>
-                                        {{-- Optional: product name or other info --}}
+                                        @if($delivery->delivered_at)
+                                            {{ \Carbon\Carbon::parse($delivery->delivered_at)->format('F j, Y') }}
+                                        @else
+                                            —
+                                        @endif
                                     </td>
                                     <td>{{ $delivery->deliveryItems->count() }}</td>
 
-                                    {{-- HEADS & KILOS DISPLAY --}}
+                                    {{-- PLANNED --}}
                                     @php
-                                        $totalHeads = $delivery->deliveryItems->sum('planned_heads');
-                                        $totalKilos = $delivery->deliveryItems->sum('planned_kilos');
+                                        $plannedHeads = $delivery->deliveryItems->sum('planned_heads');
+                                        $plannedKilos = $delivery->deliveryItems->sum('planned_kilos');
                                     @endphp
-                                    <td colspan="2">
-                                        @if ($totalHeads > 0 && $totalKilos > 0)
-                                            {{ $totalHeads }} heads | {{ $totalKilos }} kg
-                                        @elseif ($totalHeads > 0)
-                                            {{ $totalHeads }} heads
-                                        @elseif ($totalKilos > 0)
-                                            {{ $totalKilos }} kg
+                                    <td>
+                                        @if ($plannedHeads > 0 && $plannedKilos > 0)
+                                            {{ $plannedHeads }} heads<br>{{ $plannedKilos }} kg
+                                        @elseif ($plannedHeads > 0)
+                                            {{ $plannedHeads }} heads
+                                        @elseif ($plannedKilos > 0)
+                                            {{ $plannedKilos }} kg
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+
+                                    {{-- RECEIVED --}}
+                                    @php
+                                        $receivedHeads = $delivery->deliveryItems->sum('received_heads');
+                                        $receivedKilos = $delivery->deliveryItems->sum('received_kilos');
+                                        $hasReceived = $receivedHeads > 0 || $receivedKilos > 0;
+                                    @endphp
+                                    <td>
+                                        @if ($hasReceived)
+                                            @if ($receivedHeads > 0 && $receivedKilos > 0)
+                                                {{ $receivedHeads }} heads<br>{{ $receivedKilos }} kg
+                                            @elseif ($receivedHeads > 0)
+                                                {{ $receivedHeads }} heads
+                                            @elseif ($receivedKilos > 0)
+                                                {{ $receivedKilos }} kg
+                                            @endif
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+
+                                    {{-- VARIANCE --}}
+                                    @php
+                                        $varianceHeads = $delivery->deliveryItems->sum('variance_heads');
+                                        $varianceKilos = $delivery->deliveryItems->sum('variance_kilos');
+                                        $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
+                                    @endphp
+                                    <td>
+                                        @if ($hasReceived && $hasVariance)
+                                            @if ($varianceHeads != 0 && $varianceKilos != 0)
+                                                <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
+                                                    {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
+                                                </span>
+                                                <br>
+                                                <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
+                                                    {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
+                                                </span>
+                                            @elseif ($varianceHeads != 0)
+                                                <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
+                                                    {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
+                                                </span>
+                                            @elseif ($varianceKilos != 0)
+                                                <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
+                                                    {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
+                                                </span>
+                                            @else
+                                                <span style="color: green;">Exact</span>
+                                            @endif
+                                        @elseif($hasReceived && !$hasVariance)
+                                            <span style="color: green;">Exact</span>
                                         @else
                                             —
                                         @endif
@@ -734,7 +818,7 @@
                                         @php
                                             $isToday = \Carbon\Carbon::parse($delivery->delivery_date)->isToday();
                                             $color = match($delivery->status) {
-                                                'Completed' => 'green',
+                                                'Completed', 'Delivered' => 'green',
                                                 'Scheduled' => 'orange',
                                                 'In Transit' => 'blue',
                                                 'Cancelled' => 'gray',
@@ -750,8 +834,6 @@
                                         </span>
                                     </td>
 
-                                    {{-- REMARKS --}}
-                                    <td>{{ $delivery->remarks ?? '—' }}</td>
 
                                     {{-- ACTION BUTTONS --}}
                                     <td>
@@ -765,14 +847,55 @@
                                                         Print DR
                                                 </button>  
                                             @elseif($delivery->status === "Delivered")
-                                                Completed
+                                                @if($delivery->pod_file)
+                                                    <button type="button" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#viewPOD{{ $delivery->delivery_id }}" 
+                                                            class="btn-transition">
+                                                            View POD
+                                                    </button>
+                                                @else
+                                                    <span class="text-muted">No POD</span>
+                                                @endif
                                             @endif
                                         @else
                                             <button data-bs-toggle="modal" data-bs-target="#fileanaction">File an action</button>
                                         @endif
                                     </td>
                                 </tr>
+                                    @if($delivery->pod_file)
+                                        @php
+                                            $podData = 'data:' . ($delivery->pod_mime ?? 'application/pdf') . ';base64,' . base64_encode($delivery->pod_file);
+                                        @endphp
 
+                                        <div class="modal fade" id="viewPOD{{ $delivery->delivery_id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-xl modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Proof of Delivery - {{ $delivery->delivery_id }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body text-center" style="height: 80vh;">
+                                                        <iframe
+                                                            src="{{ $podData }}"
+                                                            width="100%"
+                                                            height="100%"
+                                                            style="border: none;"
+                                                            title="POD for {{ $delivery->delivery_id }}"
+                                                        ></iframe>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <a href="{{ $podData }}" 
+                                                        download="POD_{{ $delivery->delivery_id }}.pdf" 
+                                                        class="btn btn-primary">
+                                                            Download POD
+                                                        </a>
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                             @endforeach
                         </tbody>
                     </table>
@@ -780,39 +903,37 @@
                 </div>
             </div>
             <div class="table-body" style="margin-top: 50px">
-                                    <p style="margin: 5px; font-weight: bold;">Order items</p>
-                                    <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
-                                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                                            <thead style="background-color: #fff;">
-                                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                                    <th>#</th>
-                                                    <th>Name</th>
-                                                    <th>Unit price</th>
-                                                    <th>Heads/Kilos</th>
-                                                    <th>Total amount</th>                                                
-                                                </tr>
-                                            </thead>
-                                            <tbody>                                
-                                                @foreach ($items as $item)
-                                                    <tr >
-                                                        <td>{{$loop->iteration}}</td>
-                                                        <td>{{ $item->product->name }}</td>
-                                                        <td>₱{{ number_format($item->productSetting?->nego_price ?? '--', 2) }}</td>
-                                                        <td>
-                                                            @if ($item->product->measurement_type === "Kilos")
-                                                                {{ $item->placed_kilos }}kg
-                                                            @elseif ($item->product->measurement_type === "Heads")
-                                                                {{ $item->placed_heads }}
-                                                            @endif
-
-                                                        </td>
-                                                        <td>₱{{ number_format($item->total_price, 2) }}</td>
-                                                    </tr>
-                                                @endforeach
-
-                                            </tbody>
-                                        </table>
-                                    </div>
+                <p style="margin: 5px; font-weight: bold;">Order items</p>
+                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
+                    <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                        <thead style="background-color: #fff;">
+                            <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Unit price</th>
+                                <th>Heads/Kilos</th>
+                                <th>Total amount</th>                                                
+                            </tr>
+                        </thead>
+                        <tbody>                                
+                            @foreach ($items as $item)
+                                <tr >
+                                    <td>{{$loop->iteration}}</td>
+                                    <td>{{ $item->product->name }}</td>
+                                    <td>₱{{ number_format($item->productSetting?->nego_price ?? '--', 2) }}</td>
+                                    <td>
+                                        @if ($item->product->measurement_type === "Kilos")
+                                            {{ $item->placed_kilos }}kg
+                                        @elseif ($item->product->measurement_type === "Heads")
+                                            {{ $item->placed_heads }}
+                                        @endif
+                                    </td>
+                                    <td>₱{{ number_format($item->total_price, 2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
                             
             </div>

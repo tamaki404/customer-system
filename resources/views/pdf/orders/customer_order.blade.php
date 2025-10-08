@@ -309,7 +309,7 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $delivery->delivery_id }}</td>
                             <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('M j, Y') }}</td>
-                            <td>{{ $delivery->delivered_date ? \Carbon\Carbon::parse($delivery->delivered_date)->format('M j, Y') : '—' }}</td>
+                            <td>{{ $delivery->delivered_at ? \Carbon\Carbon::parse($delivery->delivered_at)->format('M j, Y') : '—' }}</td>
                             <td>
                                 @if ($delivery->delitem->product->measurement_type == "Heads")
                                     {{$plannedHeads}}pcs 
