@@ -322,90 +322,90 @@
 
                     @endforeach
 
-<script>
-document.querySelectorAll('.order-item').forEach(itemDiv => {
-    const type = itemDiv.dataset.type;
-    const totalHeads = parseFloat(itemDiv.dataset.totalHeads || 0);
-    const totalKilos = parseFloat(itemDiv.dataset.totalKilos || 0);
+                    <script>
+                    document.querySelectorAll('.order-item').forEach(itemDiv => {
+                        const type = itemDiv.dataset.type;
+                        const totalHeads = parseFloat(itemDiv.dataset.totalHeads || 0);
+                        const totalKilos = parseFloat(itemDiv.dataset.totalKilos || 0);
 
-    if (type.includes('Heads')) {
-        setupAutoAdjust(itemDiv, 'heads', totalHeads);
-    }
-    if (type.includes('Kilos')) {
-        setupAutoAdjust(itemDiv, 'kilos', totalKilos);
-    }
-});
+                        if (type.includes('Heads')) {
+                            setupAutoAdjust(itemDiv, 'heads', totalHeads);
+                        }
+                        if (type.includes('Kilos')) {
+                            setupAutoAdjust(itemDiv, 'kilos', totalKilos);
+                        }
+                    });
 
-function setupAutoAdjust(itemDiv, key, total) {
-    const inputs = Array.from(itemDiv.querySelectorAll(`input[name*="[${key}]"]`));
+                    function setupAutoAdjust(itemDiv, key, total) {
+                        const inputs = Array.from(itemDiv.querySelectorAll(`input[name*="[${key}]"]`));
 
-    // ✅ Distribute initial values properly (handle decimals nicely)
-    distributeInitial(inputs, total);
+                        // ✅ Distribute initial values properly (handle decimals nicely)
+                        distributeInitial(inputs, total);
 
-    inputs.forEach((input, index) => {
-        input.addEventListener('input', () => {
-            adjustRemaining(itemDiv, key, total, index);
-        });
-    });
-}
+                        inputs.forEach((input, index) => {
+                            input.addEventListener('input', () => {
+                                adjustRemaining(itemDiv, key, total, index);
+                            });
+                        });
+                    }
 
-function distributeInitial(inputs, total) {
-    const count = inputs.length;
-    let base = Math.floor(total / count);
-    let remainder = total % count;
+                    function distributeInitial(inputs, total) {
+                        const count = inputs.length;
+                        let base = Math.floor(total / count);
+                        let remainder = total % count;
 
-    inputs.forEach((input, i) => {
-        let value = base;
-        if (remainder > 0) {
-            value += 1;
-            remainder -= 1;
-        }
-        input.value = value;
-    });
-}
+                        inputs.forEach((input, i) => {
+                            let value = base;
+                            if (remainder > 0) {
+                                value += 1;
+                                remainder -= 1;
+                            }
+                            input.value = value;
+                        });
+                    }
 
-function adjustRemaining(itemDiv, key, total, changedIndex) {
-    const inputs = Array.from(itemDiv.querySelectorAll(`input[name*="[${key}]"]`));
-    let sumExceptChanged = 0;
+                    function adjustRemaining(itemDiv, key, total, changedIndex) {
+                        const inputs = Array.from(itemDiv.querySelectorAll(`input[name*="[${key}]"]`));
+                        let sumExceptChanged = 0;
 
-    inputs.forEach((i, idx) => {
-        if (idx !== changedIndex) {
-            sumExceptChanged += parseFloat(i.value) || 0;
-        }
-    });
+                        inputs.forEach((i, idx) => {
+                            if (idx !== changedIndex) {
+                                sumExceptChanged += parseFloat(i.value) || 0;
+                            }
+                        });
 
-    const remaining = total - sumExceptChanged;
-    const changedInput = inputs[changedIndex];
-    let changedValue = parseFloat(changedInput.value) || 0;
+                        const remaining = total - sumExceptChanged;
+                        const changedInput = inputs[changedIndex];
+                        let changedValue = parseFloat(changedInput.value) || 0;
 
-    // ✅ Prevent exceeding total
-    if (changedValue > remaining) {
-        changedValue = remaining;
-        changedInput.value = changedValue;
-    }
+                        // ✅ Prevent exceeding total
+                        if (changedValue > remaining) {
+                            changedValue = remaining;
+                            changedInput.value = changedValue;
+                        }
 
-    // ✅ Recalculate other fields proportionally
-    const diff = total - (changedValue + sumExceptChanged);
-    if (diff !== 0) {
-        distributeDiff(inputs, changedIndex, diff);
-    }
-}
+                        // ✅ Recalculate other fields proportionally
+                        const diff = total - (changedValue + sumExceptChanged);
+                        if (diff !== 0) {
+                            distributeDiff(inputs, changedIndex, diff);
+                        }
+                    }
 
-function distributeDiff(inputs, changedIndex, diff) {
-    const otherInputs = inputs.filter((_, idx) => idx !== changedIndex);
-    let remainingDiff = diff;
+                    function distributeDiff(inputs, changedIndex, diff) {
+                        const otherInputs = inputs.filter((_, idx) => idx !== changedIndex);
+                        let remainingDiff = diff;
 
-    // Adjust each input evenly to absorb or give back the difference
-    otherInputs.forEach((input, i) => {
-        if (remainingDiff === 0) return;
+                        // Adjust each input evenly to absorb or give back the difference
+                        otherInputs.forEach((input, i) => {
+                            if (remainingDiff === 0) return;
 
-        let value = parseFloat(input.value) || 0;
-        const adjustment = Math.sign(remainingDiff); // +1 or -1
-        input.value = value + adjustment;
-        remainingDiff -= adjustment;
-    });
-}
-</script>
+                            let value = parseFloat(input.value) || 0;
+                            const adjustment = Math.sign(remainingDiff); // +1 or -1
+                            input.value = value + adjustment;
+                            remainingDiff -= adjustment;
+                        });
+                    }
+                    </script>
 
                 </div>
 
@@ -678,33 +678,30 @@ function distributeDiff(inputs, changedIndex, diff) {
                                     <td>{{ $delivery->delivery_id }}</td>
                                     <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
                                     <td>
-                                        
+                                        {{-- Optional: product name or other info --}}
                                     </td>
-                                    <td>{{($delivery->deliveryItems)->count()}}</td>
-                                    <td>
-                                        @php
-                                            $totalHeads = $delivery->deliveryItems->sum('planned_heads');
-                                        @endphp
-                                        @if ($totalHeads > 0)
+                                    <td>{{ $delivery->deliveryItems->count() }}</td>
+
+                                    {{-- HEADS & KILOS DISPLAY --}}
+                                    @php
+                                        $totalHeads = $delivery->deliveryItems->sum('planned_heads');
+                                        $totalKilos = $delivery->deliveryItems->sum('planned_kilos');
+                                    @endphp
+                                    <td colspan="2">
+                                        @if ($totalHeads > 0 && $totalKilos > 0)
+                                            {{ $totalHeads }} heads | {{ $totalKilos }} kg
+                                        @elseif ($totalHeads > 0)
                                             {{ $totalHeads }} heads
-                                        @else
-                                            —
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @php
-                                            $totalKilos = $delivery->deliveryItems->sum('planned_kilos');
-                                        @endphp
-                                        @if ($totalKilos > 0)
+                                        @elseif ($totalKilos > 0)
                                             {{ $totalKilos }} kg
                                         @else
                                             —
                                         @endif
                                     </td>
 
+                                    {{-- STATUS --}}
                                     <td>
                                         @php
-                                            
                                             $isToday = \Carbon\Carbon::parse($delivery->delivery_date)->isToday();
                                             $color = match($delivery->status) {
                                                 'Completed' => 'green',
@@ -717,32 +714,35 @@ function distributeDiff(inputs, changedIndex, diff) {
                                         <span style="color: {{ $color }};">
                                             @if($isToday && $delivery->status === 'Scheduled')
                                                 <strong style="color: green;">Delivery Today</strong>
-                                            @elseif($isToday !== $delivery->delivery_date)
+                                            @else
                                                 {{ $delivery->status }}
                                             @endif
                                         </span>
                                     </td>
 
+                                    {{-- REMARKS --}}
                                     <td>{{ $delivery->remarks ?? '—' }}</td>
+
+                                    {{-- ACTION BUTTONS --}}
                                     <td>
-                                        @if (Auth()->user()->role!=="Supplier")
-                                            @if($delivery->status === "Scheduled" )
+                                        @if (Auth()->user()->role !== "Supplier")
+                                            @if($delivery->status === "Scheduled")
                                                 <button type="button" 
-                                                    data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#pdfModal" 
                                                     data-url="{{ route('orders.delivery.pdf', $delivery->delivery_id) }}"
                                                     class="btn-transition">
                                                         Print DR
                                                 </button>  
-                                            @elseif($delivery->status === "Delivered" )
-                                                    Completed
+                                            @elseif($delivery->status === "Delivered")
+                                                Completed
                                             @endif
-                                        @elseif (Auth()->user()->role==="Supplier")
-                                                <button data-bs-toggle="modal" data-bs-target="#fileanaction" >File an action</button>
+                                        @else
+                                            <button data-bs-toggle="modal" data-bs-target="#fileanaction">File an action</button>
                                         @endif
-
-                                            
                                     </td>
                                 </tr>
+
                             @endforeach
                         </tbody>
                     </table>
