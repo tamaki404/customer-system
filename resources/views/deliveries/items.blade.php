@@ -23,7 +23,31 @@
         </div>
     @endif
 
+    {{-- view POD --}}
+    <div class="modal fade" id="viewPOD" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
 
+                <div class="modal-header">
+                    <p class="modal-title" id="requestActionLabel">POD</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <p class="note-notify">
+                        <span class="material-symbols-outlined"> info </span>
+                        <span></span>
+                    </p>
+                    
+                   
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
    <div class="content-bg" >
@@ -50,20 +74,51 @@
            <p>Status: <span>{{$delivery->status}}</span></p>
            <p>Delivery ID: <span>{{$delivery->delivery_id}}</span></p>
            <p>Delivered at: <span>{{$delivery->delivered_at}}</span></p>
-           <p>Delivery date: <span>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format(format: 'F j, Y') }}</span></p>
            @if($delivery->status === "Delivered")
-                <p>Completed date: <span></span></p>
-                <button>View delivery receipt</button>
+                <p>Delivery date: <span>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format(format: 'F j, Y') }}</span></p>
+                {{-- ACTION BUTTONS --}}
+                <td>
+                    @if (Auth()->user()->role !== "Supplier")
+                        @if($delivery->status === "Scheduled")
+                            <button type="button" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#pdfModal" 
+                                data-url="{{ route('orders.delivery.pdf', $delivery->delivery_id) }}"
+                                class="btn-transition">
+                                    Print DR
+                            </button>  
+                            
+                        @elseif($delivery->status === "Delivered")
+                            @if($delivery->pod_file)
+                                <button type="button" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#viewPOD{{ $delivery->delivery_id }}" 
+                                        class="btn-transition">
+                                        View POD
+                                </button>
+                            @else
+                                <span class="text-muted">No POD</span>
+                            @endif
+                        @endif
+                    @else
+          
+                    @endif
+                </td>
+            @elseif($delivery->status === "Scheduled")
+                @if (Auth()->user()->role === "Supplier" && $delivery->status === "Scheduled")
+                            <button 
+                                type="button"
+                                class="btn btn-primary file-action-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#fileanaction">
+                                Receive this order
+                            </button>
+                        
+                
+                @endif
            @endif
 
-           <button>Received</button>
-            <button 
-                type="button"
-                class="btn btn-primary file-action-btn"
-                data-bs-toggle="modal"
-                data-bs-target="#fileanaction">
-                Receive this order
-            </button>
+
 
         </div>
 
@@ -251,8 +306,11 @@
                                 <th>Measurement</th>
                                 <th>Planned Qty</th>
                                 <th>Received Qty</th>
+                                <th>Variance</th>
+
+
                                 <th>Status</th>
-                                <th>Remarks</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -262,27 +320,138 @@
                                     <td>{{ $item->delivery_item_id }}</td>
                                     <td>{{ $item->orderItem->product->name ?? '—' }}</td>
                                     <td>{{ $item->orderItem->product->measurement_type ?? '—' }}</td>
+                                    {{-- PLANNED --}}
+                                    @php
+                                        $plannedHeads = $delivery->deliveryItems->sum('planned_heads');
+                                        $plannedKilos = $delivery->deliveryItems->sum('planned_kilos');
+                                    @endphp
                                     <td>
-                                        @if ($item->planned_heads)
-                                            {{ $item->planned_heads }} heads
-                                        @elseif ($item->planned_kilos)
-                                            {{ $item->planned_kilos }} kg
+                                        @if ($plannedHeads > 0 && $plannedKilos > 0)
+                                            {{ $plannedHeads }} heads<br>{{ $plannedKilos }} kg
+                                        @elseif ($plannedHeads > 0)
+                                            {{ $plannedHeads }} heads
+                                        @elseif ($plannedKilos > 0)
+                                            {{ $plannedKilos }} kg
                                         @else
                                             —
                                         @endif
                                     </td>
+
+                                    {{-- RECEIVED --}}
+                                    @php
+                                        $receivedHeads = $delivery->deliveryItems->sum('received_heads');
+                                        $receivedKilos = $delivery->deliveryItems->sum('received_kilos');
+                                        $hasReceived = $receivedHeads > 0 || $receivedKilos > 0;
+                                    @endphp
                                     <td>
-                                        @if ($item->orderItem->product->measurement_type === "Heads")
-                                            {{ $item->received_heads }} heads
-                                        @elseif ($item->orderItem->product->measurement_type === "Kilos")
-                                            {{ $item->received_kilos }} kg
+                                        @if ($hasReceived)
+                                            @if ($receivedHeads > 0 && $receivedKilos > 0)
+                                                {{ $receivedHeads }} heads<br>{{ $receivedKilos }} kg
+                                            @elseif ($receivedHeads > 0)
+                                                {{ $receivedHeads }} heads
+                                            @elseif ($receivedKilos > 0)
+                                                {{ $receivedKilos }} kg
+                                            @endif
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+
+                                    {{-- VARIANCE --}}
+                                    @php
+                                        $varianceHeads = $delivery->deliveryItems->sum('variance_heads');
+                                        $varianceKilos = $delivery->deliveryItems->sum('variance_kilos');
+                                        $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
+                                    @endphp
+                                    <td>
+                                        @if ($hasReceived && $hasVariance)
+                                            @if ($varianceHeads != 0 && $varianceKilos != 0)
+                                                <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
+                                                    {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
+                                                </span>
+                                                <br>
+                                                <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
+                                                    {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
+                                                </span>
+                                            @elseif ($varianceHeads != 0)
+                                                <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
+                                                    {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
+                                                </span>
+                                            @elseif ($varianceKilos != 0)
+                                                <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
+                                                    {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
+                                                </span>
+                                            @else
+                                                <span style="color: green;">Exact</span>
+                                            @endif
+                                        @elseif($hasReceived && !$hasVariance)
+                                            <span style="color: green;">Exact</span>
                                         @else
                                             —
                                         @endif
                                     </td>
                                     <td>{{ ucfirst($item->status ?? 'Pending') }}</td>
-                                    <td>{{ $item->remarks ?? '—' }}</td>
-                                </tr>
+                                    {{-- ACTION BUTTONS --}}
+                                    {{-- <td>
+                                        @if (Auth()->user()->role !== "Supplier")
+                                            @if($delivery->status === "Scheduled")
+                                                <button type="button" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#pdfModal" 
+                                                    data-url="{{ route('orders.delivery.pdf', $delivery->delivery_id) }}"
+                                                    class="btn-transition">
+                                                        Print DR
+                                                </button>  
+                                            @elseif($delivery->status === "Delivered")
+                                                @if($delivery->pod_file)
+                                                    <button type="button" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#viewPOD{{ $delivery->delivery_id }}" 
+                                                            class="btn-transition">
+                                                            View POD
+                                                    </button>
+                                                @else
+                                                    <span class="text-muted">No POD</span>
+                                                @endif
+                                            @endif
+                                        @else
+
+                                        @endif
+                                    </td>
+                                </tr> --}}
+                                    @if($delivery->pod_file)
+                                        @php
+                                            $podData = 'data:' . ($delivery->pod_mime ?? 'application/pdf') . ';base64,' . base64_encode($delivery->pod_file);
+                                        @endphp
+
+                                        <div class="modal fade" id="viewPOD{{ $delivery->delivery_id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-xl modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Proof of Delivery - {{ $delivery->delivery_id }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body text-center" style="height: 80vh;">
+                                                        <iframe
+                                                            src="{{ $podData }}"
+                                                            width="100%"
+                                                            height="100%"
+                                                            style="border: none;"
+                                                            title="POD for {{ $delivery->delivery_id }}"
+                                                        ></iframe>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <a href="{{ $podData }}" 
+                                                        download="POD_{{ $delivery->delivery_id }}.pdf" 
+                                                        class="btn btn-primary">
+                                                            Download POD
+                                                        </a>
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                             @endforeach
                         </tbody>
                     </table>
@@ -290,6 +459,10 @@
                 </div>
                        
             </div>
+        </div>
+
+        <div>
+            {{ $delivery->feedback }}
         </div>
    </div>
 

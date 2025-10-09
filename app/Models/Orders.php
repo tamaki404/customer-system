@@ -56,5 +56,9 @@ public function delitem()
 {
     return $this->hasMany(DeliveryItems::class, 'order_id', 'order_id');
 }
+public function del()
+{
+    return $this->hasMany(Delivery::class, 'order_id', 'order_id');
+}
 
 }

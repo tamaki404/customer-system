@@ -133,9 +133,12 @@ class DeliveryController extends Controller
             ]);
 
             $delivery = Delivery::where('delivery_id', $request->delivery_id)->firstOrFail();
+            $order = Orders::where('order_id', $request->order_id)->firstOrFail();
 
+            // Store PDF as binary
             $pdfContent = file_get_contents($request->file('pod_file')->getRealPath());
 
+            // ✅ Update this delivery
             $delivery->update([
                 'status' => $request->status,
                 'feedback' => $request->feedback,
@@ -144,26 +147,23 @@ class DeliveryController extends Controller
                 'pod_mime' => 'application/pdf',
             ]);
 
-            // Get all unique delivery item IDs from both arrays
+            // ✅ Update all delivery items for this delivery
             $receivedKilos = $request->input('received_kilos', []);
             $receivedHeads = $request->input('received_heads', []);
             $allItemIds = array_unique(array_merge(array_keys($receivedKilos), array_keys($receivedHeads)));
 
-            // Process all items in a single loop
             foreach ($allItemIds as $deliveryItemId) {
                 $deliveryItem = DeliveryItems::where('delivery_item_id', $deliveryItemId)->first();
-                
+
                 if ($deliveryItem) {
                     $updateData = ['status' => $request->status];
 
-                    // Process kilos if provided
                     if (isset($receivedKilos[$deliveryItemId])) {
                         $plannedKilos = $deliveryItem->planned_kilos ?? $deliveryItem->placed_kilos ?? 0;
                         $updateData['received_kilos'] = $receivedKilos[$deliveryItemId];
                         $updateData['variance_kilos'] = $receivedKilos[$deliveryItemId] - $plannedKilos;
                     }
 
-                    // Process heads if provided
                     if (isset($receivedHeads[$deliveryItemId])) {
                         $plannedHeads = $deliveryItem->planned_heads ?? $deliveryItem->placed_heads ?? 0;
                         $updateData['received_heads'] = $receivedHeads[$deliveryItemId];
@@ -174,8 +174,19 @@ class DeliveryController extends Controller
                 }
             }
 
+            // ✅ Check if ALL deliveries for this order are now "Delivered"
+            $totalDeliveries = Delivery::where('order_id', $order->order_id)->count();
+            $deliveredCount = Delivery::where('order_id', $order->order_id)
+                                    ->where('status', 'Delivered')
+                                    ->count();
+
+            if ($totalDeliveries > 0 && $totalDeliveries === $deliveredCount) {
+                $order->update(['status' => 'Completed']);
+            }
+
             return back()->with('success', 'Delivery successfully confirmed with variance recorded.');
         }
+
         public function deliveryView($delivery_id, Request $request)
         {
             $user = Auth::user();

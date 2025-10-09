@@ -53,6 +53,7 @@
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
                                     <th>Date</th>
+                                    <th>Supplier</th>
                                     <th>Order ID</th>
                                     <th>Heads/Kilos</th>
                                     <th>Amount</th>
@@ -95,12 +96,51 @@
                                             $deliveryStatus = 'Mixed';
                                         }
                                     @endphp
-                                    <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">
+                                    {{-- <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'"> --}}
+                                    <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $order->created_at->format('F j, Y') }}</td>
-
+                                        <td>{{$order->supplier->company_name}}</td>
                                         <td>{{$order->order_id}}</td>
-                                        <td>{{$order->item->product->measurement_type}}</td>
+                                        <td>
+                                            @if ($deliveryRatio !== '0/0')
+                                                <div class="dropdown">
+                                                    <button class="btn btn-outline btn-sm dropdown-toggle" style="border: 1px solid #333" type="button" data-bs-toggle="dropdown">
+                                                        {{ $order->planned_heads_total }} heads / {{ $order->planned_kilos_total }} kg
+                                                    </button>
+                                                    <ul class="dropdown-menu p-2" style="min-width: 240px;">
+                                                        @foreach ($order->deliveries->sortByDesc('delivery_date') as $delivery)
+                                                            @php
+                                                                $heads = $delivery->deliveryItems->sum('planned_heads');
+                                                                $kilos = $delivery->deliveryItems->sum('planned_kilos');
+                                                            @endphp
+                                                            <li class="mb-2">
+                                                                <strong>Delivery #{{ $loop->iteration }}:</strong><br>
+                                                                {{ $heads }} heads / {{ $kilos }} kg
+                                                            </li>
+                                                        @endforeach
+
+                                                        <hr>
+
+                                                        <li>
+                                                            <strong>Planned:</strong>
+                                                            {{ $order->planned_heads_total }} heads / {{ $order->planned_kilos_total }} kg
+                                                        </li>
+                                                        <style>
+                                                            .mb-2, li{
+                                                                font-size: 14px;
+                                                            }
+                                                        </style>
+                                                    </ul>
+                                                </div>
+                                            @elseif($deliveryRatio === '0/0')
+                                                --
+                                            @else                                               
+                                             --
+                                            @endif
+
+                                        </td>
+
                                         <td>₱{{ number_format($order->total_amount, 2) }}</td>
                                         <td>{{$order->payment_status}}</td>
                                         <td>₱{{ number_format($order->total_amount, 2) }}</td>
@@ -110,14 +150,10 @@
                                             @if ($deliveryRatio !== '0/0')
                                                 {{ $deliveryStatus }} ({{ $deliveryRatio }})
                                             @else
-                                                No deliveries yet
+
+                                                No deliveries set yet
                                             @endif
                                         </td>                                        
-
-
-
-
-
 
                                     </tr>
                                 @endforeach

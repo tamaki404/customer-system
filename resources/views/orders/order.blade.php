@@ -418,31 +418,7 @@
         </div>
     </div>
 
-    {{-- view POD --}}
-    <div class="modal fade" id="viewPOD" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
 
-                <div class="modal-header">
-                    <p class="modal-title" id="requestActionLabel">POD</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                <div class="modal-body">
-                    <p class="note-notify">
-                        <span class="material-symbols-outlined"> info </span>
-                        <span></span>
-                    </p>
-                    
-                   
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
    <div class="content-bg" >
@@ -552,7 +528,6 @@
                                 <th>Received</th>
                                 <th>Variance</th>
                                 <th>Status</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -663,67 +638,9 @@
                                     </td>
 
 
-                                    {{-- ACTION BUTTONS --}}
-                                    <td>
-                                        @if (Auth()->user()->role !== "Supplier")
-                                            @if($delivery->status === "Scheduled")
-                                                <button type="button" 
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#pdfModal" 
-                                                    data-url="{{ route('orders.delivery.pdf', $delivery->delivery_id) }}"
-                                                    class="btn-transition">
-                                                        Print DR
-                                                </button>  
-                                            @elseif($delivery->status === "Delivered")
-                                                @if($delivery->pod_file)
-                                                    <button type="button" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#viewPOD{{ $delivery->delivery_id }}" 
-                                                            class="btn-transition">
-                                                            View POD
-                                                    </button>
-                                                @else
-                                                    <span class="text-muted">No POD</span>
-                                                @endif
-                                            @endif
-                                        @else
 
-                                        @endif
-                                    </td>
                                 </tr>
-                                    @if($delivery->pod_file)
-                                        @php
-                                            $podData = 'data:' . ($delivery->pod_mime ?? 'application/pdf') . ';base64,' . base64_encode($delivery->pod_file);
-                                        @endphp
 
-                                        <div class="modal fade" id="viewPOD{{ $delivery->delivery_id }}" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog modal-xl modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Proof of Delivery - {{ $delivery->delivery_id }}</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                    </div>
-                                                    <div class="modal-body text-center" style="height: 80vh;">
-                                                        <iframe
-                                                            src="{{ $podData }}"
-                                                            width="100%"
-                                                            height="100%"
-                                                            style="border: none;"
-                                                            title="POD for {{ $delivery->delivery_id }}"
-                                                        ></iframe>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <a href="{{ $podData }}" 
-                                                        download="POD_{{ $delivery->delivery_id }}.pdf" 
-                                                        class="btn btn-primary">
-                                                            Download POD
-                                                        </a>
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
                             @endforeach
                         </tbody>
                     </table>

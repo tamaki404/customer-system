@@ -29,82 +29,101 @@ class OrderController extends Controller
             }
             return $str;
         }
-        public function orderList(Request $request)
-        {
-            $user = Auth::user();
+public function orderList(Request $request)
+{
+    $user = Auth::user();
+    $supplier = null;
+    $orders = collect();
 
-            $supplier = null;
-            $orders = collect(); 
+    if ($user->role !== "Supplier") {
+        // 📦 Non-supplier users
+        $orders = Orders::with(['deliveries.deliveryItems'])
+            ->withSum('receipts', 'total_amount')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($order) {
+                // 💰 Payment Status
+                $paid = $order->receipts_sum_total_amount ?? 0;
+                $balance = $order->total_amount - $paid;
 
-            if ($user->role !== "Supplier") {
-                $orders = Orders::withSum('receipts', 'total_amount')
-                    ->orderBy('created_at', 'desc') 
-                    ->get()
-                    ->map(function ($order) {
-                        $paid = $order->receipts_sum_total_amount ?? 0;
-                        $balance = $order->total_amount - $paid;
+                if ($paid >= $order->total_amount) {
+                    $order->payment_status = 'Fully paid';
+                } elseif ($paid > 0) {
+                    $order->payment_status = 'Partially settled';
+                } else {
+                    $order->payment_status = 'Unpaid';
+                }
+
+                $order->paid_amount = $paid;
+                $order->balance = max($balance, 0);
+
+                // 🐔 Planned Totals
+                $order->planned_heads_total = $order->deliveries
+                    ->flatMap->deliveryItems
+                    ->sum('planned_heads');
+
+                $order->planned_kilos_total = $order->deliveries
+                    ->flatMap->deliveryItems
+                    ->sum('planned_kilos');
+
+                // 🚚 Completion ratio
+                $totalDeliveries = $order->deliveries->count();
+                $completedDeliveries = $order->deliveries->where('status', 'Delivered')->count();
+                $order->completion_ratio = $totalDeliveries > 0 ? "{$completedDeliveries}/{$totalDeliveries}" : "0/0";
+
+                return $order;
+            });
+
+    } else {
+        // 📦 Supplier users
+        $supplier = Suppliers::where('user_id', $user->user_id)->first();
+
+        $orders = Orders::where('supplier_id', $supplier->supplier_id)
+            ->with(['receipts', 'deliveries.deliveryItems'])
+            ->withSum('receipts', 'total_amount')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($order) {
+                // 💰 Payment Status
+                $paid = $order->receipts_sum_total_amount ?? 0;
+                $order->running_balance = max($order->total_amount - $paid, 0);
+
+                if ($paid >= $order->total_amount) {
+                    $order->payment_status = 'Fully Paid';
+                } elseif ($paid > 0) {
+                    $order->payment_status = 'Partially settled';
+                } else {
+                    $order->payment_status = 'Unpaid';
+                }
+
+                // 🐔 Planned Totals
+                $order->planned_heads_total = $order->deliveries
+                    ->flatMap->deliveryItems
+                    ->sum('planned_heads');
+
+                $order->planned_kilos_total = $order->deliveries
+                    ->flatMap->deliveryItems
+                    ->sum('planned_kilos');
+
+                // 🚚 Completion ratio
+                $totalDeliveries = $order->deliveries->count();
+                $completedDeliveries = $order->deliveries->where('status', 'Delivered')->count();
+                $order->completion_ratio = $totalDeliveries > 0 ? "{$completedDeliveries}/{$totalDeliveries}" : "0/0";
+
+                return $order;
+            });
+    }
+
+    return view('orders.list', [
+        'user' => $user,
+        'supplier' => $supplier,
+        'orders' => $orders,
+    ]);
+}
 
 
-                        if ($paid >= $order->total_amount) {
-                            $order->payment_status = 'Fully paid';
-                        } elseif ($paid > 0) {
-                            $order->payment_status = 'Partially settled';
-                        } else {
-                            $order->payment_status = 'Unpaid';
-                        }
-
-                        $order->paid_amount = $paid;
-                        $order->balance = max($balance, 0);
-
-                        return $order;
-                    })
-
-                    ;
-            } 
-            elseif ($user->role === "Supplier") {
-                $supplier = Suppliers::where('user_id', $user->user_id)->first();
-
-                $orders = Orders::where('supplier_id', $supplier->supplier_id)
-                    ->with([
-                        'receipts',
-                        'deliveries' => function ($q) {
-                            $q->with('deliveryItems');
-                        }
-                    ])
-                    ->withSum('receipts', 'total_amount')
-                    ->orderBy('created_at', 'desc') 
-                    ->get()
-                    ->map(function ($order) {
-                        // --- Payment Status ---
-                        $paid = $order->receipts_sum_total_amount ?? 0;
-                        $order->running_balance = max($order->total_amount - $paid, 0);
-
-                        if ($paid >= $order->total_amount) {
-                            $order->payment_status = 'Fully Paid';
-                        } elseif ($paid > 0) {
-                            $order->payment_status = 'Partially settled';
-                        } else {
-                            $order->payment_status = 'Unpaid';
-                        }
-
-                        // --- Delivery Completion ---
-                        $total = $order->deliveries->count();
-                        $completed = $order->deliveries->where('status', 'Completed')->count();
-                        $order->completion_ratio = $total > 0 ? "{$completed}/{$total}" : "0/0";
-
-                        return $order;
-                    });
-            }
 
 
-
-
-            return view('orders.list', [
-                'user' => $user,
-                'supplier' => $supplier,
-                'orders' => $orders,
-            ]);
-        }
 
         public function createorder(Request $request){
         
@@ -201,6 +220,8 @@ class OrderController extends Controller
                 })
                 ->orderBy('delivery_date', 'asc')
                 ->get();
+
+            
 
             return view('orders.order', [
                 'user' => $user,
