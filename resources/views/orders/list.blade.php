@@ -103,43 +103,31 @@
                                         <td>{{$order->supplier->company_name}}</td>
                                         <td>{{$order->order_id}}</td>
                                         <td>
-                                            @if ($deliveryRatio !== '0/0')
+                                            @if ($order->all_scheduled || $order->deliveries->isEmpty())
+                                                —
+                                            @else
                                                 <div class="dropdown">
-                                                    <button class="btn btn-outline btn-sm dropdown-toggle" style="border: 1px solid #333" type="button" data-bs-toggle="dropdown">
-                                                        {{ $order->planned_heads_total }} heads / {{ $order->planned_kilos_total }} kg
+                                                    <button class="btn btn-sm dropdown-toggle" type="button" style="border: 1px solid #333" data-bs-toggle="dropdown">
+                                                        {{ $order->running_balance[0]['heads'] }} heads / {{ $order->running_balance[0]['kilos'] }} kg
                                                     </button>
-                                                    <ul class="dropdown-menu p-2" style="min-width: 240px;">
-                                                        @foreach ($order->deliveries->sortByDesc('delivery_date') as $delivery)
-                                                            @php
-                                                                $heads = $delivery->deliveryItems->sum('planned_heads');
-                                                                $kilos = $delivery->deliveryItems->sum('planned_kilos');
-                                                            @endphp
-                                                            <li class="mb-2">
-                                                                <strong>Delivery #{{ $loop->iteration }}:</strong><br>
-                                                                {{ $heads }} heads / {{ $kilos }} kg
+                                                    <ul class="dropdown-menu p-2" style="min-width: auto;">
+                                                        @foreach ($order->running_balance as $balance)
+                                                            <li>
+                                                                {{ $balance['heads'] }} heads / {{ $balance['kilos'] }} kg
                                                             </li>
                                                         @endforeach
-
-                                                        <hr>
-
-                                                        <li>
-                                                            <strong>Planned:</strong>
-                                                            {{ $order->planned_heads_total }} heads / {{ $order->planned_kilos_total }} kg
-                                                        </li>
-                                                        <style>
-                                                            .mb-2, li{
-                                                                font-size: 14px;
-                                                            }
-                                                        </style>
                                                     </ul>
                                                 </div>
-                                            @elseif($deliveryRatio === '0/0')
-                                                --
-                                            @else                                               
-                                             --
+                                                <style>
+                                                    .dropdown-menu li{
+                                                        font-size: 14px;
+                                                        padding: 2px;
+                                                    }
+                                                </style>
                                             @endif
-
                                         </td>
+
+
 
                                         <td>₱{{ number_format($order->total_amount, 2) }}</td>
                                         <td>{{$order->payment_status}}</td>

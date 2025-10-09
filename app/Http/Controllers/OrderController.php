@@ -29,99 +29,67 @@ class OrderController extends Controller
             }
             return $str;
         }
-public function orderList(Request $request)
-{
-    $user = Auth::user();
-    $supplier = null;
-    $orders = collect();
+        public function orderList(Request $request)
+        {
+            $user = Auth::user();
+            $supplier = null;
 
-    if ($user->role !== "Supplier") {
-        // 📦 Non-supplier users
-        $orders = Orders::with(['deliveries.deliveryItems'])
-            ->withSum('receipts', 'total_amount')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($order) {
-                // 💰 Payment Status
-                $paid = $order->receipts_sum_total_amount ?? 0;
-                $balance = $order->total_amount - $paid;
+            $orders = Orders::with(['deliveries.deliveryItems'])
+                ->withSum('receipts', 'total_amount')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function ($order) {
+                    $paid = $order->receipts_sum_total_amount ?? 0;
+                    $order->balance = max($order->total_amount - $paid, 0);
+                    $order->payment_status = $paid >= $order->total_amount
+                        ? 'Fully paid'
+                        : ($paid > 0 ? 'Partially settled' : 'Unpaid');
 
-                if ($paid >= $order->total_amount) {
-                    $order->payment_status = 'Fully paid';
-                } elseif ($paid > 0) {
-                    $order->payment_status = 'Partially settled';
-                } else {
-                    $order->payment_status = 'Unpaid';
-                }
+                    $plannedHeads = $order->deliveries->flatMap->deliveryItems->sum('planned_heads');
+                    $plannedKilos = $order->deliveries->flatMap->deliveryItems->sum('planned_kilos');
 
-                $order->paid_amount = $paid;
-                $order->balance = max($balance, 0);
+                    $deliveredDeliveries = $order->deliveries
+                        ->where('status', 'Delivered')
+                        ->sortBy('delivery_date');
 
-                // 🐔 Planned Totals
-                $order->planned_heads_total = $order->deliveries
-                    ->flatMap->deliveryItems
-                    ->sum('planned_heads');
+                    $runningHeads = $plannedHeads;
+                    $runningKilos = $plannedKilos;
 
-                $order->planned_kilos_total = $order->deliveries
-                    ->flatMap->deliveryItems
-                    ->sum('planned_kilos');
+                    $runningBalance = [];
 
-                // 🚚 Completion ratio
-                $totalDeliveries = $order->deliveries->count();
-                $completedDeliveries = $order->deliveries->where('status', 'Delivered')->count();
-                $order->completion_ratio = $totalDeliveries > 0 ? "{$completedDeliveries}/{$totalDeliveries}" : "0/0";
+                    // Start with planned at the end
+                    $runningBalance[] = [
+                        'heads' => $runningHeads,
+                        'kilos' => $runningKilos,
+                        'label' => 'Planned'
+                    ];
 
-                return $order;
-            });
+                    foreach ($deliveredDeliveries as $index => $delivery) {
+                        $deliveredHeads = $delivery->deliveryItems->sum('received_heads');
+                        $deliveredKilos = $delivery->deliveryItems->sum('received_kilos');
 
-    } else {
-        // 📦 Supplier users
-        $supplier = Suppliers::where('user_id', $user->user_id)->first();
+                        $runningHeads -= $deliveredHeads;
+                        $runningKilos -= $deliveredKilos;
 
-        $orders = Orders::where('supplier_id', $supplier->supplier_id)
-            ->with(['receipts', 'deliveries.deliveryItems'])
-            ->withSum('receipts', 'total_amount')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($order) {
-                // 💰 Payment Status
-                $paid = $order->receipts_sum_total_amount ?? 0;
-                $order->running_balance = max($order->total_amount - $paid, 0);
+                        $runningBalance[] = [
+                            'heads' => $runningHeads,
+                            'kilos' => $runningKilos,
+                            'label' => 'After Delivery #' . ($index + 1)
+                        ];
+                    }
 
-                if ($paid >= $order->total_amount) {
-                    $order->payment_status = 'Fully Paid';
-                } elseif ($paid > 0) {
-                    $order->payment_status = 'Partially settled';
-                } else {
-                    $order->payment_status = 'Unpaid';
-                }
+                    $runningBalance = array_reverse($runningBalance);
 
-                // 🐔 Planned Totals
-                $order->planned_heads_total = $order->deliveries
-                    ->flatMap->deliveryItems
-                    ->sum('planned_heads');
+                    $order->setAttribute('running_balance', $runningBalance);
 
-                $order->planned_kilos_total = $order->deliveries
-                    ->flatMap->deliveryItems
-                    ->sum('planned_kilos');
+                    $order->all_scheduled = $order->deliveries->count() > 0
+                        && $order->deliveries->every(fn($d) => $d->status === 'Scheduled');
 
-                // 🚚 Completion ratio
-                $totalDeliveries = $order->deliveries->count();
-                $completedDeliveries = $order->deliveries->where('status', 'Delivered')->count();
-                $order->completion_ratio = $totalDeliveries > 0 ? "{$completedDeliveries}/{$totalDeliveries}" : "0/0";
+                    return $order;
+                });
 
-                return $order;
-            });
-    }
-
-    return view('orders.list', [
-        'user' => $user,
-        'supplier' => $supplier,
-        'orders' => $orders,
-    ]);
-}
-
-
+            return view('orders.list', compact('user', 'supplier', 'orders'));
+        }
 
 
 
