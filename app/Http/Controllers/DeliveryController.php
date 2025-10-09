@@ -124,6 +124,7 @@ class DeliveryController extends Controller
         {
             $request->validate([
                 'order_id' => 'required|string',
+                'delivery_id' => 'required|string', 
                 'status' => 'required|string|in:Delivered',
                 'feedback' => 'nullable|string|max:200',
                 'pod_file' => 'required|file|mimes:pdf|max:2048',
@@ -131,7 +132,7 @@ class DeliveryController extends Controller
                 'received_heads' => 'array',
             ]);
 
-            $delivery = Delivery::where('order_id', $request->order_id)->firstOrFail();
+            $delivery = Delivery::where('delivery_id', $request->delivery_id)->firstOrFail();
 
             $pdfContent = file_get_contents($request->file('pod_file')->getRealPath());
 

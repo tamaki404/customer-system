@@ -18,9 +18,7 @@
     <link rel="stylesheet" href="{{ asset('css/layout/pagination.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/modal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/btn-hover.css') }}">
-
     <link rel="stylesheet" href="{{ asset('css/layout/error-message.css') }}">
-
 
      @stack('styles')
 
@@ -30,253 +28,249 @@
 
         <div class="mainFrame">
 
+            <div class="sideAccess" id="sideAccess">
+                
+                <!-- Sidebar Header -->
+                <div class="sidebar-header">
+                    <div class="userProfile">
+                        <div class="imgFrame">
+                            @php
+                                $imgSrc = auth()->user()->image 
+                                    ? ('data:' . auth()->user()->image_mime_type . ';base64,' . base64_encode(auth()->user()->image))
+                                    : asset('images/default-avatar.png');
+                            @endphp
+                            <img src="{{ $imgSrc }}" alt="Profile Image">
 
-        <div class="sideAccess" id="sideAccess">
-            
-            <!-- Sidebar Header -->
-            <div class="sidebar-header">
-                <div class="userProfile">
-                    <div class="imgFrame">
-                        @php
-                            $imgSrc = auth()->user()->image 
-                                ? ('data:' . auth()->user()->image_mime_type . ';base64,' . base64_encode(auth()->user()->image))
-                                : asset('images/default-avatar.png');
-                        @endphp
-                        <img src="{{ $imgSrc }}" alt="Profile Image">
+                        </div>
+                        <div class="nameFrame">
+                            @if( auth()->user()->role === 'Admin')
+                                <p class="userName">{{ auth()->user()->supplier->company_name }}</p>
+                            @elseif(auth()->user()->role === 'Supplier')
+                                <p class="userName">{{  auth()->user()->supplier->company_name }}</p>
+                            @elseif(auth()->user()->role === 'Staff')
+                                <p class="userName">
+                                    {{  auth()->user()->staff->firstname }}
+                                    {{  auth()->user()->staff->lastname }}
+                                </p>
+                            @endif
+                            <p class="userTitle">{{  auth()->user()->role }}</p>
+                            {{-- @if($user->role === 'Staff')
+                                <p style="font-size: 13px; color: #666; margin: 0;">{{  auth()->user()->role_type }}</p>
+                            @endif --}}
+
+
+                        </div>
 
                     </div>
-                    <div class="nameFrame">
-                        @if($user->role === 'Admin')
-                            <p class="userName">{{ auth()->user()->supplier->company_name }}</p>
-                        @elseif($user->role === 'Supplier')
-                            <p class="userName">{{  auth()->user()->supplier->company_name }}</p>
-                        @elseif($user->role === 'Staff')
-                            <p class="userName">
-                                {{  auth()->user()->staff->firstname }}
-                                {{  auth()->user()->staff->lastname }}
-                            </p>
-                        @endif
-                        <p class="userTitle">{{  auth()->user()->role }}</p>
-                        {{-- @if($user->role === 'Staff')
-                            <p style="font-size: 13px; color: #666; margin: 0;">{{  auth()->user()->role_type }}</p>
-                        @endif --}}
-
-
-                    </div>
-
                 </div>
-            </div>
 
-            <!-- Side Menu -->
-            @if (auth()->user()->role !== 'Supplier')
-                <div class="sideMenu" style="gap: 0; margin: 0;">
-                    @php $currentRoute = Route::currentRouteName(); @endphp
+                <!-- Side Menu -->
+                @if (auth()->user()->role !== 'Supplier')
+                    <div class="sideMenu" style="gap: 0; margin: 0;">
+                        @php $currentRoute = Route::currentRouteName(); @endphp
 
-                    <!-- Group 1: Main Navigation -->
+                        <!-- Group 1: Main Navigation -->
+                        <div class="nav-group">
+                            <div class="nav-group-title">Main Navigation</div>
+                            <a class="nav-item{{ $currentRoute == 'dashboard.view' ? ' active' : '' }}" href="{{ route('dashboard.view') }}">
+                                <span class="material-symbols-outlined">dashboard</span>
+                                <p>Dashboard</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                            {{-- <a class="nav-item{{ $currentRoute == 'profile.view' ? ' active' : '' }}" href="{{ route('profile.view') }}">
+                                <span class="material-symbols-outlined">person</span>
+                                <p>Profile</p>
+                                <div class="nav-indicator"></div>
+                            </a> --}}
+                        </div>
+
+                        <div class="nav-group">
+                            <div class="nav-group-title">Credits & Receipts</div>
+                            {{-- <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
+                                <span class="material-symbols-outlined">credit_card</span>
+                                <p>Credits</p>
+                                <div class="nav-indicator"></div>
+                            </a> --}}
+                            <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
+                                <span class="material-symbols-outlined">receipt</span>
+
+                                <p>Proof of payments</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </div>
+
+                        <!-- Group 2: Orders & Inventory -->
                     <div class="nav-group">
-                        <div class="nav-group-title">Main Navigation</div>
-                        <a class="nav-item{{ $currentRoute == 'dashboard.view' ? ' active' : '' }}" href="{{ route('dashboard.view') }}">
-                            <span class="material-symbols-outlined">dashboard</span>
-                            <p>Dashboard</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                        {{-- <a class="nav-item{{ $currentRoute == 'profile.view' ? ' active' : '' }}" href="{{ route('profile.view') }}">
-                            <span class="material-symbols-outlined">person</span>
-                            <p>Profile</p>
-                            <div class="nav-indicator"></div>
-                        </a> --}}
-                    </div>
+                            <div class="nav-group-title">Orders & Inventory</div>
+                            {{-- <a class="nav-item">
+                                <span class="material-symbols-outlined">receipt</span>
+                                <p>Receipts</p>
+                                <div class="nav-indicator"></div>
+                            </a>--}}
+                            <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
+                                <span class="material-symbols-outlined">shopping_bag</span>
+                                <p>Purchase orders</p>
+                                <div class="nav-indicator"></div>
+                            </a>
 
+                            <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
+                                <span class="material-symbols-outlined">receipt_long</span>
+                                <p>Orders</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                            <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
+                                <span class="material-symbols-outlined">store</span>
+                                <p>Products</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </div> 
+
+                        <!-- Group 3: People -->
+                        <div class="nav-group">
+                            <div class="nav-group-title">People</div>
+                            <a class="nav-item{{ $currentRoute == 'customers.list' ? ' active' : '' }}" href="{{ route('customers.list') }}">
+                                <span class="material-symbols-outlined">groups</span>
+                                <p>Customers</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                            <a class="nav-item{{ $currentRoute == 'staffs.list' ? ' active' : '' }}" href="{{ route('staffs.list') }}" >
+                                <span class="material-symbols-outlined">supervisor_account</span>
+                                <p>Staffs</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </div>
+
+                        <!-- Group 4: Reports -->
+                        <div class="nav-group">
+                            <div class="nav-group-title">Reports & logs</div>
+                            {{-- <a class="nav-item">
+                                <span class="material-symbols-outlined">bar_chart</span>
+                                <p>Reports</p>
+                                <div class="nav-indicator"></div>
+                            </a> --}}
+                            <a class="nav-item{{ $currentRoute == 'logs.list' ? ' active' : '' }}" href="{{ route('logs.list') }}" >
+                                <span class="material-symbols-outlined">history</span>
+
+                                <p>Logs</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </div>
+
+
+
+
+                    </div>
+                @elseif (auth()->user()->role === 'Supplier')
+                    <div class="sideMenu" style="gap: 0; margin: 0;">
+                        @php $currentRoute = Route::currentRouteName(); @endphp
+
+                        <!-- Group 1: Main Navigation -->
+                        <div class="nav-group">
+                            <div class="nav-group-title">Main Navigation</div>
+                            <a class="nav-item{{ $currentRoute == 'dashboard.view' ? ' active' : '' }}" href="{{ route('dashboard.view') }}">
+                                <span class="material-symbols-outlined">dashboard</span>
+                                <p>Dashboard</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                            <a class="nav-item{{ $currentRoute == 'profile.view' ? ' active' : '' }}" href="{{ route('profile.view') }}">
+                                <span class="material-symbols-outlined">person</span>
+                                <p>Profile</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </div>
+
+                        <div class="nav-group">
+                            <div class="nav-group-title">Credits & Receipts</div>
+                            <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
+                                <span class="material-symbols-outlined">credit_card</span>
+                                <p>Credits</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                            <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
+                                <span class="material-symbols-outlined">receipt</span>
+
+                                <p>Proof of payments</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </div>
+
+                        <!-- Group 2: Orders & Inventory -->
                     <div class="nav-group">
-                        <div class="nav-group-title">Credits & Receipts</div>
-                        {{-- <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
-                            <span class="material-symbols-outlined">credit_card</span>
-                            <p>Credits</p>
-                            <div class="nav-indicator"></div>
-                        </a> --}}
-                        <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
-                            <span class="material-symbols-outlined">receipt</span>
+                            <div class="nav-group-title">Orders & Inventory</div>
+                            {{-- <a class="nav-item">
+                                <span class="material-symbols-outlined">receipt</span>
+                                <p>Receipts</p>
+                                <div class="nav-indicator"></div>
+                            </a>--}}
+                            <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
+                                <span class="material-symbols-outlined">shopping_bag</span>
+                                <p>Purchase orders</p>
+                                <div class="nav-indicator"></div>
+                            </a>
 
-                            <p>Proof of payments</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                    </div>
+                            <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
+                                <span class="material-symbols-outlined">receipt_long</span>
+                                <p>Orders</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                            <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
+                                <span class="material-symbols-outlined">store</span>
+                                <p>Products</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </div> 
 
-                    <!-- Group 2: Orders & Inventory -->
-                <div class="nav-group">
-                        <div class="nav-group-title">Orders & Inventory</div>
-                        {{-- <a class="nav-item">
-                            <span class="material-symbols-outlined">receipt</span>
-                            <p>Receipts</p>
-                            <div class="nav-indicator"></div>
-                        </a>--}}
-                        <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
-                            <span class="material-symbols-outlined">shopping_bag</span>
-                            <p>Purchase orders</p>
-                            <div class="nav-indicator"></div>
-                        </a>
+                        <!-- Group 4: Reports -->
+                        {{-- <div class="nav-group">
+                            <div class="nav-group-title">Reports & logs</div>
+                            <a class="nav-item">
+                                <span class="material-symbols-outlined">bar_chart</span>
+                                <p>Reports</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                            <a class="nav-item{{ $currentRoute == 'logs.list' ? ' active' : '' }}" href="{{ route('logs.list') }}" >
+                                <span class="material-symbols-outlined">history</span>
 
-                        <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
-                            <span class="material-symbols-outlined">receipt_long</span>
-                            <p>Orders</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                        <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
-                            <span class="material-symbols-outlined">store</span>
-                            <p>Products</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                    </div> 
-
-                    <!-- Group 3: People -->
-                    <div class="nav-group">
-                        <div class="nav-group-title">People</div>
-                        <a class="nav-item{{ $currentRoute == 'customers.list' ? ' active' : '' }}" href="{{ route('customers.list') }}">
-                            <span class="material-symbols-outlined">groups</span>
-                            <p>Customers</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                        <a class="nav-item{{ $currentRoute == 'staffs.list' ? ' active' : '' }}" href="{{ route('staffs.list') }}" >
-                            <span class="material-symbols-outlined">supervisor_account</span>
-                            <p>Staffs</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                    </div>
-
-                    <!-- Group 4: Reports -->
-                    <div class="nav-group">
-                        <div class="nav-group-title">Reports & logs</div>
-                        {{-- <a class="nav-item">
-                            <span class="material-symbols-outlined">bar_chart</span>
-                            <p>Reports</p>
-                            <div class="nav-indicator"></div>
-                        </a> --}}
-                        <a class="nav-item{{ $currentRoute == 'logs.list' ? ' active' : '' }}" href="{{ route('logs.list') }}" >
-                            <span class="material-symbols-outlined">history</span>
-
-                            <p>Logs</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                    </div>
+                                <p>Logs</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </div> --}}
 
 
 
 
-                </div>
-            @elseif (auth()->user()->role === 'Supplier')
-                <div class="sideMenu" style="gap: 0; margin: 0;">
-                    @php $currentRoute = Route::currentRouteName(); @endphp
-
-                    <!-- Group 1: Main Navigation -->
-                    <div class="nav-group">
-                        <div class="nav-group-title">Main Navigation</div>
-                        <a class="nav-item{{ $currentRoute == 'dashboard.view' ? ' active' : '' }}" href="{{ route('dashboard.view') }}">
-                            <span class="material-symbols-outlined">dashboard</span>
-                            <p>Dashboard</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                        <a class="nav-item{{ $currentRoute == 'profile.view' ? ' active' : '' }}" href="{{ route('profile.view') }}">
-                            <span class="material-symbols-outlined">person</span>
-                            <p>Profile</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                    </div>
-
-                    <div class="nav-group">
-                        <div class="nav-group-title">Credits & Receipts</div>
-                        <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
-                            <span class="material-symbols-outlined">credit_card</span>
-                            <p>Credits</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                        <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
-                            <span class="material-symbols-outlined">receipt</span>
-
-                            <p>Proof of payments</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                    </div>
-
-                    <!-- Group 2: Orders & Inventory -->
-                <div class="nav-group">
-                        <div class="nav-group-title">Orders & Inventory</div>
-                        {{-- <a class="nav-item">
-                            <span class="material-symbols-outlined">receipt</span>
-                            <p>Receipts</p>
-                            <div class="nav-indicator"></div>
-                        </a>--}}
-                        <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
-                            <span class="material-symbols-outlined">shopping_bag</span>
-                            <p>Purchase orders</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-
-                        <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
-                            <span class="material-symbols-outlined">receipt_long</span>
-                            <p>Orders</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                        <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
-                            <span class="material-symbols-outlined">store</span>
-                            <p>Products</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                    </div> 
-
-                    <!-- Group 4: Reports -->
-                    {{-- <div class="nav-group">
-                        <div class="nav-group-title">Reports & logs</div>
-                        <a class="nav-item">
-                            <span class="material-symbols-outlined">bar_chart</span>
-                            <p>Reports</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                        <a class="nav-item{{ $currentRoute == 'logs.list' ? ' active' : '' }}" href="{{ route('logs.list') }}" >
-                            <span class="material-symbols-outlined">history</span>
-
-                            <p>Logs</p>
-                            <div class="nav-indicator"></div>
-                        </a>
-                    </div> --}}
-
-
-
-
-                </div>
-            @endif
-
-            <!-- Sidebar Footer -->
-            <div class="sidebar-footer">
-                @if (auth()->user()->role === 'Supplier')
-                    <div class="deskFrame">
-                        <p class="inquiry">INQUIRIES</p>
-                        <p>For any inquiries, contact us at rplai_riza@gmail.com or 09123456789</p>
                     </div>
                 @endif
+
+                <!-- Sidebar Footer -->
+                <div class="sidebar-footer">
+                    @if (auth()->user()->role === 'Supplier')
+                        <div class="deskFrame">
+                            <p class="inquiry">INQUIRIES</p>
+                            <p>For any inquiries, contact us at rplai_riza@gmail.com or 09123456789</p>
+                        </div>
+                    @endif
+                    
+                    <div class="logoutFrame">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button class="logoutButton" type="submit">
+                                <span class="material-symbols-outlined">logout</span>
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="ownFrame">
+                        <p>OWNED BY</p>
+                        <img src="{{ asset(path: 'assets/sunnyLogo1.png') }}" alt="Owner Image" width="100" class="ownerImage">
+                    </div>
+                </div>
                 
-                <div class="logoutFrame">
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button class="logoutButton" type="submit">
-                            <span class="material-symbols-outlined">logout</span>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                </div>
-
-                <div class="ownFrame">
-                    <p>OWNED BY</p>
-                    <img src="{{ asset(path: 'assets/sunnyLogo1.png') }}" alt="Owner Image" width="100" class="ownerImage">
-                </div>
             </div>
-            
-        </div>
-
-
 
             <div class="showScreen" id="showScreen">
                 @yield('content')
-
             </div>
             
         </div>

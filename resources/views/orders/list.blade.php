@@ -113,13 +113,7 @@
                                                 No deliveries yet
                                             @endif
                                         </td>                                        
-                                        <td>
-                                            @if($order->delivery_ratio !== '0/0')
-                                                {{ $order->delivery_ratio }} {{ $order->delivery_note }}
-                                            @else
-                                                No deliveries yet
-                                            @endif
-                                        </td>
+
 
 
 
@@ -147,6 +141,38 @@
                             </thead>
                             <tbody>                                
                                 @foreach ($orders as $order)
+                                    @php
+                                        $totalDeliveries = count($order->deliveries);
+                                        $deliveredCount = 0;
+                                        $scheduledCount = 0;
+                                        $cancelledCount = 0;
+
+                                        foreach ($order->deliveries as $delivery) {
+                                            if ($delivery->status === 'Delivered') {
+                                                $deliveredCount++;
+                                            } elseif ($delivery->status === 'Scheduled') {
+                                                $scheduledCount++;
+                                            } elseif ($delivery->status === 'Cancelled') {
+                                                $cancelledCount++;
+                                            }
+                                        }
+
+                                        // Compute ratio
+                                        $deliveryRatio = $totalDeliveries > 0 ? "{$deliveredCount}/{$totalDeliveries}" : "0/0";
+
+                                        // Determine delivery status
+                                        if ($totalDeliveries === 0) {
+                                            $deliveryStatus = 'No Delivery';
+                                        } elseif ($deliveredCount === $totalDeliveries) {
+                                            $deliveryStatus = 'Completed';
+                                        } elseif ($deliveredCount > 0 && $scheduledCount > 0) {
+                                            $deliveryStatus = 'Partially Completed';
+                                        } elseif ($deliveredCount === 0 && $scheduledCount > 0) {
+                                            $deliveryStatus = 'Scheduled';
+                                        } else {
+                                            $deliveryStatus = 'Mixed';
+                                        }
+                                    @endphp
                                     <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $order->created_at->format('F j, Y') }}</td>
