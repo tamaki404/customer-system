@@ -100,6 +100,35 @@
                                 >
                             </div>
 
+                            
+                            <div>
+                                @if ($ceilingPrice)
+                                    <div class="alert-info p-2 mb-3">
+                                        <strong>Ceiling Price Active:</strong><br>
+                                        @php
+                                            if($ceilingPrice->method === 'Fixed') {
+                                                $maxPrice = $ceilingPrice->fixed_price;
+                                            } else {
+                                                $base = $productRequirement->product->sale_price ?? 0;
+                                                $maxPrice = $base + ($base * ($ceilingPrice->percentage_ceiling / 100));
+                                            }
+                                        @endphp
+
+                                        @if($ceilingPrice->method === 'Fixed')
+                                            ₱{{ number_format($ceilingPrice->fixed_price, 2) }}
+                                        @else
+                                            {{ $ceilingPrice->percentage_ceiling }}% above base (₱{{ number_format($maxPrice, 2) }})
+                                        @endif
+                                        <br>
+                                        <small class="text-muted">
+                                            {{ \Carbon\Carbon::parse($ceilingPrice->start_date)->format('M d, Y') }}
+                                            →
+                                            {{ \Carbon\Carbon::parse($ceilingPrice->end_date)->format('M d, Y') }}
+                                        </small>
+                                    </div>
+                                @endif
+                            </div>
+
                             <div class="modal-option-groups">
                                 <p>Product requiremnets</p>
 
@@ -126,6 +155,7 @@
                                                         style="width: 80px"
                                                         step="0.01"
                                                         placeholder="0.00"
+                                                        @if(isset($maxPrice)) max="{{ $maxPrice }}" @endif
                                                     />
                                                     <input type="hidden" name="products[{{ $product->product_id }}][product_id]" value="{{ $product->product_id }}">
 
