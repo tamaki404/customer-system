@@ -307,8 +307,6 @@
                                 <th>Planned Qty</th>
                                 <th>Received Qty</th>
                                 <th>Variance</th>
-
-
                                 <th>Status</th>
 
                             </tr>
@@ -321,75 +319,61 @@
                                     <td>{{ $item->orderItem->product->name ?? '—' }}</td>
                                     <td>{{ $item->orderItem->product->measurement_type ?? '—' }}</td>
                                     {{-- PLANNED --}}
-                                    @php
-                                        $plannedHeads = $delivery->deliveryItems->sum('planned_heads');
-                                        $plannedKilos = $delivery->deliveryItems->sum('planned_kilos');
-                                    @endphp
+        
                                     <td>
-                                        @if ($plannedHeads > 0 && $plannedKilos > 0)
-                                            {{ $plannedHeads }} heads<br>{{ $plannedKilos }} kg
-                                        @elseif ($plannedHeads > 0)
-                                            {{ $plannedHeads }} heads
-                                        @elseif ($plannedKilos > 0)
-                                            {{ $plannedKilos }} kg
+                                        @if ($item->orderItem->product->measurement_type === "Heads")
+                                            {{ $item->planned_heads}} heads
+                                        @elseif ($item->orderItem->product->measurement_type === "Kilos")
+                                            {{ $item->planned_kilos}}kg
+                                        @elseif ($item->orderItem->product->measurement_type === "Heads&Kilos")
+                                             {{ $item->planned_heads}} heads | {{ $item->planned_kilos}}kg
                                         @else
                                             —
                                         @endif
                                     </td>
 
                                     {{-- RECEIVED --}}
-                                    @php
-                                        $receivedHeads = $delivery->deliveryItems->sum('received_heads');
-                                        $receivedKilos = $delivery->deliveryItems->sum('received_kilos');
-                                        $hasReceived = $receivedHeads > 0 || $receivedKilos > 0;
-                                    @endphp
+
                                     <td>
-                                        @if ($hasReceived)
-                                            @if ($receivedHeads > 0 && $receivedKilos > 0)
-                                                {{ $receivedHeads }} heads<br>{{ $receivedKilos }} kg
-                                            @elseif ($receivedHeads > 0)
-                                                {{ $receivedHeads }} heads
-                                            @elseif ($receivedKilos > 0)
-                                                {{ $receivedKilos }} kg
-                                            @endif
+                                        @if ($item->orderItem->product->measurement_type === "Heads")
+                                            {{ $item->receivedHeads}} heads
+                                        @elseif ($item->orderItem->product->measurement_type === "Kilos")
+                                            {{ $item->receivedKilos}}kg
+                                        @elseif ($item->orderItem->product->measurement_type === "Heads&Kilos")
+                                             {{ $item->receivedHeads}} heads | {{ $item->receivedKilos}}kg
                                         @else
                                             —
                                         @endif
                                     </td>
 
                                     {{-- VARIANCE --}}
-                                    @php
-                                        $varianceHeads = $delivery->deliveryItems->sum('variance_heads');
-                                        $varianceKilos = $delivery->deliveryItems->sum('variance_kilos');
-                                        $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
-                                    @endphp
                                     <td>
-                                        @if ($hasReceived && $hasVariance)
-                                            @if ($varianceHeads != 0 && $varianceKilos != 0)
-                                                <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
-                                                    {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
-                                                </span>
-                                                <br>
-                                                <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
-                                                    {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
-                                                </span>
-                                            @elseif ($varianceHeads != 0)
-                                                <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
-                                                    {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
-                                                </span>
-                                            @elseif ($varianceKilos != 0)
-                                                <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
-                                                    {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
-                                                </span>
-                                            @else
+                                        @if ($delivery === "Delivered")
+                                            @php
+                                                $headsVarianceText = '';
+                                                $kilosVarianceText = '';
+
+                                                if ($varianceHeads != 0) {
+                                                    $headsVarianceText = '<span style="color:' . ($varianceHeads == 0 ? 'green' : 'red') . ';">'
+                                                        . ($varianceHeads > 0 ? '+' : '') . $varianceHeads . ' heads</span>';
+                                                }
+
+                                                if ($varianceKilos != 0) {
+                                                    $kilosVarianceText = '<span style="color:' . ($varianceKilos == 0 ? 'green' : 'red') . ';">'
+                                                        . ($varianceKilos > 0 ? '+' : '') . number_format($varianceKilos, 2) . ' kg</span>';
+                                                }
+                                            @endphp
+
+                                            @if ($varianceHeads == 0 && $varianceKilos == 0)
                                                 <span style="color: green;">Exact</span>
+                                            @else
+                                                {!! trim($headsVarianceText . ($headsVarianceText && $kilosVarianceText ? ' | ' : '') . $kilosVarianceText) !!}
                                             @endif
-                                        @elseif($hasReceived && !$hasVariance)
-                                            <span style="color: green;">Exact</span>
                                         @else
                                             —
                                         @endif
                                     </td>
+
                                     <td>{{ ucfirst($item->status ?? 'Pending') }}</td>
                                     {{-- ACTION BUTTONS --}}
                                     {{-- <td>
