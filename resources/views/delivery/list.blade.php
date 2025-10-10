@@ -56,17 +56,20 @@
                             <thead style="background-color: #fff;">
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
+                                    <th>Delivery_ID</th>
                                     <th>Supplier</th>
                                     <th>Scheduled</th>
                                     <th>Heads</th>
                                     <th>Kilos</th>
-                                    <th>POD</th>
                                     <th>Status</th>
+                                    <th>POD</th>
+
                                 </tr>
                             </thead>
                                 @foreach ($deliveries as  $del)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $del->delivery_id }}</td>
                                         <td>{{ $del->supplier->company_name }}</td>
                                         @php
                                             $date = \Carbon\Carbon::parse($del->delivery_date);
@@ -95,7 +98,6 @@
                                         <td>{{ $kilos > 0 ? $kilos : '--' }}</td>
 
 
-                                        <td></td>
                                
 
                                         @php
@@ -118,6 +120,21 @@
                                             @endif
                                         </td>
 
+                                        <td>
+                                            <button type="button"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#pdfModal"
+                                                data-url="{{ route('orders.delivery.pdf', $del->order->order_id) }}"
+                                                class="btn-transition btn btn-primary"
+                                                style="font-size:14px"
+                                                >
+                                                
+                                                POD
+                                            </button>
+
+                                        </td>
+
+
 
                                     </tr>
                                 
@@ -126,6 +143,22 @@
          
                             </tbody>
                         </table>
+                            <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-xl">
+                                    <div class="modal-content" style="width: 100%">
+                                        <div class="modal-header">
+                                            <p class="modal-title">PDF Preview</p>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body" style="height: 80vh;">
+                                            <iframe id="pdfFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
                 
                     </div>
 
@@ -138,5 +171,6 @@
 @endsection
 
 @push('scripts')
+    <script src="{{ asset('js/delivery/pdf_modal.js') }}"></script>
 
 @endpush
