@@ -250,8 +250,7 @@
 
                         <th style="width: 13%;">Condition</th>
                         <th style="width: 14%;">Packaging</th>
-                        <th style="width: 14%;">Labeling Req.</th>
-                        <th style="width: 14%;">Rejection Param.</th>
+        
                     </tr>
                 </thead>
                 <tbody>
@@ -268,8 +267,7 @@
                                 <div><strong>P:</strong> {{ $item->product->req->primary_packaging ?? '—' }}</div>
                                 <div><strong>S:</strong> {{ $item->product->req->secondary_packaging ?? '—' }}</div>
                             </td>
-                            <td>{{ $item->product->req->labeling_requirement ?? '—' }}</td>
-                            <td>{{ $item->product->req->rejection_parameter ?? '—' }}</td>
+                   
                         </tr>
                     @endforeach
                 </tbody>

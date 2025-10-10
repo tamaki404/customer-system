@@ -23,31 +23,6 @@
         </div>
     @endif
 
-    {{-- view POD --}}
-    <div class="modal fade" id="viewPOD" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <p class="modal-title" id="requestActionLabel">POD</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                <div class="modal-body">
-                    <p class="note-notify">
-                        <span class="material-symbols-outlined"> info </span>
-                        <span></span>
-                    </p>
-                    
-                   
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     
 
@@ -363,24 +338,28 @@
 
                                     {{-- VARIANCE DISPLAY --}}
                                     <td>
-                                        @if (!$hasVariance)
-                                            <span style="color: green;">Exact</span>
-                                        @else
-                                            @if ($varianceHeads != 0)
-                                                <span style="color: red;">
-                                                    {{ $varianceHeads > 0 ? '-' : '+' }}{{ abs($varianceHeads) }} heads
-                                                </span>
+                                        @if ($item->status === "Delivered")
+                                            @if (!$hasVariance)
+                                                <span style="color: green;">Exact</span>
+                                            @else
+                                                @if ($varianceHeads != 0)
+                                                    <span style="color: red;">
+                                                        {{ $varianceHeads > 0 ? '-' : '+' }}{{ abs($varianceHeads) }} heads
+                                                    </span>
+                                                    @if ($varianceKilos != 0)
+                                                        <br>
+                                                    @endif
+                                                @endif
+
                                                 @if ($varianceKilos != 0)
-                                                    <br>
+                                                    <span style="color: red;">
+                                                        {{ $varianceKilos > 0 ? '-' : '+' }}{{ number_format(abs($varianceKilos), 2) }} kg
+                                                    </span>
                                                 @endif
                                             @endif
-
-                                            @if ($varianceKilos != 0)
-                                                <span style="color: red;">
-                                                    {{ $varianceKilos > 0 ? '-' : '+' }}{{ number_format(abs($varianceKilos), 2) }} kg
-                                                </span>
-                                            @endif
+                                            
                                         @endif
+
                                     </td>
 
                                     <td>{{ ucfirst($item->status ?? 'Pending') }}</td>
@@ -474,7 +453,38 @@
         </div>
 
         <div>
-            {{ $delivery->feedback }}
+        <td>
+            @if ($item->variance_heads !== NULL OR $item->variance_heads !== NULL)
+
+                <button type="button" 
+                        data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                        data-url="{{ route('orders.return-slip.pdf', $delivery->order_id) }}"
+                        class="btn-transition">
+                    View return slip
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content" style="width: 100%">
+                    <div class="modal-header">
+                        <p class="modal-title">PDF Preview</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" style="height: 80vh;">
+                        <iframe id="pdfFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+                    </div>
+                    </div>
+                </div>
+                </div>
+                                    
+                
+            @elseif ($item->variance_heads === NULL OR $item->variance_heads === NULL)
+                {{$delivery->feedback}}
+            @endif
+        </td>
+
+            
         </div>
    </div>
 
@@ -483,5 +493,6 @@
 
 @push('scripts')
     <script src="{{ asset('js/order/variance.js') }}"></script>
+    <script src="{{ asset('js/global/pdf_view.js') }}"></script>
 
 @endpush

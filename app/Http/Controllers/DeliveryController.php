@@ -191,6 +191,7 @@ class DeliveryController extends Controller
         {
             $user = Auth::user();
             $delivery = Delivery::where('delivery_id', $delivery_id)->first();
+            $item = DeliveryItems::where('delivery_id', $delivery_id)->first();
             $items = DeliveryItems::where('delivery_id', $delivery_id) 
                 ->orderBy('created_at', 'asc')
                 ->get();
@@ -198,6 +199,8 @@ class DeliveryController extends Controller
             return view('deliveries.items', [
                 'user' => $user,
                 'items' => $items,
+                'item' => $item,
+
                 'delivery' => $delivery,
 
             ]);

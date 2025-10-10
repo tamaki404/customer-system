@@ -428,6 +428,14 @@ class OrderController extends Controller
             $pdf = PDF::loadView('pdf.orders.sales_invoice', compact('order', 'items'));
             return $pdf->stream("sales-invoice-{$order_id}.pdf");
         }
-
+        public function returnSlip($order_id)
+        {
+            $order = Orders::where('order_id', $order_id)->firstOrFail();
+            $delivery = Delivery::where('order_id', $order_id)->firstOrFail();
+            $delivery_id = $delivery->delivery_id;
+            $items = DeliveryItems::where('delivery_id', $delivery_id)->get();
+            $pdf = PDF::loadView('pdf.orders.return_slip', compact('delivery', 'items'));
+            return $pdf->stream("return-slip-{$delivery_id}.pdf");
+        }
 
 }

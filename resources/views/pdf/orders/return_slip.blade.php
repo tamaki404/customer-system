@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Delivery Receipt - {{ $delivery->delivery_id }}</title>
+    <title>Return slip - {{ $delivery->delivery_id }}</title>
     <style>
         * {
             margin: 0;
@@ -282,19 +282,19 @@
         <div class="header-top">
 
             <div class="header-center">
-                <h1>DELIVERY RECEIPT</h1>
+                <h1>RETURN REPORT</h1>
                 <p class="company-name">Sunny & Scramble</p>
-                <p class="sub-header">Official Record of Goods Delivered</p>
+                <p class="sub-header">Customer return slip</p>
             </div>
             <div class="header-right">
                 <div class="header-info-box">
                     <div><strong>Delivery ID:</strong> {{ $delivery->delivery_id }}</div>
                     <div><strong>Order ID:</strong> {{ $delivery->order_id }}</div>
-                    <div><strong>Date:</strong> {{ \Carbon\Carbon::parse($delivery->delivery_date)->format('M d, Y') }}</div>
+                    <div><strong>Delivered at:</strong> {{ \Carbon\Carbon::parse($delivery->delivered_at)->format('M d, Y') }}</div>
                 </div>
             </div>
         </div>
-    
+  
     </div>
 
     {{-- DELIVERY INFORMATION --}}
@@ -325,7 +325,7 @@
             <div class="info-row">
                 <span class="info-label">Status:</span>
                 <span class="info-value">
-                    <span class="status-badge">{{ ucfirst($delivery->status) }}</span>
+                    <span class="status-badge">{{ ucfirst($delivery->status) }} at {{ $delivery->delivered_at }}</span>
                 </span>
             </div>
             
@@ -333,11 +333,6 @@
                 <div class="info-row">
                     <span class="info-label">Delivery Frequency:</span>
                     <span class="info-value">{{ $delivery->order->supplier->delivery->delivery_frequency ?? '—' }}</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">Receiving Time:</span>
-                    <span class="info-value">{{ \Carbon\Carbon::parse($delivery->order->supplier->delivery->receiving_time)->format('g:i A') }}</span>
                 </div>
                 
                 <div class="info-row">
@@ -364,13 +359,10 @@
                     <th style="width: 5%;">#</th>
                     <th style="width: 20%;">Product</th>
                     <th style="width: 12%;">Condition</th>
-                    <th style="width: 18%;">Packaging</th>
-                    <th style="width: 14%;">Labeling Req.</th>
-                        <th style="width: 14%;">Rejection Param.</th>
                     <th style="width: 6%;">Heads</th>
                     <th style="width: 6%;">Kilos</th>
-                    <th style="width: 13%;">Received</th>
-                    <th style="width: 20%;">Remarks</th>
+                    <th style="width: 6%;">Received</th>
+                    <th style="width: 7%;">Variance</th>
                 </tr>
             </thead>
             <tbody>
@@ -380,16 +372,8 @@
                         <td style="text-align: left; font-weight: bold;">
                             {{ $item->orderItem->product->name ?? '—' }}
                         </td>
-                            <td>{{ $item->product->req->condition ?? '—' }}</td>
-                        <td>
-                            <div class="packaging-details">
-                                <div><strong>Primary:</strong> {{ $item->orderItem->product->req->primary_packaging ?? '—' }}</div>
-                                <div><strong>Secondary:</strong> {{ $item->orderItem->product->req->secondary_packaging ?? '—' }}</div>
-                            </div>
-                        </td>
-                        <td>{{ $item->product->req->labeling_requirement ?? '—' }}</td>
-                        <td>{{ $item->product->req->rejection_parameter ?? '—' }}</td>
-
+                        <td>{{ $item->orderItem->product->req->condition ?? '—' }}</td>
+             
                         <td>
 
                                 <strong>{{ $item->planned_heads }}</strong> heads
@@ -398,48 +382,60 @@
                                 <strong>{{ number_format($item->planned_kilos ?? 0, 2) }}</strong> kg
                       
                         </td>
-                        <td class="empty-cell">___________</td>
-                        <td style="text-align: left;">{{ $item->remarks ?? '—' }}</td>
+                        <td>
+                            <strong>
+                                    @if ($item->orderItem->product->measurement_type === "Heads")
+                                        {{ $item->received_heads}} heads
+                                    @elseif ($item->orderItem->product->measurement_type === "Kilos")
+                                        {{ $item->received_kilos}}kg
+                                    @elseif ($item->orderItem->product->measurement_type === "Heads&Kilos")
+                                        {{ $item->received_heads}} heads | {{ $item->received_kilos}}kg
+                                    @else
+                                        —
+                                    @endif
+                            </strong>
+                        </td>
+                            @php
+                                $varianceHeads = ($item->planned_heads ?? 0) - ($item->received_heads ?? 0);
+                                $varianceKilos = ($item->planned_kilos ?? 0) - ($item->received_kilos ?? 0);
+                                $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
+                            @endphp
+                            {{-- VARIANCE DISPLAY --}}
+                            <td>
+                            @if ($item->status === "Delivered")
+                                @if (!$hasVariance)
+                                    <span style="color: green;">Exact</span>
+                                @else
+                                    @if ($varianceHeads != 0)
+                                        <span style="color: red;">
+                                            {{ $varianceHeads > 0 ? '-' : '+' }}{{ abs($varianceHeads) }} heads
+                                        </span>
+                                        @if ($varianceKilos != 0)
+                                            <br>
+                                        @endif
+                                    @endif
+                                    @if ($varianceKilos != 0)
+                                        <span style="color: red;">
+                                            {{ $varianceKilos > 0 ? '-' : '+' }}{{ number_format(abs($varianceKilos), 2) }} kg
+                                        </span>
+                                    @endif
+                                @endif
+                                
+                            @endif
+
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 
-    {{-- SIGNATURES --}}
-    <div class="signature-section">
-        <div class="signature-box">
-            <div class="signature-line">
-                Delivered By
-            </div>
-            <div class="signature-role">SNS Representative</div>
-        </div>
-        <div class="signature-box">
-            <div class="signature-line">
-                Received By
-            </div>
-            <div class="signature-role">Authorized Signatory</div>
-        </div>
-    </div>
+
 
     {{-- NOTES & INSTRUCTIONS --}}
     <div class="notes-section">
-        <h4>Additional Information</h4>
-        
-        <div class="note-item">
-            <span class="note-label">Delivery Instructions:</span> 
-            {{ $delivery->order->supplier->delivery->delivery_instructions ?? 'None provided' }}
-        </div>
-        
-        <div class="note-item">
-            <span class="note-label">PPE Requirements:</span> 
-            {{ $delivery->order->supplier->delivery->ppe_requirements ?? 'N/A' }}
-        </div>
-        
-        <div class="disclaimer">
-            Please verify all goods upon receipt. Any discrepancies must be reported immediately to the supplier. 
-            This document serves as proof of delivery and acceptance of goods.
-        </div>
+        <h4>Report: </h4>
+        <p>{{ $delivery->feedback }}</p>
     </div>
 
     {{-- FOOTER --}}

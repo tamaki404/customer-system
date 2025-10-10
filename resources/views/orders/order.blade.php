@@ -476,7 +476,7 @@
                                     data-bs-toggle="modal" data-bs-target="#pdfModal" 
                                     data-url="{{ route('orders.delivery.pdf', $order->order_id) }}"
                                     class="btn-transition">
-                                POD
+                                Delivery receipt
                             </button>
 
                             <button type="button" 
