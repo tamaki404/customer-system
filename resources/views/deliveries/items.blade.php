@@ -49,6 +49,7 @@
         </div>
     </div>
 
+    
 
    <div class="content-bg" >
         <div class="content-header">
@@ -117,6 +118,8 @@
                 
                 @endif
            @endif
+
+           
 
 
 
@@ -277,6 +280,7 @@
                         {{-- FEEDBACK --}}
                         <div class="modal-option-groups">
                             <p>Feedback (Optional)</p>
+                            <p style="font-size: 13px; color: #666; margin: 0;">If there’s a variance, please provide an explanation below.</p>
                             <input type="text" name="feedback" maxlength="200">
                         </div>
 
@@ -335,46 +339,70 @@
                                     {{-- RECEIVED --}}
 
                                     <td>
-                                        @if ($item->orderItem->product->measurement_type === "Heads")
-                                            {{ $item->receivedHeads}} heads
-                                        @elseif ($item->orderItem->product->measurement_type === "Kilos")
-                                            {{ $item->receivedKilos}}kg
-                                        @elseif ($item->orderItem->product->measurement_type === "Heads&Kilos")
-                                             {{ $item->receivedHeads}} heads | {{ $item->receivedKilos}}kg
+                                        @if ($item->status !== "Delivered")
+
                                         @else
-                                            —
+                                            @if ($item->orderItem->product->measurement_type === "Heads")
+                                                {{ $item->received_heads}} heads
+                                            @elseif ($item->orderItem->product->measurement_type === "Kilos")
+                                                {{ $item->received_kilos}}kg
+                                            @elseif ($item->orderItem->product->measurement_type === "Heads&Kilos")
+                                                {{ $item->received_heads}} heads | {{ $item->received_kilos}}kg
+                                            @else
+                                                —
+                                            @endif
                                         @endif
+
                                     </td>
 
-                                    {{-- VARIANCE --}}
+                                    @php
+                                        $varianceHeads = ($item->planned_heads ?? 0) - ($item->received_heads ?? 0);
+                                        $varianceKilos = ($item->planned_kilos ?? 0) - ($item->received_kilos ?? 0);
+                                        $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
+                                    @endphp
+
+                                    {{-- VARIANCE DISPLAY --}}
                                     <td>
-                                        @if ($delivery === "Delivered")
-                                            @php
-                                                $headsVarianceText = '';
-                                                $kilosVarianceText = '';
-
-                                                if ($varianceHeads != 0) {
-                                                    $headsVarianceText = '<span style="color:' . ($varianceHeads == 0 ? 'green' : 'red') . ';">'
-                                                        . ($varianceHeads > 0 ? '+' : '') . $varianceHeads . ' heads</span>';
-                                                }
-
-                                                if ($varianceKilos != 0) {
-                                                    $kilosVarianceText = '<span style="color:' . ($varianceKilos == 0 ? 'green' : 'red') . ';">'
-                                                        . ($varianceKilos > 0 ? '+' : '') . number_format($varianceKilos, 2) . ' kg</span>';
-                                                }
-                                            @endphp
-
-                                            @if ($varianceHeads == 0 && $varianceKilos == 0)
-                                                <span style="color: green;">Exact</span>
-                                            @else
-                                                {!! trim($headsVarianceText . ($headsVarianceText && $kilosVarianceText ? ' | ' : '') . $kilosVarianceText) !!}
-                                            @endif
+                                        @if (!$hasVariance)
+                                            <span style="color: green;">Exact</span>
                                         @else
-                                            —
+                                            @if ($varianceHeads != 0)
+                                                <span style="color: red;">
+                                                    {{ $varianceHeads > 0 ? '-' : '+' }}{{ abs($varianceHeads) }} heads
+                                                </span>
+                                                @if ($varianceKilos != 0)
+                                                    <br>
+                                                @endif
+                                            @endif
+
+                                            @if ($varianceKilos != 0)
+                                                <span style="color: red;">
+                                                    {{ $varianceKilos > 0 ? '-' : '+' }}{{ number_format(abs($varianceKilos), 2) }} kg
+                                                </span>
+                                            @endif
                                         @endif
                                     </td>
 
                                     <td>{{ ucfirst($item->status ?? 'Pending') }}</td>
+
+                                    {{-- RETURN SLIP BUTTON / DISPLAY --}}
+                                    {{-- <td>
+                                        @if ($hasVariance)
+                                            <button type="button"
+                                                    class="btn btn-sm btn-danger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#returnSlipModal"
+                                                    data-item-id="{{ $item->delivery_item_id }}">
+                                                Return Slip
+                                            </button>
+                                        @else
+                                            <span style="color: #6c757d;">—</span>
+                                        @endif
+                                    </td> --}}
+
+
+
+
                                     {{-- ACTION BUTTONS --}}
                                     {{-- <td>
                                         @if (Auth()->user()->role !== "Supplier")
