@@ -118,6 +118,7 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     Route::get('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
     Route::post('/products/setting/modify', [ProductSettingController::class, 'modifyProduct'])->name('productset.modify');
 
+    Route::get('/deliveries/list',  [DeliveryController::class, 'deliveryList'])->name('deliveries.list');
 
     //product sale
     Route::post('/products/setting/sale', [ProductSalesController::class, 'addSale'])->name('productset.sale');

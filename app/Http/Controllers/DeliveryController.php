@@ -203,6 +203,31 @@ class DeliveryController extends Controller
             ]);
         }
 
+        public function deliveryList(Request $request)
+        {
+            $user = Auth::user();
+            $today = Carbon::today();
+
+            $deliveries = Delivery::with('requirement')
+                ->get()
+                ->sortBy(function ($delivery) use ($today) {
+                    $deliveryDate = Carbon::parse($delivery->delivery_date);
+                    $daysDiff = $deliveryDate->diffInDays($today, false);
+                    
+                    return [
+                        abs($daysDiff), // 1st sort: closest to today
+                        $deliveryDate,  // 2nd sort: actual date order
+                        $delivery->requirement->receiving_time ?? '00:00:00' // 3rd sort: receiving time
+                    ];
+                })
+                ->values();
+
+            return view('delivery.list', compact('user', 'deliveries'));
+        }
+
+
+
+
 
 
 

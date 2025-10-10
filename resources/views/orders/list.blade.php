@@ -60,6 +60,7 @@
                                     <th>Payment</th>
                                     <th>Running balance</th>
                                     <th>Status</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>                                
@@ -96,7 +97,7 @@
                                             $deliveryStatus = 'Mixed';
                                         }
                                     @endphp
-                                    {{-- <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'"> --}}
+                                    {{-- <tr > --}}
                                     <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $order->created_at->format('F j, Y') }}</td>
@@ -141,7 +142,9 @@
 
                                                 No deliveries set yet
                                             @endif
-                                        </td>                                        
+                                        </td>    
+                                        
+                                        <td><button onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">View</button></td>
 
                                     </tr>
                                 @endforeach

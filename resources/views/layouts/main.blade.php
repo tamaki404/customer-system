@@ -118,6 +118,12 @@
                                 <p>Orders</p>
                                 <div class="nav-indicator"></div>
                             </a>
+                            <a class="nav-item{{ $currentRoute == 'deliveries.list' ? ' active' : '' }}" href="{{ route('deliveries.list') }}">
+                                <span class="material-symbols-outlined">delivery_truck_speed</span>
+                                <p>Deliveries</p>
+                                <div class="nav-indicator"></div>
+                            </a>
+
                             <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
                                 <span class="material-symbols-outlined">store</span>
                                 <p>Products</p>
