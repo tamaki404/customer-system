@@ -58,7 +58,6 @@
                                     <th>#</th>
                                     <th>Supplier</th>
                                     <th>Scheduled</th>
-                                    <th>Receiving time</th>
                                     <th>Heads/Kilos</th>
                                     <th>POD</th>
                                     <th>Status</th>
@@ -68,13 +67,50 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $del->supplier->company_name }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($del->delivery_date)->format('M d, Y') }}</td>
+                                        @php
+                                            $date = \Carbon\Carbon::parse($del->delivery_date);
+                                            $receiving = \Carbon\Carbon::parse($del->supplier->requirement->receiving_time);
+
+                                        @endphp
+
                                         <td>
-                                           {{ ($del->supplier->requirement->receiving_time)->format('h:i A')}}
+                                                @if ($date->isToday())
+                                                    Today ({{ $receiving->format('h:i A') }})
+                                                @elseif ($date->isTomorrow())
+                                                    Tomorrow ({{ $receiving->format('h:i A') }})
+                                                @elseif ($date->isYesterday())
+                                                    Yesterday ({{ $receiving->format('h:i A') }})
+                                                @else
+                                                    {{ $date->format('M d, Y h:i A') }}
+                                                @endif
+                                            </td>
+
+
+                                        <td></td>
+                                        <td></td>
+                                        @php
+                                            $date = \Carbon\Carbon::parse($del->delivery_date);
+                                            $today = \Carbon\Carbon::today();
+                                        @endphp
+
+                                        <td>
+                                            @if ($del->status === 'Delivered')
+                                                Delivered
+                                            @else
+                                                @if ($date->isToday())
+                                                    Delivery today
+                                                @elseif ($date->isPast())
+                                                    {{-- If date is in the past and not delivered --}}
+                                                    @php
+                                                        $daysLate = $date->diffInDays($today);
+                                                    @endphp
+                                                    {{ $daysLate }} {{ Str::plural('day', $daysLate) }} late
+                                                @else
+                                                    Upcoming
+                                                @endif
+                                            @endif
                                         </td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>{{ $del->status }}</td>
+
                                     </tr>
                                 
                                 @endforeach
