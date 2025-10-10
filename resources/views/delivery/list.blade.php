@@ -58,7 +58,8 @@
                                     <th>#</th>
                                     <th>Supplier</th>
                                     <th>Scheduled</th>
-                                    <th>Heads/Kilos</th>
+                                    <th>Heads</th>
+                                    <th>Kilos</th>
                                     <th>POD</th>
                                     <th>Status</th>
                                 </tr>
@@ -83,11 +84,20 @@
                                                 @else
                                                     {{ $date->format('M d, Y h:i A') }}
                                                 @endif
-                                            </td>
+                                        </td>
+
+                                        @php
+                                            $heads = $del->items->sum('planned_heads');
+                                            $kilos = $del->items->sum('planned_kilos');
+                                        @endphp
+
+                                        <td>{{ $heads > 0 ? $heads : '--' }}</td>
+                                        <td>{{ $kilos > 0 ? $kilos : '--' }}</td>
 
 
                                         <td></td>
-                                        <td></td>
+                               
+
                                         @php
                                             $date = \Carbon\Carbon::parse($del->delivery_date);
                                             $today = \Carbon\Carbon::today();
@@ -95,21 +105,19 @@
 
                                         <td>
                                             @if ($del->status === 'Delivered')
-                                                Delivered
-                                            @else
-                                                @if ($date->isToday())
-                                                    Delivery today
-                                                @elseif ($date->isPast())
-                                                    {{-- If date is in the past and not delivered --}}
-                                                    @php
-                                                        $daysLate = $date->diffInDays($today);
-                                                    @endphp
-                                                    {{ $daysLate }} {{ Str::plural('day', $daysLate) }} late
-                                                @else
-                                                    Upcoming
-                                                @endif
+                                                <span class="text-success">Delivered</span>
+                                            @elseif ($date->isToday())
+                                                <span class="text-warning">Delivery today</span>
+                                            @elseif ($date->isFuture())
+                                                <span class="text-primary">Upcoming</span>
+                                            @elseif ($date->isPast())
+                                                @php $daysLate = $date->diffInDays($today); @endphp
+                                                <span class="text-danger">
+                                                    {{ $daysLate }} {{ Illuminate\Support\Str::plural('day', $daysLate) }} late
+                                                </span>
                                             @endif
                                         </td>
+
 
                                     </tr>
                                 

@@ -205,24 +205,35 @@ class DeliveryController extends Controller
 
         public function deliveryList(Request $request)
         {
-            $user = Auth::user();
             $today = Carbon::today();
 
             $deliveries = Delivery::with('requirement')
                 ->get()
                 ->sortBy(function ($delivery) use ($today) {
-                    $deliveryDate = Carbon::parse($delivery->delivery_date);
-                    $daysDiff = $deliveryDate->diffInDays($today, false);
-                    
+                    $date = Carbon::parse($delivery->delivery_date);
+
+                    // Determine priority weight
+                    if ($delivery->status === 'Delivered') {
+                        $priority = 4; // Delivered last
+                    } elseif ($date->isToday()) {
+                        $priority = 1; // Delivery today first
+                    } elseif ($date->isFuture()) {
+                        $priority = 2; // Upcoming second
+                    } elseif ($date->isPast() && $delivery->status !== 'Delivered') {
+                        $priority = 3; // Late third
+                    } else {
+                        $priority = 5;
+                    }
+
                     return [
-                        abs($daysDiff), // 1st sort: closest to today
-                        $deliveryDate,  // 2nd sort: actual date order
-                        $delivery->requirement->receiving_time ?? '00:00:00' // 3rd sort: receiving time
+                        $priority,
+                        $date,
+                        $delivery->requirement->receiving_time ?? '00:00:00'
                     ];
                 })
                 ->values();
 
-            return view('delivery.list', compact('user', 'deliveries'));
+            return view('delivery.list', compact('deliveries'));
         }
 
 
