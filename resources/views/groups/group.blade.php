@@ -61,7 +61,7 @@
                 </div>
 
                 <input type="hidden" name="user_id" value="{{ auth()->user()->user_id }}" required>
-                <input type="hidden" name="rep_id" value="{{ $user->rep->rep_id }}" required>
+                <input type="hidden" name="rep_id" id="rep-repid-input" required>
 
                 <div class="modal-body" >
 
@@ -198,7 +198,17 @@
                                         <td>{{ $rep->auth_position }}</td>
                                         <td>
                                             @if ($rep->auth_position !== "Admin")
-                                                --
+                                                @php
+                                                    $permissions = json_decode($rep->permissions, true);
+                                                @endphp
+
+                                                @if (!empty($permissions) && is_array($permissions))
+                                                    {{ implode(', ', array_keys(array_filter($permissions))) }}
+                                                @else
+                                                    <i>No permissions assigned</i>
+                                                @endif
+
+
                                             @elseif ($rep->auth_position === "Admin")
                                                 All
                                             @endif
@@ -212,6 +222,7 @@
                                                     data-bs-target="#modify-modal"
                                                     data-name="{{ $rep->rep_lastname }}, {{ $rep->rep_firstname }}{{ $rep->rep_middlename ? ' '.$rep->rep_middlename : '' }}"
                                                     data-role="{{ $rep->auth_position }}"
+                                                    data-repid="{{ $rep->rep_id }}"
 
                                                 >
                                                 <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">manage_accounts</span>
