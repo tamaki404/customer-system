@@ -94,6 +94,7 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
 
     Route::get('/profile/view', [ProfileController::class, 'profileView'])->name('profile.view');
     Route::get('/groups/view', [GroupsController::class, 'groupsView'])->name('groups.view');
+    Route::post('/groups/modify/account', [GroupsController::class, 'modifyAccount'])->name('group.modify');
 
     Route::post('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
 

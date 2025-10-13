@@ -42,11 +42,14 @@ return new class extends Migration
             $table->string('supplier_id')->required(); 
 
             $table->string('user_id');
+            $table->string('rep_id')->required();
+            $table->string('cid')->nullable();
             $table->string('rep_lastname', 50);
             $table->string('rep_firstname', 50);
             $table->string('rep_middlename', 50)->nullable();
             $table->string('auth_position', 50);
             $table->string('rep_contact', 15);
+            $table->json('permissions')->nullable();
             $table->timestamps();
         });
 

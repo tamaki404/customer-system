@@ -16,7 +16,11 @@ class Representatives extends Model
         'rep_middlename', 
         'auth_position', 
         'rep_contact',
-        'supplier_id'
+        'supplier_id',
+        'rep_id',
+        'permissions',
+        'cid'
+    
     ];
 
     public function supplier()

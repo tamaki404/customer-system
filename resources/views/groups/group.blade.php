@@ -2,7 +2,7 @@
 
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/views/heads/head.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/views/groups/group.css') }}">
 @endpush
 
 
@@ -29,7 +29,7 @@
     {{-- process action --}}
     <div class="modal fade" id="modify-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form class="modal-content" method="POST" enctype="multipart/form-data" action="{{ route('order.process') }}">
+            <form class="modal-content" method="POST" enctype="multipart/form-data" action="{{ route('group.modify') }}" style=" overflow-x: auto; display: flex; flex-direction: column;">
                 @csrf
 
                 {{-- Validation & Flash Messages --}}
@@ -60,14 +60,17 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <div class="modal-body">
+                <input type="hidden" name="user_id" value="{{ auth()->user()->user_id }}" required>
+                <input type="hidden" name="rep_id" value="{{ $user->rep->rep_id }}" required>
+
+                <div class="modal-body" >
 
                     <div class="modal-option-groups">
                         <p>
                             <span class="req-asterisk">*</span>
-                           Email adddress
+                           Name
                         </p>
-                        <input type="text" id="rep-email-input" readonly>
+                        <input type="text" id="rep-name-input" readonly>
                     </div>
                     <div class="modal-option-groups">
                         <p>
@@ -76,7 +79,72 @@
                         </p>
                         <input type="text" id="rep-role-input" readonly>
                     </div>
-             
+                    <div class="modal-option-groups">
+                        <p>
+                            <span class="req-asterisk">*</span>
+                           Permissions
+                        </p>
+                        <table class="permission-table">
+                            <thead>
+                                <tr>
+                                    <th>Permission</th>
+                                    <th>Allow</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="title">Dashboard</span><br>
+                                        <span class="desc"><i>Can see overall statistics</i></span>
+                                    </td>
+                                    <td><input type="checkbox" value="Dashboard" name="Dashboard"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="title">Profile</span><br>
+                                        <span class="desc"><i>Can edit available profile data</i></span>
+                                    </td>
+                                    <td><input type="checkbox" value="Profile" name="Profile"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="title">Credits</span><br>
+                                        <span class="desc"><i>Can submit proof of payments and see credit data</i></span>
+                                    </td>
+                                    <td><input type="checkbox" value="Credits" name="Credits"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="title">Proof of payment</span><br>
+                                        <span class="desc"><i>Can view submitted proof of payments</i></span>
+                                    </td>
+                                    <td><input type="checkbox" value="POP" name="POP"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="title">Purchase order</span><br>
+                                        <span class="desc"><i>Can submit and modify a purchase order</i></span>
+                                    </td>
+                                    <td><input type="checkbox" value="PO" name="PO"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="title">Orders</span><br>
+                                        <span class="desc"><i>Can modify orders</i></span>
+                                    </td>
+                                    <td><input type="checkbox" value="Orders" name="Orders"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="title">Products</span><br>
+                                        <span class="desc"><i>Can view listed products</i></span>
+                                    </td>
+                                    <td><input type="checkbox" value="Products" name="Products"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
                 </div>
 
 
@@ -121,7 +189,7 @@
                                 @foreach ($reps as $rep)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>--</td>
+                                        <td>{{ $rep->rep_id }}</td>
                                         <td>
                                             {{$rep->rep_lastname}}
                                             {{$rep->rep_firstname}}
@@ -142,11 +210,11 @@
                                                     class="btn-transition modify-btn" 
                                                     data-bs-toggle="modal" 
                                                     data-bs-target="#modify-modal"
-                                                    data-email="{{ $rep->user->email_address }}"
+                                                    data-name="{{ $rep->rep_lastname }}, {{ $rep->rep_firstname }}{{ $rep->rep_middlename ? ' '.$rep->rep_middlename : '' }}"
                                                     data-role="{{ $rep->auth_position }}"
 
                                                 >
-                                                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">manage_accounts</span>
+                                                <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">manage_accounts</span>
                                                     Modify account
                                                 </button>
                                             </td>

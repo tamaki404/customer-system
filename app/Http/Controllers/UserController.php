@@ -166,6 +166,7 @@ class UserController extends Controller
         $user_id = 'USR-' . $date . '-' . $this->randomBase36String(5);
         $supplier_id = 'SUP-' . $date . '-' . $this->randomBase36String(5);
         $status_id = 'STAT-' . $date . '-' . $this->randomBase36String(5);
+        $rep_id = 'REP-' . $date . '-' . $this->randomBase36String(5);
 
         // Define document types for later use
         $documentTypes = [

@@ -30,4 +30,16 @@
 .table-con p span{
     font-size: 18px;
 }
-
+.modal-option-groups .permission-list{
+    display: flex;
+    flex:1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: auto;
+}
+.permission-table tbody tr td{
+    text-align: start;
+}
+.permission-table tbody tr td .title{
+    font-weight: bold;
+}
