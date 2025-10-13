@@ -9,6 +9,7 @@ use App\Models\Suppliers;
 use App\Models\Staffs;
 use App\Models\Documents;
 use App\Models\Address;
+use App\Models\AccountStatus;
 
 use App\Models\Products;
 use App\Models\ProductSetting;
@@ -19,8 +20,8 @@ class ProfileController extends Controller
             $user = Auth::user();
             $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
             $addresses  = Address::where('supplier_id', $supplier->supplier_id)->get();
-
-            $staffAgent = Staffs::where('staff_id', $supplier->staff_id)->first();
+            $accStatus  = AccountStatus::where('supplier_id', $supplier->supplier_id)->first();
+            $staffAgent = Staffs::where('staff_id', $accStatus->staff_id)->first();
             $documents  = Documents::where('supplier_id', $supplier->supplier_id)->get();
             $products   = Products::where('status', 'Listed')->get();
             $productRequirements   = ProductSetting::where('supplier_id', $supplier->supplier_id)->get();

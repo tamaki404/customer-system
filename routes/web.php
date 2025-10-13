@@ -24,6 +24,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductSalesController;
 use App\Http\Controllers\GlobalCeilingController;
 use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\GroupsController;
 
 Route::get('/registration/signin', function () {
     return view('registration.signin');
@@ -92,6 +93,8 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     Route::get('/orders/list/view/{order_id}',  [OrderController::class, 'orderView'])->name('orders.order');
 
     Route::get('/profile/view', [ProfileController::class, 'profileView'])->name('profile.view');
+    Route::get('/groups/view', [GroupsController::class, 'groupsView'])->name('groups.view');
+
     Route::post('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
 
 
