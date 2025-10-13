@@ -26,7 +26,68 @@
     </div>
 @endif
 
+    {{-- process action --}}
+    <div class="modal fade" id="modify-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" method="POST" enctype="multipart/form-data" action="{{ route('order.process') }}">
+                @csrf
 
+                {{-- Validation & Flash Messages --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger" style="margin: 10px;">
+                        <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            @foreach ($errors->all() as $error)
+                                <li style="font-size: 14px;">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @if (session('success'))
+                    <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger" style="margin: 10px;">
+                        <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
+                        <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
+                    </div>
+                @endif
+
+                <div class="modal-header">
+                    <p class="modal-title" id="requestActionLabel">Modify user account</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="modal-option-groups">
+                        <p>
+                            <span class="req-asterisk">*</span>
+                           Email adddress
+                        </p>
+                        <input type="text" id="rep-email-input" readonly>
+                    </div>
+                    <div class="modal-option-groups">
+                        <p>
+                            <span class="req-asterisk">*</span>
+                           Role type
+                        </p>
+                        <input type="text" id="rep-role-input" readonly>
+                    </div>
+             
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Apply changes</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
 
         <div class="content-bg" >
             <div class="content-header">
@@ -43,7 +104,7 @@
                     <span class="material-symbols-outlined"> person_apron </span>
                     Authorized Representatives
                 </p>      
-                    <div class="content-body" style="background: #fff; height: auto;">
+                <div class="content-body" style="background: #fff; height: auto;">
 
                         <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                             <thead style="background-color: #fff;">
@@ -67,13 +128,34 @@
                                             {{$rep->rep_middlename}}
                                         </td>
                                         <td>{{ $rep->auth_position }}</td>
-                                        <td>--</td>
-                                        <td style="display: flex; align-items: center; justify-content: center;">
-                                            <button class="btn-transition" data-bs-toggle="modal" data-bs-target="#modify-modal">
-                                                <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">manage_accounts</span>
-                                                Modify account
-                                            </button>                                        
+                                        <td>
+                                            @if ($rep->auth_position !== "Admin")
+                                                --
+                                            @elseif ($rep->auth_position === "Admin")
+                                                All
+                                            @endif
+
                                         </td>
+                                        @if ($rep->auth_position !== "Admin")
+                                            <td style="display: flex; align-items: center; justify-content: center;">
+                                                <button 
+                                                    class="btn-transition modify-btn" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#modify-modal"
+                                                    data-email="{{ $rep->user->email_address }}"
+                                                    data-role="{{ $rep->auth_position }}"
+
+                                                >
+                                                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">manage_accounts</span>
+                                                    Modify account
+                                                </button>
+                                            </td>
+                                        @elseif ($rep->auth_position === "Admin")
+                                            <td>
+                                               <em style="color: #666">You're the admin</em>
+                                            </td>
+                                        @endif
+
 
                                     </tr>
                                 @endforeach
@@ -127,5 +209,6 @@
 
 
 @push('scripts')
+     <script src="{{ asset('js/global/group/modal.js') }}"></script>
 
 @endpush

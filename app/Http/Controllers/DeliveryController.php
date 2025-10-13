@@ -58,7 +58,7 @@ class DeliveryController extends Controller
                 foreach ($deliveryDays as $dayName) {
 
                     $deliveryId = 'DEL-' . $dateNow . '-' . strtoupper(Str::random(5));
-                    $deliveryDate = \Carbon\Carbon::parse($dayName)->toDateString();
+                    $deliveryDate = Carbon::parse($dayName)->toDateString();
 
                     Delivery::create([
                         'delivery_id'   => $deliveryId,
