@@ -14,10 +14,7 @@ class GroupsController extends Controller
     {
         $user = Auth::user();
         $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
-        $reps = Representatives::where('user_id', $supplier->supplier_id)->get();
-
-        $representatives = Representatives::where('user_id', $user->user_id)->first(); 
-
+        $reps = Representatives::where('user_id', $user->user_id)->get();
 
         return view('groups.group', [
         'user' => $user,

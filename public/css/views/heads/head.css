@@ -1,0 +1,33 @@
+.title-actions .head-info{
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    gap: 10px;
+    /* box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    border-radius: 10px; */
+}
+.head-info span{
+    font-size: 14px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+.table-con{
+    display: flex;
+    flex-direction: column;
+}
+.table-con p{
+    margin-top: 10px;
+    margin-bottom: 0;
+    color: #333;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.table-con p span{
+    font-size: 18px;
+}
+
