@@ -1,5 +1,3 @@
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const modifyButtons = document.querySelectorAll('.modify-btn');
     const repNameInput = document.getElementById('rep-name-input');
@@ -8,12 +6,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     modifyButtons.forEach(button => {
         button.addEventListener('click', () => {
-            const name = button.getAttribute('data-name');
-            repNameInput.value = name;
-            const role = button.getAttribute('data-role');
-            repRoleInput.value = role;
-            const rep_id = button.getAttribute('data-repid');
-            repIdInput.value = rep_id;
+            // basic data
+            repNameInput.value = button.getAttribute('data-name');
+            repRoleInput.value = button.getAttribute('data-role');
+            repIdInput.value = button.getAttribute('data-repid');
+
+            // parse permissions object
+            const perm = JSON.parse(button.getAttribute('data-permissions'));
+
+            // loop through each permission and set checkbox checked state
+            Object.keys(perm).forEach(key => {
+                const checkbox = document.querySelector(`input[name="${key}"]`);
+                if (checkbox) {
+                    checkbox.checked = perm[key] === true;
+                }
+            });
         });
     });
 });

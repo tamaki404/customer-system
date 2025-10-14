@@ -1,0 +1,38 @@
+.loginForm .rep-group{
+    display: flex;
+    flex-direction: row;
+    width: 400px;
+    height: auto;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #fff;
+
+}
+.loginForm .rep-group:hover{
+    background-color: #f3f3f3;
+}
+
+.rep-group img{
+    border-radius: 999%;
+    height: 50px;
+    width: 50px;
+}
+.rep-group p{
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+.rep-group p span{
+    margin: 0;
+}
+.rep-group p .rep-name{
+    font-weight: bold;
+}
+.rep-group p .rep-pos{
+    color: #666;
+    font-size: 13px;
+}

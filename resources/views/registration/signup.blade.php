@@ -704,7 +704,41 @@
                         </div>
                     </section>
                     <section class="group-details">
-                        <p class="group-name">Password</p>
+                        <p class="group-name">First-security password</p>
+                        <p class="group-description" style="margin: 0; font-size: 13px;">
+                            This is the shared password for your group. 
+                            Give this only to authorized representatives.
+                        </p>
+
+                        <div class="form-list">
+                            <div class="input-forms">
+                                <label for="gate_password"><span class="req-asterisk">*</span> Gate password</label>
+                                <input type="password" name="gate_password" id="gate_password" required minlength="6" maxlength="255">
+                            </div>
+
+                            <div class="input-forms">
+                                <label for="gate_password_confirmation"><span class="req-asterisk">*</span> Confirm gate password</label>
+                                <input type="password" name="gate_password_confirmation" id="gate_password_confirmation" required minlength="6" maxlength="255">
+                                <p class="error-text" id="gate-password-match-error"></p>
+                            </div>
+                        </div>
+
+                        <div id="gate-password-strength" style="margin-top: 5px; font-size: 12px;">
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <span id="gate-length-check" style="color: #ccc;">✓ Minimum of 6 characters</span>
+                                <span id="gate-number-check" style="color: #ccc;">✓ Contains a number</span>
+                                <span id="gate-special-check" style="color: #ccc;">✓ Contains special character</span>
+                                <span id="gate-match-check" style="color: #ccc;">✓ Passwords match</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="group-details">
+                        <p class="group-name">Administrator password</p>
+                        <p class="group-description" style="margin: 0; font-size: 13px; color: red;">
+                            ⚠ Administrator account password — Strictly confidential. Do not share with anyone except the admin.
+                        </p>
+
                         <div class="form-list">
                    
                             <div class="input-forms">

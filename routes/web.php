@@ -42,8 +42,18 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/account/registration', [RegistrationController::class, 'showSignupForm'])->name('registration.signup');
+// Route::get('/choose-account', function () {
+//     return view('choose-account');
+// })->name('choose.account')->middleware('auth');
+
+Route::get('/choose-account', [RegistrationController::class, 'chooseAccount'])->name('choose.accounts')->middleware('auth');
+Route::post('/account/signin-representative', [UserController::class, 'signinRepresentative'])
+    ->name('account.signin-representative');
+// Route::get('/account/registration', [RegistrationController::class, 'showSignupForm'])->name('registration.signup');
 Route::post('/account/supplier/registration', [UserController::class, 'registerSupplier'])->name('registration.supplier.register');
+Route::get('/account/supplier/registration', [UserController::class, 'showSignupForm'])
+    ->name('registration.signup');
+
 Route::post('/account.signin', [UserController::class, 'signin'])->name('account.signin');
 Route::post('/check-email', [UserController::class, 'checkEmail'])->name('check.email');
 
@@ -60,7 +70,7 @@ Route::get('/login', function () {
 })->name('login');
 
 // Authenticated dashboard
-Route::get('/dashboard/view',  [DashboardController::class, 'dashboardView'])->middleware('auth')->name('dashboard.view');
+Route::get('/dashboard/view',  [DashboardController::class, 'dashboardView'])->middleware('auth')->name('dashboard.view')->middleware(['auth', 'check.permission:Dashboard']);;
 Route::get('/dashboard/layout',  [DashboardController::class, 'layoutView'])->middleware('auth')->name('dashboard.layout');
 
 Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
@@ -92,7 +102,7 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     Route::get('/purchase-orders/list/view/{po_id}',  [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchaseorders.purchaseorder');
     Route::get('/orders/list/view/{order_id}',  [OrderController::class, 'orderView'])->name('orders.order');
 
-    Route::get('/profile/view', [ProfileController::class, 'profileView'])->name('profile.view');
+    Route::get('/profile/view', [ProfileController::class, 'profileView'])->name('profile.view')->middleware(['auth', 'check.permission:Profile']);;
     Route::get('/groups/view', [GroupsController::class, 'groupsView'])->name('groups.view');
     Route::post('/groups/modify/account', [GroupsController::class, 'modifyAccount'])->name('group.modify');
 

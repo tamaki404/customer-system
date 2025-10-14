@@ -97,7 +97,7 @@
                                         <span class="title">Dashboard</span><br>
                                         <span class="desc"><i>Can see overall statistics</i></span>
                                     </td>
-                                    <td><input type="checkbox" value="Dashboard" name="Dashboard"></td>
+                                    <td><input type="checkbox" id="rep-perm-input" value="Dashboard" name="Dashboard"></td>
                                 </tr>
                                 <tr>
                                     <td>
@@ -179,6 +179,7 @@
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
                                     <th>Rep. ID</th>
+                                    <th>CID</th>
                                     <th>Name</th>
                                     <th>Role type</th>
                                     <th>Permissions</th>
@@ -190,6 +191,7 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $rep->rep_id }}</td>
+                                        <th>{{$rep->cid}}</th>
                                         <td>
                                             {{$rep->rep_lastname}}
                                             {{$rep->rep_firstname}}
@@ -205,7 +207,7 @@
                                                 @if (!empty($permissions) && is_array($permissions))
                                                     {{ implode(', ', array_keys(array_filter($permissions))) }}
                                                 @else
-                                                    <i>No permissions assigned</i>
+                                                    <i style="color: #666">No permissions assigned</i>
                                                 @endif
 
 
@@ -223,6 +225,8 @@
                                                     data-name="{{ $rep->rep_lastname }}, {{ $rep->rep_firstname }}{{ $rep->rep_middlename ? ' '.$rep->rep_middlename : '' }}"
                                                     data-role="{{ $rep->auth_position }}"
                                                     data-repid="{{ $rep->rep_id }}"
+                                                    data-permissions='@json($rep->permissions)'
+
 
                                                 >
                                                 <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">manage_accounts</span>
@@ -254,24 +258,21 @@
                             <thead style="background-color: #fff;">
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
-                                    <th>Rep. ID</th>
                                     <th>Name</th>
                                     <th>Role type</th>
-                                    <th>Permissions</th>
-                                    <th>Action</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($reps as $rep)
+                                @foreach ($signs as $sign)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>--</td>
                                         <td>
-                                            {{$rep->rep_lastname}}
-                                            {{$rep->rep_firstname}}
-                                            {{$rep->rep_middlename}}
+                                            {{$sign->sign_lastname}}
+                                            {{$sign->sign_firstname}}
+                                            {{$sign->sign_middlename}}
                                         </td>
-                                        <td>{{ $rep->auth_position }}</td>
+                                        <td>{{ $sign->sign_position }}</td>
                                         <td></td>
                                         <td></td>
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Representatives;
+use App\Models\Signatories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Suppliers;
@@ -27,10 +28,12 @@ class GroupsController extends Controller
         $user = Auth::user();
         $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
         $reps = Representatives::where('user_id', $user->user_id)->get();
+        $signs = Signatories::where('user_id', $user->user_id)->get();
 
         return view('groups.group', [
         'user' => $user,
         'reps' => $reps,
+        'signs' => $signs,
 
         ]);
     }

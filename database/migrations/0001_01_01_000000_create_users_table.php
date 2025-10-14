@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('user_id');
             $table->string('email_address')->unique();
             $table->string('password');
+            $table->string('gate_password');
             $table->string('status')->default('Pending');
             $table->string('role');
             $table->string('role_type');
