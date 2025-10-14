@@ -130,17 +130,17 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     | Supplier-only (Creating orders / POs)
     |-------------------------
     */
-    Route::post('/orders/order/create', [OrderController::class, 'createOrder'])->name('order.create');
+    Route::post('/orders/order/create', [OrderController::class, 'createOrder'])->middleware('check.rep.permission:Order')->name('order.create');
 
     Route::get('/purchase-orders/list', [PurchaseOrderController::class, 'purchaseOrderList'])
         ->middleware('check.rep.permission:PO')
         ->name('purchaseorders.list');
 
-    Route::post('/purchase-orders/create', [PurchaseOrderController::class, 'createPurchaseOrder'])->name('purchaseorders.create');
-    Route::post('/receipts/create', [ReceiptController::class, 'receiptUpload'])->name('receipt.create');
+    Route::post('/purchase-orders/create', [PurchaseOrderController::class, 'createPurchaseOrder'])->middleware('check.rep.permission:PO')->name('purchaseorders.create');
+    Route::post('/receipts/create', [ReceiptController::class, 'receiptUpload'])->middleware('check.rep.permission:POP')->name('receipt.create');
 
-    Route::get('/purchase-orders/list/view/{po_id}', [PurchaseOrderController::class, 'purchaseOrderView'])->name('purchaseorders.purchaseorder');
-    Route::get('/orders/list/view/{order_id}', [OrderController::class, 'orderView'])->name('orders.order');
+    Route::get('/purchase-orders/list/view/{po_id}', [PurchaseOrderController::class, 'purchaseOrderView'])->middleware('check.rep.permission:PO')->name('purchaseorders.purchaseorder');
+    Route::get('/orders/list/view/{order_id}', [OrderController::class, 'orderView'])->middleware('check.rep.permission:Orders')->name('orders.order');
 
     /*
     |-------------------------
@@ -151,8 +151,8 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
         ->middleware('check.rep.permission:Profile')
         ->name('profile.view');
 
-    Route::get('/groups/view', [GroupsController::class, 'groupsView'])->name('groups.view');
-    Route::post('/groups/modify/account', [GroupsController::class, 'modifyAccount'])->name('group.modify');
+    Route::get('/groups/view', [GroupsController::class, 'groupsView'])->middleware('check.rep.permission:Profile')->name('groups.view');
+    Route::post('/groups/modify/account', [GroupsController::class, 'modifyAccount'])->middleware('check.rep.permission:Profile')->name('group.modify');
 
     /*
     |-------------------------

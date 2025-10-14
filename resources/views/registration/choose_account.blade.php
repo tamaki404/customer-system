@@ -42,7 +42,7 @@
                 <span class="material-symbols-outlined">info</span>
                 <span>
                     All accounts shown here, except for the Admin, already have their permissions configured.
-                    To modify or set permissions, navigate to Menu > Groups > Action: Modify Account, then select the desired permissions and apply the changes
+                    To modify or set permissions, navigate to Admin: Menu > Groups > Action: Modify Account, then select the desired permissions and apply the changes
                 </span>
             </p>
 
@@ -125,6 +125,8 @@
 
 
 
+
+
                 {{-- display account picked --}}
                 {{-- if auth_position === Admin,  use the password input tag and let them input user->password that === $request->password in the backend,
                 and elseif auth_position !==, use name="cid" input tag and match cid to representative->cid to log in to this account. 
@@ -145,8 +147,15 @@
 
             {{-- </form> --}}
 
+                    
+            <form action="{{ route('logout') }}" method="POST" style="display:inline; width: auto;">
+                @csrf
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+
 
         </div>
+        
     </div>
 
     <script src="{{ asset('js/animations/carousel.js') }}"></script>
