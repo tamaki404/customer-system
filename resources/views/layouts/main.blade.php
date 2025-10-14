@@ -51,7 +51,14 @@
 
                                     {{-- In Blade Views: --}}
                                     @auth('representative')
-                                        <p>Active Representative: {{ auth('representative')->user()->rep_lastname }}</p>
+                                        @php
+                                            $rep = auth('representative')->user();
+                                            $middleInitial = $rep->rep_middlename ? strtoupper(substr($rep->rep_middlename, 0, 1)) . '.' : '';
+                                            $nameParts = [$rep->rep_lastname . ',', $rep->rep_firstname, $middleInitial];
+                                            $fullName = implode(' ', array_filter($nameParts));
+                                        @endphp
+
+                                        <p style="color: #666">{{ $fullName }}</p>
                                     @endauth
 
 
@@ -179,90 +186,88 @@
 
                     </div>
                 @elseif (auth()->user()->role === 'Supplier')
-                    <div class="sideMenu" style="gap: 0; margin: 0;">
-                        @php $currentRoute = Route::currentRouteName(); @endphp
+                    @php
+                        $permissions = auth('representative')->user()->permissions ?? [];
+                        $currentRoute = Route::currentRouteName();
+                    @endphp
 
-                        <!-- Group 1: Main Navigation -->
+                    <div class="sideMenu" style="gap: 0; margin: 0;">
                         <div class="nav-group">
                             <div class="nav-group-title">Main Navigation</div>
-                            <a class="nav-item{{ $currentRoute == 'dashboard.view' ? ' active' : '' }}" href="{{ route('dashboard.view') }}">
-                                <span class="material-symbols-outlined">dashboard</span>
-                                <p>Dashboard</p>
-                                <div class="nav-indicator"></div>
-                            </a>
-                            <a class="nav-item{{ $currentRoute == 'profile.view' ? ' active' : '' }}" href="{{ route('profile.view') }}">
-                                <span class="material-symbols-outlined">person</span>
-                                <p>Profile</p>
-                                <div class="nav-indicator"></div>
-                            </a>
-                            <a class="nav-item{{ $currentRoute == 'groups.view' ? ' active' : '' }}" href="{{ route('groups.view') }}">
-                                <span class="material-symbols-outlined">groups_2</span>
-                                <p>Groups</p>
-                                <div class="nav-indicator"></div>
-                            </a>
+
+                            {{-- Dashboard --}}
+                            @if(!empty($permissions['Dashboard']) && $permissions['Dashboard'])
+                                <a class="nav-item{{ $currentRoute == 'dashboard.view' ? ' active' : '' }}" href="{{ route('dashboard.view') }}">
+                                    <span class="material-symbols-outlined">dashboard</span>
+                                    <p>Dashboard</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
+                            @endif
+
+                            {{-- Profile --}}
+                            @if(!empty($permissions['Profile']) && $permissions['Profile'])
+                                <a class="nav-item{{ $currentRoute == 'profile.view' ? ' active' : '' }}" href="{{ route('profile.view') }}">
+                                    <span class="material-symbols-outlined">person</span>
+                                    <p>Profile</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
+                            @endif
                         </div>
 
                         <div class="nav-group">
                             <div class="nav-group-title">Credits & Receipts</div>
-                            <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
-                                <span class="material-symbols-outlined">credit_card</span>
-                                <p>Credits</p>
-                                <div class="nav-indicator"></div>
-                            </a>
-                            <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
-                                <span class="material-symbols-outlined">receipt</span>
 
-                                <p>Proof of payments</p>
-                                <div class="nav-indicator"></div>
-                            </a>
+                            {{-- Credits --}}
+                            @if(!empty($permissions['Credits']) && $permissions['Credits'])
+                                <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
+                                    <span class="material-symbols-outlined">credit_card</span>
+                                    <p>Credits</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
+                            @endif
+
+                            {{-- Proof of Payments --}}
+                            @if(!empty($permissions['POP']) && $permissions['POP'])
+                                <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
+                                    <span class="material-symbols-outlined">receipt</span>
+                                    <p>Proof of payments</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
+                            @endif
                         </div>
 
-                        <!-- Group 2: Orders & Inventory -->
-                    <div class="nav-group">
+                        <div class="nav-group">
                             <div class="nav-group-title">Orders & Inventory</div>
-                            {{-- <a class="nav-item">
-                                <span class="material-symbols-outlined">receipt</span>
-                                <p>Receipts</p>
-                                <div class="nav-indicator"></div>
-                            </a>--}}
-                            <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
-                                <span class="material-symbols-outlined">shopping_bag</span>
-                                <p>Purchase orders</p>
-                                <div class="nav-indicator"></div>
-                            </a>
 
-                            <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
-                                <span class="material-symbols-outlined">receipt_long</span>
-                                <p>Orders</p>
-                                <div class="nav-indicator"></div>
-                            </a>
-                            <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
-                                <span class="material-symbols-outlined">store</span>
-                                <p>Products</p>
-                                <div class="nav-indicator"></div>
-                            </a>
-                        </div> 
+                            {{-- Purchase Orders --}}
+                            @if(!empty($permissions['PO']) && $permissions['PO'])
+                                <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
+                                    <span class="material-symbols-outlined">shopping_bag</span>
+                                    <p>Purchase orders</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
+                            @endif
 
-                        <!-- Group 4: Reports -->
-                        {{-- <div class="nav-group">
-                            <div class="nav-group-title">Reports & logs</div>
-                            <a class="nav-item">
-                                <span class="material-symbols-outlined">bar_chart</span>
-                                <p>Reports</p>
-                                <div class="nav-indicator"></div>
-                            </a>
-                            <a class="nav-item{{ $currentRoute == 'logs.list' ? ' active' : '' }}" href="{{ route('logs.list') }}" >
-                                <span class="material-symbols-outlined">history</span>
+                            {{-- Orders --}}
+                            @if(!empty($permissions['Orders']) && $permissions['Orders'])
+                                <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
+                                    <span class="material-symbols-outlined">receipt_long</span>
+                                    <p>Orders</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
+                            @endif
 
-                                <p>Logs</p>
-                                <div class="nav-indicator"></div>
-                            </a>
-                        </div> --}}
-
-
-
-
+                            {{-- Products --}}
+                            @if(!empty($permissions['Products']) && $permissions['Products'])
+                                <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
+                                    <span class="material-symbols-outlined">store</span>
+                                    <p>Products</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
+                            @endif
+                        </div>
                     </div>
+
                 @endif
 
                 <!-- Sidebar Footer -->

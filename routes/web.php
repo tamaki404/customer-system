@@ -70,7 +70,9 @@ Route::get('/login', function () {
 })->name('login');
 
 // Authenticated dashboard
-Route::get('/dashboard/view',  [DashboardController::class, 'dashboardView'])->middleware('auth')->name('dashboard.view')->middleware(['auth', 'check.permission:Dashboard']);;
+Route::get('/dashboard/view', [DashboardController::class, 'dashboardView'])
+    ->middleware(['auth', 'check.rep.permission:Dashboard'])
+    ->name('dashboard.view');
 Route::get('/dashboard/layout',  [DashboardController::class, 'layoutView'])->middleware('auth')->name('dashboard.layout');
 
 Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
