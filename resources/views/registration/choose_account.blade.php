@@ -25,7 +25,17 @@
         <div class="right">
             <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image">
             <h1>{{$user->supplier->company_name}}</h1>
+            <p style="margin: 0; font-size: 12px; color: #666;">{{ $user->user_id }}</p>
             <p class="kindly-mess">Kindly choose your account to login to</p>
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li style="color: #fd0a00">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             {{-- <form action="{{ route('account.signin-representative') }}" method="POST" style="justify-content:space-evenly;" class="loginForm" autocomplete="off">
                 @csrf --}}
@@ -45,50 +55,80 @@
                         
                     </div>               
                 @endforeach --}}
-@foreach ($reps as $rep)
-    <form action="{{ route('account.signin-representative') }}" method="POST" class="loginForm">
-        @csrf
-        <div class="rep-group" onclick="showLoginForm(this)">
-            @php
-                $imgSrc = auth()->user()->image 
-                    ? ('data:' . auth()->user()->image_mime_type . ';base64,' . base64_encode(auth()->user()->image))
-                    : asset('images/default-avatar.png');
-            @endphp
-            <img src="{{ $imgSrc }}" class="rep-img" alt="Profile Image">
-            <p>
-                <span class="rep-name">{{ $rep->rep_lastname }}, {{ $rep->rep_firstname }} {{ $rep->rep_middlename }}</span>
-                <span class="rep-pos">{{ $rep->auth_position }}</span>
-            </p>
-        </div>
 
-        <div class="rep-inputs" style="display: none;">
-            <input type="hidden" name="rep_id" value="{{ $rep->rep_id }}">
-            <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}">
+                    @foreach ($reps as $rep)
+                        @if ($rep->auth_position !== "Admin" AND $rep->cid !== NULL)
+                            <form action="{{ route('account.signin-representative') }}" method="POST" class="loginForm">
+                                @csrf
+                                <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}" required>
 
-            @if (strtolower($rep->auth_position) === 'admin')
-                <input type="password" name="password" placeholder="Enter Admin Password">
-            @else
-                <input type="text" name="cid" placeholder="Enter Representative CID">
-            @endif
+                                <div class="rep-group" onclick="showLoginForm(this)">
+                                    @php
+                                        $imgSrc = auth()->user()->image 
+                                            ? ('data:' . auth()->user()->image_mime_type . ';base64,' . base64_encode(auth()->user()->image))
+                                            : asset('images/default-avatar.png');
+                                    @endphp
+                                    <img src="{{ $imgSrc }}" class="rep-img" alt="Profile Image">
+                                    <p>
+                                        <span class="rep-name">{{ $rep->rep_lastname }}, {{ $rep->rep_firstname }} {{ $rep->rep_middlename }}</span>
+                                        <span class="rep-pos">{{ $rep->auth_position }}</span>
+                                    </p>
+                                </div>
 
-            <button type="submit">Sign in</button>
-        </div>
-    </form>
-@endforeach
+                                <div class="rep-inputs" style="display: none;">
+                                    <input type="hidden" name="rep_id" value="{{ $rep->rep_id }}">
+                                    <input type="hidden" name="auth_position" value="{{ $rep->auth_position }}">
+                                    <input type="password" name="cid" placeholder="Enter Representative CID">
 
-<script>
-    function showLoginForm(selected) {
-        // Hide inputs of all forms
-        document.querySelectorAll('.loginForm .rep-inputs').forEach(inputs => {
-            inputs.style.display = 'none';
-        });
+                                    <button type="submit">Sign in</button>
+                                </div>
+                            </form>
+                        @elseif ($rep->auth_position === "Admin")
+                            <form action="{{ route('account.signin-representative') }}" method="POST" class="loginForm">
+                                @csrf
+                                <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}" required>
 
-        // Show inputs of the selected form
-        const form = selected.closest('.loginForm');
-        const inputs = form.querySelector('.rep-inputs');
-        inputs.style.display = 'block';
-    }
-</script>
+                                <div class="rep-group" onclick="showLoginForm(this)">
+                                    @php
+                                        $imgSrc = auth()->user()->image 
+                                            ? ('data:' . auth()->user()->image_mime_type . ';base64,' . base64_encode(auth()->user()->image))
+                                            : asset('images/default-avatar.png');
+                                    @endphp
+                                    <img src="{{ $imgSrc }}" class="rep-img" alt="Profile Image">
+                                    <p>
+                                        <span class="rep-name">{{ $rep->rep_lastname }}, {{ $rep->rep_firstname }} {{ $rep->rep_middlename }}</span>
+                                        <span class="rep-pos">{{ $rep->auth_position }}</span>
+                                    </p>
+                                </div>
+
+                                <div class="rep-inputs" style="display: none;">
+                                    <input type="hidden" name="rep_id" value="{{ $rep->rep_id }}">
+                                    <input type="hidden" name="auth_position" value="{{ $rep->auth_position }}">
+
+                                    <input type="password" name="password" placeholder="Enter Admin Password">
+
+                                    <button type="submit">Sign in</button>
+                                </div>
+                            </form>
+                        @endif
+
+                    @endforeach
+
+
+
+
+
+                <script>
+                    function showLoginForm(selected) {
+                        document.querySelectorAll('.loginForm .rep-inputs').forEach(inputs => {
+                            inputs.style.display = 'none';
+                        });
+
+                        const form = selected.closest('.loginForm');
+                        const inputs = form.querySelector('.rep-inputs');
+                        inputs.style.display = 'block';
+                    }
+                </script>
 
 
 

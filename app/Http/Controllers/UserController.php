@@ -47,19 +47,21 @@ class UserController extends Controller
     public function signinRepresentative(Request $request)
 {
     $request->validate([
-        'rep_id' => 'required',
-        'user_id' => 'required',
+        'rep_id' => 'required|exists:representatives,rep_id',
+        'user_id' => 'required|exists:users,user_id',
+        'auth_position' => 'required'
     ]);
 
-    $user = User::find($request->user_id);
-    $rep = Representatives::find($request->rep_id);
+    $user = User::where('user_id',$request->user_id)->firstOrFail();
+    $rep = Representatives::where('rep_id',$request->rep_id)->firstOrFail();
 
     if (!$user || !$rep) {
         return back()->withErrors(['loginError' => 'Representative not found.']);
     }
 
     //  If Admin, verify the password
-    if (strtolower($rep->auth_position) === 'admin') {
+if ($request->auth_position === "Admin") {
+
         $request->validate([
             'password' => 'required|string|min:8',
         ]);
@@ -371,6 +373,7 @@ class UserController extends Controller
                 Representatives::create([
                     'user_id' => $user_id,
                     'supplier_id' => $supplier_id,
+                    'rep_id' => $rep_id,
                     'rep_lastname' => $lastname,
                     'rep_firstname' => $repFirstnames[$index] ?? '',
                     'rep_middlename' => $repMiddlenames[$index] ?? null,
@@ -1047,62 +1050,61 @@ class UserController extends Controller
 // }
 
 
-public function signin(Request $request) 
-{
-    $credentials = $request->validate([
-        'email_address' => 'required|email',
-        'password' => 'required|string|min:8',
-    ]);
+    public function signin(Request $request) 
+    {
+        $credentials = $request->validate([
+            'email_address' => 'required|email',
+            'password' => 'required|string|min:8',
+        ]);
 
-    $user = User::where('email_address', $credentials['email_address'])->first();
+        $user = User::where('email_address', $credentials['email_address'])->first();
 
-    if (!$user) {
-        return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
+        if (!$user) {
+            return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
+        }
+
+        // Determine which password column to use
+        $passwordColumn = $user->role === 'Supplier' ? 'password' : 'gate_password';
+
+        if (!Hash::check($credentials['password'], $user->$passwordColumn)) {
+            return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
+        }
+
+        if ($user->role === 'Staff') {
+            $staff = Staffs::where('user_id', $user->user_id)->first();
+            if (!$staff) {
+                return back()->withErrors(['loginError' => 'Staff record not found.'])->withInput();
+            }
+            if (is_null($staff->email_verified_at)) {
+                return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
+            }
+            if (strtolower($staff->status) !== 'accepted') {
+                return back()->withErrors(['loginError' => 'Your staff account is not active yet.'])->withInput();
+            }
+        } else {
+            $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
+            if (!$accountStatus) {
+                return back()->withErrors(['loginError' => 'Account status not found.'])->withInput();
+            }
+            if (is_null($accountStatus->email_verified_at)) {
+                return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
+            }
+            if (strtolower($accountStatus->account_status) !== 'accepted') {
+                return back()->withErrors(['loginError' => 'Your account is not active yet.'])->withInput();
+            }
+        }
+
+
+        Auth::login($user, false);
+        $request->session()->regenerate();
+
+        // Redirect based on role
+        if ($user->role === 'Supplier') {
+            return redirect()->route('choose.accounts');
+        } else {
+            return redirect()->route('dashboard.view');
+        }
     }
-
-    // 🔑 Determine which password column to use
-    $passwordColumn = $user->role === 'Supplier' ? 'password' : 'gate_password';
-
-    if (!Hash::check($credentials['password'], $user->$passwordColumn)) {
-        return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-    }
-
-    // --- Optional account status verification ---
-    if ($user->role === 'Staff') {
-        $staff = Staffs::where('user_id', $user->user_id)->first();
-        if (!$staff) {
-            return back()->withErrors(['loginError' => 'Staff record not found.'])->withInput();
-        }
-        if (is_null($staff->email_verified_at)) {
-            return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
-        }
-        if (strtolower($staff->status) !== 'accepted') {
-            return back()->withErrors(['loginError' => 'Your staff account is not active yet.'])->withInput();
-        }
-    } else {
-        $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
-        if (!$accountStatus) {
-            return back()->withErrors(['loginError' => 'Account status not found.'])->withInput();
-        }
-        if (is_null($accountStatus->email_verified_at)) {
-            return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
-        }
-        if (strtolower($accountStatus->account_status) !== 'accepted') {
-            return back()->withErrors(['loginError' => 'Your account is not active yet.'])->withInput();
-        }
-    }
-
-    // ✅ Log in user
-    Auth::login($user, false);
-    $request->session()->regenerate();
-
-    // 🧭 Redirect based on role
-    if ($user->role === 'Supplier') {
-        return redirect()->route('choose.accounts');
-    } else {
-        return redirect()->route('dashboard.view');
-    }
-}
 
 }
 
