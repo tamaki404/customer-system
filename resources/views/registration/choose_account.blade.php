@@ -7,8 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="stylesheet" href="{{ asset('css/registration/signin.css') }}">
         <link rel="stylesheet" href="{{ asset('css/registration/choose-account.css') }}">
-
-    <title>Choose account</title>
+        <link rel="stylesheet" href="{{ asset('css/info/style.css') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+        <title>Choose account</title>
 </head>
 <body>
 
@@ -24,8 +25,7 @@
         </div>
         <div class="right">
             <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image">
-            <h1>{{$user->supplier->company_name}}</h1>
-            <p style="margin: 0; font-size: 12px; color: #666;">{{ $user->user_id }}</p>
+            <h1 title="{{ $user->user_id }}">{{$user->supplier->company_name}}</h1>
             <p class="kindly-mess">Kindly choose your account to login to</p>
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -36,6 +36,15 @@
                     </ul>
                 </div>
             @endif
+
+
+            <p class="info-display" style="width: 500px">
+                <span class="material-symbols-outlined">info</span>
+                <span>
+                    All accounts shown here, except for the Admin, already have their permissions configured.
+                    To modify or set permissions, navigate to Menu > Groups > Action: Modify Account, then select the desired permissions and apply the changes
+                </span>
+            </p>
 
             {{-- <form action="{{ route('account.signin-representative') }}" method="POST" style="justify-content:space-evenly;" class="loginForm" autocomplete="off">
                 @csrf --}}
@@ -58,7 +67,7 @@
 
                     @foreach ($reps as $rep)
                         @if ($rep->auth_position !== "Admin" AND $rep->cid !== NULL)
-                            <form action="{{ route('account.signin-representative') }}" method="POST" class="loginForm">
+                            <form action="{{ route('account.signin-representative') }}" method="POST" class="loginForm" style="justify-content: space-evenly; height: auto; margin-top: 10px;">
                                 @csrf
                                 <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}" required>
 
@@ -79,12 +88,12 @@
                                     <input type="hidden" name="rep_id" value="{{ $rep->rep_id }}">
                                     <input type="hidden" name="auth_position" value="{{ $rep->auth_position }}">
                                     <input type="password" name="cid" placeholder="Enter Representative CID">
-
                                     <button type="submit">Sign in</button>
+                                                                    
                                 </div>
                             </form>
                         @elseif ($rep->auth_position === "Admin")
-                            <form action="{{ route('account.signin-representative') }}" method="POST" class="loginForm">
+                            <form action="{{ route('account.signin-representative') }}" method="POST" class="loginForm" style="justify-content: space-evenly; height: auto;">
                                 @csrf
                                 <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}" required>
 
@@ -116,22 +125,6 @@
 
 
 
-
-
-                <script>
-                    function showLoginForm(selected) {
-                        document.querySelectorAll('.loginForm .rep-inputs').forEach(inputs => {
-                            inputs.style.display = 'none';
-                        });
-
-                        const form = selected.closest('.loginForm');
-                        const inputs = form.querySelector('.rep-inputs');
-                        inputs.style.display = 'block';
-                    }
-                </script>
-
-
-
                 {{-- display account picked --}}
                 {{-- if auth_position === Admin,  use the password input tag and let them input user->password that === $request->password in the backend,
                 and elseif auth_position !==, use name="cid" input tag and match cid to representative->cid to log in to this account. 
@@ -157,6 +150,7 @@
     </div>
 
     <script src="{{ asset('js/animations/carousel.js') }}"></script>
+    <script src="{{ asset('js/registration/selected_accounts.js') }}"></script>
 
 </body>
 </html>

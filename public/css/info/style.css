@@ -1,0 +1,31 @@
+
+
+/* info */
+
+/* <p class="info-display">
+    <span class="material-symbols-outlined">info</span>
+    <span>
+        All accounts shown here, except for the Admin, already have their permissions configured.
+        To modify or set permissions, navigate to Menu > Groups > Action: Modify Account, then select the desired permissions and apply the changes
+    </span>
+</p> */
+
+.info-display {
+    margin: 10px;
+    color: #0D47A1;              
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #E8F4FD;    
+    border: 1px solid #90CAF9;    
+    max-width: 400px;
+}
+
+.info-display span {
+    margin: 0;
+    font-size: 13px;
+    color: #1565C0;            
+}
