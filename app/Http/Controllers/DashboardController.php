@@ -9,6 +9,7 @@ use App\Models\Documents;
 use App\Models\Orders;
 use App\Models\Receipts;
 use App\Models\Credits;
+use App\Models\Representatives;
 
 class DashboardController extends Controller
 {
@@ -66,25 +67,37 @@ public function dashboardView(Request $request)
 }
 
 
-    public function layoutView(Request $request)
-    {
-        $user = Auth::user();
+public function layoutView(Request $request)
+{
+    $user = Auth::user();
+    $rep = auth('representative')->user();
 
-        $supplier = null;
-        $documentCount = 0;
+    $supplier = null;
+    $documentCount = 0;
+    $activeRepresentative = null;
 
-        if ($user->role === 'Supplier') {
-            $supplier = Suppliers::where('user_id', $user->user_id)->first();
-            $documentCount = $supplier
-                ? Documents::where('supplier_id', $supplier->supplier_id)->count()
-                : 0;
+    if ($user->role === 'Supplier') {
+        $supplier = Suppliers::where('user_id', $user->user_id)->first();
+        $documentCount = $supplier
+            ? Documents::where('supplier_id', $supplier->supplier_id)->count()
+            : 0;
+
+        // Get active representative if one is signed in
+        if (session()->has('active_representative_id')) {
+            $activeRepresentative = Representatives::where('rep_id', session('active_representative_id'))
+                ->first();
         }
-
-        return view('layouts.main', [
-            'user' => $user,
-            'supplier' => $supplier,
-            'documentCount' => $documentCount,
-        ]);
     }
+
+    return view('layouts.main', [
+        'user' => $user,
+        'rep' => $rep,
+
+        'supplier' => $supplier,
+        'documentCount' => $documentCount,
+        'activeRepresentative' => $activeRepresentative,
+    ]);
+}
+
 
 }

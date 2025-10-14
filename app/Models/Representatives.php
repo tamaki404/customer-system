@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable;
 
-class Representatives extends Model
+class Representatives extends Model implements Authenticatable
 {
+    use \Illuminate\Auth\Authenticatable;
     use HasFactory;
 
     protected $fillable = [
@@ -32,5 +34,15 @@ class Representatives extends Model
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
+
+    public function can($permission)
+    {
+        return $this->permissions[$permission] ?? false;
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'rep_id';
+    }
 
 }

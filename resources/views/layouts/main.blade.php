@@ -47,11 +47,23 @@
                                     <p class="userName">{{ auth()->user()->supplier->company_name }}</p>
                                 @elseif(auth()->user()->role === 'Supplier')
                                     <p class="userName">{{  auth()->user()->supplier->company_name }}</p>
+                                     
+
+                                    {{-- In Blade Views: --}}
+                                    @auth('representative')
+                                        <p>Active Representative: {{ auth('representative')->user()->rep_lastname }}</p>
+                                    @endauth
+
+
+
+
+
                                 @elseif(auth()->user()->role === 'Staff')
                                     <p class="userName">
                                         {{  auth()->user()->staff->firstname }}
                                         {{  auth()->user()->staff->lastname }}
                                     </p>
+                                  
                                 @endif
                             <p class="userTitle">{{  auth()->user()->role }}</p>
                             {{-- @if($user->role === 'Staff')
@@ -288,6 +300,12 @@
 
     @else
         <script>window.location.href = '{{ route("login") }}';</script>
+        {{-- public function signoutRepresentative(Request $request)
+        {
+            Auth::guard('representative')->logout();
+            
+            return redirect()->route('dashboard.view')->with('success', 'Representative signed out successfully.');
+        } --}}
     @endauth
     
     @stack('scripts')

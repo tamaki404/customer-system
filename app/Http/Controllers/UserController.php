@@ -44,7 +44,48 @@ class UserController extends Controller
     return view('registration.signup', compact('products'));
     }
 
-    public function signinRepresentative(Request $request)
+// public function signinRepresentative(Request $request)
+// {
+//     $request->validate([
+//         'rep_id' => 'required|exists:representatives,rep_id',
+//         'user_id' => 'required|exists:users,user_id',
+//         'auth_position' => 'required'
+//     ]);
+
+//     $user = User::where('user_id', $request->user_id)->firstOrFail();
+//     $rep = Representatives::where('rep_id', $request->rep_id)->firstOrFail();
+
+//     if (!$user || !$rep) {
+//         return back()->withErrors(['loginError' => 'Representative not found.']);
+//     }
+
+//     // If Admin, verify the password
+//     if ($request->auth_position === "Admin") {
+//         $request->validate([
+//             'password' => 'required|string|min:8',
+//         ]);
+
+//         if (!Hash::check($request->password, $user->password)) {
+//             return back()->withErrors(['loginError' => 'Invalid admin password.']);
+//         }
+//     } else {
+//         // If not Admin, match cid
+//         $request->validate([
+//             'cid' => 'required|string',
+//         ]);
+
+//         if ($request->cid !== $rep->cid) {
+//             return back()->withErrors(['loginError' => 'Invalid representative CID. Get your CID from the listed Admin.']);
+//         }
+//     }
+
+//     session(['active_representative_id' => $rep->rep_id]);
+
+//     return redirect()->route('dashboard.view')->with('success', 'Representative signed in successfully.');
+// }
+
+ 
+public function signinRepresentative(Request $request)
 {
     $request->validate([
         'rep_id' => 'required|exists:representatives,rep_id',
@@ -52,16 +93,11 @@ class UserController extends Controller
         'auth_position' => 'required'
     ]);
 
-    $user = User::where('user_id',$request->user_id)->firstOrFail();
-    $rep = Representatives::where('rep_id',$request->rep_id)->firstOrFail();
+    $user = User::where('user_id', $request->user_id)->firstOrFail();
+    $rep = Representatives::where('rep_id', $request->rep_id)->firstOrFail();
 
-    if (!$user || !$rep) {
-        return back()->withErrors(['loginError' => 'Representative not found.']);
-    }
-
-    //  If Admin, verify the password
-if ($request->auth_position === "Admin") {
-
+    // If Admin, verify the password
+    if ($request->auth_position === "Admin") {
         $request->validate([
             'password' => 'required|string|min:8',
         ]);
@@ -69,9 +105,8 @@ if ($request->auth_position === "Admin") {
         if (!Hash::check($request->password, $user->password)) {
             return back()->withErrors(['loginError' => 'Invalid admin password.']);
         }
-
     } else {
-        //  If not Admin, match cid
+        // If not Admin, match cid
         $request->validate([
             'cid' => 'required|string',
         ]);
@@ -81,13 +116,12 @@ if ($request->auth_position === "Admin") {
         }
     }
 
-    session(['active_representative_id' => $rep->rep_id]);
+    // Login the representative using the representative guard
+    Auth::guard('representative')->login($rep);
 
     return redirect()->route('dashboard.view')->with('success', 'Representative signed in successfully.');
 }
-
-
-    public function registerSupplier(Request $request)
+public function registerSupplier(Request $request)
 
 
     {
