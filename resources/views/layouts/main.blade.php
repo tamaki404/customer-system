@@ -54,12 +54,13 @@
                                     @auth('representative')
                                         @php
                                             $rep = auth('representative')->user();
+
                                             $middleInitial = $rep->rep_middlename ? strtoupper(substr($rep->rep_middlename, 0, 1)) . '.' : '';
                                             $nameParts = [$rep->rep_lastname . ',', $rep->rep_firstname, $middleInitial];
                                             $fullName = implode(' ', array_filter($nameParts));
                                         @endphp
 
-                                        <p style="color: #666">{{ $fullName }}</p>
+                                        <p style="color: #666">{{ $fullName }}  ({{ $rep->auth_position }})</p>
                                     @endauth
 
 
@@ -73,7 +74,12 @@
                                     </p>
                                   
                                 @endif
+
+
                             <p class="userTitle">{{  auth()->user()->role }}</p>
+
+
+                             
                             {{-- @if($user->role === 'Staff')
                                 <p style="font-size: 13px; color: #666; margin: 0;">{{  auth()->user()->role_type }}</p>
                             @endif --}}

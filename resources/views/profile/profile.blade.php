@@ -235,151 +235,8 @@
                             </button>
                         </div>
 
-                        {{-- sale history --}}
-                        <div id="sales-content" class="tab-content" role="tabpanel" aria-labelledby="sales-tab">
-                            <div class="profile-mid" >
-                                <div class="authorized-staffs" style="box-shadow: none">
-                                    <p style="margin-bottom: 5px">Sales table</p>
-                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
-                                        <div class="authorized-rep">
-                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                                <thead style="background-color: #f9f9f9;">
-                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                                        <th>#</th>
-                                                        <th>Created At</th>
-                                                        <th>Product</th>
-                                                        <th>Sale ID</th>
-                                                        <th>Sale Price</th>
-                                                        <th>Discount (%)</th>
-                                                        <th>Duration (Days)</th>
-                                                        <th>Start Date</th>
-                                                        <th>End Date</th>
-                                                        <th>Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    
-                                                    @foreach ($salesHistos as $salesHisto)
-                                                        @php
-                                                            $hours = \Carbon\Carbon::parse($salesHisto->start_date)->diffInHours(\Carbon\Carbon::parse($salesHisto->end_date));
-                                                            $days = round($hours / 24, 1);
-                                                            $original = $salesHisto->set->nego_price;
-                                                            $salePrice = $salesHisto->sale_price;
-                                                            $discount = $original > 0 ? round((($original - $salePrice) / $original) * 100) : 0;
-                                                        @endphp
-
-                                                        <tr>
-                                                            <td>{{ $loop->iteration }}</td>
-                                                            <td>{{ \Carbon\Carbon::parse($salesHisto->created_at)->format('M d, Y h:i A') }}</td>
-                                                            <td>{{ $salesHisto->set->product->name }}</td>
-                                                            <td>{{ $salesHisto->set_id }}</td>
-                                                            <td>₱{{ $salesHisto->sale_price }}</td>
-                                                            <td>{{ $discount }}% OFF</td>
-                                                            <td>{{ $days }} day/s sale</td>
-                                                            <td>{{ \Carbon\Carbon::parse($salesHisto->start_date)->format('M d, Y h:i A') }}</td>
-                                                            <td>{{ \Carbon\Carbon::parse($salesHisto->end_date)->format('M d, Y h:i A') }}</td>
-                                                                @php
-                                                                    $now = \Carbon\Carbon::now();
-                                                                    $start = \Carbon\Carbon::parse($salesHisto->start_date);
-                                                                    $end = \Carbon\Carbon::parse($salesHisto->end_date);
-
-                                                                    if ($now->lt($start)) {
-                                                                        // Before start date
-                                                                        if ($now->diffInDays($start) <= 3) {
-                                                                            $status = 'Starting Soon';
-                                                                        } else {
-                                                                            $status = 'Upcoming';
-                                                                        }
-                                                                    } elseif ($now->between($start, $end)) {
-                                                                        // Active now
-                                                                        if ($now->diffInDays($end) <= 3) {
-                                                                            $status = 'Ending Soon';
-                                                                        } else {
-                                                                            $status = 'Active';
-                                                                        }
-                                                                    } else {
-                                                                        // Past end date
-                                                                        $status = 'Expired';
-                                                                    }
-                                                                @endphp
-
-                                                                <td>
-                                                                    <span style="font-size: 13px; font-weight: normal;" class="badge 
-                                                                        @if($status === 'Active') bg-success
-                                                                        @elseif($status === 'Ending Soon') bg-warning
-                                                                        @elseif($status === 'Starting Soon') bg-info
-                                                                        @elseif($status === 'Upcoming') bg-primary
-                                                                        @else bg-secondary @endif">
-                                                                        {{ $status }}
-                                                                    </span>
-                                                                </td>
 
 
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        {{-- prices history --}}
-                        <div id="prices-content" class="tab-content" role="tabpanel" aria-labelledby="prices-tab">
-                            <div class="profile-mid" >
-                                <div class="authorized-staffs" style="box-shadow: none">
-                                    <p style="margin-bottom: 5px">Prices table</p>
-                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
-                                        <div class="authorized-rep">
-                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                                <thead style="background-color: #f9f9f9;">
-                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                                        <th>#</th>
-                                                        <th>Product</th>
-                                                        <th>Product ID</th>
-                                                        <th>New price</th>
-                                                        <th>Past price</th>
-                                                        <th>Percentage</th>
-                                                        <th>Updated by</th>
-                                                        <th>Updated at</th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($prices as $price)
-                                                        <tr>
-                                                            <td>{{ $loop->iteration }}</td>
-                                                            <td>{{ $price->set->product->name }}</td>
-                                                            <td>{{ $price->set->product->product_id }}</td>
-                                                            <td>₱{{ $price->new_price }}</td>
-                                                            <td>₱{{ $price->past_price }}</td>
-                                                            <td>
-                                                                @php
-                                                                    $new = $price->new_price;
-                                                                    $old = $price->past_price;
-                                                                    $percent = $old > 0 ? round((($new - $old) / $old) * 100, 2) : 0;
-                                                                @endphp
-                                                                {{ $percent }}%
-                                                            </td>
-
-                                                            
-                                                            <td>{{ $price->staff->lastname}}, {{ $price->staff->firstname}} {{ $price->staff->middlename}}</td>
-                                                            <td>{{ \Carbon\Carbon::parse($price->created_at)->format('M d, Y h:i A') }}</td>
-
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
                         {{-- product requirements --}}
                         <div id="product-content" class="tab-content active" role="tabpanel" aria-labelledby="product-tab">
                             <div class="profile-mid" >
@@ -441,21 +298,18 @@
 
 
                                 <div class="authorized-staffs" style="box-shadow: none">
-                                    <p style="margin-bottom: 5px">Price change</p>
+                                    <p style="margin-bottom: 5px">Product price table</p>
                                     <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
                                         <div class="authorized-rep">
-                                            <button  data-bs-toggle="modal" data-bs-target="#add-product-modal" class="btn-transition btn-span" style="width: 100px;     background-color: #f8912a; color: #fff; font-weight: normal;"> <span class="material-symbols-outlined ">add</span>Add new</button>
 
                                             <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
                                                 <thead style="background-color: #f9f9f9;">
                                                     <tr style="background:#f7f7fa; text-align: center; height: 30px">
                                                         <th>#</th>
-                                                        <th>Category</th>
                                                         <th>Name</th>
-                                                        <th>Unit</th>
+                                                        <th>Condition</th>
                                                         <th>Measurement</th>
                                                         <th>Price</th>
-                                                        <th></th>
 
                                                     </tr>
                                                 </thead>
@@ -463,10 +317,15 @@
                                                     @foreach ($productRequirements as $productRequirement)
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $productRequirement->condition }}</td>
                                                         <td>{{ $productRequirement->product->name }}</td>
-                                                        <td>{{ $productRequirement->product->unit }}</td>
-                                                        <td>{{ $productRequirement->product->measurement }}</td>
+                                                        <td  style="color: #666">
+                                                            @if ($productRequirement->condition === 'frozen')
+                                                                <span class="material-symbols-outlined" title="Frozen">mode_cool</span>
+                                                            @elseif ($productRequirement->condition === 'fresh')
+                                                                <span class="material-symbols-outlined" title="Fresh">air</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $productRequirement->product->measurement_type }}</td>
                                                  
                                                         @if ($productRequirement->settings?->sale)
                                                             {{-- Product is on sale --}}
@@ -483,29 +342,10 @@
                                                             @if ($productRequirement->settings && $productRequirement->settings->nego_price !== null)
                                                                 <td>₱{{ number_format($productRequirement->settings->nego_price, 2) }}</td>
                                                             @else
-                                                                <td>₱0.00</td>
+                                                                <td>--</td>
                                                             @endif
-
-
                                                         @endif
 
-
-                                                    
-                                                        <td>
-                                                            <button  
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#edit-row-action" 
-                                                                class="btn-span edit-product-btn"
-                                                                data-set-id="{{ ($productRequirement->settings->set_id) ?? "" }}"
-                                                                data-price="{{ ($productRequirement->settings->nego_price) ?? "" }}"
-                                                                data-name="{{ $productRequirement->product->name }}"
-                                                                data-supplier-id="{{ $productRequirement->supplier_id }}"
-                                                            >
-                                                                <span class="material-symbols-outlined">edit</span>
-                                                            </button>
-
-
-                                                        </td>
                                                     </tr>
                                                     @endforeach
                                                 </tbody>
@@ -610,6 +450,169 @@
 
                             </div>
                         </div>
+
+                        {{-- sale history --}}
+                        <div id="sales-content" class="tab-content" role="tabpanel" aria-labelledby="sales-tab">
+                            <div class="profile-mid" >
+                                <div class="authorized-staffs" style="box-shadow: none">
+                                    <p style="margin-bottom: 5px">Sales table</p>
+                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep">
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Created At</th>
+                                                        <th>Product</th>
+                                                        <th>Sale ID</th>
+                                                        <th>Sale Price</th>
+                                                        <th>Discount (%)</th>
+                                                        <th>Duration (Days)</th>
+                                                        <th>Start Date</th>
+                                                        <th>End Date</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if (!$isThereSalesHistory)
+                                                        <tr>
+                                                            <td colspan="10" style="text-align: center; color: #666;">No sales recorded.</td>
+                                                        </tr>
+                                                    @else
+                                                        @foreach ($salesHistos as $salesHisto)
+                                                            @php
+                                                                $hours = \Carbon\Carbon::parse($salesHisto->start_date)->diffInHours(\Carbon\Carbon::parse($salesHisto->end_date));
+                                                                $days = round($hours / 24, 1);
+                                                                $original = $salesHisto->set->nego_price;
+                                                                $salePrice = $salesHisto->sale_price;
+                                                                $discount = $original > 0 ? round((($original - $salePrice) / $original) * 100) : 0;
+                                                            @endphp
+
+                                                            <tr>
+                                                                <td>{{ $loop->iteration }}</td>
+                                                                <td>{{ \Carbon\Carbon::parse($salesHisto->created_at)->format('M d, Y h:i A') }}</td>
+                                                                <td>{{ $salesHisto->set->product->name }}</td>
+                                                                <td>{{ $salesHisto->set_id }}</td>
+                                                                <td>₱{{ $salesHisto->sale_price }}</td>
+                                                                <td>{{ $discount }}% OFF</td>
+                                                                <td>{{ $days }} day/s sale</td>
+                                                                <td>{{ \Carbon\Carbon::parse($salesHisto->start_date)->format('M d, Y h:i A') }}</td>
+                                                                <td>{{ \Carbon\Carbon::parse($salesHisto->end_date)->format('M d, Y h:i A') }}</td>
+                                                                    @php
+                                                                        $now = \Carbon\Carbon::now();
+                                                                        $start = \Carbon\Carbon::parse($salesHisto->start_date);
+                                                                        $end = \Carbon\Carbon::parse($salesHisto->end_date);
+
+                                                                        if ($now->lt($start)) {
+                                                                            // Before start date
+                                                                            if ($now->diffInDays($start) <= 3) {
+                                                                                $status = 'Starting Soon';
+                                                                            } else {
+                                                                                $status = 'Upcoming';
+                                                                            }
+                                                                        } elseif ($now->between($start, $end)) {
+                                                                            // Active now
+                                                                            if ($now->diffInDays($end) <= 3) {
+                                                                                $status = 'Ending Soon';
+                                                                            } else {
+                                                                                $status = 'Active';
+                                                                            }
+                                                                        } else {
+                                                                            // Past end date
+                                                                            $status = 'Expired';
+                                                                        }
+                                                                    @endphp
+
+                                                                    <td>
+                                                                        <span style="font-size: 13px; font-weight: normal;" class="badge 
+                                                                            @if($status === 'Active') bg-success
+                                                                            @elseif($status === 'Ending Soon') bg-warning
+                                                                            @elseif($status === 'Starting Soon') bg-info
+                                                                            @elseif($status === 'Upcoming') bg-primary
+                                                                            @else bg-secondary @endif">
+                                                                            {{ $status }}
+                                                                        </span>
+                                                                    </td>
+
+
+                                                            </tr>
+                                                        @endforeach
+                                                    @endif
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {{-- prices history --}}
+                        <div id="prices-content" class="tab-content" role="tabpanel" aria-labelledby="prices-tab">
+                            <div class="profile-mid" >
+                                <div class="authorized-staffs" style="box-shadow: none">
+                                    <p style="margin-bottom: 5px">Prices table</p>
+                                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                                        <div class="authorized-rep">
+                                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                                <thead style="background-color: #f9f9f9;">
+                                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                                        <th>#</th>
+                                                        <th>Product</th>
+                                                        <th>Product ID</th>
+                                                        <th>New price</th>
+                                                        <th>Past price</th>
+                                                        <th>Percentage</th>
+                                                        <th>Updated by</th>
+                                                        <th>Updated at</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if ($isTherePriceHistory)
+                                                        @foreach ($prices as $price)
+                                                            
+                                                                <tr>
+                                                                    <td>{{ $loop->iteration }}</td>
+                                                                    <td>{{ $price->set->product->name }}</td>
+                                                                    <td>{{ $price->set->product->product_id }}</td>
+                                                                    <td>₱{{ $price->new_price }}</td>
+                                                                    <td>₱{{ $price->past_price }}</td>
+                                                                    <td>
+                                                                        @php
+                                                                            $new = $price->new_price;
+                                                                            $old = $price->past_price;
+                                                                            $percent = $old > 0 ? round((($new - $old) / $old) * 100, 2) : 0;
+                                                                        @endphp
+                                                                        {{ $percent }}%
+                                                                    </td>
+
+                                                                    <td>{{ $price->staff->lastname}}, {{ $price->staff->firstname}} {{ $price->staff->middlename}}</td>
+                                                                    <td>{{ \Carbon\Carbon::parse($price->created_at)->format('M d, Y h:i A') }}</td>
+
+                                                                </tr>
+                                                                    <td>{{ $price->staff->lastname}}, {{ $price->staff->firstname}} {{ $price->staff->middlename}}</td>
+                                                                    <td>{{ \Carbon\Carbon::parse($price->created_at)->format('M d, Y h:i A') }}</td>
+
+                                                                </tr>
+                                                        @endforeach
+                                                    @else
+                                                        <tr>
+                                                            <td colspan="8" style="text-align: center; color: #666;">No price changes recorded.</td>
+                                                        </tr>
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
 
                         {{-- authorized staffs requirements --}}
                         <div id="staff-content" class="tab-content" role="tabpanel" aria-labelledby="staff-tab">
@@ -743,7 +746,38 @@
                                                     </div>
 
                                                     <div class="card-body p-3">
-                                                        <p class="fw-semibold mb-1" style="font-size: 0.9rem;">{{ $document->type }}</p>
+                                                        @if ($document->type === 'BP')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">Business permit</p>
+                                                        @elseif ($document->type === 'BIR')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">BIR certificate</p>
+                                                        @elseif ($document->type === 'SEC')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">SEC certificate</p>
+                                                        @elseif ($document->type === 'DTI')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">DTI certificate</p>
+                                                        @elseif ($document->type === 'COC')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">COC certificate</p>
+                                                        @elseif ($document->type === 'SSS')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">SSS certificate</p>
+                                                        @elseif ($document->type === 'valid_one')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">Valid I.D (1)</p>
+                                                        @elseif ($document->type === 'valid_two')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">Valid I.D (2)</p>
+                                                        @elseif ($document->type === 'MP')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">Mayor's permit</p>
+                                                        @elseif ($document->type === 'BS')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">Bank statement</p>
+                                                        @elseif ($document->type === 'PB')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">Proof of billing</p>
+                                                        @elseif( $document->type === 'NCC')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">Notarized corporation certificate</p>
+                                                        @elseif( $document->type === 'AIB')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">Articles of incorporation and bylaws</p>
+                                                        @elseif( $document->type === 'OTHERS')
+                                                            <p class="fw-semibold mb-1" style="font-size: 0.9rem;">Other document/s</p>
+                                                        @endif
+
+                                                        {{ $document->type }}
+                                                        
                                                         <small class="text-muted">
                                                             {{ \Carbon\Carbon::parse($document->updated_at)->format('M d, Y') }} <br>
                                                             {{-- Opened {{ \Carbon\Carbon::parse($document->updated_at)->format('g:i A') }} --}}
@@ -864,30 +898,45 @@
 
                                 </div>
 
-                                <div class="authorized-staffs" >
-                                    <p style="margin-bottom: 5px">Business & contacts</p>
-                                    <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px; ">
-                                        <div class="questions-list">
-                                            <p>
-                                                <span style="color:#666">How long have you been in the industry? </span>
-                                                <span>{{$business->years}}</span>
-                                            </p>
-                                            <p>
-                                                <span style="color:#666">Referred by</span>
-                                                <span>{{$business->referred_by}}</span>
-                                            </p>
-                                            <p>
-                                                <span style="color:#666">Contacted by</span>
-                                                <span>{{$business->contacted_by}}</span>
-                                            </p>
-                           
-                                    
-                                        </div>
+                                @if ($business)
+                                    <div class="authorized-staffs" >
+                                        <p style="margin-bottom: 5px">Business & contacts</p>
+                                        <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px; ">
+                                            <div class="questions-list">
+                                                <p>
+                                                    <span style="color:#666">How long have you been in the industry? </span>
+                                                    @if($business->years !== NULL)
+                                                        <span>{{$business->years}} </span>
+                                                    @else
+                                                        <span>--</span>
+                                                    @endif
+                                                </p>
+                                                <p>
+                                                    <span style="color:#666">Referred by</span>
+                                                    @if($business->referred_by !== NULL)
+                                                        <span>{{$business->referred_by}}</span>
+                                                    @else
+                                                        <span>--</span>
+                                                    @endif
+                                                </p>
+                                                <p>
+                                                    <span style="color:#666">Contacted by</span>
+                                                    @if($business->contacted_by !== NULL)
+                                                        <span>{{$business->contacted_by}}</span>
+                                                    @else
+                                                        <span>--</span>
+                                                    @endif
+                                                </p>
 
-                                    </di>
+
+                                            </div>
+
+                                        </di>
 
 
-                                </div>
+                                    </div>
+                                @endif
+
 
                                 <div class="authorized-staffs" >
                                     <p style="margin-bottom: 5px">Valid ID</p>

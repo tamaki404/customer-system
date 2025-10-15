@@ -31,7 +31,7 @@ class ProfileController extends Controller
             $staffAgent = Staffs::where('staff_id', $accStatus->staff_id)->first();
             $documents  = Documents::where('supplier_id', $supplier->supplier_id)->get();
             $products   = Products::where('status', 'Listed')->get();
-            $productRequirements   = ProductSetting::where('supplier_id', $supplier->supplier_id)->get();
+            $productRequirements   = ProductRequirements::where('supplier_id', $supplier->supplier_id)->get();
             $salesHistos   = ProductSales::where('supplier_id', $supplier->supplier_id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -46,10 +46,14 @@ class ProfileController extends Controller
             $account_status = AccountStatus::where('supplier_id', $supplier->supplier_id)->first();
             $business   = Business::where('supplier_id', $supplier->supplier_id)->first();
 
+            $isTherePriceHistory = PriceHistory::where('supplier_id', $supplier->supplier_id)->exists();
+            $isThereSalesHistory = ProductSales::where('supplier_id', $supplier->supplier_id)->exists();
 
             return view('profile.profile', [
                 'user' => $user,
                 'supplier' => $supplier,
+                'isTherePriceHistory' => $isTherePriceHistory,
+                'isThereSalesHistory' => $isThereSalesHistory,
                 'address' => $address,
                 'staffAgent' => $staffAgent,
                 'documents' => $documents,
