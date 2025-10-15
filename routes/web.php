@@ -70,25 +70,35 @@ Route::post('/check-email', [UserController::class, 'checkEmail'])->name('check.
 Route::get('/email/verify/notice', fn () => view('verification.notice'))->name('verification.notice');
 Route::get('/email/verify', [UserController::class, 'verifyEmail'])->name('verification.verify');
 
-/*
-|--------------------------------------------------------------------------
-| Dashboard (with Representative Permission Check)
-|--------------------------------------------------------------------------
-*/
-Route::get('/dashboard/view', [DashboardController::class, 'dashboardView'])
-    ->middleware(['auth', 'check.rep.permission:Dashboard'])
-    ->name('dashboard.view');
-
-Route::get('/dashboard/layout', [DashboardController::class, 'layoutView'])
-    ->middleware('auth')
-    ->name('dashboard.layout');
 
 /*
 |--------------------------------------------------------------------------
 | Supplier & Shared Routes (Supplier, Admin, Staff)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
+
+    Route::get('/locked', function () {
+        return view('lock.locked'); 
+    })->name('locked.page');
+
+Route::middleware(['auth', 'role:Supplier|Admin|Staff', 'check.supplier'])->group(function () {
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dashboard (with Representative Permission Check)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/dashboard/view', [DashboardController::class, 'dashboardView'])
+        ->middleware(['auth', 'check.rep.permission:Dashboard'])
+        ->name('dashboard.view');
+
+    Route::get('/dashboard/layout', [DashboardController::class, 'layoutView'])
+        ->middleware('auth')
+        ->name('dashboard.layout');
+
 
     /*
     |-------------------------

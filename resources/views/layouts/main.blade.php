@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="{{ asset('css/layout/modal.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/btn-hover.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/error-message.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/locked-tabs.css') }}">
 
      @stack('styles')
 
@@ -225,25 +226,31 @@
                             <div class="nav-group-title">Credits & Receipts</div>
 
 
-                            @if (Auth()->user()->)
-                            
-                            @endif
-                            {{-- Credits --}}
-                            @if(!empty($permissions['Credits']) && $permissions['Credits'])
-                                <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
-                                    <span class="material-symbols-outlined">credit_card</span>
-                                    <p>Credits</p>
-                                    <div class="nav-indicator"></div>
-                                </a>
-                            @endif
+                            @if (Auth()->user()->role === 'Supplier' &&  !empty($user->acc_status->staff_id))
+                                {{-- Credits --}}
+                                @if(!empty($permissions['Credits']) && $permissions['Credits'])
+                                    <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
+                                        <span class="material-symbols-outlined">credit_card</span>
+                                        <p>Credits</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                @endif
 
-                            {{-- Proof of Payments --}}
-                            @if(!empty($permissions['POP']) && $permissions['POP'])
-                                <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
-                                    <span class="material-symbols-outlined">receipt</span>
-                                    <p>Proof of payments</p>
-                                    <div class="nav-indicator"></div>
-                                </a>
+                                {{-- Proof of Payments --}}
+                                @if(!empty($permissions['POP']) && $permissions['POP'])
+                                    <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
+                                        <span class="material-symbols-outlined">receipt</span>
+                                        <p>Proof of payments</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                @endif
+                            @else
+                                <div class="locked">
+                                    <p title="Please wait for a staff member to set it up.">
+                                        <span class="material-symbols-outlined">lock</span>
+                                        <span>This is currently locked. Hover for more info </span>
+                                    </p>
+                                </div>
                             @endif
 
                         </div>
