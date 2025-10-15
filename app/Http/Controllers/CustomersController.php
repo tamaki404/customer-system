@@ -70,8 +70,6 @@ class CustomersController extends Controller
                                 ->get();
             $delivery = DeliveryRequirements::where('supplier_id', $supplier->supplier_id)->first();
 
-
-
             $address = Address::where('supplier_id', $supplier->supplier_id)->first();
             $ceilingPrice = GlobalCeiling::whereRaw('LOWER(city_selected) = ?', [strtolower($address->office_city)])->first();
 

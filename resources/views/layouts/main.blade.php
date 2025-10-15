@@ -224,6 +224,10 @@
                         <div class="nav-group">
                             <div class="nav-group-title">Credits & Receipts</div>
 
+
+                            @if (Auth()->user()->)
+                            
+                            @endif
                             {{-- Credits --}}
                             @if(!empty($permissions['Credits']) && $permissions['Credits'])
                                 <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
@@ -241,6 +245,7 @@
                                     <div class="nav-indicator"></div>
                                 </a>
                             @endif
+
                         </div>
 
                         <div class="nav-group">
@@ -273,6 +278,7 @@
                                 </a>
                             @endif
                         </div>
+
                     </div>
 
                 @endif

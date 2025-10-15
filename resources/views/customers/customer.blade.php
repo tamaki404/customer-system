@@ -563,7 +563,12 @@
                                 waiting for supplier to modify their request
                             </div>
                         @elseif ($accStatus->account_status === 'Pending')
-                            <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
+                            <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">
+                                <span class="material-symbols-outlined">
+                                    approval_delegation
+                                </span>
+                                File an action
+                            </button>
 
                         @elseif ($accStatus->account_status === 'Accepted')
                             <div>
