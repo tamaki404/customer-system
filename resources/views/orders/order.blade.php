@@ -167,7 +167,8 @@
 
                     @foreach($items as $item)
                         @php
-                            $days = count($order->supplier->delivery->delivery_days);
+                            $deliveryDays = $order->supplier->delivery->delivery_days ?? [];
+                            $days = is_countable($deliveryDays) ? count($deliveryDays) : 0;
 
                             if ($item->product->measurement_type === 'Kilos') {
                                 $total_kilos = $item->placed_kilos;
@@ -182,6 +183,7 @@
                                 $per_day_kilos = $days > 0 ? round($total_kilos / $days, 2) : $total_kilos;
                             }
                         @endphp
+
 
 
 
@@ -282,7 +284,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($order->supplier->delivery->delivery_days as $day)
+                                    @foreach(optional(optional($order->supplier)->delivery)->delivery_days ?? [] as $day)
+                                    
                                         <tr>
                                             <td>{{ $day }}</td>
 

@@ -27,7 +27,9 @@ class Delivery extends Model
 
     protected $casts = [
         'delivery_date' => 'datetime',
+        'delivery_days' => 'array',
     ];
+
 
 
     public function order()
