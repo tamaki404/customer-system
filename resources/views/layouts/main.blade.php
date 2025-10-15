@@ -258,32 +258,45 @@
                         <div class="nav-group">
                             <div class="nav-group-title">Orders & Inventory</div>
 
-                            {{-- Purchase Orders --}}
-                            @if(!empty($permissions['PO']) && $permissions['PO'])
-                                <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
-                                    <span class="material-symbols-outlined">shopping_bag</span>
-                                    <p>Purchase orders</p>
-                                    <div class="nav-indicator"></div>
-                                </a>
+
+                            @if (Auth()->user()->role === 'Supplier' &&  !empty($user->acc_status->staff_id))
+                                {{-- Purchase Orders --}}
+                                @if(!empty($permissions['PO']) && $permissions['PO'])
+                                    <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
+                                        <span class="material-symbols-outlined">shopping_bag</span>
+                                        <p>Purchase orders</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                @endif
+
+                                {{-- Orders --}}
+                                @if(!empty($permissions['Orders']) && $permissions['Orders'])
+                                    <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
+                                        <span class="material-symbols-outlined">receipt_long</span>
+                                        <p>Orders</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                @endif
+
+                                {{-- Products --}}
+                                @if(!empty($permissions['Products']) && $permissions['Products'])
+                                    <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
+                                        <span class="material-symbols-outlined">store</span>
+                                        <p>Products</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                @endif
+                            @else
+                                <div class="locked">
+                                    <p title="Please wait for a staff member to set it up.">
+                                        <span class="material-symbols-outlined">lock</span>
+                                        <span>This is currently locked. Hover for more info </span>
+                                    </p>
+                                </div>
                             @endif
 
-                            {{-- Orders --}}
-                            @if(!empty($permissions['Orders']) && $permissions['Orders'])
-                                <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
-                                    <span class="material-symbols-outlined">receipt_long</span>
-                                    <p>Orders</p>
-                                    <div class="nav-indicator"></div>
-                                </a>
-                            @endif
 
-                            {{-- Products --}}
-                            @if(!empty($permissions['Products']) && $permissions['Products'])
-                                <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
-                                    <span class="material-symbols-outlined">store</span>
-                                    <p>Products</p>
-                                    <div class="nav-indicator"></div>
-                                </a>
-                            @endif
+
                         </div>
 
                     </div>

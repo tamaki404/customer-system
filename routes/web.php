@@ -77,15 +77,53 @@ Route::get('/email/verify', [UserController::class, 'verifyEmail'])->name('verif
 |--------------------------------------------------------------------------
 */
 
-    Route::get('/locked', function () {
-        return view('lock.locked'); 
-    })->name('locked.page');
+Route::get('/locked', function () {
+    return view('lock.locked'); 
+})->name('locked.page');
 
-Route::middleware(['auth', 'role:Supplier|Admin|Staff', 'check.supplier'])->group(function () {
+Route::middleware(['auth', 'role:Supplier', 'check.supplier'])->group(function () {
+    Route::get('/products/list', [ProductController::class, 'productList'])
+        ->middleware('check.rep.permission:Products')
+        ->name('products.list');
+    Route::get('/products/product/view/{product_id}', [ProductController::class, 'productView'])->name('products.product');
+    Route::get('/products/{product_id}/info', [ProductController::class, 'info'])->name('products.info');
+    Route::get('/orders/list', [OrderController::class, 'orderList'])
+        ->middleware('check.rep.permission:Orders')
+        ->name('orders.list');
+
+    Route::get('/receipts/list', [ReceiptController::class, 'receiptList'])
+        ->middleware('check.rep.permission:POP')
+        ->name('receipts.list');
+
+    Route::get('/credits/list', [CreditsController::class, 'creditsList'])
+        ->middleware('check.rep.permission:Credits')
+        ->name('credits.list');
+
+    Route::get('/receipts/list/receipt/{receipt_id}', [ReceiptController::class, 'receiptView'])->name('receipts.receipt');
+
+
+    /*
+    |-------------------------
+    | Supplier-only (Creating orders / POs)
+    |-------------------------
+    */
+    Route::post('/orders/order/create', [OrderController::class, 'createOrder'])->middleware('check.rep.permission:Order')->name('order.create');
+
+    Route::get('/purchase-orders/list', [PurchaseOrderController::class, 'purchaseOrderList'])
+        ->middleware('check.rep.permission:PO')
+        ->name('purchaseorders.list');
+
+    Route::post('/purchase-orders/create', [PurchaseOrderController::class, 'createPurchaseOrder'])->middleware('check.rep.permission:PO')->name('purchaseorders.create');
+    Route::post('/receipts/create', [ReceiptController::class, 'receiptUpload'])->middleware('check.rep.permission:POP')->name('receipt.create');
+
+    Route::get('/purchase-orders/list/view/{po_id}', [PurchaseOrderController::class, 'purchaseOrderView'])->middleware('check.rep.permission:PO')->name('purchaseorders.purchaseorder');
+    Route::get('/orders/list/view/{order_id}', [OrderController::class, 'orderView'])->middleware('check.rep.permission:Orders')->name('orders.order');
 
 
 
+});
 
+Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     /*
     |--------------------------------------------------------------------------
     | Dashboard (with Representative Permission Check)
@@ -106,9 +144,12 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff', 'check.supplier'])->grou
     |-------------------------
     */
     Route::get('/products/list', [ProductController::class, 'productList'])
-        ->middleware('check.rep.permission:Products')
+        ->middleware(['check.rep.permission:Products', 'check.supplier'])
         ->name('products.list');
-    Route::get('/products/product/view/{product_id}', [ProductController::class, 'productView'])->name('products.product');
+
+    Route::get('/products/product/view/{product_id}', [ProductController::class, 'productView'])
+        ->middleware(['check.rep.permission:Products', 'check.supplier'])
+        ->name('products.product');
     Route::get('/products/{product_id}/info', [ProductController::class, 'info'])->name('products.info');
 
     Route::get('/categories/tree', [CategoryController::class, 'tree'])->name('categories.tree');
@@ -122,35 +163,20 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff', 'check.supplier'])->grou
     |-------------------------
     */
     Route::get('/orders/list', [OrderController::class, 'orderList'])
-        ->middleware('check.rep.permission:Orders')
+        ->middleware(['check.rep.permission:Orders', 'check.supplier'])
         ->name('orders.list');
 
     Route::get('/receipts/list', [ReceiptController::class, 'receiptList'])
-        ->middleware('check.rep.permission:POP')
+        ->middleware(['check.rep.permission:POP', 'check.supplier'])
         ->name('receipts.list');
 
     Route::get('/credits/list', [CreditsController::class, 'creditsList'])
-        ->middleware('check.rep.permission:Credits')
+        ->middleware(['check.rep.permission:Credits', 'check.supplier'])
         ->name('credits.list');
 
-    Route::get('/receipts/list/receipt/{receipt_id}', [ReceiptController::class, 'receiptView'])->name('receipts.receipt');
-
-    /*
-    |-------------------------
-    | Supplier-only (Creating orders / POs)
-    |-------------------------
-    */
-    Route::post('/orders/order/create', [OrderController::class, 'createOrder'])->middleware('check.rep.permission:Order')->name('order.create');
-
-    Route::get('/purchase-orders/list', [PurchaseOrderController::class, 'purchaseOrderList'])
-        ->middleware('check.rep.permission:PO')
-        ->name('purchaseorders.list');
-
-    Route::post('/purchase-orders/create', [PurchaseOrderController::class, 'createPurchaseOrder'])->middleware('check.rep.permission:PO')->name('purchaseorders.create');
-    Route::post('/receipts/create', [ReceiptController::class, 'receiptUpload'])->middleware('check.rep.permission:POP')->name('receipt.create');
-
-    Route::get('/purchase-orders/list/view/{po_id}', [PurchaseOrderController::class, 'purchaseOrderView'])->middleware('check.rep.permission:PO')->name('purchaseorders.purchaseorder');
-    Route::get('/orders/list/view/{order_id}', [OrderController::class, 'orderView'])->middleware('check.rep.permission:Orders')->name('orders.order');
+    Route::get('/receipts/list/receipt/{receipt_id}', [ReceiptController::class, 'receiptView'])
+        ->middleware(['check.rep.permission:POP', 'check.supplier'])
+        ->name('receipts.receipt');
 
     /*
     |-------------------------
@@ -163,6 +189,8 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff', 'check.supplier'])->grou
 
     Route::get('/groups/view', [GroupsController::class, 'groupsView'])->middleware('check.rep.permission:Groups')->name('groups.view');
     Route::post('/groups/modify/account', [GroupsController::class, 'modifyAccount'])->middleware('check.rep.permission:Groups')->name('group.modify');
+
+
 
     /*
     |-------------------------
