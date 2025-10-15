@@ -27,28 +27,42 @@ public function dashboardView(Request $request)
     if ($user->role === 'Supplier') {
         $credit = Credits::where('user_id', $user->user_id)->first();
 
-        $usedCredit = Orders::where('supplier_id', $supplier->supplier_id)
-            ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
-            ->selectRaw('
-                SUM(
-                    orders.total_amount - COALESCE(
-                        (SELECT SUM(r.total_amount) 
-                        FROM receipts r 
-                        WHERE r.order_id = orders.order_id 
-                        AND r.status = "Verified"), 0
-                    )
-                ) as outstanding_balance
-            ')
-            ->value('outstanding_balance') ?? 0; 
 
         $totalOrders = Orders::where('supplier_id', $supplier->supplier_id)->count();
         $pendingOrders = Orders::where('supplier_id', $supplier->supplier_id)
             ->where('status', 'Pending')
             ->count();
+
+
+
+        // new
+
+
+        $credit = Credits::where('user_id', $user->user_id)->first();
+        $remainingBalance = Orders::where('supplier_id', $supplier->supplier_id)
+            ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
+            ->selectRaw('
+                SUM(
+                    COALESCE(
+                        (SELECT SUM(r.total_amount) 
+                        FROM receipts r 
+                        WHERE r.order_id = orders.order_id 
+                        AND r.status = "Verified"), 0
+                    )
+                ) as paid_total
+            ')
+            ->value('paid_total') ?? 0;
+
+        $purchasesCount = Orders::where('supplier_id', $supplier->supplier_id)->count();
         $totalReceipts = Receipts::where('supplier_id', $supplier->supplier_id)->count();
+
+
+
+
 
     } elseif ($user->role === 'Staff' || $user->role === 'Admin') {
         $totalOrders = Orders::count();
+        
         $pendingOrders = Orders::where('status', 'Pending')->count();
         $totalReceipts = Receipts::count();
 
@@ -58,6 +72,8 @@ public function dashboardView(Request $request)
     return view('dashboard', [
         'user' => $user,
         'supplier' => $supplier,
+        'purchasesCount' => $purchasesCount ?? 0,
+        'remainingBalance' => $remainingBalance ?? 0,
         'documentCount' => $documentCount,
         'usedCredit' => $usedCredit,
         'totalOrders' => $totalOrders,

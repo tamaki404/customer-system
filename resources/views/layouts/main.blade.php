@@ -60,7 +60,7 @@
                                             $fullName = implode(' ', array_filter($nameParts));
                                         @endphp
 
-                                        <p style="color: #666">{{ $fullName }}  ({{ $rep->auth_position }})</p>
+                                        <p style="color: #666">{{ $fullName }}  </p>
                                     @endauth
 
 

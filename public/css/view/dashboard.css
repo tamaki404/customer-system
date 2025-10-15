@@ -1,0 +1,72 @@
+.heading{
+    display: flex;
+    flex-direction: row;
+}
+.heading span{
+    font-weight: bold;
+    font-size: 30px;
+}
+.title-row{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    justify-content: space-evenly;
+}
+.title-row .sub-heading{
+    font-size: 18px;
+    color: #666;
+}
+
+.content-body{
+ padding: 10px; 
+ border: none; 
+ height: auto; 
+ display: flex; 
+ flex-direction: row; 
+ gap: 5px;
+}
+.content-body .card{ 
+    background-color: #fff; 
+    border-radius: 10px; 
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: start; 
+    align-items: start;
+    height: 130px;
+    padding: 20px;
+    border: none;
+    width: 300px;
+
+}
+.user-dash .card p{
+    margin: 0;
+    color: #333;
+}
+.user-dash .card .card-head{
+    display: flex;
+    flex-direction: row;
+    font-size: 14px;
+    color: #666;
+    width: 100%;
+}
+.card-head span{
+    margin-left: auto;
+}
+.card p.card-head .icon{
+    font-size: 25px;
+    color: #444;
+}
+
+.card .item{
+    font-size: 2em;
+    color: #333;
+    font-weight: bold;
+    margin-right: auto;
+}
+.card p .data{
+    font-weight: bold;
+}
+.card-head span{
+    font-size: 14px;
+}

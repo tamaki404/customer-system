@@ -109,15 +109,11 @@ Route::middleware(['auth', 'role:Supplier', 'check.supplier'])->group(function (
     */
     Route::post('/orders/order/create', [OrderController::class, 'createOrder'])->middleware('check.rep.permission:Order')->name('order.create');
 
-    Route::get('/purchase-orders/list', [PurchaseOrderController::class, 'purchaseOrderList'])
-        ->middleware('check.rep.permission:PO')
-        ->name('purchaseorders.list');
+
 
     Route::post('/purchase-orders/create', [PurchaseOrderController::class, 'createPurchaseOrder'])->middleware('check.rep.permission:PO')->name('purchaseorders.create');
     Route::post('/receipts/create', [ReceiptController::class, 'receiptUpload'])->middleware('check.rep.permission:POP')->name('receipt.create');
 
-    Route::get('/purchase-orders/list/view/{po_id}', [PurchaseOrderController::class, 'purchaseOrderView'])->middleware('check.rep.permission:PO')->name('purchaseorders.purchaseorder');
-    Route::get('/orders/list/view/{order_id}', [OrderController::class, 'orderView'])->middleware('check.rep.permission:Orders')->name('orders.order');
 
 
 
@@ -143,6 +139,15 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     | Products & Categories
     |-------------------------
     */
+    Route::get('/purchase-orders/list', [PurchaseOrderController::class, 'purchaseOrderList'])
+        ->middleware('check.rep.permission:PO')
+        ->name('purchaseorders.list');
+    Route::get('/purchase-orders/list/view/{po_id}', [PurchaseOrderController::class, 'purchaseOrderView'])->middleware('check.rep.permission:PO')->name('purchaseorders.purchaseorder');
+    Route::get('/orders/list/view/{order_id}', [OrderController::class, 'orderView'])->middleware('check.rep.permission:Orders')->name('orders.order');
+
+
+
+
     Route::get('/products/list', [ProductController::class, 'productList'])
         ->middleware(['check.rep.permission:Products', 'check.supplier'])
         ->name('products.list');
