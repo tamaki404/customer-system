@@ -97,8 +97,18 @@
                                         <span class="title">Dashboard</span><br>
                                         <span class="desc"><i>Can see overall statistics</i></span>
                                     </td>
-                                    <td><input type="checkbox" id="rep-perm-input" value="Dashboard" name="Dashboard"></td>
+                                    <td>
+                                        <input 
+                                            type="checkbox" 
+                                            id="rep-perm-input" 
+                                            value="Dashboard" 
+                                            name="Dashboard" 
+                                            checked 
+                                            disabled
+                                        >
+                                    </td>
                                 </tr>
+
                                 <tr>
                                     <td>
                                         <span class="title">Profile</span><br>
@@ -201,6 +211,26 @@
                                         <td>
                                             @if ($rep->auth_position !== "Admin")
                                                 @php
+                                                    // Check if $rep->permissions is already an array
+                                                    $permissions = is_array($rep->permissions) 
+                                                        ? $rep->permissions 
+                                                        : json_decode($rep->permissions, true);
+                                                @endphp
+
+                                                @if (!empty($permissions) && is_array($permissions))
+                                                    {{ implode(', ', array_keys(array_filter($permissions))) }}
+                                                @else
+                                                    <i style="color: #666">No permissions assigned</i>
+                                                @endif
+
+                                            @elseif ($rep->auth_position === "Admin")
+                                                All
+                                            @endif
+
+                                            {{--  --}}                              
+{{-- 
+                                            @if ($rep->auth_position !== "Admin")
+                                                @php
                                                     $permissions = json_decode($rep->permissions, true);
                                                 @endphp
 
@@ -213,7 +243,7 @@
 
                                             @elseif ($rep->auth_position === "Admin")
                                                 All
-                                            @endif
+                                            @endif --}}
 
                                         </td>
                                         @if ($rep->auth_position !== "Admin")

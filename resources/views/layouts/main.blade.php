@@ -212,6 +212,13 @@
                                     <div class="nav-indicator"></div>
                                 </a>
                             @endif
+                            @if(!empty($permissions['Groups']) && $permissions['Groups'])
+                                <a class="nav-item{{ $currentRoute == 'groups.view' ? ' active' : '' }}" href="{{ route('groups.view') }}">
+                                    <span class="material-symbols-outlined">group</span>
+                                    <p>Groups</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
+                            @endif
                         </div>
 
                         <div class="nav-group">

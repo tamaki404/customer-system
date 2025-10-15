@@ -151,8 +151,8 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
         ->middleware('check.rep.permission:Profile')
         ->name('profile.view');
 
-    Route::get('/groups/view', [GroupsController::class, 'groupsView'])->middleware('check.rep.permission:Profile')->name('groups.view');
-    Route::post('/groups/modify/account', [GroupsController::class, 'modifyAccount'])->middleware('check.rep.permission:Profile')->name('group.modify');
+    Route::get('/groups/view', [GroupsController::class, 'groupsView'])->middleware('check.rep.permission:Groups')->name('groups.view');
+    Route::post('/groups/modify/account', [GroupsController::class, 'modifyAccount'])->middleware('check.rep.permission:Groups')->name('group.modify');
 
     /*
     |-------------------------

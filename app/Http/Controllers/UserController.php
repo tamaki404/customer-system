@@ -386,17 +386,7 @@ public function registerSupplier(Request $request)
             ]);
 
             // Create Representative
-            // $representative = Representatives::create([
-            //     'user_id' => $user_id,
-            //     'supplier_id' => $supplier_id,
 
-            //     'rep_lastname' => $request->rep_lastname,
-            //     'rep_firstname' => $request->rep_firstname,
-            //     'rep_middlename' => $request->rep_middlename,
-            //     'auth_position' => $request->auth_position,
-            //     'rep_contact' => $request->rep_contact,
-            //     'is_primary' => true,
-            // ]);
             $repLastnames = $request->input('rep_lastname', []);
             $repFirstnames = $request->input('rep_firstname', []);
             $repMiddlenames = $request->input('rep_middlename', []);
@@ -404,33 +394,36 @@ public function registerSupplier(Request $request)
             $repContacts = $request->input('rep_contact', []);
 
             foreach ($repLastnames as $index => $lastname) {
+                // Default permissions (empty or limited)
+                $permissions = [];
+
+                // If the auth position is Admin, assign full permissions
+                if ($authPositions[$index] === 'Admin') {
+                    $permissions = [
+                        'Dashboard' => true,
+                        'Profile'   => true,
+                        'Credits'   => true,
+                        'POP'       => true,
+                        'PO'        => true,
+                        'Orders'    => true,
+                        'Products'  => true,
+                        'Groups'    => true,
+                    ];
+                }
+
                 Representatives::create([
-                    'user_id' => $user_id,
-                    'supplier_id' => $supplier_id,
-                    'rep_id' => $rep_id,
-                    'rep_lastname' => $lastname,
-                    'rep_firstname' => $repFirstnames[$index] ?? '',
+                    'user_id'        => $user_id,
+                    'supplier_id'    => $supplier_id,
+                    'rep_id'         => $rep_id,
+                    'rep_lastname'   => $lastname,
+                    'rep_firstname'  => $repFirstnames[$index] ?? '',
                     'rep_middlename' => $repMiddlenames[$index] ?? null,
-                    'auth_position' => $authPositions[$index] ?? '',
-                    'rep_contact' => $repContacts[$index] ?? '',
+                    'auth_position'  => $authPositions[$index] ?? '',
+                    'rep_contact'    => $repContacts[$index] ?? '',
+                    'permissions'    => json_encode($permissions), 
                 ]);
             }
 
-            // Create Signatory
-            // $signatory = Signatories::create([
-            //     'user_id' => $user_id,
-            //     'supplier_id' => $supplier_id,
-
-            //     'sign_lastname' => $request->sign_lastname,
-            //     'sign_firstname' => $request->sign_firstname,
-            //     'sign_middlename' => $request->sign_middlename,
-            //     'sign_position' => $request->sign_position,
-            //     'signature_image' => $eSignatureBinary,
-            //     'signature_image_mime_type' => $eSignatureMime,
-            //     'signature_image_filename' => $eSignatureName,
-            //     'signature_image_size' => $eSignatureSize,
-            //     'is_primary' => true,
-            // ]);
 
             // Create Signatories (loop through all)
             $signLastnames = $request->input('sign_lastname', []);
