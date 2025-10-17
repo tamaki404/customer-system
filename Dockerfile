@@ -21,13 +21,18 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Permissions for storage and cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# ✅ Set Apache DocumentRoot to public/
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
-# Enable .htaccess
+# ✅ Allow .htaccess overrides
 RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
-# Expose port
+# ✅ Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Expose port 80
 EXPOSE 80
 
+# Start Apache
 CMD ["apache2-foreground"]
