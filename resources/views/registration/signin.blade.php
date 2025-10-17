@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" href="{{ asset('css/registration/signin.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('css/registration/signin.css') }}">
     <title>Login</title>
 </head>
 <body>
@@ -22,7 +21,7 @@
         </div>
         <div class="right">
             <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image">
-            <h1>Welcome👋!</h1>
+            <h1>Welcome👋!!</h1>
             <p class="kindly-mess">Please log in to your account below</p>
 
             <form action="{{ route('account.signin') }}" method="POST" class="loginForm" autocomplete="off">
