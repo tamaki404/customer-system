@@ -14,6 +14,7 @@ class ProductSales extends Model
         'sale_price',
         'start_date',
         'end_date',
+        'action_by'
     ];
 
     public function set()

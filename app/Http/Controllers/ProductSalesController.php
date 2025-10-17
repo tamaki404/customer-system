@@ -18,26 +18,17 @@ class ProductSalesController extends Controller
     {
         $user = Auth::user();
         $request->validate([
-            'method_select' => 'required|in:Fixed,Percentage',
-            'city_selected' => 'required|string',
+            'supplier_id' => 'required|exists:suppliers,supplier_id',
+            'set_id' => 'required|exists:product_settings,set_id',        
+            'sale_price' => 'required|numeric|min:0',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'staff_id' => 'required|integer',
-            'fixed_price' => 'required_if:method_select,Fixed|nullable|numeric|min:0',
-            'percentage_ceiling' => 'required_if:method_select,Percentage|nullable|numeric|min:0|max:100',
         ]);
-
-
-        $product = ProductSetting::where('set_id', $request->set_id)->firstOrFail();
-
 
 
         $date = date('Ymd');
         $log_id = 'LOG-' . $date . '-' . strtoupper(Str::random(5));
         $sale_id = 'SALE-' . $date . '-' . strtoupper(Str::random(5));
-        $price = 'PRICE-' . $date . '-' . strtoupper(Str::random(5));
-
-        $description = '';
 
         //  1: product sales
         $sale = ProductSales::create([
@@ -51,22 +42,11 @@ class ProductSalesController extends Controller
             'action_by' => $user->user_id
         ]);
         
-        //  2: price history
-        // PriceHistory::create([
-        //     'phistory_id'     => $price,
-        //     'supplier_id'      => $request->supplier_id,
-        //     'action' => 'Sale',
-        //     'sale_id' => $sale_id,
-        //     'set_id'      => $request->set_id,
-        //     'new_price' => $request->sale_price,
-        //     'past_price' => $product->nego_price,
-        //     'action_by' => $user->user_id,
-        // ]);
 
         //  3: price history
         Logs::create([
             'user_id'     => $user->user_id,
-            'action'      => 'Created promo',
+            'action'      => 'Created sale promo',
             'log_id'      => $log_id,
             'description' => " Staff ($user->user_id)
                 created promo for ($request->supplier_id)' ($request->set_id). sale price 
@@ -75,6 +55,6 @@ class ProductSalesController extends Controller
             'entity_id'   => $sale->id,
         ]);
 
-        return back()->with('success', 'Product requirement updated successfully.');
+        return back()->with('success', 'Product sale created successfully.');
     }
 }

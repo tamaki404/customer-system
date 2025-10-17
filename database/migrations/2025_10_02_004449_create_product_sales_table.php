@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('sale_price', 10, 2);
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
+            $table->string('action_by')->nullable();
             $table->timestamps();
         });
     }

@@ -306,7 +306,18 @@
                                     </td>
                                     <td style="text-align: center;">
                                         @php
-                                            $oldTotal = $item->original_price * $item->supplier_quantity;
+                                            if($item->product->measurement_type === "Kilos") {
+                                                $quantity = $item->placed_kilos;
+                                            } elseif($item->product->measurement_type === "Heads") {
+                                                $quantity = $item->placed_heads;
+                                            } elseif($item->product->measurement_type === "Heads&Kilos") {
+                                                $quantity = $item->placed_kilos; 
+                                            } else {
+                                                $quantity = 0;
+                                            }
+
+
+                                            $oldTotal = $item->original_price * $quantity;
                                             $newTotal = $item->total_price;
                                         @endphp
 
