@@ -728,6 +728,9 @@
                             <button class="tab-button" data-tab="documents" role="tab" aria-selected="false" aria-controls="documents-content" id="documents-tab">
                             Documents
                             </button>
+                            <button class="tab-button" data-tab="prices" role="tab" aria-selected="true" aria-controls="prices-content" id="prices-tab">
+                            Credits
+                            </button>
                         </div>
 
                         {{-- sale history --}}
@@ -945,9 +948,8 @@
                                                 <thead style="background-color: #f9f9f9;">
                                                     <tr style="background:#f7f7fa; text-align: center; height: 30px">
                                                         <th>#</th>
-                                                        <th>Category</th>
+                                                        <th>Condition</th>
                                                         <th>Name</th>
-                                                        <th>Unit</th>
                                                         <th>Measurement</th>
                                                         <th>Price</th>
                                                         <th></th>
@@ -958,10 +960,16 @@
                                                     @foreach ($productRequirements as $productRequirement)
                                                     <tr>
                                                         <td>{{ $loop->iteration }}</td>
-                                                        <td>{{ $productRequirement->condition }}</td>
+                                                        <td>
+                                                            @if($productRequirement->condition === 'frozen')
+                                                                <span style="color: #888" class="material-symbols-outlined" title="Frozen">mode_cool</span>
+                                                            @elseif($productRequirement->condition === 'fresh')
+                                                                <span style="color: #888" class="material-symbols-outlined" title="Fresh">air</span>
+                                                            @endif
+
+                                                        </td>
                                                         <td>{{ $productRequirement->product->name }}</td>
-                                                        <td>{{ $productRequirement->product->unit }}</td>
-                                                        <td>{{ $productRequirement->product->measurement }}</td>
+                                                        <td>{{ $productRequirement->product->measurement_type }}</td>
                                                  
                                                         @if ($productRequirement->settings?->sale)
                                                             {{-- Product is on sale --}}
@@ -976,7 +984,9 @@
                                                         @else
                                                             {{-- Normal price --}}
                                                             @if ($productRequirement->settings && $productRequirement->settings->nego_price !== null)
-                                                                <td>₱{{ number_format($productRequirement->settings->nego_price, 2) }}</td>
+
+                                                                <td>₱{{ number_format($productRequirement->settings->nego_price ?? 0, 2) }}</td>
+
                                                             @else
                                                                 <td>₱0.00</td>
                                                             @endif
@@ -985,7 +995,7 @@
                                                         @endif
 
 
-                                                    
+                                                    </td>
                                                         <td>
                                                             <button  
                                                                 data-bs-toggle="modal" 

@@ -24,9 +24,12 @@ class ProductRequirements extends Model
     {
         return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }
-        public function settings()
+    public function settings()
     {
-        return $this->belongsTo(ProductSetting::class, 'supplier_id', 'supplier_id');
+        return $this->hasOne(ProductSetting::class, 'product_id', 'product_id');
     }
-    
+
+
+
+
 }

@@ -77,7 +77,13 @@ class CustomersController extends Controller
             $staffAgent = Staffs::where('staff_id', $accStatus->staff_id)->first();
             $documents  = Documents::where('supplier_id', $supplier_id)->get();
             $products   = Products::where('status', 'Listed')->get();
-            $productRequirements   = ProductRequirements::where('supplier_id', $supplier_id)->get();
+$productRequirements = \App\Models\ProductRequirements::with([
+    'product',
+    'settings' => function($query) use ($supplier_id) {
+        $query->where('supplier_id', $supplier_id);
+    }
+])->where('supplier_id', $supplier_id)->get();
+
             $prodSpecs   = ProductRequirements::where('supplier_id', $supplier_id)->get();
             $representatives   = Representatives::where('supplier_id', $supplier_id)->get();
             $signatories   = Signatories::where('supplier_id', $supplier_id)->get();
