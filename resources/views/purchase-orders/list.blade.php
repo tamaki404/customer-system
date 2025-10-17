@@ -353,7 +353,7 @@
                 headsInput.required = true;
                 kilosInput.required = false;
             } else if (measurementType === 'Heads&Kilos') {
-                // ✅ Enable both
+                //  Enable both
                 headsInput.disabled = false;
                 kilosInput.disabled = false;
                 headsInput.value = headsInput.value || 1;
@@ -404,7 +404,7 @@ function calculateRowTotal(setId) {
         } else if (measurementType === 'Heads') {
             total = price * heads;
         } else if (measurementType === 'Heads&Kilos') {
-            // ✅ Only count kilos for total calculation
+            //  Only count kilos for total calculation
             total = price * kilos;
         }
 
@@ -434,7 +434,7 @@ function updateSummary() {
             totalItems += data.heads;
             grandTotal += data.price * data.heads;
         } else if (data.measurementType === 'Heads&Kilos') {
-            // ✅ Total is based on kilos only
+            //  Total is based on kilos only
             totalItems += data.kilos;
             grandTotal += data.price * data.kilos;
         }

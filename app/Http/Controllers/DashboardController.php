@@ -10,6 +10,9 @@ use App\Models\Orders;
 use App\Models\Receipts;
 use App\Models\Credits;
 use App\Models\Representatives;
+use App\Models\Delivery;
+use Carbon\Carbon;
+use Session;
 
 class DashboardController extends Controller
 {
@@ -17,69 +20,86 @@ public function dashboardView(Request $request)
 {
     $user = Auth::user();
     $supplier = $user ? Suppliers::where('user_id', $user->user_id)->first() : null;
+
+    $purchasesCount = 0;
+    $totalReceipts = 0;
+    $totalOrders = 0;
+    $remainingBalance = 0;
+    $deliveryCount = 0;
     $documentCount = $supplier ? Documents::where('supplier_id', $supplier->supplier_id)->count() : 0;
 
-    $usedCredit = 0;
-    $totalOrders = 0;
-    $pendingOrders = 0;
-    $totalReceipts = 0;
-
     if ($user->role === 'Supplier') {
-        $credit = Credits::where('user_id', $user->user_id)->first();
-
-
         $totalOrders = Orders::where('supplier_id', $supplier->supplier_id)->count();
-        $pendingOrders = Orders::where('supplier_id', $supplier->supplier_id)
-            ->where('status', 'Pending')
-            ->count();
+
+                $deliveryCount = Delivery::where('supplier_id', $supplier->supplier_id)
+                    ->where('Status', "Scheduled")
+                    ->count();
 
 
+                $credit = Credits::where('user_id', $user->user_id)->first();
+                $usedCredit = Orders::where('supplier_id', $supplier->supplier_id)
+                    ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
+                    ->selectRaw('
+                        SUM(
+                            orders.total_amount - COALESCE(
+                                (SELECT SUM(r.total_amount) 
+                                FROM receipts r 
+                                WHERE r.order_id = orders.order_id 
+                                AND r.status = "Verified"), 0
+                            )
+                        ) as outstanding_balance
+                    ')
+                    ->value('outstanding_balance');
 
-        // new
+                $remainingBalance = $credit ? $credit->credit_limit - $usedCredit : 0;
 
-
-        $credit = Credits::where('user_id', $user->user_id)->first();
-        $remainingBalance = Orders::where('supplier_id', $supplier->supplier_id)
-            ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
-            ->selectRaw('
-                SUM(
-                    COALESCE(
-                        (SELECT SUM(r.total_amount) 
-                        FROM receipts r 
-                        WHERE r.order_id = orders.order_id 
-                        AND r.status = "Verified"), 0
-                    )
-                ) as paid_total
-            ')
-            ->value('paid_total') ?? 0;
 
         $purchasesCount = Orders::where('supplier_id', $supplier->supplier_id)->count();
         $totalReceipts = Receipts::where('supplier_id', $supplier->supplier_id)->count();
 
+    
 
 
 
+    // } elseif ($user->role === 'Staff' || $user->role === 'Admin') {
+    //    $today = Carbon::today();
 
-    } elseif ($user->role === 'Staff' || $user->role === 'Admin') {
+    //     $totalOrders = Orders::count();
+    //     $pendingOrders = Orders::where('status', 'Pending')->count();
+    //     $deliveryCount = Delivery::where('delivery_date', $today)->count();
+    //     $totalReceipts = Receipts::count();
+    //     $deliveryToday = Delivery::where('delivery_date', $today)->count();
+    //     $pendingReceipts = Receipts::where('status', "Pending")->count();
+    //     $verifiedReceipts = Receipts::where('status', "Verified")->count();
+    //     $deliveries = Delivery::where('delivery_date', $today)->get();
+    //     $orderCount = Orders::where('status', "Completed")->count();
+
+
+    // }
+
+    } elseif (in_array($user->role, ['Admin', 'Staff'])) {
+        $today = Carbon::today();
         $totalOrders = Orders::count();
-        
         $pendingOrders = Orders::where('status', 'Pending')->count();
+        $deliveryCount = Delivery::where('delivery_date', $today)->count();
         $totalReceipts = Receipts::count();
-
-
+        $deliveryToday = Delivery::where('delivery_date', $today)->count();
+        $pendingReceipts = Receipts::where('status', "Pending")->count();
+        $verifiedReceipts = Receipts::where('status', "Verified")->count();
+        $deliveries = Delivery::where('delivery_date', $today)->get();
+        $orderCount = Orders::where('status', "Completed")->count();
     }
 
-    return view('dashboard', [
-        'user' => $user,
-        'supplier' => $supplier,
-        'purchasesCount' => $purchasesCount ?? 0,
-        'remainingBalance' => $remainingBalance ?? 0,
-        'documentCount' => $documentCount,
-        'usedCredit' => $usedCredit,
-        'totalOrders' => $totalOrders,
-        'pendingOrders' => $pendingOrders,
-        'totalReceipts' => $totalReceipts,
-    ]);
+    return view('dashboard', compact(
+        'user',
+        'supplier',
+        'purchasesCount',
+        'remainingBalance',
+        'documentCount',
+        'totalOrders',
+        'totalReceipts',
+        'deliveryCount'
+    ));
 }
 
 

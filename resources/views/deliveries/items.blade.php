@@ -65,7 +65,6 @@
                             </button>  
                             
                         @elseif($delivery->status === "Delivered")
-                            @if($delivery->pod_file)
                                 <button type="button" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#viewPOD{{ $delivery->delivery_id }}" 

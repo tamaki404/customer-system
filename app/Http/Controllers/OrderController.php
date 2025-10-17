@@ -238,6 +238,7 @@ class OrderController extends Controller
                 })
                 ->orderBy('delivery_date', 'asc')
                 ->get();
+            $activeDelivery = Delivery::where('order_id', $order_id)->count();
 
             
 
@@ -246,6 +247,7 @@ class OrderController extends Controller
                 'order' => $order,
                 'items' => $items,
                 'deliveries' => $deliveries,
+                'activeDelivery' => $activeDelivery
 
             ]);
         }

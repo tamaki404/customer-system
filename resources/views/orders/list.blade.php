@@ -40,7 +40,10 @@
                         </form>
                     </div>
 
-    
+                    <div class="title-actions">
+                        <p class="heading">Orders list</p>
+                
+                    </div>
 
                 </div>
 

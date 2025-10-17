@@ -41,7 +41,10 @@
                     </div>
 
                     <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
-                        <p class="heading">Receipts list</p>
+                        <p class="heading" style="display: flex; flex-direction: column;">
+                            <span>Receipts list</span>
+                            <span style="font-size: 14px; color: #333; margin: 0; font-weight: normal;">Amount shows when receipt has been accepted.</span>
+                        </p>
                   
 
                     </div>
@@ -69,9 +72,9 @@
                                 @foreach ($receipts as $receipt)
                                     <tr onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $receipt->receipt_id]) }}'">
                                         <td>{{$loop->iteration}}</td>
-                                        <td>{{$receipt->created_at}}</td>
+                                        <td>{{ \Carbon\Carbon::parse($receipt->created_at)->format('F j, Y') }}</td>
                                         <td>{{$receipt->receipt_id}}</td>
-                                        <td>{{$receipt->total_amount}}</td>
+                                        <td>₱{{$receipt->total_amount}}</td>
                                         <td>{{$receipt->status}}</td>
                                     </tr>
                                 @endforeach
@@ -98,9 +101,9 @@
                                 @foreach ($receipts as $receipt)
                                     <tr onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $receipt->receipt_id]) }}'">
                                         <td>{{$loop->iteration}}</td>
-                                        <td>{{$receipt->created_at}}</td>
+                                        <td>{{ \Carbon\Carbon::parse($receipt->created_at)->format('F j, Y') }}</td>
                                         <td>{{$receipt->receipt_id}}</td>
-                                        <td>{{$receipt->total_amount}}</td>
+                                        <td>₱{{$receipt->total_amount}}</td>
                                         <td>{{$receipt->status}}</td>
                                     </tr>
                                 @endforeach

@@ -68,7 +68,7 @@
                                         </option>
 
                                     @endforeach
-                                </select>
+                                </select>r
                             </div>
                             <div class="form-group">
                                     <p><span class="req-asterisk">*</span>Upload receipt image</p>
@@ -177,9 +177,9 @@
                                                     <td>{{ $transaction->label }}</td>
                                                     <td>{{ $transaction->status }}</td>
                                                     @if ($transaction->label === 'Receipt')
-                                                       <td>+{{ $transaction->amount }}</td>
+                                                       <td>₱ +{{ number_format($transaction->amount, 2) }}</td>
                                                     @elseif ($transaction->label === 'Order')
-                                                        <td>-{{ $transaction->amount }}</td>
+                                                       <td>₱ -{{ number_format($transaction->amount, 2) }}</td>
                                                     @endif
                                                   
                                          
@@ -219,7 +219,7 @@
                                                             x{{$item->quantity}} {{ $item->product->name }},
                                                         @endforeach
                                                     </td>
-                                                    <td><strong>{{ number_format($oustandingPayment->outstanding_balance, 2) }}</strong></td>
+                                                    <td><strong>₱{{ number_format($oustandingPayment->outstanding_balance, 2) }}</strong></td>
                                                     <td>{{ $oustandingPayment->status }}</td>
                                                 </tr>
                                             @endforeach

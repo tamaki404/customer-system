@@ -106,7 +106,7 @@
                                         @endphp
 
                                         <td>
-                                            @if ($del->status === 'Delivered')
+                                            @if ($del->status === '7 days late')
                                                 <span class="text-success">Delivered</span>
                                             @elseif ($date->isToday())
                                                 <span class="text-warning">Delivery today</span>
@@ -121,23 +121,66 @@
                                         </td>
 
                                         <td>
-                                            <button type="button"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#pdfModal"
-                                                data-url="{{ route('orders.delivery.pdf', $del->order->order_id) }}"
-                                                class="btn-transition btn btn-primary"
-                                                style="font-size:14px"
-                                                >
+                                            @if ($del->status==="Delivered")
+                                                @if($del->pod_file)
+                                                    <button type="button" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#viewPOD{{ $del->delivery_id }}" 
+                                                            class="btn-transition">
+                                                            View POD
+                                                    </button>
+                                                @else
+                                                    <span class="text-muted">No POD</span>
+                                                @endif
+                                            @elseif($del->status === 'Scheduled')
+                                                <button type="button" 
+                                                        data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                                        data-url="{{ route('orders.delivery.pdf', $del->order->order_id) }}"
+                                                        class="btn-transition">
+                                                    Delivery receipt
+                                                </button>
                                                 
-                                                POD
-                                            </button>
+                                            @endif
+
 
                                         </td>
 
 
 
                                     </tr>
-                                
+                                    @if($del->pod_file)
+                                        @php
+                                            $podData = 'data:' . ($del->pod_mime ?? 'application/pdf') . ';base64,' . base64_encode($del->pod_file);
+                                        @endphp
+
+                                        <div class="modal fade" id="viewPOD{{ $del->delivery_id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-xl modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Proof of Delivery - {{ $del->delivery_id }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body text-center" style="height: 80vh;">
+                                                        <iframe
+                                                            src="{{ $podData }}"
+                                                            width="100%"
+                                                            height="100%"
+                                                            style="border: none;"
+                                                            title="POD for {{ $del->delivery_id }}"
+                                                        ></iframe>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <a href="{{ $podData }}" 
+                                                        download="POD_{{ $del->delivery_id }}.pdf" 
+                                                        class="btn btn-primary">
+                                                            Download POD
+                                                        </a>
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 @endforeach
                             <tbody>                                
          

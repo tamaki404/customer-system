@@ -56,7 +56,7 @@
                         <th>SUP ID.</th>
                         <th>Supplier</th>
                         <th>Email</th>
-                        <th>Role</th>
+                        <th>Type</th>
                         <th>Sales Agent</th>
                         <th>Status</th>
                         <th>Balance</th>
@@ -69,7 +69,7 @@
                             <td>{{ $supplier->supplier_id }}</td>
                             <td>{{ $supplier->company_name }}</td>
                             <td>{{ $supplier->user->email_address }}</td>
-                            <td>{{ $supplier->user->role }}</td>
+                            <td>{{ $supplier->category }}</td>
                             <td>
                                 @if ($supplier->account_status->staff_id !== NULL)
                                     {{ $supplier->staff_name }}

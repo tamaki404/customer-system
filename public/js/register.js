@@ -192,7 +192,7 @@ form.addEventListener('submit', function (e) {
         }
     });
 
-    // ✅ no need to check if image is required anymore
+    //  no need to check if image is required anymore
 
     // if anything failed, stop form from submitting
     if (hasErrors) {

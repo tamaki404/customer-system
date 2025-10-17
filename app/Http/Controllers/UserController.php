@@ -815,7 +815,7 @@ public function registerSupplier(Request $request)
     //         return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
     //     }
 
-    //     // ✅ Branch depending on role
+    //     //  Branch depending on role
     //     if ($user->role === 'Staff') {
     //         $staff = Staffs::where('user_id', $user->user_id)->first();
 
@@ -888,7 +888,7 @@ public function registerSupplier(Request $request)
         // Mark verified in the correct table
         DB::transaction(function() use ($user, $userId) {
             if ($user->role === 'Staff') {
-                // ✅ Update staff table
+                //  Update staff table
                 DB::table('staffs')->where('user_id', $userId)->update([
                     'email_verified_at' => now(),
                     'status' => 'Accepted',
@@ -1068,11 +1068,11 @@ public function registerSupplier(Request $request)
 //         }
 //     }
 
-//     // ✅ Login user
+//     //  Login user
 //     Auth::login($user, false);
 //     $request->session()->regenerate();
 
-//     // ✅ Redirect to choose account page after gate_password authentication
+//     //  Redirect to choose account page after gate_password authentication
 //     return redirect()->route('choose.accounts');
 // }
 

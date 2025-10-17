@@ -138,7 +138,7 @@ class DeliveryController extends Controller
             // Store PDF as binary
             $pdfContent = file_get_contents($request->file('pod_file')->getRealPath());
 
-            // ✅ Update this delivery
+            //  Update this delivery
             $delivery->update([
                 'status' => $request->status,
                 'feedback' => $request->feedback,
@@ -147,7 +147,7 @@ class DeliveryController extends Controller
                 'pod_mime' => 'application/pdf',
             ]);
 
-            // ✅ Update all delivery items for this delivery
+            //  Update all delivery items for this delivery
             $receivedKilos = $request->input('received_kilos', []);
             $receivedHeads = $request->input('received_heads', []);
             $allItemIds = array_unique(array_merge(array_keys($receivedKilos), array_keys($receivedHeads)));
@@ -174,7 +174,7 @@ class DeliveryController extends Controller
                 }
             }
 
-            // ✅ Check if ALL deliveries for this order are now "Delivered"
+            //  Check if ALL deliveries for this order are now "Delivered"
             $totalDeliveries = Delivery::where('order_id', $order->order_id)->count();
             $deliveredCount = Delivery::where('order_id', $order->order_id)
                                     ->where('status', 'Delivered')
