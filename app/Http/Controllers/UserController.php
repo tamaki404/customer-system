@@ -420,8 +420,9 @@ public function registerSupplier(Request $request)
                     'rep_middlename' => $repMiddlenames[$index] ?? null,
                     'auth_position'  => $authPositions[$index] ?? '',
                     'rep_contact'    => $repContacts[$index] ?? '',
-                    'permissions'    => json_encode($permissions), 
+                    'permissions'    => $permissions, 
                 ]);
+
             }
 
 
