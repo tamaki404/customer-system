@@ -243,7 +243,7 @@ $productRequirements = \App\Models\ProductRequirements::with([
                     return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
                 }
         }
-            public function afas($supplier_id, Request $request)
+        public function afas($supplier_id, Request $request)
         {
             $user = Auth::user();
 
