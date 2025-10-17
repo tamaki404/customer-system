@@ -101,74 +101,82 @@
                             </div>
 
                             
-                            <div>
-                                @if ($ceilingPrice)
-                                    <div class="alert-info p-2 mb-3">
-                                        <strong>Ceiling Price Active:</strong><br>
-                                        @php
-                                            if($ceilingPrice->method === 'Fixed') {
-                                                $maxPrice = $ceilingPrice->fixed_price;
-                                            } else {
-                                                $base = $productRequirement->product->sale_price ?? 0;
-                                                $maxPrice = $base + ($base * ($ceilingPrice->percentage_ceiling / 100));
-                                            }
-                                        @endphp
+                                <div>
+                                    @if ($ceilingPrice)
+                                        <div class="alert-info p-2 mb-3">
+                                            <strong>Ceiling Price Active:</strong><br>
+                                            @if($ceilingPrice->method === 'Fixed')
+                                                ₱{{ number_format($ceilingPrice->fixed_price, 2) }}
+                                            @elseif($ceilingPrice->method === 'Percentage')
+                                                {{ $ceilingPrice->percentage_ceiling }}% above base price
+                                            @endif
+                                            <br>
+                                            <small class="text-muted">
+                                                {{ \Carbon\Carbon::parse($ceilingPrice->start_date)->format('M d, Y') }}
+                                                →
+                                                {{ \Carbon\Carbon::parse($ceilingPrice->end_date)->format('M d, Y') }}
+                                            </small>
+                                        </div>
+                                    @endif
+                                </div>
 
-                                        @if($ceilingPrice->method === 'Fixed')
-                                            ₱{{ number_format($ceilingPrice->fixed_price, 2) }}
-                                        @else
-                                            {{ $ceilingPrice->percentage_ceiling }}% above base (₱{{ number_format($maxPrice, 2) }})
-                                        @endif
-                                        <br>
-                                        <small class="text-muted">
-                                            {{ \Carbon\Carbon::parse($ceilingPrice->start_date)->format('M d, Y') }}
-                                            →
-                                            {{ \Carbon\Carbon::parse($ceilingPrice->end_date)->format('M d, Y') }}
-                                        </small>
-                                    </div>
-                                @endif
-                            </div>
+                                <div class="modal-option-groups">
+                                    <p>Product requirements</p>
 
-                            <div class="modal-option-groups">
-                                <p>Product requiremnets</p>
-
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <td>Product ID</td>
-                                            <td>Product name</td>
-                                            <td>Base price</td>
-                                            <td>Agreed price</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ( $productRequirements as $product)
+                                    <table>
+                                        <thead>
                                             <tr>
-                                                <td>{{$product->product_id}}</td>
-                                                <td>{{$product->product->name}}</td>
-                                                <td>₱{{$product->product->base_price}}</td>
-                                                <td>₱
-                                                    <input 
-                                                        type="number" 
-                                                        name="products[{{ $product->product_id }}][nego_price]" 
-                                                        class="decimal-input"
-                                                        style="width: 80px"
-                                                        step="0.01"
-                                                        placeholder="0.00"
-                                                        @if(isset($maxPrice)) max="{{ $maxPrice }}" @endif
-                                                    />
-                                                    <input type="hidden" name="products[{{ $product->product_id }}][product_id]" value="{{ $product->product_id }}">
-
-                                                </td>
+                                                <td>Product ID</td>
+                                                <td>Product name</td>
+                                                <td>Base price</td>
+                                                @if ($ceilingPrice)
+                                                    <td>Ceiling price</td>
+                                                @endif
+                                                <td>Agreed price</td>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($productRequirements as $product)
+                                                @php
+                                                    $basePrice = $product->product->base_price ?? 0;
+                                                    if ($ceilingPrice) {
+                                                        if ($ceilingPrice->method === 'Fixed') {
+                                                            $maxPrice = $ceilingPrice->fixed_price;
+                                                        } else {
+                                                            $maxPrice = $basePrice + ($basePrice * ($ceilingPrice->percentage_ceiling / 100));
+                                                        }
+                                                    }
+                                                @endphp
 
-                                </table>
-                                    
-                                
-                               
-                            </div>
+                                                <tr>
+                                                    <td>{{ $product->product_id }}</td>
+                                                    <td>{{ $product->product->name }}</td>
+                                                    <td>₱{{ number_format($basePrice, 2) }}</td>
+                                                    @if ($ceilingPrice)
+                                                        <td>₱{{ number_format($maxPrice, 2) }}</td>
+                                                    @endif
+                                                    <td>
+                                                        ₱
+                                                        <input 
+                                                            type="number" 
+                                                            name="products[{{ $product->product_id }}][nego_price]" 
+                                                            class="decimal-input"
+                                                            style="width: 100px"
+                                                            step="0.01"
+                                                            placeholder="0.00"
+                                                            @if ($ceilingPrice) max="{{ $maxPrice }}" @endif
+                                                        />
+                                                        <input 
+                                                            type="hidden" 
+                                                            name="products[{{ $product->product_id }}][product_id]" 
+                                                            value="{{ $product->product_id }}">
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+
 
 
 
@@ -986,9 +994,8 @@
                                                             @if ($productRequirement->settings && $productRequirement->settings->nego_price !== null)
 
                                                                 <td>₱{{ number_format($productRequirement->settings->nego_price ?? 0, 2) }}</td>
-
                                                             @else
-                                                                <td>₱0.00</td>
+                                                                <td>--</td>
                                                             @endif
 
 

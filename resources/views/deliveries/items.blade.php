@@ -55,26 +55,26 @@
                 {{-- ACTION BUTTONS --}}
                 <td>
                     @if (Auth()->user()->role !== "Supplier")
-                        @if($delivery->status === "Scheduled")
-                            <button type="button" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#pdfModal" 
-                                data-url="{{ route('orders.delivery.pdf', $delivery->delivery_id) }}"
-                                class="btn-transition">
-                                    Print DR
-                            </button>  
-                            
-                        @elseif($delivery->status === "Delivered")
+                            @if($delivery->status === "Scheduled")
                                 <button type="button" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#viewPOD{{ $delivery->delivery_id }}" 
-                                        class="btn-transition">
-                                        View POD
-                                </button>
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#pdfModal" 
+                                    data-url="{{ route('orders.delivery.pdf', $delivery->delivery_id) }}"
+                                    class="btn-transition">
+                                        Print DR
+                                </button>  
+                                
+                            @elseif($delivery->status === "Delivered")
+                                    <button type="button" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#viewPOD{{ $delivery->delivery_id }}" 
+                                            class="btn-transition">
+                                            View POD
+                                    </button>
                             @else
-                                <span class="text-muted">No POD</span>
+                                    <span class="text-muted">No POD</span>
                             @endif
-                        @endif
+                        
                     @else
           
                     @endif
@@ -453,7 +453,7 @@
 
         <div>
         <td>
-            @if ($item->variance_heads !== NULL OR $item->variance_heads !== NULL)
+            @if ($item->variance_heads !== 0 || $item->variance_kilos !== NULL)
 
                 <button type="button" 
                         data-bs-toggle="modal" data-bs-target="#pdfModal" 
@@ -476,7 +476,8 @@
                     </div>
                 </div>
                 </div>
-                                    
+                {{$delivery->feedback}}
+
                 
             @elseif ($item->variance_heads === NULL OR $item->variance_heads === NULL)
                 {{$delivery->feedback}}

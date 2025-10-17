@@ -461,7 +461,11 @@
                     @elseif($order->status === "Rejected")
                         <span><strong>Rejected at:</strong> {{ $order->rejected_at->format('F j, Y') }}</span>
                     @elseif($order->status === "Completed")
-                        <span><strong>Completed at:</strong> {{ $order->completed_at->format('F j, Y') }}</span>
+                        <span>
+                            <strong>Completed at:</strong> 
+                            {{ $order->completed_at?->format('F j, Y') ?? 'Not yet completed' }}
+                        </span>
+
                     @elseif($order->status === "Accepted")
                         <span><strong>Acccepted at:</strong> {{ $order->created_at->format('F j, Y') }}</span>
                     

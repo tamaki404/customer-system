@@ -228,6 +228,11 @@ public function registerSupplier(Request $request)
             'delivery_address_2'     => 'nullable|string|max:255',
             'delivery_address_3'     => 'nullable|string|max:255',
             'delivery_instructions'  => 'nullable|string|max:255',
+            'deliveries_per_week'    => 'nullable|integer|min:0',
+            'delivery_days.*'          => 'required|string|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
+            'receiving_time'         => 'nullable|date_format:H:i',
+            'deliveries_per_month'    => 'nullable|integer|min:0',
+
         ]);
 
         // Additional dynamic validation for product requirements
@@ -531,6 +536,10 @@ public function registerSupplier(Request $request)
                 'delivery_address_2' => $request->delivery_address_2,
                 'delivery_address_3' => $request->delivery_address_3,
                 'delivery_instructions' => $request->delivery_instructions,
+                'deliveries_per_week' => $request->deliveries_per_week,
+                'delivery_days' => isset($request->delivery_days) ? implode(',', $request->delivery_days) : null,
+                'receiving_time' => $request->receiving_time,
+                'deliveries_per_month' => $request->deliveries_per_month,
             ]);
 
             // Create and send verification token
