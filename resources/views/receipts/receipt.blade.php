@@ -14,87 +14,173 @@
     @if(Auth()->user()->role !== "Supplier")
         <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true" >
             <div class="modal-dialog" style="width: auto">
-                <form class="modal-content" method="POST" enctype="multipart/form-data" style="width: 800px" action="{{ route('receipts.action', $receipt->receipt_id) }}">
-                    @csrf
-                    
-                    @if ($errors->any())
-                        <div class="alert alert-danger" style="margin: 10px;">
-                            <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
-                            <ul style="margin: 0; padding-left: 20px;">
-                                @foreach ($errors->all() as $error)
-                                    <li style="font-size: 14px;">{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                    
-                    @if (session('success'))
-                        <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
-                    @endif
+<form class="modal-content" method="POST" enctype="multipart/form-data"
+      style="width: 800px"
+      action="{{ route('receipts.action', $receipt->receipt_id) }}">
+    @csrf
 
-                    @if (session('error'))
-                        <div class="alert alert-danger" style="margin: 10px;">
-                            <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
-                            <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
-                        </div>
-                    @endif
+    <!-- error / success alerts -->
+    @if ($errors->any())
+        <div class="alert alert-danger m-2">
+            <h6><strong>Validation Errors:</strong></h6>
+            <ul class="mb-0 ps-3">
+                @foreach ($errors->all() as $error)
+                    <li style="font-size: 14px;">{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-                    <!-- Hidden field for PO ID -->                
-                    <div class="modal-header">
-                        <p class="modal-title" id="requestActionLabel">Receipt actions</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    
-                    <div class="modal-body" style="width: auto">
-                        <p class="note-notify">
-                            <span class="material-symbols-outlined"> info </span>
-                            <span>Any changes will be logged.</span>
-                        </p>
+    @if (session('success'))
+        <div class="alert alert-success m-2">{{ session('success') }}</div>
+    @endif
 
-                        <div style="width: auto">
-                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                <thead style="background-color: #f9f9f9;">
-                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                        <td>Receipt ID</td>
-                                        <td>Order ID</td>
-                                        <td>Order amount</td>
-                                        <td>Amount paying</td>
+    @if (session('error'))
+        <div class="alert alert-danger m-2">
+            <h6><strong>Error:</strong></h6>
+            <p class="mb-0" style="font-size: 14px;">{{ session('error') }}</p>
+        </div>
+    @endif
 
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>{{ $receipt->receipt_id }}</td>
-                                        <td><button>View order</button></td>
-                                        <td>
-                                            {{ number_format($receipt->order->total_amount) }}
-                                        </td>
-                                        <td><input type="number" name="amount"></td>
+    <div class="modal-header">
+        <p class="modal-title">Receipt Actions</p>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
 
-                                    </tr>
-                                    <input type="hidden" name="order_id" value="{{$receipt->order_id}}">
-                                    <input type="hidden" name="receipt_id" value="{{$receipt->receipt_id}}">
+    <div class="modal-body">
+        <p class="note-notify">
+            <span class="material-symbols-outlined"> info </span>
+            <span>Any changes will be logged.</span>
+        </p>
 
-                                </tbody>
-                            </table>
-                        </div>
+        <div class="mt-2">
+            <label class="form-label">Action <span class="text-danger">*</span></label>
+            <select name="status" id="statusSelect" class="form-select" required>
+                <option value="">--Select status--</option>
+                <option value="Verified">Verify receipt</option>
+                <option value="Rejected">Reject receipt</option>
+            </select>
+        </div>
 
-                        <select name="status" id="" required>
-                            <option value="Verified">Verify receipt</option>
-                            <option value="Rejected">Reject receipt</option>
-                        </select>
-                        
-                        <div class="form-group">
-                            <input type="text" name="remarks" maxlength="200">
-                        </div>
+        {{-- Verified Section --}}
+        <div id="verifiedSection" style="display: none;">
+            <table class="table table-bordered mt-3" style="width:100%">
+                <thead class="table-light">
+                    <tr class="text-center">
+                        <td>Receipt ID</td>
+                        <td>Order ID</td>
+                        <td>Order Amount</td>
+                        <td>Amount Paying</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center">{{ $receipt->receipt_id }}</td>
+                        <td class="text-center">
+                            <a href="{{ route('orders.order', $receipt->order_id) }}" 
+                               class="btn btn-link p-0" 
+                               target="_blank">
+                                {{ $receipt->order_id }}
+                            </a>
+                        </td>
+                        <td class="text-end">₱{{ number_format($receipt->order->total_amount, 2) }}</td>
+                        <td>
+                            <input type="number" 
+                                   name="amount" 
+                                   id="amountInput"
+                                   class="form-control" 
+                                   step="0.01"
+                                   min="0.01"
+                                   max="{{ $receipt->order->total_amount }}"
+                                   placeholder="Enter amount">
+                            <small class="text-muted">Max: ₱{{ number_format($receipt->order->total_amount, 2) }}</small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="form-group mt-2">
+                <label class="form-label">Remarks (Optional)</label>
+                <input type="text" 
+                       name="remarks" 
+                       id="remarksInput"
+                       class="form-control" 
+                       maxlength="200" 
+                       placeholder="Add any additional notes">
+            </div>
+        </div>
+
+        {{-- Rejected Section --}}
+        <div id="rejectedSection" style="display: none;">
+            <div class="alert alert-warning mt-3">
+                <strong>Warning:</strong> Rejecting this receipt will mark it as invalid. Please provide a clear reason.
+            </div>
+
+            <div class="form-group mt-2">
+                <label class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
+                <textarea name="reason" 
+                          id="reasonInput"
+                          class="form-control" 
+                          rows="3"
+                          maxlength="200" 
+                          placeholder="Explain why this receipt is being rejected"></textarea>
+                <small class="text-muted">Required when rejecting a receipt</small>
+            </div>
+        </div>
+
+        <input type="hidden" name="order_id" value="{{ $receipt->order_id }}">
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" id="submitBtn" class="btn btn-primary" disabled>Confirm Action</button>
+    </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('statusSelect');
+    const verifiedSection = document.getElementById('verifiedSection');
+    const rejectedSection = document.getElementById('rejectedSection');
+    const submitBtn = document.getElementById('submitBtn');
+    const amountInput = document.getElementById('amountInput');
+    const reasonInput = document.getElementById('reasonInput');
+    const remarksInput = document.getElementById('remarksInput');
+
+    statusSelect.addEventListener('change', function() {
+        const status = this.value;
         
-                    </div>
-                    
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit"  class="btn btn-primary">Confirm receipt</button>
-                    </div>
-                </form>
+        // Reset sections
+        verifiedSection.style.display = 'none';
+        rejectedSection.style.display = 'none';
+        submitBtn.disabled = true;
+        
+        // Clear inputs
+        if (amountInput) amountInput.value = '';
+        if (reasonInput) reasonInput.value = '';
+        if (remarksInput) remarksInput.value = '';
+        
+        // Remove required attributes
+        if (amountInput) amountInput.removeAttribute('required');
+        if (reasonInput) reasonInput.removeAttribute('required');
+        
+        if (status === 'Verified') {
+            verifiedSection.style.display = 'block';
+            if (amountInput) amountInput.setAttribute('required', 'required');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Verify Receipt';
+            submitBtn.className = 'btn btn-success';
+        } else if (status === 'Rejected') {
+            rejectedSection.style.display = 'block';
+            if (reasonInput) reasonInput.setAttribute('required', 'required');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Reject Receipt';
+            submitBtn.className = 'btn btn-danger';
+        }
+    });
+});
+</script>
+
             </div>
         </div>
     @endif

@@ -167,8 +167,9 @@
 
                     @foreach($items as $item)
                         @php
-                            $deliveryDays = $order->supplier->delivery->delivery_days ?? [];
-                            $days = is_countable($deliveryDays) ? count($deliveryDays) : 0;
+                            $rawDays = $order->supplier->delivery->delivery_days ?? [];
+                            $deliveryDays = is_array($rawDays) ? $rawDays : json_decode($rawDays, true) ?? [];
+                            $days = is_array($deliveryDays) ? count($deliveryDays) : 0;
 
                             if ($item->product->measurement_type === 'Kilos') {
                                 $total_kilos = $item->placed_kilos;
@@ -284,8 +285,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach(optional(optional($order->supplier)->delivery)->delivery_days ?? [] as $day)
+                                    @php
+                                        $deliveryDays = [];
+                                        if ($order->supplier && $order->supplier->delivery && $order->supplier->delivery->delivery_days) {
+                                            $deliveryDays = is_array($order->supplier->delivery->delivery_days) 
+                                                ? $order->supplier->delivery->delivery_days 
+                                                : json_decode($order->supplier->delivery->delivery_days, true) ?? [];
+                                        }
+                                    @endphp
                                     
+                                    @foreach($deliveryDays as $day)
                                         <tr>
                                             <td>{{ $day }}</td>
 
@@ -452,6 +461,7 @@
             </div>
             <div class="order-details">
                 <p style="display: flex; flex-direction: column;">
+                    <span><strong>Supplier:</strong> {{ $order->supplier->company_name }}</span>
                     <span><strong>Order ID:</strong> {{ $order->order_id }}</span>
                     <span><strong>Order date:</strong> {{ $order->created_at->format('F j, Y')}}</span>
                     <span><strong>Total amount: </strong> ₱{{ number_format($order->total_amount, 2) }}</span>

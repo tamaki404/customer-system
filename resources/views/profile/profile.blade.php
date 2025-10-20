@@ -3,6 +3,8 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/views/customer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/views/customers/sales-display.css') }}">
+
 @endpush
 
 
@@ -248,6 +250,7 @@
                                         </div>
                                         
                                         <div class="sale-list">
+                                            @if($sales)
                                             @foreach ($sales as $sale)
                                                 @php
                                                     $hours = \Carbon\Carbon::parse($sale->start_date)->diffInHours(\Carbon\Carbon::parse($sale->end_date));
@@ -291,6 +294,7 @@
                                                     </div>
                                                 </div>
                                             @endforeach
+                                            @endif
                                         </div>
                                     </div>
 

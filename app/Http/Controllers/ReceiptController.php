@@ -139,64 +139,74 @@ class ReceiptController extends Controller
             ]);
         }
 
-        public function receiptAction(Request $request, $receipt_id)
-        {
-            $request->validate([
-                'receipt_id' => 'required|exists:receipts,receipt_id',
-                'order_id'   => 'required|exists:orders,order_id',
-                'amount'     => 'required|numeric|min:1',
-                'status' => 'required|in:Verified,Rejected',
-            ]);
+public function receiptAction(Request $request, $receipt_id)
+{
+    $request->validate([
+        'order_id' => 'required|exists:orders,order_id',
+        'amount'   => 'required|numeric|min:1',
+        'status'   => 'required|in:Verified,Rejected', 
+        'remarks'  => 'nullable|string|max:200',
+    ]);
 
-            try {
-                DB::beginTransaction();
-                $receipt = Receipts::where('receipt_id', $receipt_id)->firstOrFail();
+    try {
+        DB::beginTransaction();
 
-                $receipt->total_amount = $request->amount;  
-                $receipt->status = $request->status;  
-                $receipt->save();
-            
-                $updatedAmount = $receipt->total_amount;
+        $receipt = Receipts::where('receipt_id', $receipt_id)->firstOrFail();
 
-                $date = date('Ymd');
-                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
-                $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
-                $user_id = Auth::user()->user_id;
+        $receipt->update([
+            'total_amount' => $request->amount,
+            'status'       => $request->status,
+        ]);
 
+        $updatedAmount = $receipt->total_amount;
 
-                Logs::create([
-                    'user_id' => Auth::user()->user_id,
-                    'action' => 'Commited a receipt action',
-                    'log_id' => $log_id,
-                    'description' => "Staff '{$user_id}' {$request->status} receipt '{$request->receipt_id}'",
-                ]);
-
-                OrderHistory::create([
-                    'action_by' => Auth::user()->user_id,
-                    'order_id' => $request->order_id,
-                    'action_at' => now(),
-                    'history_id' => $history_id,
-                    'label' => 'Receipt',
-                    'amount' => $request->amount,
-                    'status' => $request->status,
-                ]);
+        $date = now()->format('Ymd');
+        $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+        $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
+        $user_id = Auth::user()->user_id;
 
 
-                DB::commit();
 
-                return redirect()->back()->with('success', 
-                    "Receipt {$receipt->receipt_id} updated successfully. Amount paid: {$updatedAmount}");
-            } catch (\Exception $e) {
-                DB::rollBack();
-                \Log::error('Receipt update failed:', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'request_data' => $request->all(),
-                ]);
 
-                return redirect()->back()->with('error', 'Failed to update receipt: '.$e->getMessage());
-            }
+        Logs::create([
+            'user_id'     => $user_id,
+            'action'      => "($request->status) receipt",
+            'log_id'      => $log_id,
+            'description' => "Staff ($user_id), ($request->status) receipt '{$receipt_id}' with amount {$updatedAmount}",
+            'entity'      => 'Receipts',
+            'entity_id'   => $receipt->id,
+        ]);
+
+        OrderHistory::create([
+            'action_by'  => $user_id,
+            'order_id'   => $request->order_id,
+            'action_at'  => now(),
+            'history_id' => $history_id,
+            'label'      => 'Receipt',
+            'amount'     => $request->amount,
+            'status'     => $request->status,
+            'remarks'    => $request->remarks,
+        ]);
+
+        DB::commit();
+
+        return redirect()->back()->with(
+            'success',
+            "Receipt {$receipt->receipt_id} updated successfully. Amount paid: {$updatedAmount}"
+        );
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        \Log::error('Receipt update failed:', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'request_data' => $request->all(),
+        ]);
+
+        return redirect()->back()->with('error', 'Failed to update receipt: '.$e->getMessage());
     }
+}
+
   
 
 }

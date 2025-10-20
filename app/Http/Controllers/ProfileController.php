@@ -49,6 +49,8 @@ class ProfileController extends Controller
             $isTherePriceHistory = PriceHistory::where('supplier_id', $supplier->supplier_id)->exists();
             $isThereSalesHistory = ProductSales::where('supplier_id', $supplier->supplier_id)->exists();
 
+            $sales = ProductSales::where('supplier_id', $supplier->supplier_id)->get();
+
             return view('profile.profile', [
                 'user' => $user,
                 'supplier' => $supplier,
@@ -67,6 +69,7 @@ class ProfileController extends Controller
                 'representatives' => $representatives,
                 'signatories' => $signatories,
                 'account_status' => $account_status,
+                'sales' => $sales,
                 'business' => $business,
             ]);
         }

@@ -51,6 +51,7 @@ public function dashboardView(Request $request)
                     ')
                     ->value('outstanding_balance');
 
+
                 $remainingBalance = $credit ? $credit->credit_limit - $usedCredit : 0;
 
 

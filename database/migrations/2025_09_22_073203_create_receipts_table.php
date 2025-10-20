@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('receipt_id')->unique(); 
             $table->string('supplier_id');
             $table->string('order_id');
-            $table->string('status')->default('Pending');
+            $table->enum('status', ['Pending', 'Verified', 'Rejected'])
+                ->default('Pending');
             $table->decimal('total_amount', 12, 2)->default(0)->nullable();
             $table->string('image_mime_type')->nullable();
             $table->string('image_filename')->nullable();

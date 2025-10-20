@@ -24,9 +24,10 @@ class Representatives extends Model implements Authenticatable
         'cid'
     
     ];
-    protected $casts = [
-        'permissions' => 'array',
-    ];
+protected $casts = [
+    'permissions' => 'array',
+];
+
 
     public function supplier()
     {
