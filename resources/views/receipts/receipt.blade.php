@@ -64,13 +64,20 @@
 
         {{-- Verified Section --}}
         <div id="verifiedSection" style="display: none;">
+            @if($remainingAmount <= 0)
+                <div class="alert alert-info mt-3">
+                    <strong>Notice:</strong> This order has been fully paid. No additional payment can be added.
+                </div>
+            @endif
+
             <table class="table table-bordered mt-3" style="width:100%">
                 <thead class="table-light">
                     <tr class="text-center">
                         <td>Receipt ID</td>
                         <td>Order ID</td>
-                        <td>Order Amount</td>
-                        <td>Amount Paying</td>
+                        <td>Order Total</td>
+                        <td>Already Paid</td>
+                        <td>Remaining</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -84,20 +91,29 @@
                             </a>
                         </td>
                         <td class="text-end">₱{{ number_format($receipt->order->total_amount, 2) }}</td>
-                        <td>
-                            <input type="number" 
-                                   name="amount" 
-                                   id="amountInput"
-                                   class="form-control" 
-                                   step="0.01"
-                                   min="0.01"
-                                   max="{{ $receipt->order->total_amount }}"
-                                   placeholder="Enter amount">
-                            <small class="text-muted">Max: ₱{{ number_format($receipt->order->total_amount, 2) }}</small>
-                        </td>
+                        <td class="text-end text-success">₱{{ number_format($totalPaid, 2) }}</td>
+                        <td class="text-end fw-bold text-primary">₱{{ number_format($remainingAmount, 2) }}</td>
                     </tr>
                 </tbody>
             </table>
+
+            <div class="form-group mt-2">
+                <label class="form-label">Amount Paying <span class="text-danger">*</span></label>
+                <input type="number" 
+                       name="amount" 
+                       id="amountInput"
+                       class="form-control" 
+                       step="0.01"
+                       min="0.01"
+                       max="{{ $remainingAmount }}"
+                       placeholder="Enter amount">
+                <small class="text-muted">
+                    Maximum remaining balance: ₱{{ number_format($remainingAmount, 2) }}
+                    @if($totalPaid > 0)
+                        <br><span class="text-success">✓ Previous payments: ₱{{ number_format($totalPaid, 2) }}</span>
+                    @endif
+                </small>
+            </div>
 
             <div class="form-group mt-2">
                 <label class="form-label">Remarks (Optional)</label>
@@ -146,6 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const amountInput = document.getElementById('amountInput');
     const reasonInput = document.getElementById('reasonInput');
     const remarksInput = document.getElementById('remarksInput');
+    const remainingAmount = {{ $remainingAmount }};
 
     statusSelect.addEventListener('change', function() {
         const status = this.value;
@@ -166,10 +183,22 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (status === 'Verified') {
             verifiedSection.style.display = 'block';
-            if (amountInput) amountInput.setAttribute('required', 'required');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Verify Receipt';
-            submitBtn.className = 'btn btn-success';
+            
+            // Check if order is fully paid
+            if (remainingAmount <= 0) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Order Fully Paid';
+                submitBtn.className = 'btn btn-secondary';
+                if (amountInput) amountInput.disabled = true;
+            } else {
+                if (amountInput) {
+                    amountInput.setAttribute('required', 'required');
+                    amountInput.disabled = false;
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Verify Receipt';
+                submitBtn.className = 'btn btn-success';
+            }
         } else if (status === 'Rejected') {
             rejectedSection.style.display = 'block';
             if (reasonInput) reasonInput.setAttribute('required', 'required');
@@ -179,7 +208,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 </script>
+
+
 
             </div>
         </div>
