@@ -3,6 +3,10 @@
 
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('css/receipt.css') }}">
+
+
+
 @endpush
 
 
@@ -11,227 +15,152 @@
 
 
     {{-- purchase order placing --}}
-    @if(Auth()->user()->role !== "Supplier")
+    @if(Auth()->user()->role !== "Supplier" && $receipt->status === 'Pending')
         <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true" >
             <div class="modal-dialog" style="width: auto">
-<form class="modal-content" method="POST" enctype="multipart/form-data"
-      style="width: 800px"
-      action="{{ route('receipts.action', $receipt->receipt_id) }}">
-    @csrf
+                <form class="modal-content" method="POST" enctype="multipart/form-data"
+                    style="width: 800px"
+                    action="{{ route('receipts.action', $receipt->receipt_id) }}">
+                    @csrf
 
-    <!-- error / success alerts -->
-    @if ($errors->any())
-        <div class="alert alert-danger m-2">
-            <h6><strong>Validation Errors:</strong></h6>
-            <ul class="mb-0 ps-3">
-                @foreach ($errors->all() as $error)
-                    <li style="font-size: 14px;">{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+                    <div class="modal-header">
+                        <p class="modal-title">Receipt Actions</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
 
-    @if (session('success'))
-        <div class="alert alert-success m-2">{{ session('success') }}</div>
-    @endif
+                    <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined"> info </span>
+                            <span>Verified receipts will deduct from the total amount of the tagged order.</span>
+                        </p>
 
-    @if (session('error'))
-        <div class="alert alert-danger m-2">
-            <h6><strong>Error:</strong></h6>
-            <p class="mb-0" style="font-size: 14px;">{{ session('error') }}</p>
-        </div>
-    @endif
-
-    <div class="modal-header">
-        <p class="modal-title">Receipt Actions</p>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
-
-    <div class="modal-body">
-        <p class="note-notify">
-            <span class="material-symbols-outlined"> info </span>
-            <span>Any changes will be logged.</span>
-        </p>
-
-        <div class="mt-2">
-            <label class="form-label">Action <span class="text-danger">*</span></label>
-            <select name="status" id="statusSelect" class="form-select" required>
-                <option value="">--Select status--</option>
-                <option value="Verified">Verify receipt</option>
-                <option value="Rejected">Reject receipt</option>
-            </select>
-        </div>
-
-        {{-- Verified Section --}}
-        <div id="verifiedSection" style="display: none;">
-            @if($remainingAmount <= 0)
-                <div class="alert alert-info mt-3">
-                    <strong>Notice:</strong> This order has been fully paid. No additional payment can be added.
-                </div>
-            @endif
-
-            <table class="table table-bordered mt-3" style="width:100%">
-                <thead class="table-light">
-                    <tr class="text-center">
-                        <td>Receipt ID</td>
-                        <td>Order ID</td>
-                        <td>Order Total</td>
-                        <td>Already Paid</td>
-                        <td>Remaining</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="text-center">{{ $receipt->receipt_id }}</td>
-                        <td class="text-center">
-                            <a href="{{ route('orders.order', $receipt->order_id) }}" 
-                               class="btn btn-link p-0" 
-                               target="_blank">
+                        <p>
+                            <strong>Receipt ID: </strong>
+                            <span>{{ $receipt->receipt_id }}</span>
+                        </p>
+                        <p>
+                            <strong>Order ID: </strong>
+                            <a href="{{ route('orders.order', $receipt->order_id) }}"  target="_blank">
                                 {{ $receipt->order_id }}
                             </a>
-                        </td>
-                        <td class="text-end">₱{{ number_format($receipt->order->total_amount, 2) }}</td>
-                        <td class="text-end text-success">₱{{ number_format($totalPaid, 2) }}</td>
-                        <td class="text-end fw-bold text-primary">₱{{ number_format($remainingAmount, 2) }}</td>
-                    </tr>
-                </tbody>
-            </table>
+                        </p>
 
-            <div class="form-group mt-2">
-                <label class="form-label">Amount Paying <span class="text-danger">*</span></label>
-                <input type="number" 
-                       name="amount" 
-                       id="amountInput"
-                       class="form-control" 
-                       step="0.01"
-                       min="0.01"
-                       max="{{ $remainingAmount }}"
-                       placeholder="Enter amount">
-                <small class="text-muted">
-                    Maximum remaining balance: ₱{{ number_format($remainingAmount, 2) }}
-                    @if($totalPaid > 0)
-                        <br><span class="text-success">✓ Previous payments: ₱{{ number_format($totalPaid, 2) }}</span>
+                        <div class="mt-2">
+                            <label class="form-label">Set status for this receipt <span class="text-danger">*</span></label>
+                            <select name="status" id="statusSelect"  required>
+                                <option value="">-- Select status --</option>
+                                <option value="Verified">Verify receipt</option>
+                                <option value="Rejected">Reject receipt</option>
+                            </select>
+                        </div>
+
+                        {{-- Verified Section --}}
+                        <div id="verifiedSection" style="display: none; border-radius: 5px;">
+                            @if($remainingAmount <= 0)
+                                <div class="alert alert-info mt-3">
+                                    <strong>Notice:</strong> This order has been fully paid. No additional payment can be added.
+                                </div>
+                            @endif
+
+                            <table class="table table-bordered mt-3" style="width:100%;  border-radius: 5px;;">
+                                <thead class="table-light">
+                                    <tr class="text-center">
+                                        <td>Order Total</td>
+                                        <td>Already Paid</td>
+                                        <td>Remaining</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-end">₱{{ number_format($receipt->order->total_amount, 2) }}</td>
+                                        <td class="text-end">₱{{ number_format($totalPaid, 2) }}</td>
+                                        <td class="text-end fw-bold text-success">₱{{ number_format($remainingAmount, 2) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="form-group mt-2">
+                                <label class="form-label">Amount Paying <span class="text-danger">*</span></label>
+                                <input type="number" 
+                                    name="amount" 
+                                    id="amountInput"
+                                    step="0.01"
+                                    min="0.01"
+                                    max="{{ $remainingAmount }}"
+                                    placeholder="Enter amount">
+                                <small class="text-muted">
+                                    Maximum remaining balance: ₱{{ number_format($remainingAmount, 2) }}
+                                    @if($totalPaid > 0)
+                                        <br><span class="text-success">✓ Previous payments: ₱{{ number_format($totalPaid, 2) }}</span>
+                                    @endif
+                                </small>
+                            </div>
+                            
+
+                            <div class="form-group mt-2">
+                                <label class="form-label">Remarks (Optional)</label>
+                                <input type="text" 
+                                    name="remarks" 
+                                    id="remarksInput"
+                                    maxlength="200" 
+                                    placeholder="Add any additional notes">
+                            </div>
+                        </div>
+
+                        {{-- Rejected Section --}}
+                        <div id="rejectedSection" style="display: none;">
+                            <div class="alert alert-warning mt-3">
+                                <strong>Warning:</strong> Rejecting this receipt will mark it as invalid. Please provide a clear reason.
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
+                                <textarea name="reason" 
+                                        id="reasonInput"
+                                        rows="3"
+                                        maxlength="200" 
+                                        placeholder="Explain why this receipt is being rejected"></textarea>
+                                <small class="text-muted">Required when rejecting a receipt</small>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="order_id" value="{{ $receipt->order_id }}">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" id="submitBtn" class="btn btn-primary" disabled>Confirm Action</button>
+                    </div>
+
+                    <input type="hidden" id="remainingAmount" value="{{ $remainingAmount }}">
+
+                </form>
+            </div>
+        </div>
+    @endif
+
+                    <!-- error / success alerts -->
+                    @if ($errors->any())
+                        <div class="alert alert-danger m-2">
+                            <h6><strong>Validation Errors:</strong></h6>
+                            <ul class="mb-0 ps-3">
+                                @foreach ($errors->all() as $error)
+                                    <li style="font-size: 14px;">{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
                     @endif
-                </small>
-            </div>
 
-            <div class="form-group mt-2">
-                <label class="form-label">Remarks (Optional)</label>
-                <input type="text" 
-                       name="remarks" 
-                       id="remarksInput"
-                       class="form-control" 
-                       maxlength="200" 
-                       placeholder="Add any additional notes">
-            </div>
-        </div>
+                    @if (session('success'))
+                        <div class="alert alert-success m-2">{{ session('success') }}</div>
+                    @endif
 
-        {{-- Rejected Section --}}
-        <div id="rejectedSection" style="display: none;">
-            <div class="alert alert-warning mt-3">
-                <strong>Warning:</strong> Rejecting this receipt will mark it as invalid. Please provide a clear reason.
-            </div>
-
-            <div class="form-group mt-2">
-                <label class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
-                <textarea name="reason" 
-                          id="reasonInput"
-                          class="form-control" 
-                          rows="3"
-                          maxlength="200" 
-                          placeholder="Explain why this receipt is being rejected"></textarea>
-                <small class="text-muted">Required when rejecting a receipt</small>
-            </div>
-        </div>
-
-        <input type="hidden" name="order_id" value="{{ $receipt->order_id }}">
-    </div>
-
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" id="submitBtn" class="btn btn-primary" disabled>Confirm Action</button>
-    </div>
-</form>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const statusSelect = document.getElementById('statusSelect');
-    const verifiedSection = document.getElementById('verifiedSection');
-    const rejectedSection = document.getElementById('rejectedSection');
-    const submitBtn = document.getElementById('submitBtn');
-    const amountInput = document.getElementById('amountInput');
-    const reasonInput = document.getElementById('reasonInput');
-    const remarksInput = document.getElementById('remarksInput');
-    const remainingAmount = {{ $remainingAmount }};
-
-    statusSelect.addEventListener('change', function() {
-        const status = this.value;
-        
-        // Reset sections
-        verifiedSection.style.display = 'none';
-        rejectedSection.style.display = 'none';
-        submitBtn.disabled = true;
-        
-        // Clear inputs
-        if (amountInput) amountInput.value = '';
-        if (reasonInput) reasonInput.value = '';
-        if (remarksInput) remarksInput.value = '';
-        
-        // Remove required attributes
-        if (amountInput) amountInput.removeAttribute('required');
-        if (reasonInput) reasonInput.removeAttribute('required');
-        
-        if (status === 'Verified') {
-            verifiedSection.style.display = 'block';
-            
-            // Check if order is fully paid
-            if (remainingAmount <= 0) {
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Order Fully Paid';
-                submitBtn.className = 'btn btn-secondary';
-                if (amountInput) amountInput.disabled = true;
-            } else {
-                if (amountInput) {
-                    amountInput.setAttribute('required', 'required');
-                    amountInput.disabled = false;
-                }
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Verify Receipt';
-                submitBtn.className = 'btn btn-success';
-            }
-        } else if (status === 'Rejected') {
-            rejectedSection.style.display = 'block';
-            if (reasonInput) reasonInput.setAttribute('required', 'required');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Reject Receipt';
-            submitBtn.className = 'btn btn-danger';
-        }
-    });
-});
-
-</script>
-
-
-
-            </div>
-        </div>
-    @endif
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+                    @if (session('error'))
+                        <div class="alert alert-danger m-2">
+                            <h6><strong>Error:</strong></h6>
+                            <p class="mb-0" style="font-size: 14px;">{{ session('error') }}</p>
+                        </div>
+                    @endif
 
    <div class="content-bg" >
         <div class="content-header">
@@ -243,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             <div class="title-actions">
                 <p class="heading">Receipt</p>
-                @if(Auth()->user()->role !== "Supplier")
+                @if(Auth()->user()->role !== "Supplier" && $receipt->status === 'Pending')
                     <div>
                         <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">File an action</button>
                     </div>
@@ -278,6 +207,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 @push('scripts')
+    <script src="{{ asset('js/receipts/receipt-action.js') }}"></script>
+<script src="{{ asset('js/receipt-actions.js') }}"></script>
+
 
 
 
