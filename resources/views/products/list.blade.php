@@ -9,7 +9,7 @@
     @if (auth()->user()->role !== 'Supplier')
 
         {{-- add product modal --}}
-        <div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        {{-- <div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <form class="modal-content"  method="POST" action="{{ route('product.add') }}">
                     @csrf
@@ -140,8 +140,109 @@
                 
                 </form>
             </div>
-        </div>
+        </div> --}}
+        <div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="modal-content" method="POST" action="{{ route('product.add') }}">
+                    @csrf
 
+                    @if (session('success'))
+                        <div class="alert alert-success" style="margin: 10px;">
+                            <h6 style="margin-bottom: 5px; font-weight: bold;">Success:</h6>
+                            <p style="margin: 0; font-size: 14px;">{{ session('success') }}</p>
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger" style="margin: 10px;">
+                            <h6 style="margin-bottom: 5px; font-weight: bold;">Error:</h6>
+                            <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
+                        </div>
+                    @endif
+                
+                    <div class="modal-header">
+                        <p class="modal-title" id="requestActionLabel">Add product form</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined"> info </span>
+                            <span>Products added will be automatically listed.</span>
+                        </p>
+
+                        <div class="modal-option-groups">
+                            <!-- Product ID -->
+                            <div class="form-group">
+                                <p><span class="req-asterisk">*</span> Product ID</p>
+                                <input type="text" name="product_id" maxlength="50" minlength="3" value="{{ old('product_id') }}" required>
+                                @error('product_id')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Name -->
+                            <div class="form-group">
+                                <p><span class="req-asterisk">*</span> Name</p>
+                                <input type="text" name="name" maxlength="255" minlength="3" value="{{ old('name') }}" required>
+                                @error('name')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Base Price (nullable in migration) -->
+                            <div class="form-group">
+                                <p>Base price (Optional)</p>
+                                <input type="number" step="0.01" name="base_price" placeholder="&#8369; 0.00" value="{{ old('base_price') }}">
+                                @error('base_price')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Category - MUST match migration enum values -->
+                            <div class="form-group">
+                                <p><span class="req-asterisk">*</span> Category</p>
+                                <select name="category" required>
+                                    <option value="">-- Select category --</option>
+                                    <option value="By products" {{ old('category') == 'By products' ? 'selected' : '' }}>By products</option>
+                                    <option value="Cut ups" {{ old('category') == 'Cut ups' ? 'selected' : '' }}>Cut ups</option>
+                                    <option value="Fillets" {{ old('category') == 'Fillets' ? 'selected' : '' }}>Fillets</option>
+                                    <option value="Dressed chickens" {{ old('category') == 'Dressed chickens' ? 'selected' : '' }}>Dressed chickens</option>
+                                    <option value="Uncategorized" {{ old('category') == 'Uncategorized' ? 'selected' : '' }}>Uncategorized</option>
+                                </select>                            
+                                @error('category')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Measurement Type - MUST match migration enum values -->
+                            <div class="form-group">
+                                <p><span class="req-asterisk">*</span> Measurement type</p>
+                                <select name="measurement_type" required>
+                                    <option value="">-- Select measurement type --</option>
+                                    <option value="Heads" {{ old('measurement_type') == 'Heads' ? 'selected' : '' }}>Heads</option>
+                                    <option value="Kilos" {{ old('measurement_type') == 'Kilos' ? 'selected' : '' }}>Kilos</option>
+                                    <option value="Heads&Kilos" {{ old('measurement_type') == 'Heads&Kilos' ? 'selected' : '' }}>Heads & Kilos</option>
+                                </select>                            
+                                @error('measurement_type')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Hidden Fields -->
+                            <input type="hidden" name="status" value="Listed">
+                            <input type="hidden" name="added_by" value="{{ auth()->user()->user_id }}">
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="add-staff-submit">List product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
         {{-- set ceiling modal --}}
         <div class="modal fade" id="set-ceiling-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">

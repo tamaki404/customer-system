@@ -139,28 +139,26 @@
         </div>
     @endif
 
-                    <!-- error / success alerts -->
-                    @if ($errors->any())
-                        <div class="alert alert-danger m-2">
-                            <h6><strong>Validation Errors:</strong></h6>
-                            <ul class="mb-0 ps-3">
-                                @foreach ($errors->all() as $error)
-                                    <li style="font-size: 14px;">{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    @if (session('success'))
-                        <div class="alert alert-success m-2">{{ session('success') }}</div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="alert alert-danger m-2">
-                            <h6><strong>Error:</strong></h6>
-                            <p class="mb-0" style="font-size: 14px;">{{ session('error') }}</p>
-                        </div>
-                    @endif
+    <!-- error / success alerts -->
+    @if ($errors->any())
+        <div class="alert alert-danger m-2">
+            <h6><strong>Validation Errors:</strong></h6>
+            <ul class="mb-0 ps-3">
+                @foreach ($errors->all() as $error)
+                    <li style="font-size: 14px;">{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    @if (session('success'))
+        <div class="alert alert-success m-2">{{ session('success') }}</div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-danger m-2">
+            <h6><strong>Error:</strong></h6>
+            <p class="mb-0" style="font-size: 14px;">{{ session('error') }}</p>
+        </div>
+    @endif
 
    <div class="content-bg" >
         <div class="content-header">
@@ -183,21 +181,68 @@
         </div>
 
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
-            <div class="purchase-order-div" style="display: flex; flex-direction: row; gap: 20px">
-                <div class="po-image-div">
-                    @php
-                        $imgSrc = $receipt->image 
-                            ? ('data:' . $receipt->image_mime_type . ';base64,' . base64_encode($receipt->image))
-                            : asset('assets/default-image.jpg');
-                    @endphp
-                    <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image"> 
-                </div>
+            {{--  Basic Receipt Info --}}
+            <div class="row mb-3">
+                
+                <p><strong>Supplier:</strong> {{ $receipt->supplier->company_name }}</p>
+                <p><strong>Receipt ID:</strong> {{ $receipt->receipt_id }}</p>
+                <p><strong>Order ID:</strong> {{ $receipt->order_id }}</p>
 
+                @if(Auth()->user()->role !== "Supplier" && $receipt->status !== 'Pending')
+                    <p><strong>Action by:</strong> {{ $receipt->action_by }}</p>
+                    <p><strong>Action at:</strong> {{ $receipt->action_at }}</p>
+                @endif
 
+                <p><strong>Status:</strong>
+                @if($receipt->status === 'Verified')
+                    <span class="badge bg-success">Verified</span>
+                @elseif($receipt->status === 'Rejected')
+                    <span class="badge bg-danger">Rejected</span>
+                @else
+                    <span class="badge bg-warning text-dark">{{ $receipt->status }}</span>
+                @endif
+                </p>
+                @if($receipt->status === 'Rejected' && $receipt->reason !== NULL)
+                    <p><strong>Reason for Rejection:</strong> {{ $receipt->reason }}</p>
+                @elseif($receipt->status === 'Verified')
+                    {{-- Payment Information --}}
+                    <div class="row mb-3">
+                        <p><strong>Total Paid:</strong> ₱{{ number_format($totalPaid, 2) }}</p>
+                    </div>
+                @endif
             </div>
+
+
+
+            {{-- Image Preview --}}
+            @if($receipt->image)
+            <div class="mb-3">
+                <strong>Uploaded Receipt:</strong><br>
+                <img src="data:{{ $receipt->image_mime_type }};base64,{{ base64_encode($receipt->image) }}"
+                    alt="Receipt Image"
+                    class="img-fluid border mt-2"
+                    style="max-width: 500px;">
+            </div>
+            @else
+            <div class="alert alert-secondary">
+                No image uploaded for this receipt.
+            </div>
+            @endif
+
+            {{-- Remarks (Optional) --}}
+            @if(!empty($receipt->remarks))
+                <div class="mt-3">
+                    <strong>Remarks:</strong>
+                    <p class="mb-0">{{ $receipt->remarks }}</p>
+                </div>
+            @endif
 
        
         </div>
+
+
+    </div>
+
 
 
    </div>

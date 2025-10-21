@@ -13,15 +13,22 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->decimal('base_price', 10, 2);
-            $table->string('category');
-            $table->string('measurement_type');
-            $table->string('unit')->nullable();
-            $table->string('weight')->nullable();
-            $table->string('added_by')->nullable();
-            $table->string('status');
+            // $table->string('name');
+            // $table->decimal('base_price', 10, 2);
+            // $table->string('category');
+            // $table->string('measurement_type');
+            // $table->string('unit')->nullable();
+            // $table->string('weight')->nullable();
+            // $table->string('added_by')->nullable();
+            // $table->string('status');
 
+            $table->string('product_id')->unique();
+            $table->string('name')->required();
+            $table->decimal('base_price', 10, 2)->nullable();
+            $table->enum('category', ['By products', 'Cut ups', 'Fillets', 'Dressed chickens', 'Uncategorized'])->required();
+            $table->enum('measurement_type', ['Heads', 'Kilos', 'Heads&Kilos'])->required();
+            $table->string('added_by')->required();
+            $table->string('status')->default('Listed');
             $table->timestamps();
         });
     }

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Suppliers;
 use App\Models\Logs;
 use App\Models\OrderHistory;
+use App\Models\Orders;
 
 
 class ReceiptController extends Controller
@@ -108,14 +109,11 @@ class ReceiptController extends Controller
             $user = Auth::user();
 
             if ($user->role !== "Supplier") {
-                $receipts = Receipts::all();
+                $receipts = Receipts::orderBy('created_at', 'desc')->get();
             } 
             elseif ($user->role === "Supplier") {
                 $supplier = Suppliers::where('user_id', $user->user_id)->first();
-                $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->get();
-    
-
-
+                $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->orderBy('created_at', 'desc')->get();
             }
             return view('receipts.list', [
                 'user' => $user,
@@ -148,143 +146,130 @@ class ReceiptController extends Controller
             ]);
         }
 
-public function receiptAction(Request $request, $receipt_id)
-{
-    // Conditional validation based on status
-    $rules = [
-        'order_id' => 'required|exists:orders,order_id',
-        'status'   => 'required|in:Verified,Rejected',
-    ];
+        public function receiptAction(Request $request, $receipt_id)
+        {
+            // Conditional validation based on status
+            $rules = [
+                'order_id' => 'required|exists:orders,order_id',
+                'status'   => 'required|in:Verified,Rejected',
+            ];
 
-    if ($request->status === 'Verified') {
-        $rules['amount'] = [
-            'required',
-            'numeric',
-            'min:0.01',
-            function ($attribute, $value, $fail) use ($request) {
-                $order = Order::where('order_id', $request->order_id)->first();
-                
-                if (!$order) {
-                    $fail('Order not found.');
-                    return;
+            if ($request->status === 'Verified') {
+                $rules['amount'] = [
+                    'required',
+                    'numeric',
+                    'min:0.01',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $order = Orders::where('order_id', $request->order_id)->first();
+                        if (!$order) {
+                            $fail('Order not found.');
+                            return;
+                        }
+
+                        $totalPaid = Receipts::where('order_id', $request->order_id)
+                            ->where('status', 'Verified')
+                            ->sum('total_amount');
+
+                        $remainingAmount = $order->total_amount - $totalPaid;
+
+                        if ($value > $remainingAmount) {
+                            $fail('The amount cannot exceed the remaining balance of ₱' . number_format($remainingAmount, 2) .
+                                ' (Order total: ₱' . number_format($order->total_amount, 2) .
+                                ', Already paid: ₱' . number_format($totalPaid, 2) . ')');
+                        }
+                    }
+                ];
+                $rules['remarks'] = 'nullable|string|max:200';
+            } elseif ($request->status === 'Rejected') {
+                $rules['reason'] = 'required|string|max:200';
+            }
+
+            $request->validate($rules);
+
+            try {
+                DB::beginTransaction();
+
+                $receipt = Receipts::where('receipt_id', $receipt_id)->firstOrFail();
+
+                // Check if already processed
+                if (in_array($receipt->status, ['Verified', 'Rejected'])) {
+                    return redirect()->back()->with('error', 'This receipt has already been processed.');
                 }
-                
-                // Calculate total already paid from verified receipts
-                $totalPaid = Receipts::where('order_id', $request->order_id)
-                    ->where('status', 'Verified')
-                    ->sum('total_amount');
-                
-                $remainingAmount = $order->total_amount - $totalPaid;
-                
-                if ($value > $remainingAmount) {
-                    $fail('The amount cannot exceed the remaining balance of ₱' . number_format($remainingAmount, 2) . 
-                          ' (Order total: ₱' . number_format($order->total_amount, 2) . 
-                          ', Already paid: ₱' . number_format($totalPaid, 2) . ')');
+
+                // Check if fully paid
+                if ($request->status === 'Verified') {
+                    $order = Orders::where('order_id', $request->order_id)->first();
+                    $totalPaid = Receipts::where('order_id', $request->order_id)
+                        ->where('status', 'Verified')
+                        ->sum('total_amount');
+
+                    $remainingAmount = $order->total_amount - $totalPaid;
+
+                    if ($remainingAmount <= 0) {
+                        return redirect()->back()->with('error', 'This order has already been fully paid.');
+                    }
+
+                    if ($request->amount > $remainingAmount) {
+                        return redirect()->back()->with('error',
+                            'Amount exceeds remaining balance of ₱' . number_format($remainingAmount, 2));
+                    }
                 }
+
+                // ✅ Update receipt with action_by and action_at
+                $updateData = [
+                    'status'     => $request->status,
+                    'action_by'  => Auth::user()->user_id,   // who processed it
+                    'action_at'  => now(),                   // when it was processed
+                ];
+
+                if ($request->status === 'Verified') {
+                    $updateData['total_amount'] = $request->amount;
+                } elseif ($request->status === 'Rejected') {
+                    $updateData['reason'] = $request->reason;
+                }
+
+                $receipt->update($updateData);
+
+                // Logging
+                $date = now()->format('Ymd');
+                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                $user_id = Auth::user()->user_id;
+
+                $logDescription = $request->status === 'Verified'
+                    ? "Staff ($user_id) verified receipt '{$receipt_id}' with amount ₱" . number_format($request->amount, 2)
+                    : "Staff ($user_id) rejected receipt '{$receipt_id}'. Reason: {$request->reason}";
+
+                Logs::create([
+                    'user_id'     => $user_id,
+                    'action'      => "{$request->status} receipt",
+                    'log_id'      => $log_id,
+                    'description' => $logDescription,
+                    'entity'      => 'Receipts',
+                    'entity_id'   => $receipt->id,
+                ]);
+
+                DB::commit();
+
+                $successMessage = $request->status === 'Verified'
+                    ? "Receipt {$receipt->receipt_id} verified successfully. Amount paid: ₱" . number_format($request->amount, 2)
+                    : "Receipt {$receipt->receipt_id} has been rejected.";
+
+                return redirect()->back()->with('success', $successMessage);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+
+                \Log::error('Receipt update failed:', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'receipt_id' => $receipt_id,
+                    'request_data' => $request->except(['_token']),
+                ]);
+
+                return redirect()->back()
+                    ->with('error', 'Failed to update receipt. Please try again.')
+                    ->withInput();
             }
-        ];
-        $rules['remarks'] = 'nullable|string|max:200';
-    } elseif ($request->status === 'Rejected') {
-        $rules['reason'] = 'required|string|max:200';
-    }
-
-    $request->validate($rules);
-
-    try {
-        DB::beginTransaction();
-
-        $receipt = Receipts::where('receipt_id', $receipt_id)->firstOrFail();
-
-        // Check if receipt is already processed
-        if (in_array($receipt->status, ['Verified', 'Rejected'])) {
-            return redirect()->back()->with('error', 'This receipt has already been processed.');
         }
 
-        // For verification, check if order is already fully paid
-        if ($request->status === 'Verified') {
-            $order = Order::where('order_id', $request->order_id)->first();
-            $totalPaid = Receipts::where('order_id', $request->order_id)
-                ->where('status', 'Verified')
-                ->sum('total_amount');
-            
-            $remainingAmount = $order->total_amount - $totalPaid;
-            
-            if ($remainingAmount <= 0) {
-                return redirect()->back()->with('error', 'This order has already been fully paid.');
-            }
-            
-            if ($request->amount > $remainingAmount) {
-                return redirect()->back()->with('error', 
-                    'Amount exceeds remaining balance of ₱' . number_format($remainingAmount, 2));
-            }
-        }
-
-        // Update receipt based on status
-        $updateData = ['status' => $request->status];
-        
-        if ($request->status === 'Verified') {
-            $updateData['total_amount'] = $request->amount;
-        }
-
-        $receipt->update($updateData);
-
-        $date = now()->format('Ymd');
-        $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
-        $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
-        $user_id = Auth::user()->user_id;
-
-        // Create log entry
-        $logDescription = $request->status === 'Verified'
-            ? "Staff ($user_id) verified receipt '{$receipt_id}' with amount ₱" . number_format($request->amount, 2)
-            : "Staff ($user_id) rejected receipt '{$receipt_id}'. Reason: {$request->reason}";
-
-        Logs::create([
-            'user_id'     => $user_id,
-            'action'      => "{$request->status} receipt",
-            'log_id'      => $log_id,
-            'description' => $logDescription,
-            'entity'      => 'Receipts',
-            'entity_id'   => $receipt->id,
-        ]);
-
-        // Create order history entry
-        OrderHistory::create([
-            'action_by'  => $user_id,
-            'order_id'   => $request->order_id,
-            'action_at'  => now(),
-            'history_id' => $history_id,
-            'label'      => 'Receipt',
-            'amount'     => $request->status === 'Verified' ? $request->amount : null,
-            'status'     => $request->status,
-            'remarks'    => $request->status === 'Verified' 
-                ? $request->remarks 
-                : $request->reason,
-        ]);
-
-        DB::commit();
-
-        $successMessage = $request->status === 'Verified'
-            ? "Receipt {$receipt->receipt_id} verified successfully. Amount paid: ₱" . number_format($request->amount, 2)
-            : "Receipt {$receipt->receipt_id} has been rejected.";
-
-        return redirect()->back()->with('success', $successMessage);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-
-        \Log::error('Receipt update failed:', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-            'receipt_id' => $receipt_id,
-            'request_data' => $request->except(['_token']),
-        ]);
-
-        return redirect()->back()
-            ->with('error', 'Failed to update receipt. Please try again.')
-            ->withInput();
-    }
-}
-
-  
-
-}
+};

@@ -30,3 +30,6 @@ textarea{
 .modal-body .note-notify{
     margin-bottom: 10px;
 }
+.row p{
+    margin: 0;
+}

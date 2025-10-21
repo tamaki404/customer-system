@@ -19,9 +19,12 @@ return new class extends Migration
             $table->enum('status', ['Pending', 'Verified', 'Rejected'])
                 ->default('Pending');
             $table->decimal('total_amount', 12, 2)->default(0)->nullable();
+            $table->string('reason')->nullable();
             $table->string('image_mime_type')->nullable();
             $table->string('image_filename')->nullable();
             $table->unsignedInteger('image_size')->nullable(); 
+            $table->string('action_by')->nullable();
+            $table->timestamp('action_at')->nullable();
 
             $table->timestamps();
         });

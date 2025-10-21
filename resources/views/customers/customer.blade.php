@@ -132,7 +132,7 @@
                                                 @if ($ceilingPrice)
                                                     <td>Ceiling price</td>
                                                 @endif
-                                                <td>Agreed price</td>
+                                                <td>Final price</td>
                                             </tr>
                                         </thead>
                                         <tbody>
