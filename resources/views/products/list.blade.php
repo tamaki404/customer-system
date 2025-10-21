@@ -256,19 +256,19 @@
                                             <span class="material-symbols-outlined" style="font-size: 16px">
                                                 price_change
                                             </span>
-                                            Ceiling price
+                                             Active Promos & Discounts
                                         </th>
                                     </tr>
                                     
                                 </thead>
                                     <tbody>
-                                        @foreach($ceilings as $ceiling)
+                                        @foreach($activePromos as $promo)
                                             @php
                                                 $now = \Carbon\Carbon::now();
-                                                if($ceiling->start_date <= $now && $ceiling->end_date >= $now) {
+                                                if($promo->start_date <= $now && $promo->end_date >= $now) {
                                                     $status = 'Active';
                                                     $badge = 'success';
-                                                } elseif($ceiling->start_date > $now) {
+                                                } elseif($promo->start_date > $now) {
                                                     $status = 'Upcoming';
                                                     $badge = 'warning';
                                                 } else {
@@ -278,20 +278,26 @@
                                             @endphp
 
                                             <tr>
-                                                <td>
-                                                    <strong>[{{ ucfirst($ceiling->city_selected) }}]</strong> – 
-                                                    @if($ceiling->method === 'Fixed')
-                                                        ₱{{ number_format($ceiling->fixed_price, 2) }}
+                                                <td title="Click to view details" style="cursor: pointer;" onclick="window.location.href='{{ route('products.product', ['product_id' => $promo->product->product_id]) }}'">
+                                                    <strong>[{{ $promo->category }}] - {{ ucfirst($promo->name) }}</strong>
+                                                    <p style="margin: 0;">
+                                                        <span>{{ ucfirst($promo->product->name) }}</span>
+                                                        
+                                                    </p>
+                                                    @if($promo->value_type === 'Fixed')
+                                                        ₱{{ number_format($promo->value, 2) }}
+                                                        <span class="badge bg-{{ $badge }}">{{ $promo->type }}</span>
                                                     @else
-                                                        {{ $ceiling->percentage_ceiling }}%
+                                                        {{ $promo->value }}%
+                                                        <span class="badge bg-{{ $badge }}">{{ $promo->type }}</span>
                                                     @endif
                                                     <br>
                                                     <small class="text-muted">
-                                                        {{ \Carbon\Carbon::parse($ceiling->start_date)->format('M d, Y') }} → 
-                                                        {{ \Carbon\Carbon::parse($ceiling->end_date)->format('M d, Y') }}
+                                                        {{ \Carbon\Carbon::parse($promo->start_date)->format('M d, Y') }} → 
+                                                        {{ \Carbon\Carbon::parse($promo->end_date)->format('M d, Y') }}
                                                     </small>
                                                     &nbsp;&nbsp;
-                                                    <span class="badge bg-{{ $badge }}">{{ $status }}</span>
+                                                    {{-- <span class="badge bg-{{ $badge }}">{{ $status }}</span> --}}
                                                 </td>
                                             </tr>
                                         @endforeach

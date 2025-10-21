@@ -13,14 +13,14 @@ use App\Models\Logs;
 use App\Models\ProductSetting;
 use App\Models\Address;
 use Carbon\Carbon;
+use App\Models\SaleDiscount;
+
 
 class ProductController extends Controller
 {
 
         public function productList(Request $request)
         {
-
-
             $now = Carbon::now();
 
             $user = Auth::user();
@@ -39,8 +39,11 @@ class ProductController extends Controller
             $supplierCounts = Address::selectRaw('LOWER(office_city) as city, COUNT(DISTINCT supplier_id) as count')
                 ->groupBy('city')
                 ->pluck('count', 'city');
-            
             $ceilings = GlobalCeiling::orderBy('start_date', 'desc')->get();
+            $activePromos = SaleDiscount::where('start_date', '<=', now())
+                ->where('end_date', '>=', now())
+                ->limit(11)
+                ->get();
 
 
             return view('products.list', [
@@ -51,6 +54,8 @@ class ProductController extends Controller
                 'ceilings' => $ceilings,
 
                 'supplierCounts' => $supplierCounts,
+
+                'activePromos' => $activePromos,
 
             ]);
         }

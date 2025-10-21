@@ -21,6 +21,7 @@ use App\Models\Address;
 use App\Models\ProductRequirements;
 use App\Models\PriceHistory;
 use App\Models\GlobalCeiling;
+use App\Models\SaleDiscount;
 
 use App\Models\ProductSetting;
 use App\Models\Credits;
@@ -37,7 +38,7 @@ class CustomersController extends Controller
         {
             $user = Auth::user();
             $supplier = Suppliers::where('user_id', $user->user_id)->first() ;
-
+            $products = Products::where('status', 'Listed')->get();
 
             $suppliers = Suppliers::select(
             'suppliers.*',
@@ -56,6 +57,7 @@ class CustomersController extends Controller
                 'user' => $user,
                 'supplier' => $supplier,
                 'suppliers' => $suppliers,
+                'products' => $products,
             ]);
         }
 
@@ -77,12 +79,12 @@ class CustomersController extends Controller
             $staffAgent = Staffs::where('staff_id', $accStatus->staff_id)->first();
             $documents  = Documents::where('supplier_id', $supplier_id)->get();
             $products   = Products::where('status', 'Listed')->get();
-$productRequirements = \App\Models\ProductRequirements::with([
-    'product',
-    'settings' => function($query) use ($supplier_id) {
-        $query->where('supplier_id', $supplier_id);
-    }
-])->where('supplier_id', $supplier_id)->get();
+            $productRequirements = ProductRequirements::with([
+                'product',
+                'settings' => function($query) use ($supplier_id) {
+                    $query->where('supplier_id', $supplier_id);
+                }
+            ])->where('supplier_id', $supplier_id)->get();
 
             $prodSpecs   = ProductRequirements::where('supplier_id', $supplier_id)->get();
             $representatives   = Representatives::where('supplier_id', $supplier_id)->get();

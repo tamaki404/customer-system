@@ -21,7 +21,8 @@ use App\Http\Controllers\{
     ProductSettingController,
     ProductSalesController,
     GlobalCeilingController,
-    DeliveryController
+    DeliveryController,
+    SaleDiscountController
 };
 
 /*
@@ -262,6 +263,10 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
     // products
     Route::put('/products/{product_id}/update', [ProductController::class, 'update'])->name('product.update');
+
+    //sale/discount
+    Route::post('/set-sale-discount', [SaleDiscountController::class, 'store'])->name('set.sale_discount');
+
 
 });
 

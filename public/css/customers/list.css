@@ -1,0 +1,13 @@
+.form-control {
+    outline: none;
+    font-size: 14px;
+    color: #333;
+
+}
+.form-select{
+    font-size: 14px;
+    color: #333;
+}
+.form-group label, .form-group label span, .form-group p {
+    margin: 0;
+}
