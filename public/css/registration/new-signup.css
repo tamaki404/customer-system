@@ -274,3 +274,65 @@ body{
     background-color: #e6c74c;
 
 }
+
+
+
+
+
+/* product search and select */
+
+.category-card {
+                            transform-origin: center;
+}
+.category-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.25) !important;
+}
+.category-card.active {
+    transform: scale(1.05);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.35) !important;
+    border: 3px solid white;
+}
+.category-card:active {
+    transform: scale(0.98);
+}
+#product-select {
+    transition: all 0.3s;
+}
+#product-select:focus {
+    outline: none;
+    border-color: #f5922a;
+    box-shadow: 0 0 0 3px rgba(245, 146, 42, 0.2);
+}
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    z-index: 1;
+}
+.category-card:active::before {
+    width: 300px;
+    height: 300px;
+}
+.remove-product-btn:hover {
+    background: #d32f2f !important;
+    transform: scale(1.05);
+}
+@media (max-width: 768px) {
+    .category-card {
+        padding: 20px !important;
+    }
+    .category-card h3 {
+        font-size: 16px !important;
+    }
+    .category-card p {
+        font-size: 12px !important;
+    }
+}

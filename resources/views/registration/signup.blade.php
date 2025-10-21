@@ -6,9 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Signup</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
-    <style>body {  }</style>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
     <link rel="stylesheet" href="{{ asset('css/registration/new-signup.css') }}">
     <link rel="stylesheet" href="{{ asset('css/links/scroll-bar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/displays/alerts.css') }}">
@@ -62,14 +60,14 @@
         }
 
     </style>
-<script>
-    // Pass PHP session data to JavaScript
-    window.preserveStep = @json(session('preserve_step'));
-    window.validationFailed = @json(session('validation_failed'));
-</script>
+    <script>
+        // Pass PHP session data to JavaScript
+        window.preserveStep = @json(session('preserve_step'));
+        window.validationFailed = @json(session('validation_failed'));
+    </script>
 </head>
-<body style="overflow: hidden">
 
+<body style="overflow: hidden">
 
     @if ($errors->any())
         <div class="alert alert-danger auto-hide">
@@ -110,7 +108,6 @@
 
             <form method="POST" action="{{ route('registration.supplier.register') }}" class="log-form" id="registerForm" enctype="multipart/form-data">
                 @csrf
-
 
                 <div class="step-section" id="step1">
                     <p class="step-title-info">
@@ -480,51 +477,132 @@
                         <span class="title">3/4 Customer product requirements</span>
                         <span class="info">Answer the inputs below regarding your product requirements and delivery preferences</span>
                     </p>
-                    
+
+                    <!-- Product Search Section -->
                     <section class="group-details" style="border-top-left-radius: 5px; border-top-right-radius: 5px;">
                         <p class="group-name">Product search and add</p>
                         <div class="form-list">
-                            <div class="input-forms" style="margin-bottom: 20px; width: 45%;">
-                                <label for="product-search"><span class="req-asterisk">*</span> Search for a product</label>
-                                <input type="text" id="product-search" style="width: 100%;" placeholder="Type to search products...">
-                                <div id="product-search-results" style="display:none; width: 300px; position: absolute; background: #fff; border: 1px solid #ccc; z-index: 10;  max-height: 200px; overflow-y: auto; border-radius: 10px; padding: 10px;">
-                                    
+                            <!-- Category cards in a grid layout like a map chart -->
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%;">
+                                
+                                <!-- By Products Card -->
+                                <div class="category-card" data-category="By products" style="background: linear-gradient(135deg, #ff9a56 0%, #f5922a 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; position: relative; overflow: hidden;">
+                                    <div style="position: relative; z-index: 2;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">nutrition</span>
+                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">By Products</h3>
+                                        </div>
+                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Organs, bones, and other parts</p>
+                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                                            <span data-count="By products">0</span> products
+                                        </div>
+                                    </div>
+                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
                                 </div>
+
+                                <!-- Cut Ups Card -->
+                                <div class="category-card" data-category="Cut ups" style="background: linear-gradient(135deg, #ff7b7b 0%, #ff5252 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; position: relative; overflow: hidden;">
+                                    <div style="position: relative; z-index: 2;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">cut</span>
+                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Cut Ups</h3>
+                                        </div>
+                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Individual chicken parts</p>
+                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                                            <span data-count="Cut ups">0</span> products
+                                        </div>
+                                    </div>
+                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                                </div>
+
+                                <!-- Fillets Card -->
+                                <div class="category-card" data-category="Fillets" style="background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; position: relative; overflow: hidden;">
+                                    <div style="position: relative; z-index: 2;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">restaurant</span>
+                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Fillets</h3>
+                                        </div>
+                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Boneless chicken cuts</p>
+                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                                            <span data-count="Fillets">0</span> products
+                                        </div>
+                                    </div>
+                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                                </div>
+
+                                <!-- Dressed Chickens Card -->
+                                <div class="category-card" data-category="Dressed chickens" style="background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; position: relative; overflow: hidden;">
+                                    <div style="position: relative; z-index: 2;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">egg</span>
+                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Dressed Chickens</h3>
+                                        </div>
+                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Whole chicken varieties</p>
+                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                                            <span data-count="Dressed chickens">0</span> products
+                                        </div>
+                                    </div>
+                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                                </div>
+
                             </div>
+
+                            <!-- Dropdown that appears when category is clicked -->
+                            <div class="input-forms" id="product-select-container" style="display: none; margin-bottom: 20px; width: 100%; max-width: 500px;">
+                                <label for="product-select">
+                                    <span class="req-asterisk">*</span> 
+                                    Select a product from <span id="selected-category-name" style="font-weight: bold; color: #f5922a;"></span>
+                                </label>
+                                <select id="product-select" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #ddd; font-size: 14px; background: white; cursor: pointer;">
+                                    <option value="">-- Select a product --</option>
+                                </select>
+                            </div>
+
+                            <!-- Hidden div containing all products data -->
                             <div id="all-products" style="display:none;">
                                 @foreach($products as $product)
-                                    <div class="product-item" data-id="{{ $product->product_id }}" data-name="{{ $product->name }}">{{ $product->name }}</div>
+                                    <div class="product-item" 
+                                        data-id="{{ $product->product_id }}" 
+                                        data-name="{{ $product->name }}"
+                                        data-category="{{ $product->category }}">
+                                    </div>
                                 @endforeach
                             </div>
                         </div>
                     </section>
 
+                    <!-- Product Details Verification Section (THIS IS WHERE FORMS APPEAR) -->
                     <section class="group-details">
-                        <p class="group-name">Product details verification</p>
-                        <div class="form-list" id="product-forms-container">
-                            <!-- Forms will be injected here -->
+                        <p class="group-name">Product details</p>
+                        <div class="form-list" id="product-forms-container" style="display: flex; flex-direction: row; gap: 20px;">
+                            <!-- Product forms will be dynamically added here -->
                         </div>
 
-                        <template id="product-form-template">
-                          
-                            <div class="product-form-main" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; width: 45%;">
-                                <h4 style="margin: 0 0 15px 0; font-weight: normal; font-size: 14px;">Product: __PRODUCT_NAME__</h4>
-                                <input type="hidden" name="product_ids[]"  value="__PRODUCT_ID__">
+                        <!-- Product Form Template (Hidden) -->
+                        <template id="product-form-template" style="display: flex; flex-direction: row; flex-wrap: wrap;">
+                            <div class="product-form-main" style="margin-bottom: 20px; padding: 20px; border: 2px solid #ddd; border-radius: 8px; width: 40%; background: #f9f9f9;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                    <h4 style="margin: 0; font-weight: 600; font-size: 16px; color: #333;">Product: __PRODUCT_NAME__</h4>
+                                    <button type="button" class="remove-product-btn" onclick="this.closest('.product-form-main').remove();" style="background: #ff5252; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; transition: all 0.3s;">
+                                        <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">delete</span>
+                                        Remove
+                                    </button>
+                                </div>
+                                
+                                <input type="hidden" name="product_ids[]" value="__PRODUCT_ID__">
 
                                 <div style="display: flex; flex-wrap: wrap; gap: 15px;">
                                     <div class="input-forms">
-                                        <label for="product_name"><span class="req-asterisk">*</span> Name</label>
-                                        <input id="product_name" type="text" name="product_name___PRODUCT_ID__" value="__PRODUCT_NAME__" readonly>
-
+                                        <label for="product_name___PRODUCT_ID__"><span class="req-asterisk">*</span> Name</label>
+                                        <input id="product_name___PRODUCT_ID__" type="text" name="product_name___PRODUCT_ID__" value="__PRODUCT_NAME__" readonly style="background: #e9ecef;">
                                     </div>
 
                                     <div class="input-forms">
-                                        <label for="fresh-__PRODUCT_ID__"><span class="req-asterisk">*</span> Product condition</label>
-                                        <div  style="display: flex; gap: 15px; align-items: center;">
+                                        <label><span class="req-asterisk">*</span> Product condition</label>
+                                        <div style="display: flex; gap: 15px; align-items: center;">
                                             <div style="display: flex; align-items: center; gap: 5px;">
                                                 <input type="checkbox" name="condition___PRODUCT_ID__[]" id="fresh-__PRODUCT_ID__" value="fresh">
                                                 <label for="fresh-__PRODUCT_ID__">Fresh</label>
-
                                             </div>
                                             <div style="display: flex; align-items: center; gap: 5px;">
                                                 <input type="checkbox" name="condition___PRODUCT_ID__[]" id="frozen-__PRODUCT_ID__" value="frozen">
@@ -534,24 +612,24 @@
                                     </div>
 
                                     <div class="input-forms">
-                                        <label for="weight_req"><span class="req-asterisk">*</span> Weight requirement</label>
-                                        <input type="text" id="weight_req" name="weight_requirement___PRODUCT_ID__" required maxlength="50">
+                                        <label for="weight_req___PRODUCT_ID__"><span class="req-asterisk">*</span> Weight requirement</label>
+                                        <input type="text" id="weight_req___PRODUCT_ID__" name="weight_requirement___PRODUCT_ID__" required maxlength="50" placeholder="e.g., 1-1.2kg">
                                     </div>
 
                                     <div class="input-forms">
-                                        <label for="select_primary"><span class="req-asterisk">*</span> Packaging requirement</label>
-                                        <div  style="display: flex; gap: 10px;">
+                                        <label><span class="req-asterisk">*</span> Packaging requirement</label>
+                                        <div style="display: flex; gap: 10px;">
                                             <div>
-                                                <label for="select_primary" style="font-size: 12px; display: block;">Primary</label>
-                                                <select id="select_primary" name="primary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
-                                                    <option  value=""  disabled selected>-- Select primary packaging --</option>
+                                                <label for="primary___PRODUCT_ID__" style="font-size: 12px; display: block;">Primary</label>
+                                                <select id="primary___PRODUCT_ID__" name="primary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
+                                                    <option value="" disabled selected>-- Select primary --</option>
                                                     <option value="sunny_plastic">Sunny plastic</option>
                                                 </select>
                                             </div>
                                             <div>
-                                                <label for="sec_packaging" style="font-size: 12px; display: block;">Secondary</label>
-                                                <select id="sec_packaging" name="secondary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
-                                                    <option value="" disabled selected>-- Select secondary packaging --</option>
+                                                <label for="secondary___PRODUCT_ID__" style="font-size: 12px; display: block;">Secondary</label>
+                                                <select id="secondary___PRODUCT_ID__" name="secondary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
+                                                    <option value="" disabled selected>-- Select secondary --</option>
                                                     <option value="sack_wrapper">Sack wrapper</option>
                                                 </select>
                                             </div>
@@ -559,23 +637,17 @@
                                     </div>
 
                                     <div class="input-forms">
-                                        <label for="labeling_req"><span class="req-asterisk">*</span> Labeling requirement</label>
-                                        <input id="labeling_req" type="text" name="labeling_requirement___PRODUCT_ID__" required maxlength="255">
+                                        <label for="labeling___PRODUCT_ID__"><span class="req-asterisk">*</span> Labeling requirement</label>
+                                        <input id="labeling___PRODUCT_ID__" type="text" name="labeling_requirement___PRODUCT_ID__" required maxlength="255" placeholder="e.g., Brand name, expiry date">
                                     </div>
 
                                     <div class="input-forms">
-                                        <label for="reject_param"><span class="req-asterisk">*</span> Rejection parameter</label>
-                                        <input id="reject_param" type="text" name="rejection_parameter___PRODUCT_ID__" required maxlength="255">
+                                        <label for="rejection___PRODUCT_ID__"><span class="req-asterisk">*</span> Rejection parameter</label>
+                                        <input id="rejection___PRODUCT_ID__" type="text" name="rejection_parameter___PRODUCT_ID__" required maxlength="255" placeholder="e.g., Damaged packaging, expired">
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" class="remove-btn" onclick="this.closest('.product-form-main').remove();" style="margin-top: 10px; background: #f8d7da; color: #721c24; border: none; padding: 5px 10px; border-radius: 4px;">
-                                Remove Product
-                            </button>
-
                         </template>
-
-
                     </section>
 
                     <section class="group-details">
@@ -814,61 +886,136 @@
     <script src="{{ asset('js/registration/x/default-logo.js') }}"></script>
     <script src="{{ asset('js/registration/x/two-mb.js') }}"></script>
     <script src="{{ asset('js/registration/x/digit-only.js') }}"></script>
+    <script src="{{ asset('js/registration/x/product-select.js') }}"></script>
 
 <!-- jQuery (must be first) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
-$(function (handleProductSearch) {
-    const $search = $('#product-search');
-    const $results = $('#product-search-results');
-    const $allProducts = $('#all-products .product-item');
+document.addEventListener('DOMContentLoaded', function() {
+    const productSelect = document.getElementById('product-select');
+    const selectContainer = document.getElementById('product-select-container');
+    const categoryName = document.getElementById('selected-category-name');
+    const allProducts = document.querySelectorAll('#all-products .product-item');
+    const categoryCards = document.querySelectorAll('.category-card');
+    const formsContainer = document.getElementById('product-forms-container');
 
-    $search.on('input', function() {
-        const val = $(this).val().toLowerCase();
-        $results.empty();
-        if (!val) {
-            $results.hide();
-            return;
-        }
-        let found = false;
-        $allProducts.each(function() {
-            const name = $(this).data('name').toLowerCase();
-            if (name.includes(val)) {
-                $results.append(`<div class="search-result" data-id="${$(this).data('id')}" data-name="${$(this).data('name')}">${$(this).data('name')}</div>`);
-                found = true;
+    console.log('Script loaded. Forms container:', formsContainer);
+
+    // Count products per category
+    function updateProductCounts() {
+        const counts = {
+            'By products': 0,
+            'Cut ups': 0,
+            'Fillets': 0,
+            'Dressed chickens': 0
+        };
+
+        allProducts.forEach(function(product) {
+            const category = product.getAttribute('data-category');
+            if (counts.hasOwnProperty(category)) {
+                counts[category]++;
             }
         });
-        $results.toggle(found);
+
+        document.querySelectorAll('[data-count]').forEach(function(countElement) {
+            const category = countElement.getAttribute('data-count');
+            countElement.textContent = counts[category] || 0;
+        });
+    }
+
+    updateProductCounts();
+
+    // Handle category card clicks
+    categoryCards.forEach(function(card) {
+        card.addEventListener('click', function() {
+            const category = this.getAttribute('data-category');
+            
+            categoryCards.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            
+            categoryName.textContent = category;
+            productSelect.innerHTML = '<option value="">-- Select a product --</option>';
+            
+            let hasProducts = false;
+            allProducts.forEach(function(product) {
+                if (product.getAttribute('data-category') === category) {
+                    const productId = product.getAttribute('data-id');
+                    const productName = product.getAttribute('data-name');
+                    const option = document.createElement('option');
+                    option.value = productId;
+                    option.setAttribute('data-name', productName);
+                    option.textContent = productName;
+                    productSelect.appendChild(option);
+                    hasProducts = true;
+                }
+            });
+            
+            if (hasProducts) {
+                selectContainer.style.display = 'block';
+                setTimeout(() => productSelect.focus(), 100);
+            } else {
+                alert('No products found in this category.');
+                selectContainer.style.display = 'none';
+            }
+        });
     });
 
-    $results.on('click', '.search-result', function() {
-        const productId = $(this).data('id');
-        const productName = $(this).data('name');
+    // Handle product selection
+    productSelect.addEventListener('change', function() {
+        const productId = this.value;
+        const selectedOption = this.options[this.selectedIndex];
+        const productName = selectedOption.getAttribute('data-name');
+        
+        console.log('Product selected:', productId, productName);
+        
+        if (!productId) return;
+        
+        // Check if already added
         if (document.querySelector(`.product-form-main[data-id="${productId}"]`)) {
             alert("Product already added.");
-            $results.hide();
+            this.value = '';
             return;
         }
-        const template = document.getElementById('product-form-template').innerHTML;
-        const filledTemplate = template
+        
+        // Get template
+        const template = document.getElementById('product-form-template');
+        if (!template) {
+            console.error('Template not found!');
+            alert('Error: Form template not found.');
+            return;
+        }
+        
+        let filledTemplate = template.innerHTML
             .replace(/__PRODUCT_ID__/g, productId)
             .replace(/__PRODUCT_NAME__/g, productName);
+        
+        console.log('Creating form...');
+        
+        // Create element
         const wrapper = document.createElement('div');
         wrapper.innerHTML = filledTemplate.trim();
         const formElement = wrapper.firstElementChild;
         formElement.setAttribute('data-id', productId);
-        document.getElementById('product-forms-container').appendChild(formElement);
-        $results.hide();
-        $search.val('');
-    });
-
-    $(document).on('click', function(e) {
-        if (!$(e.target).closest('#product-search, #product-search-results').length) {
-            $results.hide();
-        }
+        
+        // Append to container
+        formsContainer.appendChild(formElement);
+        console.log('Form appended!');
+        
+        // Reset dropdown
+        this.value = '';
+        
+        // Scroll and highlight
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        formElement.style.background = '#e8f5e9';
+        setTimeout(() => {
+            formElement.style.transition = 'background 1.5s';
+            formElement.style.background = '#f9f9f9';
+        }, 100);
     });
 });
 </script>
+
+
 </body>
+
 </html>
