@@ -10,23 +10,13 @@
 @section('content')
 
 
+    @if (session('success') || session('error'))
+        <div id="flash-message"
+            class="flash-message alert {{ session('success') ? 'alert-success' : 'alert-danger' }}">
+            {{ session('success') ?? session('error') }}
+        </div>
+    @endif
 
-
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-@if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
 
    <div class="content-bg" >
         <div class="content-header">
@@ -37,15 +27,14 @@
             </div>
 
             <div class="title-actions">
-                <p class="heading">Product {{$product->product_id}}</p>
-
-
+                <p class="heading">{{$product->name}}</p>
 
                 <div>
-                    <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">Modify product</button>
+                    <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">
+                        <span class="material-symbols-outlined">edit</span>
+                        Modify product
+                    </button>
                 </div>
-
-          
 
             </div>
        
@@ -53,37 +42,143 @@
 
         </div>
 
-                <div class="content-body" style="padding: 10px; border: none; height: auto;">
-                    <p>{{ $product->name}}</p>
-                    <div style="margin-top:12px;">
-                        <button data-bs-toggle="modal" data-bs-target="#edit-category" class="btn-transition">Edit Category</button>
-                    </div>
-                </div>
 
-                <div class="modal fade" id="edit-category" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form class="modal-content" method="POST" action="{{ route('products.updateParent') }}">
-                            @csrf
-                            <div class="modal-header">
-                                <p class="modal-title">Update Product Parent</p>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
+        <!-- Modify Product Modal -->
+        <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="modifyProductLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form class="modal-content" method="POST" action="{{ route('product.update', $product->product_id) }}">
+                        @csrf
+                        @method('PUT')
+
+
+                    
+                        <div class="modal-header">
+                            <p class="modal-title" id="modifyProductLabel">Modify product</p>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <p class="note-notify">
+                                <span class="material-symbols-outlined"> info </span>
+                                <span>Update product information below. Changes will be reflected immediately.</span>
+                            </p>
+
+                            <div class="modal-option-groups">
+                                <!-- Product ID (Read-only or editable based on your requirements) -->
                                 <div class="form-group">
-                                    <p>Parent Product (optional)</p>
-                                    <div id="edit_parent_tree" style="max-height:220px; overflow:auto; border:1px solid #eee; border-radius:6px; padding:8px;"></div>
-                                    <div id="edit_parent_breadcrumb" style="margin-top:6px; font-size:12px; color:#666;"></div>
-                                    <input type="hidden" name="parent_product_id" id="edit_final_parent_product_id">
+                                    <p><span class="req-asterisk">*</span> Product ID</p>
+                                    <input type="text" 
+                                        name="product_id" 
+                                        maxlength="50" 
+                                        minlength="3" 
+                                        value="{{ old('product_id', $product->product_id) }}" 
+                                        required
+                                        readonly
+                                        style="background-color: #f5f5f5; cursor: not-allowed;">
+                                    <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">
+                                        Product ID cannot be changed
+                                    </small>
+                                    @error('product_id')
+                                        <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                                <input type="hidden" name="product_id" value="{{ $product->product_id }}">
+
+                                <!-- Name -->
+                                <div class="form-group">
+                                    <p><span class="req-asterisk">*</span> Name</p>
+                                    <input type="text" 
+                                        name="name" 
+                                        maxlength="100" 
+                                        minlength="3" 
+                                        value="{{ old('name', $product->name) }}" 
+                                        required>
+                                    @error('name')
+                                        <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <!-- Description -->
+                                <div class="form-group">
+                                    <p><span class="req-asterisk">*</span> Description</p>
+                                    <textarea 
+                                        id="description"
+                                        name="description"
+                                        minlength="5"
+                                        maxlength="255"
+                                        required
+                                    >{{ old('description', $product->description) }}</textarea>
+                                    @error('description')
+                                        <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <!-- Base Price -->
+                                <div class="form-group">
+                                    <p>Base price (Optional)</p>
+                                    <input type="number" 
+                                        step="0.01" 
+                                        name="base_price" 
+                                        placeholder="&#8369; 0.00" 
+                                        value="{{ old('base_price', $product->base_price) }}">
+                                    @error('base_price')
+                                        <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <!-- Category -->
+                                <div class="form-group">
+                                    <p><span class="req-asterisk">*</span> Category</p>
+                                    <select name="category" required>
+                                        <option value="">-- Select category --</option>
+                                        <option value="By products" {{ old('category', $product->category) == 'By products' ? 'selected' : '' }}>By products</option>
+                                        <option value="Cut ups" {{ old('category', $product->category) == 'Cut ups' ? 'selected' : '' }}>Cut ups</option>
+                                        <option value="Fillets" {{ old('category', $product->category) == 'Fillets' ? 'selected' : '' }}>Fillets</option>
+                                        <option value="Dressed chickens" {{ old('category', $product->category) == 'Dressed chickens' ? 'selected' : '' }}>Dressed chickens</option>
+                                        <option value="Uncategorized" {{ old('category', $product->category) == 'Uncategorized' ? 'selected' : '' }}>Uncategorized</option>
+                                    </select>                            
+                                    @error('category')
+                                        <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <!-- Measurement Type -->
+                                <div class="form-group">
+                                    <p><span class="req-asterisk">*</span> Measurement type</p>
+                                    <select name="measurement_type" required>
+                                        <option value="">-- Select measurement type --</option>
+                                        <option value="Heads" {{ old('measurement_type', $product->measurement_type) == 'Heads' ? 'selected' : '' }}>Heads</option>
+                                        <option value="Kilos" {{ old('measurement_type', $product->measurement_type) == 'Kilos' ? 'selected' : '' }}>Kilos</option>
+                                        <option value="Heads&Kilos" {{ old('measurement_type', $product->measurement_type) == 'Heads&Kilos' ? 'selected' : '' }}>Heads & Kilos</option>
+                                    </select>                            
+                                    @error('measurement_type')
+                                        <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <!-- Status (optional - if you want to allow changing status) -->
+                                <div class="form-group">
+                                    <p><span class="req-asterisk">*</span> Status</p>
+                                    <select name="status" required>
+                                        <option value="Listed" {{ old('status', $product->status) == 'Listed' ? 'selected' : '' }}>List</option>
+                                        <option value="Unlisted" {{ old('status', $product->status) == 'Unlisted' ? 'selected' : '' }}>Unlist</option>
+                                    </select>                            
+                                    @error('status')
+                                        <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <!-- Hidden field for tracking who updated -->
+                                <input type="hidden" name="updated_by" value="{{ auth()->user()->user_id }}">
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Save</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Update Product</button>
+                        </div>
+                    </form>
                 </div>
+        </div>
 
 
 
@@ -93,92 +188,5 @@
 
 
 @push('scripts')
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    buildEditParentTree();
-});
-
-function buildEditParentTree() {
-    fetch("{{ route('products.tree') }}")
-        .then(r => r.json())
-        .then(data => {
-            const root = document.getElementById('edit_parent_tree');
-            root.innerHTML = '';
-            const ul = document.createElement('ul');
-            ul.style.listStyle = 'none';
-            ul.style.paddingLeft = '0';
-            data.forEach(node => ul.appendChild(makeEditParentTreeNode(node, [])));
-            root.appendChild(ul);
-        });
-}
-
-function makeEditParentTreeNode(node, path) {
-    const li = document.createElement('li');
-    li.style.margin = '2px 0';
-    const row = document.createElement('div');
-    row.style.display = 'flex';
-    row.style.alignItems = 'center';
-    row.style.gap = '6px';
-
-    const toggle = document.createElement('span');
-    toggle.textContent = node.children && node.children.length ? '▸' : '•';
-    toggle.style.cursor = node.children && node.children.length ? 'pointer' : 'default';
-    toggle.style.width = '14px';
-
-    const label = document.createElement('button');
-    label.type = 'button';
-    label.textContent = node.name;
-    label.className = 'btn btn-sm';
-    label.style.padding = '2px 6px';
-    label.style.border = '1px solid #ddd';
-    label.style.background = '#fafafa';
-    label.addEventListener('click', () => {
-        document.getElementById('edit_final_parent_product_id').value = node.product_id;
-        const bc = document.getElementById('edit_parent_breadcrumb');
-        const names = path.concat([node.name]).join(' > ');
-        bc.textContent = names;
-        document.querySelectorAll('#edit_parent_tree button').forEach(b => b.style.background = '#fafafa');
-        label.style.background = '#e7f1ff';
-    });
-
-    row.appendChild(toggle);
-    row.appendChild(label);
-    li.appendChild(row);
-
-    const childUl = document.createElement('ul');
-    childUl.style.listStyle = 'none';
-    childUl.style.marginLeft = '16px';
-    childUl.style.display = 'none';
-    li.appendChild(childUl);
-
-    if (node.children && node.children.length) {
-        node.children.forEach(ch => childUl.appendChild(makeEditParentTreeNode(ch, path.concat([node.name]))));
-        toggle.style.cursor = 'pointer';
-    }
-
-    toggle.addEventListener('click', () => {
-        const open = childUl.style.display !== 'none';
-        if (open) {
-            childUl.style.display = 'none';
-            toggle.textContent = '▸';
-            return;
-        }
-        childUl.style.display = 'block';
-        toggle.textContent = '▾';
-        if (!childUl.hasChildNodes()) {
-            fetch(`{{ url('/products') }}/${node.product_id}/children`)
-                .then(r => r.json())
-                .then(children => {
-                    if (!children || !children.length) return;
-                    children.forEach(ch => childUl.appendChild(makeEditParentTreeNode(ch, path.concat([node.name]))));
-                });
-        }
-    });
-    return li;
-}
-</script>
-
-
 
 @endpush

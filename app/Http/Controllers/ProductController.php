@@ -70,91 +70,6 @@ class ProductController extends Controller
 
             ]);
         }
-        public function updateParent(Request $request)
-        {
-            $data = $request->validate([
-                'product_id' => 'required|string|exists:products,product_id',
-                'parent_product_id' => 'nullable|string|exists:products,product_id',
-            ]);
-
-            $product = Products::where('product_id', $data['product_id'])->firstOrFail();
-            $product->parent_product_id = $data['parent_product_id'] ?? null;
-            $product->save();
-
-            return back()->with('success', 'Product parent updated.');
-        }
-        // public function addProduct(Request $request) {
-        //     \Log::info('Request data:', $request->all());
-        //     $user_id = Auth::user()->user_id;
-        //     try {
-        //         $validated = $request->validate([
-        //             'product_id' => 'required|string|max:50|unique:products,product_id',
-        //             'parent_product_id' => 'nullable|string|exists:products,product_id',
-        //             'name'       => 'required|string|max:255',
-        //             'base_price'        => 'required|numeric|min:0',
-        //             'category'   => 'nullable|string|max:100',
-        //             'category_id'=> 'nullable|string|exists:categories,category_id',
-        //             'unit'       => 'nullable|string|max:50',
-        //             'measurement_type' => 'required|string|max:50',
-        //             'weight'     => 'nullable|string|max:50',
-        //             'status'     => 'required|string|in:Listed,Unlisted',
-        //         ]);
-                
-        //         \Log::info('Validated data:', $validated);
-                
-        //         $validated['added_by'] = auth()->user()->user_id;
-        //         if (!empty($validated['category_id']) && empty($validated['category'])) {
-        //             $cat = \App\Models\Category::where('category_id', $validated['category_id'])->first();
-        //             if ($cat) {
-        //                 $validated['category'] = $cat->name;
-        //             }
-        //         }
-                
-        //         \Log::info('Final data for creation:', $validated);
-                
-        //         $product = Products::create($validated); 
-        //             $date = date('Ymd');
-        //             function randomBase36String(int $length): string {
-        //                 $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        //                 $str = '';
-        //                 for ($i = 0; $i < $length; $i++) {
-        //                     $str .= $chars[random_int(0, strlen($chars) - 1)];
-        //                 }
-        //                 return $str;
-        //             }
-
-        //             $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
-        //             Logs::create([
-        //                 'user_id'     => $user_id,
-        //                 'action'      => 'Added a new product',
-        //                 'log_id'      => $log_id,
-        //                 'description' => "Staff( $user_id) added a new product named" .$validated['name'],
-        //                                  "with base price" .$validated['base_price'],
-        //                 'entity'      => 'Products',
-        //                 'entity_id'   => $product->id,
-        //             ]);
-                    
-        //         return redirect()->route('products.list')
-        //             ->with('success', 'Product added successfully!');
-                    
-        //     } catch (\Illuminate\Validation\ValidationException $e) {
-        //         \Log::error('Validation failed:', $e->errors());
-        //         return redirect()->back()
-        //             ->withErrors($e->errors())
-        //             ->withInput();
-        //     } catch (\Exception $e) {
-        //         \Log::error('Exception in addProduct: ' . $e->getMessage(), [
-        //             'trace' => $e->getTraceAsString(),
-        //             'request_data' => $request->all()
-        //         ]);
-                
-        //         return redirect()->back()
-        //             ->with('error', 'An error occurred while adding the product: ' . $e->getMessage())
-        //             ->withInput();
-        //     }
-        // }
-
-       
        
         public function addProduct(Request $request) {
             \Log::info('Request data:', $request->all());
@@ -164,6 +79,7 @@ class ProductController extends Controller
                 $validated = $request->validate([
                     'product_id' => 'required|string|max:255|unique:products,product_id',
                     'name' => 'required|string|max:255',
+                    'description' => 'required|string|max:255',
                     'base_price' => 'nullable|numeric|min:0|max:99999999.99', // matches decimal(10,2)
                     'category' => 'required|in:By products,Cut ups,Fillets,Dressed chickens,Uncategorized',
                     'measurement_type' => 'required|in:Heads,Kilos,Heads&Kilos',
@@ -254,6 +170,28 @@ class ProductController extends Controller
             ]);
         }
 
+        public function update(Request $request, $product_id)
+        {
+            $validated = $request->validate([
+                'name' => 'required|string|max:100|min:3',
+                'description' => 'required|string|max:255|min:5',
+                'base_price' => 'nullable|numeric|min:0',
+                'category' => 'required|in:By products,Cut ups,Fillets,Dressed chickens,Uncategorized',
+                'measurement_type' => 'required|in:Heads,Kilos,Heads&Kilos',
+                'status' => 'required|in:Listed,Unlisted',
+                'updated_by' => 'required|exists:users,user_id'
+            ]);
 
+            try {
+                $product = Products::where('product_id', $product_id)->first();
+                if (!$product) {
+                    return redirect()->back()->with('error', 'Product not found.');
+                }
+                $product->update($validated);
 
-}
+                return redirect()->back()->with('success', 'Product updated successfully!');
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Failed to update product: ' . $e->getMessage());
+            }
+        }
+    }

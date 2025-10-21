@@ -258,6 +258,11 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
     Route::post('/products/add-sub/{product_id}', [ProductController::class, 'addSub'])->name('add.subproduct');
     Route::post('/products/update-parent', [ProductController::class, 'updateParent'])->name('products.updateParent');
+
+
+    // products
+    Route::put('/products/{product_id}/update', [ProductController::class, 'update'])->name('product.update');
+
 });
 
 /*

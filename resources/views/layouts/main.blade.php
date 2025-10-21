@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +22,7 @@
     <link rel="stylesheet" href="{{ asset('css/layout/btn-hover.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/error-message.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/locked-tabs.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/flash-message.css') }}">
 
      @stack('styles')
 
@@ -38,7 +41,7 @@
                             @php
                                 $imgSrc = auth()->user()->image 
                                     ? ('data:' . auth()->user()->image_mime_type . ';base64,' . base64_encode(auth()->user()->image))
-                                    : asset('images/default-avatar.png');
+                                    : asset('assets/default-company-logo.png');
                             @endphp
                             <img src="{{ $imgSrc }}" alt="Profile Image">
 
@@ -358,6 +361,20 @@
     @endauth
     
     @stack('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const flashMessage = document.getElementById('flash-message');
+            if (flashMessage) {
+                flashMessage.style.opacity = 1;
+                setTimeout(() => {
+                    flashMessage.style.opacity = 0;
+                    setTimeout(() => {
+                        flashMessage.remove();
+                    }, 400);
+                }, 3000);
+            }
+        });
+    </script>
 
 </body>
 </html>
