@@ -101,7 +101,7 @@
                             <!-- Assign staff -->
                             <div class="modal-option-groups" id="assign_agent">
                                 <p>Assign a sales agent</p>
-                                <select name="staff_id" class="form-control" required>
+                                <select name="staff_id" class="form-control">
                                     <option value="">-- Select agent --</option>
                                     @foreach($staffs as $staff)
                                         <option value="{{ $staff->staff->staff_id }}">
@@ -121,7 +121,7 @@
                                     placeholder="Enter credit limit"
                                     class="input-form"
                                     style="width:300px; font-size: 14px;"
-                                    required
+                                    
                                 >
                             </div>
 
@@ -211,8 +211,10 @@
                    
                         </div>
 
-                        <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
-                        <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
+
+                        <input type="hidden" name="supplier_id" value="{{$supplier->supplier_id }}">
+                        <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}">
+                        <input type="hidden" name="staff_id" value="{{ Auth()->user()->staff->staff_id }}">
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

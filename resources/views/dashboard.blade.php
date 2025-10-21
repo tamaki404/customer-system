@@ -13,8 +13,13 @@
 
             <div class="title-row">
                 <p class="heading">
-                    <span class="greet">Goodmorning,</span>
-                    <span class="company-name">{{ auth()->user()->supplier->company_name }} 👋 !</span>
+                    <span class="greet">Goodmorning, </span>
+                    @if (Auth()->user()->role !== "Supplier")
+                        <span class="company-name">{{ auth()->user()->staff->lastname }} 👋 !</span>
+                    @else
+                        <span class="company-name">{{ auth()->user()->supplier->company_name }} 👋 !</span>
+
+                    @endif
                 </p>
                 <p class="sub-heading">Here's your dashboard overview</p>
             </div>
@@ -160,7 +165,7 @@
 
             @endif --}}
 
-        </div>
+    </div>
 
 
          
