@@ -478,177 +478,251 @@
                         <span class="info">Answer the inputs below regarding your product requirements and delivery preferences</span>
                     </p>
 
-                    <!-- Product Search Section -->
-                    <section class="group-details" style="border-top-left-radius: 5px; border-top-right-radius: 5px;">
-                        <p class="group-name">Product search and add</p>
-                        <div class="form-list">
-                            <!-- Category cards in a grid layout like a map chart -->
-                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%;">
-                                
-                                <!-- By Products Card -->
-                                <div class="category-card" data-category="By products" style="background: linear-gradient(135deg, #ff9a56 0%, #f5922a 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; position: relative; overflow: hidden;">
-                                    <div style="position: relative; z-index: 2;">
-                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">nutrition</span>
-                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">By Products</h3>
-                                        </div>
-                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Organs, bones, and other parts</p>
-                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
-                                            <span data-count="By products">0</span> products
-                                        </div>
-                                    </div>
-                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+<!-- Product Search Section -->
+<section class="group-details" style="border-top-left-radius: 5px; border-top-right-radius: 5px;">
+    <p class="group-name">Product search and add</p>
+    <div class="form-list">
+        <!-- Category cards in a grid layout -->
+        <div id="categoriesContainer" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%;">
+            
+            <!-- By Products Card -->
+            <div class="category-card" data-category="By products" style="background: linear-gradient(135deg, #ff9a56 0%, #f5922a 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
+                <div style="position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                        <span class="material-symbols-outlined" style="font-size: 36px; color: white;">nutrition</span>
+                        <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">By Products</h3>
+                    </div>
+                    <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Organs, bones, and other parts</p>
+                    <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                        <span class="category-count" data-category="By products">0</span> products
+                    </div>
+                </div>
+                <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                
+                <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
+                    <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;">
+                        @foreach($products as $product)
+                            @if($product->category === 'By products')
+                                <div class="product-tag" data-product-id="{{ $product->product_id }}" data-product-name="{{ $product->name }}">
+<span class="material-symbols-outlined checkmark" style="display: none;">
+check_circle
+</span>
+                                    <span>{{ $product->name }}</span>
                                 </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
 
-                                <!-- Cut Ups Card -->
-                                <div class="category-card" data-category="Cut ups" style="background: linear-gradient(135deg, #ff7b7b 0%, #ff5252 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; position: relative; overflow: hidden;">
-                                    <div style="position: relative; z-index: 2;">
-                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">cut</span>
-                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Cut Ups</h3>
-                                        </div>
-                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Individual chicken parts</p>
-                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
-                                            <span data-count="Cut ups">0</span> products
-                                        </div>
-                                    </div>
-                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+            <!-- Cut Ups Card -->
+            <div class="category-card" data-category="Cut ups" style="background: linear-gradient(135deg, #ff7b7b 0%, #ff5252 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
+                <div style="position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                        <span class="material-symbols-outlined" style="font-size: 36px; color: white;">cut</span>
+                        <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Cut Ups</h3>
+                    </div>
+                    <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Individual chicken parts</p>
+                    <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                        <span class="category-count" data-category="Cut ups">0</span> products
+                    </div>
+                </div>
+                <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                
+                <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
+                    <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;">
+                        @foreach($products as $product)
+                            @if($product->category === 'Cut ups')
+                                <div class="product-tag" data-product-id="{{ $product->product_id }}" data-product-name="{{ $product->name }}">
+<span class="material-symbols-outlined checkmark" style="display: none;">
+check_circle
+</span>
+                                    <span>{{ $product->name }}</span>
                                 </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
 
-                                <!-- Fillets Card -->
-                                <div class="category-card" data-category="Fillets" style="background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; position: relative; overflow: hidden;">
-                                    <div style="position: relative; z-index: 2;">
-                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">restaurant</span>
-                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Fillets</h3>
-                                        </div>
-                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Boneless chicken cuts</p>
-                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
-                                            <span data-count="Fillets">0</span> products
-                                        </div>
-                                    </div>
-                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+            <!-- Fillets Card -->
+            <div class="category-card" data-category="Fillets" style="background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
+                <div style="position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                        <span class="material-symbols-outlined" style="font-size: 36px; color: white;">restaurant</span>
+                        <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Fillets</h3>
+                    </div>
+                    <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Boneless chicken cuts</p>
+                    <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                        <span class="category-count" data-category="Fillets">0</span> products
+                    </div>
+                </div>
+                <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                
+                <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
+                    <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;">
+                        @foreach($products as $product)
+                            @if($product->category === 'Fillets')
+                                <div class="product-tag" data-product-id="{{ $product->product_id }}" data-product-name="{{ $product->name }}">
+                                    <span class="material-symbols-outlined checkmark" style="display: none;">
+                                    check_circle
+                                    </span>
+                                    <span>{{ $product->name }}</span>
                                 </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
 
-                                <!-- Dressed Chickens Card -->
-                                <div class="category-card" data-category="Dressed chickens" style="background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; position: relative; overflow: hidden;">
-                                    <div style="position: relative; z-index: 2;">
-                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">egg</span>
-                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Dressed Chickens</h3>
-                                        </div>
-                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Whole chicken varieties</p>
-                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
-                                            <span data-count="Dressed chickens">0</span> products
-                                        </div>
-                                    </div>
-                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+            <!-- Dressed Chickens Card -->
+            <div class="category-card" data-category="Dressed chickens" style="background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
+                <div style="position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                        <span class="material-symbols-outlined" style="font-size: 36px; color: white;">egg</span>
+                        <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Dressed Chickens</h3>
+                    </div>
+                    <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Whole chicken varieties</p>
+                    <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                        <span class="category-count" data-category="Dressed chickens">0</span> products
+                    </div>
+                </div>
+                <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                
+                <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
+                    <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; overflow: auto;">
+                        @foreach($products as $product)
+                            @if($product->category === 'Dressed chickens')
+                                <div class="product-tag" data-product-id="{{ $product->product_id }}" data-product-name="{{ $product->name }}">
+                                    <span class="material-symbols-outlined checkmark" style="display: none;">
+                                    check_circle
+                                    </span>
+                                    <span>{{ $product->name }}</span>
                                 </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
 
-                            </div>
-
-                            <!-- Dropdown that appears when category is clicked -->
-                            <div class="input-forms" id="product-select-container" style="display: none; margin-bottom: 20px; width: 100%; max-width: 500px;">
-                                <label for="product-select">
-                                    <span class="req-asterisk">*</span> 
-                                    Select a product from <span id="selected-category-name" style="font-weight: bold; color: #f5922a;"></span>
-                                </label>
-                                <select id="product-select" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #ddd; font-size: 14px; background: white; cursor: pointer;">
-                                    <option value="">-- Select a product --</option>
-                                </select>
-                            </div>
-
-                            <!-- Hidden div containing all products data -->
-                            <div id="all-products" style="display:none;">
-                                @foreach($products as $product)
-                                    <div class="product-item" 
-                                        data-id="{{ $product->product_id }}" 
-                                        data-name="{{ $product->name }}"
-                                        data-category="{{ $product->category }}">
-                                    </div>
-                                @endforeach
-                            </div>
+        </div>
+    </div>
+    <div id="product-forms-container" style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 30px; width: 100%;"></div>
+</section>
+    <template id="product-form-template">
+        <div class="product-form-main" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; width: 45%;">
+            <h4 style="font-weight: normal; font-size: 14px; margin: 0;"><strong>__PRODUCT_NAME__</strong></h4>
+            <p style="font-size: 13px; color: #666; margin: 0; margin-bottom: 10px; margin-left: 5px;">This is a juicy chicken part</p>
+            
+            <input type="hidden" name="product_ids[]"  value="__PRODUCT_ID__">
+            <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                <div class="input-forms">
+                    <label for="product_name"><span class="req-asterisk">*</span> Name</label>
+                    <input id="product_name" type="text" name="product_name___PRODUCT_ID__" value="__PRODUCT_NAME__" readonly>
+                </div>
+                <div class="input-forms">
+                    <label for="fresh-__PRODUCT_ID__"><span class="req-asterisk">*</span> Product condition</label>
+                    <div  style="display: flex; gap: 15px; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" name="condition___PRODUCT_ID__[]" id="fresh-__PRODUCT_ID__" value="fresh">
+                            <label for="fresh-__PRODUCT_ID__">Fresh</label>
                         </div>
-                    </section>
-
-                    <!-- Product Details Verification Section (THIS IS WHERE FORMS APPEAR) -->
-                    <section class="group-details">
-                        <p class="group-name">Product details</p>
-                        <div class="form-list" id="product-forms-container" style="display: flex; flex-direction: row; gap: 20px;">
-                            <!-- Product forms will be dynamically added here -->
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" name="condition___PRODUCT_ID__[]" id="frozen-__PRODUCT_ID__" value="frozen">
+                            <label for="frozen-__PRODUCT_ID__">Frozen</label>
                         </div>
+                    </div>
+                </div>
+                <div class="input-forms">
+                    <label for="weight_req"><span class="req-asterisk">*</span> Weight requirement</label>
+                    <input type="text" id="weight_req" name="weight_requirement___PRODUCT_ID__" required maxlength="50">
+                </div>
+                <div class="input-forms">
+                    <label for="select_primary"><span class="req-asterisk">*</span> Packaging requirement</label>
+                    <div  style="display: flex; gap: 10px;">
+                        <div>
+                            <label for="select_primary" style="font-size: 12px; display: block;">Primary</label>
+                            <select id="select_primary" name="primary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
+                                <option  value=""  disabled selected>-- Select primary packaging --</option>
+                                <option value="sunny_plastic">Sunny plastic</option>
+                            </select>
+                        </div>
+                        <div>
+                        <label for="sec_packaging" style="font-size: 12px; display: block;">Secondary</label>
+                            <select id="sec_packaging" name="secondary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
+                                <option value="" disabled selected>-- Select secondary packaging --</option>
+                                <option value="sack_wrapper">Sack wrapper</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-forms">
+                    <label for="labeling_req"><span class="req-asterisk">*</span> Labeling requirement</label>
+                    <input id="labeling_req" type="text" name="labeling_requirement___PRODUCT_ID__" required maxlength="255">
+                </div>
+                <div class="input-forms">
+                    <label for="reject_param"><span class="req-asterisk">*</span> Rejection parameter</label>
+                    <input id="reject_param" type="text" name="rejection_parameter___PRODUCT_ID__" required maxlength="255">
+                </div>
+            </div>
+        </div>
+        <button type="button" class="remove-btn" onclick="this.closest('.product-form-main').remove();" style="margin-top: 10px; background: #f8d7da; color: #721c24; border: none; padding: 5px 10px; border-radius: 4px;">
+            Remove Product
+        </button>
+    </template>
 
-                        <!-- Product Form Template (Hidden) -->
-                        <template id="product-form-template" style="display: flex; flex-direction: row; flex-wrap: wrap;">
-                            <div class="product-form-main" style="margin-bottom: 20px; padding: 20px; border: 2px solid #ddd; border-radius: 8px; width: 40%; background: #f9f9f9;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                    <h4 style="margin: 0; font-weight: 600; font-size: 16px; color: #333;">Product: __PRODUCT_NAME__</h4>
-                                    <button type="button" class="remove-product-btn" onclick="this.closest('.product-form-main').remove();" style="background: #ff5252; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px; transition: all 0.3s;">
-                                        <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">delete</span>
-                                        Remove
-                                    </button>
-                                </div>
-                                
-                                <input type="hidden" name="product_ids[]" value="__PRODUCT_ID__">
+<style>
+.category-card.expanded {
+    grid-column: 1 / -1;
+    padding-bottom: 20px;
+}
 
-                                <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                                    <div class="input-forms">
-                                        <label for="product_name___PRODUCT_ID__"><span class="req-asterisk">*</span> Name</label>
-                                        <input id="product_name___PRODUCT_ID__" type="text" name="product_name___PRODUCT_ID__" value="__PRODUCT_NAME__" readonly style="background: #e9ecef;">
-                                    </div>
+.products-dropdown.show {
+    max-height: 500px !important;
+    margin-top: 20px !important;
+    padding-top: 20px;
+    border-top: 2px solid rgba(255,255,255,0.3);
+}
 
-                                    <div class="input-forms">
-                                        <label><span class="req-asterisk">*</span> Product condition</label>
-                                        <div style="display: flex; gap: 15px; align-items: center;">
-                                            <div style="display: flex; align-items: center; gap: 5px;">
-                                                <input type="checkbox" name="condition___PRODUCT_ID__[]" id="fresh-__PRODUCT_ID__" value="fresh">
-                                                <label for="fresh-__PRODUCT_ID__">Fresh</label>
-                                            </div>
-                                            <div style="display: flex; align-items: center; gap: 5px;">
-                                                <input type="checkbox" name="condition___PRODUCT_ID__[]" id="frozen-__PRODUCT_ID__" value="frozen">
-                                                <label for="frozen-__PRODUCT_ID__">Frozen</label>
-                                            </div>
-                                        </div>
-                                    </div>
+.product-tag{
+    border-radius: 5px;
+    padding: 8px 12px;
+    background: white !important;
+}
+.product-tag span{
+    font-size: 13px;
+    color: #333
+}
 
-                                    <div class="input-forms">
-                                        <label for="weight_req___PRODUCT_ID__"><span class="req-asterisk">*</span> Weight requirement</label>
-                                        <input type="text" id="weight_req___PRODUCT_ID__" name="weight_requirement___PRODUCT_ID__" required maxlength="50" placeholder="e.g., 1-1.2kg">
-                                    </div>
+.product-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+    border-color: #f5922a !important;
+}
 
-                                    <div class="input-forms">
-                                        <label><span class="req-asterisk">*</span> Packaging requirement</label>
-                                        <div style="display: flex; gap: 10px;">
-                                            <div>
-                                                <label for="primary___PRODUCT_ID__" style="font-size: 12px; display: block;">Primary</label>
-                                                <select id="primary___PRODUCT_ID__" name="primary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
-                                                    <option value="" disabled selected>-- Select primary --</option>
-                                                    <option value="sunny_plastic">Sunny plastic</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label for="secondary___PRODUCT_ID__" style="font-size: 12px; display: block;">Secondary</label>
-                                                <select id="secondary___PRODUCT_ID__" name="secondary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
-                                                    <option value="" disabled selected>-- Select secondary --</option>
-                                                    <option value="sack_wrapper">Sack wrapper</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
+.product-tag.selected {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 3px;
+}
 
-                                    <div class="input-forms">
-                                        <label for="labeling___PRODUCT_ID__"><span class="req-asterisk">*</span> Labeling requirement</label>
-                                        <input id="labeling___PRODUCT_ID__" type="text" name="labeling_requirement___PRODUCT_ID__" required maxlength="255" placeholder="e.g., Brand name, expiry date">
-                                    </div>
+.product-tag.selected .checkmark {
+    display: inline !important;
+}
 
-                                    <div class="input-forms">
-                                        <label for="rejection___PRODUCT_ID__"><span class="req-asterisk">*</span> Rejection parameter</label>
-                                        <input id="rejection___PRODUCT_ID__" type="text" name="rejection_parameter___PRODUCT_ID__" required maxlength="255" placeholder="e.g., Damaged packaging, expired">
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </section>
+.category-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.25) !important;
+}
+
+.category-card.active {
+    box-shadow: 0 12px 28px rgba(0,0,0,0.35) !important;
+    border: 3px solid white;
+}
+</style>
+
+
+
+
+
 
                     <section class="group-details">
                         <p class="group-name">PPE requirements</p>
@@ -886,40 +960,26 @@
     <script src="{{ asset('js/registration/x/default-logo.js') }}"></script>
     <script src="{{ asset('js/registration/x/two-mb.js') }}"></script>
     <script src="{{ asset('js/registration/x/digit-only.js') }}"></script>
-    <script src="{{ asset('js/registration/x/product-select.js') }}"></script>
+    {{-- <script src="{{ asset('js/registration/x/product-select.js') }}"></script> --}}
 
 <!-- jQuery (must be first) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const productSelect = document.getElementById('product-select');
-    const selectContainer = document.getElementById('product-select-container');
-    const categoryName = document.getElementById('selected-category-name');
-    const allProducts = document.querySelectorAll('#all-products .product-item');
+    document.addEventListener('DOMContentLoaded', function() {
     const categoryCards = document.querySelectorAll('.category-card');
     const formsContainer = document.getElementById('product-forms-container');
+    let selectedProducts = new Set();
+    let activeCategory = null;
 
-    console.log('Script loaded. Forms container:', formsContainer);
+    console.log('Category product selector loaded');
 
     // Count products per category
     function updateProductCounts() {
-        const counts = {
-            'By products': 0,
-            'Cut ups': 0,
-            'Fillets': 0,
-            'Dressed chickens': 0
-        };
-
-        allProducts.forEach(function(product) {
-            const category = product.getAttribute('data-category');
-            if (counts.hasOwnProperty(category)) {
-                counts[category]++;
-            }
-        });
-
-        document.querySelectorAll('[data-count]').forEach(function(countElement) {
-            const category = countElement.getAttribute('data-count');
-            countElement.textContent = counts[category] || 0;
+        document.querySelectorAll('.category-count').forEach(function(countElement) {
+            const category = countElement.getAttribute('data-category');
+            const card = countElement.closest('.category-card');
+            const tags = card.querySelectorAll('.product-tag');
+            countElement.textContent = tags.length;
         });
     }
 
@@ -927,61 +987,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle category card clicks
     categoryCards.forEach(function(card) {
-        card.addEventListener('click', function() {
-            const category = this.getAttribute('data-category');
+        card.addEventListener('click', function(e) {
+            // Don't toggle if clicking on a product tag
+            if (e.target.closest('.product-tag')) return;
             
-            categoryCards.forEach(c => c.classList.remove('active'));
-            this.classList.add('active');
+            const dropdown = this.querySelector('.products-dropdown');
+            const isExpanded = this.classList.contains('expanded');
             
-            categoryName.textContent = category;
-            productSelect.innerHTML = '<option value="">-- Select a product --</option>';
-            
-            let hasProducts = false;
-            allProducts.forEach(function(product) {
-                if (product.getAttribute('data-category') === category) {
-                    const productId = product.getAttribute('data-id');
-                    const productName = product.getAttribute('data-name');
-                    const option = document.createElement('option');
-                    option.value = productId;
-                    option.setAttribute('data-name', productName);
-                    option.textContent = productName;
-                    productSelect.appendChild(option);
-                    hasProducts = true;
+            // Close all other categories
+            categoryCards.forEach(function(otherCard) {
+                if (otherCard !== card) {
+                    otherCard.classList.remove('expanded', 'active');
+                    otherCard.querySelector('.products-dropdown').classList.remove('show');
                 }
             });
             
-            if (hasProducts) {
-                selectContainer.style.display = 'block';
-                setTimeout(() => productSelect.focus(), 100);
+            // Toggle current category
+            if (isExpanded) {
+                this.classList.remove('expanded', 'active');
+                dropdown.classList.remove('show');
+                activeCategory = null;
             } else {
-                alert('No products found in this category.');
-                selectContainer.style.display = 'none';
+                this.classList.add('expanded', 'active');
+                dropdown.classList.add('show');
+                activeCategory = this.getAttribute('data-category');
             }
         });
     });
 
-    // Handle product selection
-    productSelect.addEventListener('change', function() {
-        const productId = this.value;
-        const selectedOption = this.options[this.selectedIndex];
-        const productName = selectedOption.getAttribute('data-name');
-        
-        console.log('Product selected:', productId, productName);
-        
-        if (!productId) return;
-        
-        // Check if already added
-        if (document.querySelector(`.product-form-main[data-id="${productId}"]`)) {
-            alert("Product already added.");
-            this.value = '';
-            return;
-        }
-        
-        // Get template
+    // Handle product tag clicks
+    document.querySelectorAll('.product-tag').forEach(function(tag) {
+        tag.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            const productId = this.getAttribute('data-product-id');
+            const productName = this.getAttribute('data-product-name');
+            
+            if (selectedProducts.has(productId)) {
+                // Deselect
+                selectedProducts.delete(productId);
+                this.classList.remove('selected');
+                removeProductForm(productId);
+            } else {
+                // Select
+                selectedProducts.add(productId);
+                this.classList.add('selected');
+                addProductForm(productId, productName);
+            }
+        });
+    });
+
+    // Add product form
+    function addProductForm(productId, productName) {
         const template = document.getElementById('product-form-template');
         if (!template) {
             console.error('Template not found!');
-            alert('Error: Form template not found.');
             return;
         }
         
@@ -989,20 +1049,12 @@ document.addEventListener('DOMContentLoaded', function() {
             .replace(/__PRODUCT_ID__/g, productId)
             .replace(/__PRODUCT_NAME__/g, productName);
         
-        console.log('Creating form...');
-        
-        // Create element
         const wrapper = document.createElement('div');
         wrapper.innerHTML = filledTemplate.trim();
         const formElement = wrapper.firstElementChild;
         formElement.setAttribute('data-id', productId);
         
-        // Append to container
         formsContainer.appendChild(formElement);
-        console.log('Form appended!');
-        
-        // Reset dropdown
-        this.value = '';
         
         // Scroll and highlight
         formElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1011,8 +1063,29 @@ document.addEventListener('DOMContentLoaded', function() {
             formElement.style.transition = 'background 1.5s';
             formElement.style.background = '#f9f9f9';
         }, 100);
-    });
+    }
+
+    // Remove product form
+    function removeProductForm(productId) {
+        const form = document.querySelector(`.product-form-main[data-id="${productId}"]`);
+        if (form) {
+            form.remove();
+        }
+    }
+
+    // Global function for remove button
+    window.removeProductSelection = function(productId) {
+        selectedProducts.delete(productId);
+        removeProductForm(productId);
+        
+        // Update tag visual state
+        const tag = document.querySelector(`.product-tag[data-product-id="${productId}"]`);
+        if (tag) {
+            tag.classList.remove('selected');
+        }
+    };
 });
+
 </script>
 
 
