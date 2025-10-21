@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SaleDiscount;
 use Illuminate\Support\Str;
-
+use App\Models\Logs;
 class SaleDiscountController extends Controller
 {
     public function store(Request $request)
@@ -20,7 +20,8 @@ class SaleDiscountController extends Controller
             'product' => 'required|string|exists:products,product_id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'staff_id' => 'required|string',
+            'user_id' => 'required|string',
+            'quantity' => 'required|integer|min:0',
         ]);
 
         $promo = SaleDiscount::create([
@@ -34,8 +35,32 @@ class SaleDiscountController extends Controller
             'product_id' => $request->product,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'staff_id' => $request->staff_id,
+            'user_id' => $request->user_id,
+            'quantity' => $request->quantity,
         ]);
+
+        $product = $request->product;
+
+        // Create log entry
+        $date = date('Ymd');
+        function randomBase36String(int $length): string {
+            $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $str = '';
+            for ($i = 0; $i < $length; $i++) {
+                $str .= $chars[random_int(0, strlen($chars) - 1)];
+            }
+            return $str;
+        }
+        $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
+        Logs::create([
+            'user_id' => $request->user_id,
+            'action' => "Added a new {$request->type}",
+            'log_id' => $log_id,
+            'description' => "User ({$request->user_id}) added a new {$request->type} named '{$request->name}' with value " . ($request->value ?? 'N/A'). " for product ID {$product}, category {$request->category}.",
+            'entity' => 'SalesDiscount',
+            'entity_id' => $promo->id,
+        ]);
+                
 
         return redirect()->back()->with('success', 'Sale or discount successfully applied!');
     }

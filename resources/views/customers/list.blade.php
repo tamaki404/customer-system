@@ -66,6 +66,16 @@
                         {{-- Value --}}
                         <div class="form-group mt-3">
                             <label class="form-label">
+                                <span class="req-asterisk">*</span> How many is available to sell?
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="number" name="quantity" class="form-control" placeholder="Enter quantity" required>
+                            </div>
+                        </div>
+
+                        {{-- Value --}}
+                        <div class="form-group mt-3">
+                            <label class="form-label">
                                 <span class="req-asterisk">*</span> Set value
                             </label>
                             <div class="d-flex gap-2 align-items-center">
@@ -120,7 +130,7 @@
                         </div>
 
                         {{-- Hidden --}}
-                        <input type="hidden" name="staff_id" value="{{ auth()->id() }}">
+                        <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}">
                     </div>
 
                     {{-- Footer --}}

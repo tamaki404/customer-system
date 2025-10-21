@@ -5,36 +5,17 @@
 @endpush
 
 @section('content')
-
+    @if (session('success') || session('error'))
+        <div id="flash-message"
+            class="flash-message alert {{ session('success') ? 'alert-success' : 'alert-danger' }}">
+            {{ session('success') ?? session('error') }}
+        </div>
+    @endif
 
     <div class="modal fade" id="add-staff-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content"  method="POST" action="{{ route('registration.staff.register') }}" enctype="multipart/form-data">
                 @csrf
-                @if ($errors->any())
-                    <div class="alert alert-danger" style="margin: 10px;">
-                        <h6 style="margin-bottom: 10px; font-weight: bold;">Registration Errors:</h6>
-                        <ul style="margin: 0; padding-left: 20px;">
-                            @foreach ($errors->all() as $error)
-                                <li style="font-size: 14px;">{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                
-                @if (session('success'))
-                    <div class="alert alert-success" style="margin: 10px;">
-                        <h6 style="margin-bottom: 5px; font-weight: bold;">Success:</h6>
-                        <p style="margin: 0; font-size: 14px;">{{ session('success') }}</p>
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger" style="margin: 10px;">
-                        <h6 style="margin-bottom: 5px; font-weight: bold;">Error:</h6>
-                        <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
-                    </div>
-                @endif
             
                 <div class="modal-header">
                     <p class="modal-title" id="requestActionLabel">Add staff form</p>
@@ -55,13 +36,6 @@
                         <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                     @enderror
                     </div>
-
-
-
-
-
-
-                    </script>
 
                     <div class="modal-option-groups">
                         <p>Fullname</p>

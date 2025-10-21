@@ -20,7 +20,8 @@ class SaleDiscount extends Model
         'product_id',
         'start_date',
         'end_date',
-        'staff_id',
+        'user_id',
+        'quantity',
     ];
 
     // Relationships
@@ -29,8 +30,8 @@ class SaleDiscount extends Model
         return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }
 
-    public function staff()
+    public function user()
     {
-        return $this->belongsTo(Staffs::class, 'staff_id', 'user_id');
+        return $this->belongsTo(Staffs::class, 'user_id', 'user_id');
     }
 }

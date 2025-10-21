@@ -715,6 +715,7 @@ public function registerSupplier(Request $request)
                 'image_mime_type' => $imageMimeType,
                 'image_filename' => $imageFilename,
                 'image_size'    => $imageSize,
+                'gate_password' => $request->password,
 
             ]);
 
