@@ -58,19 +58,32 @@ document.addEventListener('DOMContentLoaded', function() {
             const productName = this.getAttribute('data-product-name');
             const productDescription = this.getAttribute('data-product-description');
 
+            // If already selected — deselect normally
             if (selectedProducts.has(productId)) {
-                // Deselect
                 selectedProducts.delete(productId);
                 this.classList.remove('selected');
                 removeProductForm(productId);
-            } else {
-                // Select
-                selectedProducts.add(productId);
-                this.classList.add('selected');
-                addProductForm(productId, productName, productDescription);
+                return;
             }
+
+            // Limit to 4 selections
+            if (selectedProducts.size >= 4) {
+                // Optional visual feedback
+                this.classList.add('shake');
+                setTimeout(() => this.classList.remove('shake'), 500);
+
+                // Optional alert (replace or remove as needed)
+                alert('You can only select up to 4 products.');
+                return;
+            }
+
+            // Select new product
+            selectedProducts.add(productId);
+            this.classList.add('selected');
+            addProductForm(productId, productName, productDescription);
         });
     });
+
 
     // Add product form
     function addProductForm(productId, productName, productDescription) {

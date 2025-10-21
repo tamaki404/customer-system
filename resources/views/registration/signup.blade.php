@@ -505,11 +505,11 @@
                                             @foreach($products as $product)
                                                 @if($product->category === 'By products')
                                                      <div 
-        class="product-tag"
-        data-product-id="{{ $product->product_id }}"
-        data-product-name="{{ $product->name }}"
-        data-product-description="{{ $product->description }}"
-    >
+                                                            class="product-tag"
+                                                            data-product-id="{{ $product->product_id }}"
+                                                            data-product-name="{{ $product->name }}"
+                                                            data-product-description="{{ $product->description }}"
+                                                        >
                                                         <span class="material-symbols-outlined checkmark" style="display: none;">
                                                         check_circle
                                                         </span>
@@ -540,11 +540,11 @@
                                             @foreach($products as $product)
                                                 @if($product->category === 'Cut ups')
                                                      <div 
-        class="product-tag"
-        data-product-id="{{ $product->product_id }}"
-        data-product-name="{{ $product->name }}"
-        data-product-description="{{ $product->description }}"
-    >
+                                                            class="product-tag"
+                                                            data-product-id="{{ $product->product_id }}"
+                                                            data-product-name="{{ $product->name }}"
+                                                            data-product-description="{{ $product->description }}"
+                                                        >
                                                         <span class="material-symbols-outlined checkmark" style="display: none;">
                                                         check_circle
                                                         </span>
@@ -575,11 +575,11 @@
                                             @foreach($products as $product)
                                                 @if($product->category === 'Fillets')
                                                      <div 
-        class="product-tag"
-        data-product-id="{{ $product->product_id }}"
-        data-product-name="{{ $product->name }}"
-        data-product-description="{{ $product->description }}"
-    >
+                                                            class="product-tag"
+                                                            data-product-id="{{ $product->product_id }}"
+                                                            data-product-name="{{ $product->name }}"
+                                                            data-product-description="{{ $product->description }}"
+                                                        >
                                                         <span class="material-symbols-outlined checkmark" style="display: none;">
                                                         check_circle
                                                         </span>
@@ -610,11 +610,11 @@
                                             @foreach($products as $product)
                                                 @if($product->category === 'Dressed chickens')
                                                      <div 
-        class="product-tag"
-        data-product-id="{{ $product->product_id }}"
-        data-product-name="{{ $product->name }}"
-        data-product-description="{{ $product->description }}"
-    >
+                                                            class="product-tag"
+                                                            data-product-id="{{ $product->product_id }}"
+                                                            data-product-name="{{ $product->name }}"
+                                                            data-product-description="{{ $product->description }}"
+                                                        >
                                                         <span class="material-symbols-outlined checkmark" style="display: none;">
                                                         check_circle
                                                         </span>
