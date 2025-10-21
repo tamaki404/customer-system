@@ -136,20 +136,19 @@ class CustomersController extends Controller
             $request->merge($input);
 
 
-            $request->validate([
-                'supplier_id'       => 'required|exists:suppliers,supplier_id',
-                'user_id'       => 'required|exists:users,user_id',
-                'account_status'        => 'required|string|max:100',
-                'reason_to_decline' => 'nullable|string|max:200|required_if:account_status,Declined',
-                'staff_id'          => 'required|exists:staffs,staff_id',
-                'credit_limit' => 'required|numeric|min:0',
-                'products'    => 'nullable|array',
-                'products.*.product_id' => 'required|string|exists:products,product_id',
-                'products.*.nego_price'      => 'required|numeric|min:0',
-
-
-
-            ]);
+$request->validate([
+    'supplier_id'       => 'required|exists:suppliers,supplier_id',
+    'user_id'           => 'required|exists:users,user_id',
+    'account_status'    => 'required|string|max:100',
+    'reason_to_decline' => 'nullable|string|max:200|required_if:account_status,Declined',
+    'to_change'         => 'nullable|string|max:200|required_if:account_status,Declined',
+    'feedback'          => 'nullable|string|max:500|required_if:account_status,Declined',
+    'staff_id'          => 'required|exists:staffs,staff_id',
+    'credit_limit'      => 'required|numeric|min:0',
+    'products'          => 'nullable|array',
+    'products.*.product_id' => 'required|string|exists:products,product_id',
+    'products.*.nego_price' => 'required|numeric|min:0',
+]);
 
             DB::beginTransaction();
 
@@ -159,12 +158,20 @@ class CustomersController extends Controller
                 $user = User::where('user_id', $request->user_id)->firstOrFail();
                 $account_status = AccountStatus::firstOrNew(['supplier_id' => $request->supplier_id]);
 
-                $account_status->staff_id = $request->staff_id;
-                $account_status->account_status = $request->account_status; 
-                $account_status->reason_to_decline = $request->account_status === 'Declined'
-                    ? $request->reason_to_decline
-                    : null;
-                $account_status->save();
+$account_status->staff_id = $request->staff_id;
+$account_status->account_status = $request->account_status; 
+
+if ($request->account_status === 'Declined') {
+    $account_status->reason_to_decline = $request->reason_to_decline;
+    $account_status->to_change = $request->to_change;
+    $account_status->feedback = $request->feedback;
+} else {
+    $account_status->reason_to_decline = null;
+    $account_status->to_change = null;
+    $account_status->feedback = null;
+}
+
+$account_status->save();
 
                 $user->status = $request->account_status;
                 $user->save();

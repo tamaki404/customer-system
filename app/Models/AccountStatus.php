@@ -14,6 +14,8 @@ class AccountStatus extends Model
         'status_id', 
         'account_status', 
         'reason_to_decline',
+        'to_change',
+        'feedback',
         'staff_id',
         'supplier_id',
         'approved_at',

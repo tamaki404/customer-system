@@ -71,10 +71,35 @@
                                 </select>
                             </div>
 
+                            <div class="modal-option-groups" id="to_change_group" style="display: none;">
+                                <p>What details or documents you want to be changed?</p>
+                                <select name="to_change" id="to_change">
+                                    <option value="">-- Select what needs to be changed --</option>
+                                    <option value="ID image and details">ID image and details</option>
+                                    <option value="Bank details">Bank details</option>
+                                    <option value="Necessary documents">Necessary documents</option>
+                                    <option value="Delivery requirements">Delivery requirements</option>
+                                </select>
+                            </div>
+
+                            <div class="modal-option-groups" id="feedback_group" style="display: none;">
+                                <p>Kindly specify what needs to be changed and the reason, be specific and on point</p>
+                                <textarea 
+                                    name="feedback" 
+                                    id="feedback" 
+                                    rows="4" 
+                                    class="form-control" 
+                                    placeholder="Provide detailed feedback here..."
+                                    maxlength="500"
+                                    style="width: 100%; resize: vertical; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"
+                                ></textarea>
+                                <small class="text-muted" style="font-size: 11px;">Maximum 500 characters</small>
+                            </div>
+
 
 
                             <!-- Assign staff -->
-                            <div class="modal-option-groups">
+                            <div class="modal-option-groups" id="assign_agent">
                                 <p>Assign a sales agent</p>
                                 <select name="staff_id" class="form-control" required>
                                     <option value="">-- Select agent --</option>
@@ -87,7 +112,7 @@
                             </div>
 
                     
-                            <div class="modal-option-groups">
+                            <div class="modal-option-groups" id="credit_limit">
                                 <p>Add credit limit</p>
                                   <input 
                                     type="text" 
@@ -101,7 +126,7 @@
                             </div>
 
                             
-                                <div>
+                                <div id="ceiling_price">
                                     @if ($ceilingPrice)
                                         <div class="alert-info p-2 mb-3">
                                             <strong>Ceiling Price Active:</strong><br>
@@ -120,7 +145,7 @@
                                     @endif
                                 </div>
 
-                                <div class="modal-option-groups">
+                                <div class="modal-option-groups" id="product_list">
                                     <p>Product requirements</p>
 
                                     <table>
