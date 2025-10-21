@@ -29,6 +29,7 @@ return new class extends Migration
             $table->enum('measurement_type', ['Heads', 'Kilos', 'Heads&Kilos'])->required();
             $table->string('added_by')->required();
             $table->string('status')->default('Listed');
+            $table->string('description', 255)->required();
             $table->timestamps();
         });
     }

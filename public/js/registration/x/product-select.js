@@ -56,7 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const productId = this.getAttribute('data-product-id');
             const productName = this.getAttribute('data-product-name');
-            
+            const productDescription = this.getAttribute('data-product-description');
+
             if (selectedProducts.has(productId)) {
                 // Deselect
                 selectedProducts.delete(productId);
@@ -66,13 +67,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Select
                 selectedProducts.add(productId);
                 this.classList.add('selected');
-                addProductForm(productId, productName);
+                addProductForm(productId, productName, productDescription);
             }
         });
     });
 
     // Add product form
-    function addProductForm(productId, productName) {
+    function addProductForm(productId, productName, productDescription) {
         const template = document.getElementById('product-form-template');
         if (!template) {
             console.error('Template not found!');
@@ -84,9 +85,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        let filledTemplate = template.innerHTML
-            .replace(/__PRODUCT_ID__/g, productId)
-            .replace(/__PRODUCT_NAME__/g, productName);
+    let filledTemplate = template.innerHTML
+        .replace(/__PRODUCT_ID__/g, productId)
+        .replace(/__PRODUCT_NAME__/g, productName)
+        .replace(/__PRODUCT_DESCRIPTION__/g, productDescription || '');
+
         
         const wrapper = document.createElement('div');
         wrapper.innerHTML = filledTemplate.trim();

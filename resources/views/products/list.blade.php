@@ -184,12 +184,24 @@
                             <!-- Name -->
                             <div class="form-group">
                                 <p><span class="req-asterisk">*</span> Name</p>
-                                <input type="text" name="name" maxlength="255" minlength="3" value="{{ old('name') }}" required>
+                                <input type="text" name="name" maxlength="100" minlength="3" value="{{ old('name') }}" required>
                                 @error('name')
                                     <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                                 @enderror
                             </div>
-
+                            <div class="form-group">
+                                <p><span class="req-asterisk">*</span> Description </p>
+                                <textarea 
+                                    id="description"
+                                    name="description"
+                                    minlength="5"
+                                    maxlength="255"
+                                    required
+                                >{{ old('description') }}</textarea>
+                                @error('description')
+                                    <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                                @enderror
+                            </div>
                             <!-- Base Price (nullable in migration) -->
                             <div class="form-group">
                                 <p>Base price (Optional)</p>
@@ -244,7 +256,7 @@
         </div>
         
         {{-- set ceiling modal --}}
-        <div class="modal fade" id="set-ceiling-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        {{-- <div class="modal fade" id="set-promo-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <form class="modal-content" method="POST" action="{{ route('set.global_ceiling') }}">
                     @csrf
@@ -260,7 +272,6 @@
                             <span>Global ceilings only apply to future price changes. Existing prices remain until edited.</span>
                         </p>
 
-                        {{-- Toggle between Fixed or Percentage --}}
                         <div class="form-group checkbox-form">
                             <input type="checkbox" id="use_percentage" name="use_percentage" style="width:auto;height:auto;">
                             <label for="use_percentage">Use percentage (%)</label>
@@ -278,7 +289,6 @@
 
                         <input type="hidden" name="method_select" id="method" value="Fixed">
 
-                        {{-- City selection --}}
                         <div class="form-group mt-3">
                             <p><span class="req-asterisk">*</span> Select city to apply to</p>
                             <select name="city_selected" id="city_select" class="form-control" required>
@@ -291,7 +301,6 @@
 
                         <p id="supplier-count" class="mt-2 text-muted">0 suppliers selected within city</p>
 
-                        {{-- Effectivity --}}
                         <div class="form-group mt-3 p-2 rounded" style="box-shadow: #f8912a30 0px 0px 0px 3px;">
                             <label class="form-label">Effectivity</label>
                             <div class="d-flex gap-3">
@@ -316,11 +325,10 @@
                 </form>
 
             </div>
-        </div>
-
+        </div> --}}
 
     @endif
-        <div class="content-bg">
+        <div class="content-bg" style="overflow: hidden">
                 <div class="content-header">
                     <div class="contents-display">
                         <form action="{{ route('products.list') }}" id="text-search" class="search-text-con" method="GET">
@@ -360,10 +368,10 @@
                                         <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
                                         Add products
                                     </button>
-                                    <button class="set-ceiling-btn btn-transition" data-bs-toggle="modal" data-bs-target="#set-ceiling-modal">
-                                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">price_change</span>
-                                        Ceiling price
-                                    </button>
+                                    {{-- <button class="set-ceiling-btn btn-transition" data-bs-toggle="modal" data-bs-target="#set-promo-modal">
+                                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">shoppingmode</span>
+                                        Sales & discounts
+                                    </button> --}}
                                 </div>
                             @endif
 
@@ -432,41 +440,40 @@
 
                     </div>
                     <div class="table-div">
-                        <div class="content-body" style="background: #fff">
+                        <div class="content-body" style="background: #fff; height: 600px; overflow: hidden;">
 
-                            <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                                <thead style="background-color: #fff;">
-                                    <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                        <th>#</th>
-                                        <th>Product ID</th>
-                                        <th>Name</th>
-                                        <th>Category</th>
-                                        <th>Base price</th>
-                                        <th>Measurement</th>
+                            <div style="max-height: 100%; overflow-y: auto;">
+                                <table style="width:100%; height: 100%; border-collapse:collapse; border: 1px solid #fff;">
+                                    <thead style="background-color: #fff; position: sticky; top: 0; z-index: 1;">
+                                        <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                            <th>#</th>
+                                            <th>Product ID</th>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            <th>Base price</th>
+                                            <th>Measurement</th>
+                                            <th>Sold</th>
 
-                                        <th>Unit</th>
-                                        <th>Weight</th>
-                                        <th>Sold</th>
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($products as $product)
-                                        <tr onclick="window.location.href='{{ route('products.product', ['product_id' => $product->product_id]) }}'">
-                                            <th>{{ $loop->iteration }}</th>
-                                            <td>{{ $product->product_id }}</td>
-                                            <td>{{ $product->name }}</td>
-                                            <td>{{ $product->category }}</td>
-                                            <td>₱{{ number_format($product->base_price, 2) }}</td>
-                                            <td>{{ $product->measurement_type }}</td>
-                                            <td>{{ $product->unit }}</td>
-                                            <td>{{ $product->weight }}</td>
-                                            <td>--</td>
                                         </tr>
+                                    </thead>
+                                    <tbody style="overflow: auto;">
+                                        @foreach ($products as $product)
+                                            <tr onclick="window.location.href='{{ route('products.product', ['product_id' => $product->product_id]) }}'">
+                                                <th>{{ $loop->iteration }}</th>
+                                                <td>{{ $product->product_id }}</td>
+                                                <td>{{ $product->name }}</td>
+                                                <td>{{ $product->category }}</td>
+                                                <td>₱{{ number_format($product->base_price, 2) }}</td>
+                                                <td>{{ $product->measurement_type }}</td>
+                                 
+                                                <td>--</td>
+                                            </tr>
 
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+
                     
                         </div>
 

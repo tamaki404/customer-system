@@ -341,7 +341,8 @@
                                 <div class="input-forms">
                                     <label for="id-signature"><span class="req-asterisk">*</span> E-signature</label>
                                         {{-- <input type="file" id="id-signature" name="e_image" accept="image/*" required> --}}
-                                        <input type="file" name="e_image[]" accept="image/*" required>
+                                        <input type="file" id="id-signature" name="e_image[]" accept="image/*" multiple required>
+
 
 
                                 </div>
@@ -478,198 +479,218 @@
                         <span class="info">Answer the inputs below regarding your product requirements and delivery preferences</span>
                     </p>
 
-<!-- Product Search Section -->
-<section class="group-details" style="border-top-left-radius: 5px; border-top-right-radius: 5px;">
-    <p class="group-name">Product search and add</p>
-    <div class="form-list">
-        <!-- Category cards in a grid layout -->
-        <div id="categoriesContainer" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%;">
-            
-            <!-- By Products Card -->
-            <div class="category-card" data-category="By products" style="background: linear-gradient(135deg, #ff9a56 0%, #f5922a 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
-                <div style="position: relative; z-index: 2;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                        <span class="material-symbols-outlined" style="font-size: 36px; color: white;">nutrition</span>
-                        <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">By Products</h3>
-                    </div>
-                    <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Organs, bones, and other parts</p>
-                    <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
-                        <span class="category-count" data-category="By products">0</span> products
-                    </div>
-                </div>
-                <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
-                
-                <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
-                    <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;">
-                        @foreach($products as $product)
-                            @if($product->category === 'By products')
-                                <div class="product-tag" data-product-id="{{ $product->product_id }}" data-product-name="{{ $product->name }}">
-<span class="material-symbols-outlined checkmark" style="display: none;">
-check_circle
-</span>
-                                    <span>{{ $product->name }}</span>
+                    <!-- Product Search Section -->
+                    <section class="group-details" style="border-top-left-radius: 5px; border-top-right-radius: 5px;">
+                        <p class="group-name">Product search and add</p>
+                        <div class="form-list">
+                            <!-- Category cards in a grid layout -->
+                            <div id="categoriesContainer" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%;">
+                                
+                                <!-- By Products Card -->
+                                <div class="category-card" data-category="By products" style="background: linear-gradient(135deg, #ff9a56 0%, #f5922a 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
+                                    <div style="position: relative; z-index: 2;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">nutrition</span>
+                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">By Products</h3>
+                                        </div>
+                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Organs, bones, and other parts</p>
+                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                                            <span class="category-count" data-category="By products">0</span> products
+                                        </div>
+                                    </div>
+                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                                    
+                                    <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
+                                        <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;">
+                                            @foreach($products as $product)
+                                                @if($product->category === 'By products')
+                                                     <div 
+        class="product-tag"
+        data-product-id="{{ $product->product_id }}"
+        data-product-name="{{ $product->name }}"
+        data-product-description="{{ $product->description }}"
+    >
+                                                        <span class="material-symbols-outlined checkmark" style="display: none;">
+                                                        check_circle
+                                                        </span>
+                                                        <span>{{ $product->name }}</span>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-            </div>
 
-            <!-- Cut Ups Card -->
-            <div class="category-card" data-category="Cut ups" style="background: linear-gradient(135deg, #ff7b7b 0%, #ff5252 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
-                <div style="position: relative; z-index: 2;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                        <span class="material-symbols-outlined" style="font-size: 36px; color: white;">cut</span>
-                        <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Cut Ups</h3>
-                    </div>
-                    <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Individual chicken parts</p>
-                    <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
-                        <span class="category-count" data-category="Cut ups">0</span> products
-                    </div>
-                </div>
-                <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
-                
-                <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
-                    <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;">
-                        @foreach($products as $product)
-                            @if($product->category === 'Cut ups')
-                                <div class="product-tag" data-product-id="{{ $product->product_id }}" data-product-name="{{ $product->name }}">
-<span class="material-symbols-outlined checkmark" style="display: none;">
-check_circle
-</span>
-                                    <span>{{ $product->name }}</span>
+                                <!-- Cut Ups Card -->
+                                <div class="category-card" data-category="Cut ups" style="background: linear-gradient(135deg, #ff7b7b 0%, #ff5252 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
+                                    <div style="position: relative; z-index: 2;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">cut</span>
+                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Cut Ups</h3>
+                                        </div>
+                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Individual chicken parts</p>
+                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                                            <span class="category-count" data-category="Cut ups">0</span> products
+                                        </div>
+                                    </div>
+                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                                    
+                                    <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
+                                        <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;">
+                                            @foreach($products as $product)
+                                                @if($product->category === 'Cut ups')
+                                                     <div 
+        class="product-tag"
+        data-product-id="{{ $product->product_id }}"
+        data-product-name="{{ $product->name }}"
+        data-product-description="{{ $product->description }}"
+    >
+                                                        <span class="material-symbols-outlined checkmark" style="display: none;">
+                                                        check_circle
+                                                        </span>
+                                                        <span>{{ $product->name }}</span>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-            </div>
 
-            <!-- Fillets Card -->
-            <div class="category-card" data-category="Fillets" style="background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
-                <div style="position: relative; z-index: 2;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                        <span class="material-symbols-outlined" style="font-size: 36px; color: white;">restaurant</span>
-                        <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Fillets</h3>
-                    </div>
-                    <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Boneless chicken cuts</p>
-                    <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
-                        <span class="category-count" data-category="Fillets">0</span> products
-                    </div>
-                </div>
-                <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
-                
-                <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
-                    <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;">
-                        @foreach($products as $product)
-                            @if($product->category === 'Fillets')
-                                <div class="product-tag" data-product-id="{{ $product->product_id }}" data-product-name="{{ $product->name }}">
-                                    <span class="material-symbols-outlined checkmark" style="display: none;">
-                                    check_circle
-                                    </span>
-                                    <span>{{ $product->name }}</span>
+                                <!-- Fillets Card -->
+                                <div class="category-card" data-category="Fillets" style="background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
+                                    <div style="position: relative; z-index: 2;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">restaurant</span>
+                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Fillets</h3>
+                                        </div>
+                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Boneless chicken cuts</p>
+                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                                            <span class="category-count" data-category="Fillets">0</span> products
+                                        </div>
+                                    </div>
+                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                                    
+                                    <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
+                                        <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;">
+                                            @foreach($products as $product)
+                                                @if($product->category === 'Fillets')
+                                                     <div 
+        class="product-tag"
+        data-product-id="{{ $product->product_id }}"
+        data-product-name="{{ $product->name }}"
+        data-product-description="{{ $product->description }}"
+    >
+                                                        <span class="material-symbols-outlined checkmark" style="display: none;">
+                                                        check_circle
+                                                        </span>
+                                                        <span>{{ $product->name }}</span>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-            </div>
 
-            <!-- Dressed Chickens Card -->
-            <div class="category-card" data-category="Dressed chickens" style="background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
-                <div style="position: relative; z-index: 2;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                        <span class="material-symbols-outlined" style="font-size: 36px; color: white;">egg</span>
-                        <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Dressed Chickens</h3>
-                    </div>
-                    <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Whole chicken varieties</p>
-                    <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
-                        <span class="category-count" data-category="Dressed chickens">0</span> products
-                    </div>
-                </div>
-                <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
-                
-                <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
-                    <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; overflow: auto;">
-                        @foreach($products as $product)
-                            @if($product->category === 'Dressed chickens')
-                                <div class="product-tag" data-product-id="{{ $product->product_id }}" data-product-name="{{ $product->name }}">
-                                    <span class="material-symbols-outlined checkmark" style="display: none;">
-                                    check_circle
-                                    </span>
-                                    <span>{{ $product->name }}</span>
+                                <!-- Dressed Chickens Card -->
+                                <div class="category-card" data-category="Dressed chickens" style="background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); border-radius: 12px; padding: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;">
+                                    <div style="position: relative; z-index: 2;">
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                            <span class="material-symbols-outlined" style="font-size: 36px; color: white;">egg</span>
+                                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 600;">Dressed Chickens</h3>
+                                        </div>
+                                        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">Whole chicken varieties</p>
+                                        <div class="product-count" style="margin-top: 10px; color: white; font-size: 12px; font-weight: bold;">
+                                            <span class="category-count" data-category="Dressed chickens">0</span> products
+                                        </div>
+                                    </div>
+                                    <div style="position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;"></div>
+                                    
+                                    <div class="products-dropdown" style="max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;">
+                                        <div class="product-tags-container" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; overflow: auto;">
+                                            @foreach($products as $product)
+                                                @if($product->category === 'Dressed chickens')
+                                                     <div 
+        class="product-tag"
+        data-product-id="{{ $product->product_id }}"
+        data-product-name="{{ $product->name }}"
+        data-product-description="{{ $product->description }}"
+    >
+                                                        <span class="material-symbols-outlined checkmark" style="display: none;">
+                                                        check_circle
+                                                        </span>
+                                                        <span>{{ $product->name }}</span>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-            </div>
 
-        </div>
-    </div>
-    <div id="product-forms-container" style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 30px; width: 100%;"></div>
-</section>
-    <template id="product-form-template">
-        <div class="product-form-main" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; width: 45%;">
-            <h4 style="font-weight: normal; font-size: 14px; margin: 0;"><strong>__PRODUCT_NAME__</strong></h4>
-            <p style="font-size: 13px; color: #666; margin: 0; margin-bottom: 10px; margin-left: 5px;">This is a juicy chicken part</p>
-            
-            <input type="hidden" name="product_ids[]"  value="__PRODUCT_ID__">
-            <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                <div class="input-forms">
-                    <label for="product_name"><span class="req-asterisk">*</span> Name</label>
-                    <input id="product_name" type="text" name="product_name___PRODUCT_ID__" value="__PRODUCT_NAME__" readonly>
-                </div>
-                <div class="input-forms">
-                    <label for="fresh-__PRODUCT_ID__"><span class="req-asterisk">*</span> Product condition</label>
-                    <div  style="display: flex; gap: 15px; align-items: center;">
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" name="condition___PRODUCT_ID__[]" id="fresh-__PRODUCT_ID__" value="fresh">
-                            <label for="fresh-__PRODUCT_ID__">Fresh</label>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <input type="checkbox" name="condition___PRODUCT_ID__[]" id="frozen-__PRODUCT_ID__" value="frozen">
-                            <label for="frozen-__PRODUCT_ID__">Frozen</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="input-forms">
-                    <label for="weight_req"><span class="req-asterisk">*</span> Weight requirement</label>
-                    <input type="text" id="weight_req" name="weight_requirement___PRODUCT_ID__" required maxlength="50">
-                </div>
-                <div class="input-forms">
-                    <label for="select_primary"><span class="req-asterisk">*</span> Packaging requirement</label>
-                    <div  style="display: flex; gap: 10px;">
-                        <div>
-                            <label for="select_primary" style="font-size: 12px; display: block;">Primary</label>
-                            <select id="select_primary" name="primary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
-                                <option  value=""  disabled selected>-- Select primary packaging --</option>
-                                <option value="sunny_plastic">Sunny plastic</option>
-                            </select>
-                        </div>
-                        <div>
-                        <label for="sec_packaging" style="font-size: 12px; display: block;">Secondary</label>
-                            <select id="sec_packaging" name="secondary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
-                                <option value="" disabled selected>-- Select secondary packaging --</option>
-                                <option value="sack_wrapper">Sack wrapper</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="input-forms">
-                    <label for="labeling_req"><span class="req-asterisk">*</span> Labeling requirement</label>
-                    <input id="labeling_req" type="text" name="labeling_requirement___PRODUCT_ID__" required maxlength="255">
-                </div>
-                <div class="input-forms">
-                    <label for="reject_param"><span class="req-asterisk">*</span> Rejection parameter</label>
-                    <input id="reject_param" type="text" name="rejection_parameter___PRODUCT_ID__" required maxlength="255">
-                </div>
-            </div>
-        </div>
-        <button type="button" class="remove-btn" onclick="this.closest('.product-form-main').remove();" style="margin-top: 10px; background: #f8d7da; color: #721c24; border: none; padding: 5px 10px; border-radius: 4px;">
-            Remove Product
-        </button>
-    </template>
+                        <div id="product-forms-container" style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 30px; width: 100%;"></div>
+                    </section>
+                        <template id="product-form-template">
+                            <div class="product-form-main" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; width: 45%;">
+                                <h4 style="font-weight: normal; font-size: 14px; margin: 0;"><strong>__PRODUCT_NAME__</strong></h4>
+                                <p style="font-size: 13px; color: #666; margin: 0; margin-bottom: 10px; margin-left: 5px;">__PRODUCT_DESCRIPTION__</p>
+
+                                <input type="hidden" name="product_ids[]"  value="__PRODUCT_ID__">
+                                <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                                    <div class="input-forms">
+                                        <label for="product_name"><span class="req-asterisk">*</span> Name</label>
+                                        <input id="product_name" type="text" name="product_name___PRODUCT_ID__" value="__PRODUCT_NAME__" readonly>
+                                    </div>
+                                    <div class="input-forms">
+                                        <label for="fresh-__PRODUCT_ID__"><span class="req-asterisk">*</span> Product condition</label>
+                                        <div  style="display: flex; gap: 15px; align-items: center;">
+                                            <div style="display: flex; align-items: center; gap: 5px;">
+                                                <input type="checkbox" name="condition___PRODUCT_ID__[]" id="fresh-__PRODUCT_ID__" value="fresh">
+                                                <label for="fresh-__PRODUCT_ID__">Fresh</label>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 5px;">
+                                                <input type="checkbox" name="condition___PRODUCT_ID__[]" id="frozen-__PRODUCT_ID__" value="frozen">
+                                                <label for="frozen-__PRODUCT_ID__">Frozen</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-forms">
+                                        <label for="weight_req"><span class="req-asterisk">*</span> Weight requirement</label>
+                                        <input type="text" id="weight_req" name="weight_requirement___PRODUCT_ID__" required maxlength="50">
+                                    </div>
+                                    <div class="input-forms">
+                                        <label for="select_primary"><span class="req-asterisk">*</span> Packaging requirement</label>
+                                        <div  style="display: flex; gap: 10px;">
+                                            <div>
+                                                <label for="select_primary" style="font-size: 12px; display: block;">Primary</label>
+                                                <select id="select_primary" name="primary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
+                                                    <option  value=""  disabled selected>-- Select primary packaging --</option>
+                                                    <option value="sunny_plastic">Sunny plastic</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                            <label for="sec_packaging" style="font-size: 12px; display: block;">Secondary</label>
+                                                <select id="sec_packaging" name="secondary_packaging___PRODUCT_ID__" style="height: 35px; font-size: 13px;" required>
+                                                    <option value="" disabled selected>-- Select secondary packaging --</option>
+                                                    <option value="sack_wrapper">Sack wrapper</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="input-forms">
+                                        <label for="labeling_req"><span class="req-asterisk">*</span> Labeling requirement</label>
+                                        <input id="labeling_req" type="text" name="labeling_requirement___PRODUCT_ID__" required maxlength="255">
+                                    </div>
+                                    <div class="input-forms">
+                                        <label for="reject_param"><span class="req-asterisk">*</span> Rejection parameter</label>
+                                        <input id="reject_param" type="text" name="rejection_parameter___PRODUCT_ID__" required maxlength="255">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="remove-btn" onclick="this.closest('.product-form-main').remove();" style="margin-top: 10px; background: #f8d7da; color: #721c24; border: none; padding: 5px 10px; border-radius: 4px;">
+                                Remove Product
+                            </button>
+                        </template>
 
 
 

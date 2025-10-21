@@ -26,6 +26,7 @@ class Products extends Model
         'measurement_type',
         'added_by',
         'status',
+        'description',
 
     ];
 

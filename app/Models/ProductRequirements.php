@@ -14,7 +14,7 @@ class ProductRequirements extends Model
         'weight_requirement',
         'primary_packaging',
         'secondary_packaging',
-        'labeling_requiremen',
+        'labeling_requirement',
         'rejection_parameter'
 
 

@@ -8,7 +8,9 @@ document.addEventListener('DOMContentLoaded', function () {
         '.modal-option-groups input[type="file"][name="image"], ' +
         '.form-group input[type="file"][name="image"], ' +
         '.input-forms input[type="file"][name="id_image"],'  +
-        '.input-forms input[type="file"][name="e_image"]'  
+        '.input-forms input[type="file"][name="e_image"]'  +
+        '.input-forms input[type="file"][name="id_image"],'  +
+        '.input-forms input[type="file"][name="e_image"]'
 
     );
 
