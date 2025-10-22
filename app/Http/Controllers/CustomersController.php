@@ -124,14 +124,149 @@ class CustomersController extends Controller
             ]);
         }
 
+        // public function supplierConfirm(Request $request)
+        // {
+        //     $staff = Auth::user();
+        //     Log::info('SupplierConfirm started', $request->all());
+        //     $input = $request->all();
+        //     $input['credit_limit'] = str_replace(',', '', $input['credit_limit']);
+
+        //     $request->merge($input);
+
+        //     $request->validate([
+        //         'supplier_id'       => 'required|exists:suppliers,supplier_id',
+        //         'user_id'           => 'required|exists:users,user_id',
+        //         'account_status'    => 'required|string|max:100',
+        //         'reason_to_decline' => 'nullable|string|max:200|required_if:account_status,Declined',
+        //         'to_change'         => 'nullable|string|max:200|required_if:account_status,Declined',
+        //         'feedback'          => 'nullable|string|max:500|required_if:account_status,Declined',
+        //         'staff_id'          => 'required|exists:staffs,staff_id',
+        //         'credit_limit'      => 'required_if:account_status,Accepted|numeric|min:0',
+
+        //         'products'          => 'sometimes|required_if:account_status,Accepted|array',
+        //         'products.*.product_id' => 'sometimes|required_if:account_status,Accepted|string|exists:products,product_id',
+        //         'products.*.nego_price' => 'sometimes|required_if:account_status,Accepted|numeric|min:0',
+        //     ]);
+
+        //     if ($request->account_status !== 'Accepted') {
+        //         $request->merge(['products' => []]);
+        //     }
+
+
+        //     DB::beginTransaction();
+
+        //     try {
+
+
+        //         $user = User::where('user_id', $request->user_id)->firstOrFail();
+        //         $account_status = AccountStatus::firstOrNew(['supplier_id' => $request->supplier_id]);
+
+        //         $account_status->staff_id = $request->staff_id;
+        //         $account_status->account_status = $request->account_status; 
+
+        //         if ($request->account_status === 'Declined') {
+        //             $account_status->reason_to_decline = $request->reason_to_decline;
+        //             $account_status->to_change = $request->to_change;
+        //             $account_status->feedback = $request->feedback;
+        //         } else {
+        //             $account_status->reason_to_decline = null;
+        //             $account_status->to_change = null;
+        //             $account_status->feedback = null;
+        //         }
+
+        //         $account_status->save();
+
+        //         $user->status = $request->account_status;
+        //         $user->save();
+
+        //         $supplier = AccountStatus::where('supplier_id', $request->supplier_id)->firstOrFail();
+        //         $supplier->staff_id = $request->staff_id;
+        //         $supplier->approved_by = $request->user_id;
+        //         $supplier->approved_at = now();
+
+        //         $supplier->save();
+
+        //             $date = date('Ymd');
+        //             function randomBase36String(int $length): string {
+        //                 $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        //                 $str = '';
+        //                 for ($i = 0; $i < $length; $i++) {
+        //                     $str .= $chars[random_int(0, strlen($chars) - 1)];
+        //                 }
+        //                 return $str;
+        //             }
+
+        //             $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
+        //             $set_id = 'SET-' . $date . '-' . randomBase36String(5);
+
+
+        //         // Save product settings only if accepted
+        //             if ($request->account_status === 'Accepted' && $request->has('products')) {
+        //                 foreach ($request->products as $productData) {
+        //                     ProductSetting::create([
+        //                         'product_id'  => $productData['product_id'],
+        //                         'set_id'      => 'SET-' . date('Ymd') . '-' . randomBase36String(5),
+        //                         'supplier_id' => $request->supplier_id,
+        //                         'nego_price'  => $productData['nego_price'],
+        //                         'added_by'    => $user->user_id,
+        //                     ]);
+        //                 }
+        //             }
+
+
+        //         $credit_id = 'CRDT-' . $date . '-' . randomBase36String(5);
+
+        //         Credits::updateOrCreate(
+        //             ['user_id' => $user->user_id],
+        //             [
+        //                 'credit_id'   => $credit_id,
+        //                 'status'      => 'Active',
+        //                 'balance'     => 0,
+        //                 'credit_limit'=> $input['credit_limit'],
+        //             ]
+        //         );
+
+
+        //         Logs::create([
+        //             'user_id' => $request->user_id,
+        //             'action' => 'Supplier registration request',
+        //             'log_id' => $log_id,
+        //             'description' => "Supplier {$request->supplier_id} confirmed with status 'Accepted', assigned to staff {$request->staff_id} and set negotiated price.",
+        //             'entity' => 'Supplier', 
+        //             'entity_id' => $supplier->id,
+        //         ]);
+
+
+        //         DB::commit();
+        //         return redirect()->back()
+        //             ->with('success', "Supplier confirmation saved successfully (status: {$request->account_status}).");
+
+
+                
+
+        //         } catch (\Exception $e) {
+        //             Log::error('SupplierConfirm failed: ' . $e->getMessage(), [
+        //                 'trace' => $e->getTraceAsString(),
+        //                 'request' => $request->all(),
+        //                 'line' => $e->getLine(),
+        //                 'file' => $e->getFile(),
+        //             ]);
+                    
+        //             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        //         }
+        // }
+
         public function supplierConfirm(Request $request)
         {
             $staff = Auth::user();
             Log::info('SupplierConfirm started', $request->all());
             $input = $request->all();
-            $input['credit_limit'] = str_replace(',', '', $input['credit_limit']);
-
-            $request->merge($input);
+            
+            // Only process credit_limit if it exists (when Accepted)
+            if (isset($input['credit_limit'])) {
+                $input['credit_limit'] = str_replace(',', '', $input['credit_limit']);
+                $request->merge($input);
+            }
 
             $request->validate([
                 'supplier_id'       => 'required|exists:suppliers,supplier_id',
@@ -152,12 +287,9 @@ class CustomersController extends Controller
                 $request->merge(['products' => []]);
             }
 
-
             DB::beginTransaction();
 
             try {
-
-
                 $user = User::where('user_id', $request->user_id)->firstOrFail();
                 $account_status = AccountStatus::firstOrNew(['supplier_id' => $request->supplier_id]);
 
@@ -183,78 +315,76 @@ class CustomersController extends Controller
                 $supplier->staff_id = $request->staff_id;
                 $supplier->approved_by = $request->user_id;
                 $supplier->approved_at = now();
-
                 $supplier->save();
 
-                    $date = date('Ymd');
-                    function randomBase36String(int $length): string {
-                        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                        $str = '';
-                        for ($i = 0; $i < $length; $i++) {
-                            $str .= $chars[random_int(0, strlen($chars) - 1)];
-                        }
-                        return $str;
+                $date = date('Ymd');
+                function randomBase36String(int $length): string {
+                    $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    $str = '';
+                    for ($i = 0; $i < $length; $i++) {
+                        $str .= $chars[random_int(0, strlen($chars) - 1)];
                     }
+                    return $str;
+                }
 
-                    $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
-                    $set_id = 'SET-' . $date . '-' . randomBase36String(5);
-
+                $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
+                $set_id = 'SET-' . $date . '-' . randomBase36String(5);
 
                 // Save product settings only if accepted
-                    if ($request->account_status === 'Accepted' && $request->has('products')) {
-                        foreach ($request->products as $productData) {
-                            ProductSetting::create([
-                                'product_id'  => $productData['product_id'],
-                                'set_id'      => 'SET-' . date('Ymd') . '-' . randomBase36String(5),
-                                'supplier_id' => $request->supplier_id,
-                                'nego_price'  => $productData['nego_price'],
-                                'added_by'    => $user->user_id,
-                            ]);
-                        }
+                if ($request->account_status === 'Accepted' && $request->has('products')) {
+                    foreach ($request->products as $productData) {
+                        ProductSetting::create([
+                            'product_id'  => $productData['product_id'],
+                            'set_id'      => 'SET-' . date('Ymd') . '-' . randomBase36String(5),
+                            'supplier_id' => $request->supplier_id,
+                            'nego_price'  => $productData['nego_price'],
+                            'added_by'    => $user->user_id,
+                        ]);
                     }
+                }
 
-
-                $credit_id = 'CRDT-' . $date . '-' . randomBase36String(5);
-
-                Credits::updateOrCreate(
-                    ['user_id' => $user->user_id],
-                    [
-                        'credit_id'   => $credit_id,
-                        'status'      => 'Active',
-                        'balance'     => 0,
-                        'credit_limit'=> $input['credit_limit'],
-                    ]
-                );
-
+                // Only create/update credits if accepted
+                if ($request->account_status === 'Accepted') {
+                    $credit_id = 'CRDT-' . $date . '-' . randomBase36String(5);
+                    
+                    Credits::updateOrCreate(
+                        ['user_id' => $user->user_id],
+                        [
+                            'credit_id'   => $credit_id,
+                            'status'      => 'Active',
+                            'balance'     => 0,
+                            'credit_limit'=> $request->credit_limit,
+                        ]
+                    );
+                }
 
                 Logs::create([
                     'user_id' => $request->user_id,
                     'action' => 'Supplier registration request',
                     'log_id' => $log_id,
-                    'description' => "Supplier {$request->supplier_id} confirmed with status 'Accepted', assigned to staff {$request->staff_id} and set negotiated price.",
+                    'description' => "Supplier {$request->supplier_id} confirmed with status '{$request->account_status}'" . 
+                                ($request->account_status === 'Accepted' ? ", assigned to staff {$request->staff_id} and set negotiated price." : "."),
                     'entity' => 'Supplier', 
                     'entity_id' => $supplier->id,
                 ]);
-
 
                 DB::commit();
                 return redirect()->back()
                     ->with('success', "Supplier confirmation saved successfully (status: {$request->account_status}).");
 
-
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('SupplierConfirm failed: ' . $e->getMessage(), [
+                    'trace' => $e->getTraceAsString(),
+                    'request' => $request->all(),
+                    'line' => $e->getLine(),
+                    'file' => $e->getFile(),
+                ]);
                 
-
-                } catch (\Exception $e) {
-                    Log::error('SupplierConfirm failed: ' . $e->getMessage(), [
-                        'trace' => $e->getTraceAsString(),
-                        'request' => $request->all(),
-                        'line' => $e->getLine(),
-                        'file' => $e->getFile(),
-                    ]);
-                    
-                    return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
-                }
+                return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+            }
         }
+
         public function afas($supplier_id, Request $request)
         {
             $user = Auth::user();

@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const productInputs = productList?.querySelectorAll('input[name*="nego_price"]');
         productInputs?.forEach(input => input.disabled = true);
 
+
         // Disable credit limit input
         const creditLimitInput = document.querySelector('input[name="credit_limit"]');
         if (creditLimitInput) creditLimitInput.disabled = true;
