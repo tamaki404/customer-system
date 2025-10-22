@@ -69,6 +69,57 @@ public function success(Request $request){
  return view('error.success');
 }
 
+public function review($user_id, Request $request){
+    $user = User::where('user_id', $user_id)->first();
+    $supplier = Suppliers::where('user_id', $user_id)->first();
+    $accStats = AccountStatus::where('user_id', $user_id)->first();
+
+    $banks = null;
+    $documents = collect();
+    $deliveryRequirements = collect();
+
+    $reason = $accStats->to_change ?? '';
+
+    if ($accStats) {
+        switch ($accStats->to_change) {
+            case 'ID image and details':
+                $documents = Documents::where('user_id', $user_id)
+                    ->whereIn('type', ['valid_one', 'valid_two'])
+                    ->orderByRaw("FIELD(type, 'valid_one', 'valid_two')") 
+                    ->limit(2)
+                    ->get();
+                break;
+
+            case 'Bank details':
+                $banks = Banks::where('user_id', $user_id)->first();
+                break;
+
+            case 'Necessary documents':
+                $documents = Documents::where('user_id', $user_id)
+                    ->whereIn('type', ['valid_one', 'valid_two'])
+                    ->orderByRaw("FIELD(type, 'valid_one', 'valid_two')") 
+                    ->limit(2)
+                    ->get();
+                break;
+
+            case 'Delivery requirements':
+                $deliveryRequirements = DeliveryRequirements::where('user_id', $user_id)->get();
+                break;
+        }
+    }
+
+    return view('error.review', compact(
+        'supplier',
+        'user',
+        'documents',
+        'banks',
+        'accStats',
+        'reason',
+        'deliveryRequirements'
+    ));
+
+}
+
 public function updateDeclined(Request $request)
 {
     $user_id = session('user_id');

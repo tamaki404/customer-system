@@ -23,17 +23,19 @@
                     </ul>
                 </div>
             @endif
-            
-            @if (session('success'))
-                <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
-            @endif
 
-            @if (session('error'))
-                <div class="alert alert-danger" style="margin: 10px;">
-                    <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
-                    <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
+            @if (session('success') || session('error'))
+                <div 
+                    id="flash-message"
+                    class="flash-message 
+                        {{ session('success') ? 'alert-success' : 'alert-danger' }}">
+                    <strong>
+                        {{ session('success') ? 'Success:' : ' Error:' }}
+                    </strong>
+                    {{ session('success') ?? session('error') }}
                 </div>
             @endif
+            
 
             {{-- confirm supplier request --}}
             <div class="modal fade" id="request-action"tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
@@ -612,8 +614,10 @@
 
                     </div>
 
+
+
                         @if ($accStatus->account_status === 'Declined')
-                            <div class="declined-box">
+                            <div class="status-box status-box--declined">
                                 <div class="declined-header">
                                     <span class="declined-title">DECLINED</span>
                                     <span class="declined-date">{{ \Carbon\Carbon::parse($accStatus->approved_at)->format('F j, Y g:i A') }}</span>
@@ -642,116 +646,27 @@
                                 </div>
                             </div>
 
-                            <style>
-                            /*  Container */
-                            .declined-box {
-                                background: linear-gradient(135deg, #ff5c5c, #d93636);
-                                color: #fff;
-                                padding: 10px;
-                                border-radius: 10px;
-                                border-left: 6px solid #b71c1c;
-                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-                                display: flex;
-                                flex-direction: column;
-                                gap: 10px;
-                                animation: fadeIn 0.4s ease-out;
-                            }
+                        @elseif ($accStatus->account_status === 'Under review')
+                            <div class="status-box status-box--under-review">
+                                <div class="declined-header">
+                                    <span class="declined-title">To review</span>
+                                    <span class="declined-date">{{ \Carbon\Carbon::parse($accStatus->updated_at)->format('F j, Y g:i A') }}</span>
+                                </div>
 
-                            /*  Header */
-                            .declined-header {
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: center;
-                                flex-wrap: wrap;
-                            }
+                                <div class="declined-content">
+            
 
-                            .declined-title {
-                                font-weight: bold;
-                                font-size: 15px;
-                                letter-spacing: 0.5px;
-                                background: rgba(255, 255, 255, 0.15);
-                                padding: 4px 10px;
-                                border-radius: 4px;
-                                text-transform: uppercase;
-                            }
-
-                            .declined-date {
-                                font-size: 13px;
-                                opacity: 0.9;
-                            }
-
-                            /*  Content */
-                            .declined-content {
-                                display: flex;
-                                flex-direction: row;
-                                align-items: flex-start;
-                                gap: 12px;
-                                flex-wrap: wrap;
-                            }
-
-                            /*  Staff Section */
-                            .declined-staff {
-                                display: flex;
-                                align-items: center;
-                                gap: 10px;
-                            }
-
-                            .staff-img {
-                                height: 36px;
-                                width: 36px;
-                                border-radius: 50%;
-                                border: 2px solid #fff;
-                                object-fit: cover;
-                                box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
-                            }
-
-                            .staff-info {
-                                display: flex;
-                                flex-direction: column;
-                                line-height: 1.3;
-                            }
-
-                            .staff-info .label {
-                                font-size: 12px;
-                                opacity: 0.85;
-                            }
-
-                            .staff-info .name {
-                                font-size: 14.5px;
-                                font-weight: 600;
-                            }
-
-                            /*  Details Section */
-                            .declined-details {
-                                flex: 1;
-                                display: flex;
-                                flex-direction: column;
-                                gap: 4px;
-                            }
-
-                            .declined-reason {
-                                font-size: 14px;
-                                line-height: 1.5;
-                                margin: 0;
-                            }
-
-                            .footer {
-                                margin: 0;
-                                font-size: 13px;
-                                opacity: 0.85;
-                                font-style: italic;
-                            }
-
-                            /* Animation */
-                            @keyframes fadeIn {
-                                from { opacity: 0; transform: translateY(8px); }
-                                to { opacity: 1; transform: translateY(0); }
-                            }
-
-
-                            </style>
-
+                                    <div class="declined-details">
+                                        <p class="declined-reason">
+                                            {{$supplier->company_name}} have modified their request, kindly check it out
+                                        </p>
+                                        <p class="footer">Waiting for your confirmation to take action.</p>
+                                    </div>
+                                    <button onclick="window.location.href='{{ route('error.changes', ['user_id' => $accStatus->user_id]) }}'">Review changes</button>
+                                </div>
+                            </div>
                         @endif
+
 
 
                 </div>
@@ -775,6 +690,8 @@
                                             @elseif($supplier->account_status->account_status === 'Accepted') green
                                             @elseif($supplier->account_status->account_status === 'Suspended') black
                                             @elseif($supplier->account_status->account_status === 'Declined') red
+                                            @elseif($supplier->account_status->account_status === 'Under review') violet
+
                                             @else gray
                                             @endif
                                         "
@@ -1617,7 +1534,6 @@
                 
             
                 </div>
-
 
         </div>
 

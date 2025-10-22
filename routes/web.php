@@ -280,6 +280,7 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
     //sale/discount
     Route::post('/set-sale-discount', [SaleDiscountController::class, 'store'])->name('set.sale_discount');
 
+    Route::get('/review/changes/{user_id}', [ErrorController::class, 'review'])->name('error.changes');
 
 });
 

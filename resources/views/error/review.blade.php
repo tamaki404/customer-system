@@ -26,43 +26,59 @@
         </div>
     @endif
 
+    {{-- confirm supplier request --}}
+    <div class="modal fade" id="request-action"tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        <div class="modal-dialog" >
+            <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header">
+                    <p class="modal-title">Supplier request action</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <p class="note-notify">
+                        <span class="material-symbols-outlined"> info </span>
+                        <span>Review the profile before taking any action on this request.</span>
+                    </p>
+                    <!-- Status selection -->
+                    <div class="modal-option-groups">
+                        <p>Are the modified data correct now?</p>
+                        <select name="account_status" id="account_status" required>
+                            <option value="">-- Select status --</option>
+                            <option value="To confirm">Yes, all are good now</option>
+                            <option value="Declined again">No, there's something wrong</option>
+                        </select>
+                    </div>
+                    <!-- Reason to decline again (hidden by default) -->
+                        <div class="modal-option-groups" id="feedback_group" style="display: none;">
+                            <p>Kindly specify what needs to be changed and the reason, be specific and on point</p>
+                            <textarea 
+                                name="review_feedback" 
+                                id="feedback" 
+                                rows="4" 
+                                class="form-control" 
+                                placeholder="Provide detailed feedback here..."
+                                maxlength="500"
+                                style="width: 100%; resize: vertical; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"
+                            ></textarea>
+                            <small class="text-muted" style="font-size: 11px;">Maximum 500 characters</small>
+                        </div>
+
+                   
+                </div>
+                <input type="hidden" name="supplier_id" value="{{$supplier->supplier_id }}">
+                <input type="hidden" name="reviewed_by" value="{{ Auth()->user()->user_id }}">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit action</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <div class="container">
-        <div class="header-section">
-            <p>Your request to join was declined</p>
-            <p>Declined at {{ $accStats->approved_at }}</p>
-        </div>
-
-        <div class="report-section">
-            <p class="info-display" style="width: 90%; max-width: 90%;">
-                <span class="material-symbols-outlined">info</span>
-                <span>
-                    Our team has reviewed your registration details and identified specific issues that need correction.  
-                    Please review the feedback below, make the necessary modifications, and resubmit your account for verification.
-                </span>
-            </p>
-
-            <div class="report-details">
-                <div class="report-item">
-                    <span class="report-label">Required Action:</span>
-                    <span class="report-value">{{ $accStats->to_change }}</span>
-                </div>
-                <div class="report-item">
-                    <span class="report-label">Feedback from Reviewer:</span>
-                    <span class="report-value">{{ $accStats->feedback }}</span>
-                </div>
-                <div class="report-item">
-                    <span class="report-label">Date of Decline:</span>
-                    <span class="report-value">{{ \Carbon\Carbon::parse($accStats->approved_at)->format('F j, Y g:i A') }}</span>
-                </div>
-            </div>
-
-            <p class="report-note">
-                ⚠️ Make sure that all uploaded documents are clear, valid, and correctly labeled before resubmitting.  
-                Once resubmitted, your application will go through another review process.
-            </p>
-        </div>
-
-
         @if ($reason === "ID image and details")
             <form action="{{ route('declined.update') }}" method="POST" enctype="multipart/form-data" class="decline-form">
                 @csrf
@@ -188,9 +204,7 @@
                 </div>
 
                 <div class="form-actions" style="margin-top: 15px;" >
-                    <button type="submit" class="resubmit-btn">Report issueAsk to resubmit</button>
                     <button type="submit" class="resubmit-btn">Resubmit for Review</button>
-
                 </div>
             </form>
         @endif

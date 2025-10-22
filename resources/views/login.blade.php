@@ -18,7 +18,7 @@
                 class="flash-message 
                     {{ session('success') ? 'alert-success' : 'alert-danger' }}">
                 <strong>
-                    {{ session('success') ? '✅ Success:' : '⚠️ Error:' }}
+                    {{ session('success') ? 'Success:' : ' Error:' }}
                 </strong>
                 {{ session('success') ?? session('error') }}
             </div>
