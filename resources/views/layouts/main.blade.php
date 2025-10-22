@@ -57,7 +57,6 @@
                                     @auth('representative')
                                         @php
                                             $rep = auth('representative')->user();
-
                                             $middleInitial = $rep->rep_middlename ? strtoupper(substr($rep->rep_middlename, 0, 1)) . '.' : '';
                                             $nameParts = [$rep->rep_lastname . ',', $rep->rep_firstname, $middleInitial];
                                             $fullName = implode(' ', array_filter($nameParts));
@@ -75,11 +74,13 @@
                                         {{  auth()->user()->staff->firstname }}
                                         {{  auth()->user()->staff->lastname }}
                                     </p>
-                                  
                                 @endif
 
-
-                            <p class="userTitle">{{  auth()->user()->role }}</p>
+                            @if (Auth()->user()->role !== "Supplier")
+                                <p class="userTitle">{{  auth()->user()->role_type }}</p>
+                            @elseif (Auth()->user()->role === "Supplier")
+                                <p class="userTitle">{{  auth()->user()->role }}</p>
+                            @endif
 
 
                              

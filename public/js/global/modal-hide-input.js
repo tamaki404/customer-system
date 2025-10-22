@@ -23,7 +23,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Remove all requirements
         [reasonSelect, toChangeSelect, feedbackInput].forEach(el => el?.removeAttribute("required"));
-        [assignAgent, creditLimit, ceilingPrice, productList].forEach(el => el?.removeAttribute("required"));
+
+        // Disable product inputs so they won't be submitted when hidden
+        const productInputs = productList?.querySelectorAll('input[name*="nego_price"]');
+        productInputs?.forEach(input => input.disabled = true);
+
+        // Disable credit limit input
+        const creditLimitInput = document.querySelector('input[name="credit_limit"]');
+        if (creditLimitInput) creditLimitInput.disabled = true;
+
+        // Disable staff select
+        const staffSelect = assignAgent?.querySelector('select[name="staff_id"]');
+        if (staffSelect) staffSelect.disabled = true;
 
         if (status === "Declined") {
             // Show decline fields
@@ -43,13 +54,12 @@ document.addEventListener("DOMContentLoaded", function () {
             ceilingPrice.style.display = "block";
             productList.style.display = "block";
 
-            // Make required
-            assignAgent.setAttribute("required", "required");
-            creditLimit.setAttribute("required", "required");
-            ceilingPrice.setAttribute("required", "required");
-            productList.setAttribute("required", "required");
+            // Enable inputs for submission
+            productInputs?.forEach(input => input.disabled = false);
+            if (creditLimitInput) creditLimitInput.disabled = false;
+            if (staffSelect) staffSelect.disabled = false;
         }
-        // else (Pending or others): keep all hidden
+        // else (Pending or others): keep all hidden and disabled
     }
 
     // Initialize on load

@@ -50,9 +50,6 @@ class CustomersController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->get();
 
-
-
-
             return view('customers.list', [
                 'user' => $user,
                 'supplier' => $supplier,
