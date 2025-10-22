@@ -65,6 +65,9 @@ public function declined(Request $request)
         'deliveryRequirements'
     ));
 }
+public function success(Request $request){
+ return view('error.success');
+}
 
 public function updateDeclined(Request $request)
 {
@@ -150,6 +153,12 @@ public function updateDeclined(Request $request)
             $documentsUpdated = true;
         }
 
+        $accStats = AccountStatus::where('user_id', $user_id)->first();
+        if ($accStats) {
+            $accStats->account_status = 'Under review'; 
+            $accStats->updated_at = now();
+            $accStats->save();
+        }
 
         // Success message
         $message = 'Your account has been successfully resubmitted for review.';
@@ -157,7 +166,8 @@ public function updateDeclined(Request $request)
             $message .= ' Updated documents have been uploaded.';
         }
 
-        return back()->with('success' , $message);
+
+        return redirect()->route('error.success')->with('success' , $message);
 
     }catch (\Exception $e) {
     \Log::error('UpdateDeclined error: ' . $e->getMessage());

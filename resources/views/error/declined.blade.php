@@ -201,7 +201,7 @@
 
 
     <script>
-                document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
             const flashMessage = document.getElementById('flash-message');
             if (flashMessage) {
                 flashMessage.style.opacity = 1;

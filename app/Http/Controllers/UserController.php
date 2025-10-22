@@ -925,6 +925,16 @@ public function signin(Request $request)
             return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
         }
 
+        if (strtolower($accountStatus->account_status) === 'under review') {
+            \Log::info('Declined login attempt', [
+                'email' => $user->email_address,
+                'user_id' => $user->user_id,
+                'timestamp' => now()->toDateTimeString(),
+            ]);
+
+            return back()->withErrors(['loginError' => 'Your account is under review, kindly wait for an email for your status.'])->withInput();
+        }
+
         //  Handle declined accounts (no login)
         if (strtolower($accountStatus->account_status) === 'declined') {
             \Log::info('Declined login attempt', [

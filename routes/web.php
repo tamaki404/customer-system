@@ -83,6 +83,7 @@ Route::get('/email/verify', [UserController::class, 'verifyEmail'])->name('verif
     Route::get('/error/declined-request', [ErrorController::class, 'declined'])
         ->name('error.declined');
     Route::post('/declined/update', [ErrorController::class, 'updateDeclined'])->name('declined.update');    
+    Route::get('/submitted/success', [ErrorController::class, 'success'])->name('error.success');    
 
 
 Route::get('/locked', function () {
