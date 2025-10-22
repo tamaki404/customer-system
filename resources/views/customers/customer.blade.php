@@ -616,36 +616,36 @@
 
 
 
-                        @if ($accStatus->account_status === 'Declined')
+                     @if ($accStatus->account_status === 'Declined')
                             <div class="status-box status-box--declined">
                                 <div class="declined-header">
                                     <span class="declined-title">DECLINED</span>
-                                    <span class="declined-date">{{ \Carbon\Carbon::parse($accStatus->approved_at)->format('F j, Y g:i A') }}</span>
+                                    <span class="declined-date">{{ \Carbon\Carbon::parse($review->raised_at)->format('F j, Y g:i A') }}</span>
                                 </div>
 
                                 <div class="declined-content">
                                     <div class="declined-staff">
                                         @php
-                                            $imgSrc = $accStatus->user->image 
-                                                ? ('data:' . $accStatus->user->image_mime_type . ';base64,' . base64_encode($accStatus->user->image))
+                                            $imgSrc = $review->user->image 
+                                                ? ('data:' . $review->user->image_mime_type . ';base64,' . base64_encode($review->user->image))
                                                 : asset('assets/default-company-logo.png');
                                         @endphp
                                         <img src="{{ $imgSrc }}" alt="Staff image" class="staff-img">
                                         <div class="staff-info">
                                             <small class="label">Handled by:</small>
-                                            <span class="name">{{ $accStatus->staff->lastname }}, {{ $accStatus->staff->firstname }}</span>
+                                            <span class="name">{{ $review->staff->lastname }}, {{ $review->staff->firstname }}</span>
                                         </div>
                                     </div>
 
                                     <div class="declined-details">
                                         <p class="declined-reason">
-                                            <strong>Reason:</strong> “{{ $accStatus->reason_to_decline }}” - {{ $accStatus->feedback }}
+                                            <strong>Reason:</strong> “{{ $review->head }}” - {{ $review->body }}
                                         </p>
                                         <p class="footer">Waiting for supplier to modify their request.</p>
                                     </div>
                                 </div>
-                            </div>
-
+                            </div> 
+{{-- 
                         @elseif ($accStatus->account_status === 'Under review')
                             <div class="status-box status-box--under-review">
                                 <div class="declined-header">
@@ -664,7 +664,7 @@
                                     </div>
                                     <button onclick="window.location.href='{{ route('error.changes', ['user_id' => $accStatus->user_id]) }}'">Review changes</button>
                                 </div>
-                            </div>
+                            </div> --}}
                         @endif
 
 

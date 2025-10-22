@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Suppliers;
 use App\Models\Documents;
 use App\Models\Banks;
+use App\Models\Reviews;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -19,16 +20,17 @@ public function declined(Request $request)
     $user_id = session('user_id'); 
     $supplier = Suppliers::where('user_id', $user_id)->first();
     $accStats = AccountStatus::where('user_id', $user_id)->first();
+    $review = Reviews::where('user_id', $user_id)->first();
 
     // Initialize ALL variables to avoid "undefined variable" errors
     $banks = null;
     $documents = collect();
     $deliveryRequirements = collect();
 
-    $reason = $accStats->to_change ?? '';
+    $reason = $review->head ?? '';
 
-    if ($accStats) {
-        switch ($accStats->to_change) {
+    if ($review) {
+        switch ($review->head) {
             case 'ID image and details':
                 $documents = Documents::where('user_id', $user_id)
                     ->whereIn('type', ['valid_one', 'valid_two'])
@@ -62,7 +64,8 @@ public function declined(Request $request)
         'banks',
         'accStats',
         'reason',
-        'deliveryRequirements'
+        'deliveryRequirements',
+        'review'
     ));
 }
 public function success(Request $request){
@@ -210,6 +213,13 @@ public function updateDeclined(Request $request)
             $accStats->updated_at = now();
             $accStats->save();
         }
+        $review = Reviews::where('user_id', $user_id)->first();
+        if ($review) {
+            $review->status = 'Under review'; 
+            $review->updated_at = now();
+            $review->save();
+        }
+
 
         // Success message
         $message = 'Your account has been successfully resubmitted for review.';

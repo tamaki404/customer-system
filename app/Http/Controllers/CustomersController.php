@@ -21,7 +21,7 @@ use App\Models\Address;
 use App\Models\ProductRequirements;
 use App\Models\PriceHistory;
 use App\Models\GlobalCeiling;
-use App\Models\SaleDiscount;
+use App\Models\Reviews;
 
 use App\Models\ProductSetting;
 use App\Models\Credits;
@@ -62,6 +62,8 @@ class CustomersController extends Controller
             $user = Auth::user();
 
             $supplier   = Suppliers::where('supplier_id', $supplier_id)->firstOrFail();
+
+            $review = Reviews::where('user_id', $supplier->user_id)->first();
 
             $accStatus  = AccountStatus::where('supplier_id', $supplier_id)->first();
             $staffs = User::where('role', 'Staff')
@@ -120,6 +122,7 @@ class CustomersController extends Controller
                 'documents'  => $documents,
                 'products'   => $products,
                 'productRequirements'   => $productRequirements,
+                'review' => $review,
 
             ]);
         }
@@ -273,16 +276,18 @@ class CustomersController extends Controller
             $request->validate([
                 'supplier_id'       => 'required|exists:suppliers,supplier_id',
                 'user_id'           => 'required|exists:users,user_id',
-                'account_status'    => 'required|string|max:100',
-                'reason_to_decline' => 'nullable|string|max:200|required_if:account_status,Declined',
-                'to_change'         => 'nullable|string|max:200|required_if:account_status,Declined',
-                'feedback'          => 'nullable|string|max:500|required_if:account_status,Declined',
                 'staff_id'          => 'nullable|required_if:account_status,Accepted|exists:staffs,staff_id', 
                 'credit_limit'      => 'required_if:account_status,Accepted|numeric|min:0',
+                'account_status'    => 'required|string|max:100',
 
                 'products'          => 'sometimes|required_if:account_status,Accepted|array',
                 'products.*.product_id' => 'sometimes|required_if:account_status,Accepted|string|exists:products,product_id',
                 'products.*.nego_price' => 'sometimes|required_if:account_status,Accepted|numeric|min:0',
+
+                // declined, to save to reviews table
+                'reason_to_decline' => 'nullable|string|max:200|required_if:account_status,Declined',
+                'to_change'         => 'nullable|string|max:200|required_if:account_status,Declined',
+                'feedback'          => 'nullable|string|max:500|required_if:account_status,Declined',
             ]);
 
             if ($request->account_status !== 'Accepted') {
@@ -292,33 +297,6 @@ class CustomersController extends Controller
             DB::beginTransaction();
 
             try {
-                $user = User::where('user_id', $request->user_id)->firstOrFail();
-                $account_status = AccountStatus::firstOrNew(['supplier_id' => $request->supplier_id]);
-
-                $account_status->staff_id = $request->staff_id;
-                $account_status->account_status = $request->account_status; 
-
-                if ($request->account_status === 'Declined') {
-                    $account_status->reason_to_decline = $request->reason_to_decline;
-                    $account_status->to_change = $request->to_change;
-                    $account_status->feedback = $request->feedback;
-                } else {
-                    $account_status->reason_to_decline = null;
-                    $account_status->to_change = null;
-                    $account_status->feedback = null;
-                }
-
-                $account_status->save();
-
-                $user->status = $request->account_status;
-                $user->save();
-
-                $supplier = AccountStatus::where('supplier_id', $request->supplier_id)->firstOrFail();
-                $supplier->staff_id = $request->staff_id;
-                $supplier->approved_by = $request->user_id;
-                $supplier->approved_at = now();
-                $supplier->save();
-
                 $date = date('Ymd');
                 function randomBase36String(int $length): string {
                     $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -330,7 +308,39 @@ class CustomersController extends Controller
                 }
 
                 $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
-                $set_id = 'SET-' . $date . '-' . randomBase36String(5);
+
+
+
+                $user = User::where('user_id', $request->user_id)->firstOrFail();
+                $account_status = AccountStatus::firstOrNew(['supplier_id' => $request->supplier_id]);
+
+                $account_status->staff_id = $request->staff_id;
+                $account_status->account_status = $request->account_status; 
+
+                if ($request->account_status === 'Declined') {
+                    Reviews::create([
+                        'review_id' => 'REVIEW-' . $date . '-' . randomBase36String(5),
+                        'head' => $request->to_change,
+                        'body' => $request->feedback,
+                        'user_id' => $request->user_id,
+                        'status' => "Active",
+                        'raised_by' => $staff->user_id,
+                        'raised_at' => now()
+                    ]);
+                    $account_status->reason_to_decline = $request->reason_to_decline; 
+
+                }
+
+                $account_status->save();
+
+                $user->status = $request->account_status;
+                $user->save();
+
+                $supplier = AccountStatus::where('supplier_id', $request->supplier_id)->firstOrFail();
+                $supplier->staff_id = $request->staff_id;
+                $supplier->save();
+
+
 
                 // Save product settings only if accepted
                 if ($request->account_status === 'Accepted' && $request->has('products')) {

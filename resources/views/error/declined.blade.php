@@ -29,7 +29,7 @@
     <div class="container">
         <div class="header-section">
             <p>Your request to join was declined</p>
-            <p>Declined at {{ $accStats->approved_at }}</p>
+            <p>Declined at {{ $review->raised_at }}</p>
         </div>
 
         <div class="report-section">
@@ -44,15 +44,15 @@
             <div class="report-details">
                 <div class="report-item">
                     <span class="report-label">Required Action:</span>
-                    <span class="report-value">{{ $accStats->to_change }}</span>
+                    <span class="report-value">{{ $review->head }}</span>
                 </div>
                 <div class="report-item">
                     <span class="report-label">Feedback from Reviewer:</span>
-                    <span class="report-value">{{ $accStats->feedback }}</span>
+                    <span class="report-value">{{ $review->body }}</span>
                 </div>
                 <div class="report-item">
                     <span class="report-label">Date of Decline:</span>
-                    <span class="report-value">{{ \Carbon\Carbon::parse($accStats->approved_at)->format('F j, Y g:i A') }}</span>
+                    <span class="report-value">{{ \Carbon\Carbon::parse($review->raised_at)->format('F j, Y g:i A') }}</span>
                 </div>
             </div>
 
@@ -188,8 +188,8 @@
                 </div>
 
                 <div class="form-actions" style="margin-top: 15px;" >
-                    <button type="submit" class="resubmit-btn">Report issueAsk to resubmit</button>
-                    <button type="submit" class="resubmit-btn">Resubmit for Review</button>
+                    {{-- <button type="submit" class="resubmit-btn">Report issueAsk to resubmit</button> --}}
+                    <button type="submit" class="resubmit-btn">Submit</button>
 
                 </div>
             </form>
