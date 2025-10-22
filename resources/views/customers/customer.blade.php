@@ -35,7 +35,7 @@
                 </div>
             @endif
 
-
+            {{-- confirm supplier request --}}
             <div class="modal fade" id="request-action"tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
                 <div class="modal-dialog" >
                     <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
@@ -214,7 +214,6 @@
 
                         <input type="hidden" name="supplier_id" value="{{$supplier->supplier_id }}">
                         <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}">
-                        <input type="hidden" name="staff_id" value="{{ Auth()->user()->staff->staff_id }}">
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -566,6 +565,7 @@
 
 
         <div class="content-bg" >
+            
                 <div class="content-header">
                     <div class="contents-display">
                         <p>
@@ -592,12 +592,10 @@
                         @endif --}}
 
 
-                        @if ($accStatus->account_status === 'Declined')
-                            <div>
-                                <p>This user was declined due to: {{$accStatus->reason_to_decline}}</p>
-                                waiting for supplier to modify their request
-                            </div>
-                        @elseif ($accStatus->account_status === 'Pending')
+
+
+
+                        @if ($accStatus->account_status === 'Pending')
                             <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">
                                 <span class="material-symbols-outlined">
                                     approval_delegation
@@ -613,6 +611,147 @@
                         @endif
 
                     </div>
+
+                        @if ($accStatus->account_status === 'Declined')
+                            <div class="declined-box">
+                                <div class="declined-header">
+                                    <span class="declined-title">DECLINED</span>
+                                    <span class="declined-date">{{ \Carbon\Carbon::parse($accStatus->approved_at)->format('F j, Y g:i A') }}</span>
+                                </div>
+
+                                <div class="declined-content">
+                                    <div class="declined-staff">
+                                        @php
+                                            $imgSrc = $accStatus->user->image 
+                                                ? ('data:' . $accStatus->user->image_mime_type . ';base64,' . base64_encode($accStatus->user->image))
+                                                : asset('assets/default-company-logo.png');
+                                        @endphp
+                                        <img src="{{ $imgSrc }}" alt="Staff image" class="staff-img">
+                                        <div class="staff-info">
+                                            <small class="label">Handled by:</small>
+                                            <span class="name">{{ $accStatus->staff->lastname }}, {{ $accStatus->staff->firstname }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="declined-details">
+                                        <p class="declined-reason">
+                                            <strong>Reason:</strong> “{{ $accStatus->reason_to_decline }}” - {{ $accStatus->feedback }}
+                                        </p>
+                                        <p class="footer">Waiting for supplier to modify their request.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <style>
+                            /*  Container */
+                            .declined-box {
+                                background: linear-gradient(135deg, #ff5c5c, #d93636);
+                                color: #fff;
+                                padding: 10px;
+                                border-radius: 10px;
+                                border-left: 6px solid #b71c1c;
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+                                display: flex;
+                                flex-direction: column;
+                                gap: 10px;
+                                animation: fadeIn 0.4s ease-out;
+                            }
+
+                            /*  Header */
+                            .declined-header {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                flex-wrap: wrap;
+                            }
+
+                            .declined-title {
+                                font-weight: bold;
+                                font-size: 15px;
+                                letter-spacing: 0.5px;
+                                background: rgba(255, 255, 255, 0.15);
+                                padding: 4px 10px;
+                                border-radius: 4px;
+                                text-transform: uppercase;
+                            }
+
+                            .declined-date {
+                                font-size: 13px;
+                                opacity: 0.9;
+                            }
+
+                            /*  Content */
+                            .declined-content {
+                                display: flex;
+                                flex-direction: row;
+                                align-items: flex-start;
+                                gap: 12px;
+                                flex-wrap: wrap;
+                            }
+
+                            /*  Staff Section */
+                            .declined-staff {
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                            }
+
+                            .staff-img {
+                                height: 36px;
+                                width: 36px;
+                                border-radius: 50%;
+                                border: 2px solid #fff;
+                                object-fit: cover;
+                                box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+                            }
+
+                            .staff-info {
+                                display: flex;
+                                flex-direction: column;
+                                line-height: 1.3;
+                            }
+
+                            .staff-info .label {
+                                font-size: 12px;
+                                opacity: 0.85;
+                            }
+
+                            .staff-info .name {
+                                font-size: 14.5px;
+                                font-weight: 600;
+                            }
+
+                            /*  Details Section */
+                            .declined-details {
+                                flex: 1;
+                                display: flex;
+                                flex-direction: column;
+                                gap: 4px;
+                            }
+
+                            .declined-reason {
+                                font-size: 14px;
+                                line-height: 1.5;
+                                margin: 0;
+                            }
+
+                            .footer {
+                                margin: 0;
+                                font-size: 13px;
+                                opacity: 0.85;
+                                font-style: italic;
+                            }
+
+                            /* Animation */
+                            @keyframes fadeIn {
+                                from { opacity: 0; transform: translateY(8px); }
+                                to { opacity: 1; transform: translateY(0); }
+                            }
+
+
+                            </style>
+
+                        @endif
 
 
                 </div>
@@ -634,7 +773,8 @@
                                         <span class="material-icons" style="font-size: 14px; color:
                                             @if($supplier->account_status->account_status === 'Pending') orange
                                             @elseif($supplier->account_status->account_status === 'Accepted') green
-                                            @elseif($supplier->account_status->account_status === 'Suspended') red
+                                            @elseif($supplier->account_status->account_status === 'Suspended') black
+                                            @elseif($supplier->account_status->account_status === 'Declined') red
                                             @else gray
                                             @endif
                                         "
@@ -1302,8 +1442,8 @@
                                                             @if ($pdfData)
                                                                 <iframe
                                                                     src="{{ $pdfData }}"
-                                                                    width="100%"
-                                                                    height="100%"
+                                                                    width="100px"
+                                                                    height="100px"
                                                                     style="border: none;"
                                                                     title="{{ $document->type }} Full View"
                                                                 ></iframe>

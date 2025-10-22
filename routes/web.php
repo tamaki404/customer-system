@@ -22,7 +22,9 @@ use App\Http\Controllers\{
     ProductSalesController,
     GlobalCeilingController,
     DeliveryController,
-    SaleDiscountController
+    SaleDiscountController,
+    ErrorController
+
 };
 
 /*
@@ -78,6 +80,10 @@ Route::get('/email/verify', [UserController::class, 'verifyEmail'])->name('verif
 |--------------------------------------------------------------------------
 */
 
+    Route::get('/error/declined-request', [ErrorController::class, 'declined'])
+        ->name('error.declined');
+    
+
 Route::get('/locked', function () {
     return view('lock.locked'); 
 })->name('locked.page');
@@ -114,6 +120,12 @@ Route::middleware(['auth', 'role:Supplier', 'check.supplier'])->group(function (
 
     Route::post('/purchase-orders/create', [PurchaseOrderController::class, 'createPurchaseOrder'])->middleware('check.rep.permission:PO')->name('purchaseorders.create');
     Route::post('/receipts/create', [ReceiptController::class, 'receiptUpload'])->middleware('check.rep.permission:POP')->name('receipt.create');
+
+    /*
+    |-------------------------
+    | Error
+    |-------------------------
+    */
 
 
 

@@ -28,15 +28,15 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-        public static function randomBase36String(int $length): string
-        {
-            $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $str = '';
-            for ($i = 0; $i < $length; $i++) {
-                $str .= $chars[random_int(0, strlen($chars) - 1)];
-            }
-            return $str;
+    public static function randomBase36String(int $length): string
+    {
+        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $str = '';
+        for ($i = 0; $i < $length; $i++) {
+            $str .= $chars[random_int(0, strlen($chars) - 1)];
         }
+        return $str;
+    }
    
     public function showSignupForm()
     {
@@ -586,7 +586,7 @@ class UserController extends Controller
                     ]));
 
                     }
-        }
+    }
   
     public function registerStaff(Request $request){
        
@@ -754,7 +754,7 @@ class UserController extends Controller
                 ->with('error', 'Staff registration failed: ' . $e->getMessage() . '. Please check the logs for more details.')
                 ->withInput();
         }
-        }
+    }
 
     public function checkEmail(Request $request)
     {
@@ -766,68 +766,6 @@ class UserController extends Controller
         
         return response()->json(['exists' => $exists]);
     }
-
-    // public function signin(Request $request)
-    // {
-    //     $key = 'login:' . $request->ip();
-    //     if (RateLimiter::tooManyAttempts($key, 5)) {
-    //         $seconds = RateLimiter::availableIn($key);
-    //         return redirect()->back()->withErrors(['loginError' => "Too many attempts. Try again in {$seconds} seconds."])->withInput();
-    //     }
-    //     RateLimiter::hit($key, 300);
-
-    //     $credentials = $request->validate([
-    //         'email_address' => 'required|email',
-    //         'password' => 'required|string|min:8',
-    //     ]);
-
-    //     $user = User::where('email_address', $credentials['email_address'])->first();
-    //     if (!$user) {
-    //         return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-    //     }
-
-    //     if (!Hash::check($credentials['password'], $user->password)) {
-    //         return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-    //     }
-
-    //     //  Branch depending on role
-    //     if ($user->role === 'Staff') {
-    //         $staff = Staffs::where('user_id', $user->user_id)->first();
-
-    //         if (!$staff) {
-    //             return redirect()->route('signin')->with('error', 'Staff record not found. Please contact support.');
-    //         }
-
-    //         if (is_null($staff->email_verified_at)) {
-    //             return redirect()->route('signin')->with('error', 'Please verify your email before signing in.');
-    //         }
-
-    //         if (strtolower($staff->status) !== 'accepted') {
-    //             return redirect()->route('signin')->with('error', 'Your staff account is not active yet. Kindly wait for verification.');
-    //         }
-    //     } else {
-    //         $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
-
-    //         if (!$accountStatus) {
-    //             return redirect()->route('signin')->with('error', 'Account status not found. Please contact support.');
-    //         }
-
-    //         if (is_null($accountStatus->email_verified_at)) {
-    //             return redirect()->route('signin')->with('error', 'Please verify your email before signing in.');
-    //         }
-
-    //         if (strtolower($accountStatus->account_status) !== 'accepted') {
-    //             return redirect()->route('signin')->with('error', 'Your account is not active yet. Kindly wait for verification.');
-    //         }
-    //     }
-
-    //     Auth::login($user, false);
-    //     $request->session()->regenerate();
-
-    //     return redirect()->route('dashboard.view');
-    // }
-
-
 
     public function verifyEmail(Request $request)
     {
@@ -880,7 +818,6 @@ class UserController extends Controller
 
         return redirect()->route('signin')->with('success', 'Email verified successfully. You may now sign in.');
     }
-
 
     private function validateSecurity(Request $request)
     {
@@ -939,180 +876,86 @@ class UserController extends Controller
         }
     }
 
-    // public function signin(Request $request)
-    // {
-    //     // $key = 'login:' . $request->ip();
-    //     // if (RateLimiter::tooManyAttempts($key, 5)) {
-    //     //     $seconds = RateLimiter::availableIn($key);
-    //     //     return redirect()->back()->withErrors(['loginError' => "Too many attempts. Try again in {$seconds} seconds."])->withInput();
-    //     // }
-    //     // RateLimiter::hit($key, 300);
+public function signin(Request $request) 
+{
+    $credentials = $request->validate([
+        'email_address' => 'required|email',
+        'password' => 'required|string|min:8',
+    ]);
 
-    //     $credentials = $request->validate([
-    //         'email_address' => 'required|email',
-    //         'password' => 'required|string|min:8',
-    //     ]);
+    $user = User::where('email_address', $credentials['email_address'])->first();
 
-    //     $user = User::where('email_address', $credentials['email_address'])->first();
-    //     if (!$user) {
-    //         return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-    //     }
-
-    //     if (!Hash::check($credentials['password'], $user->gate_password)) {
-    //         return redirect()->back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-    //     }
-
-    //     if ($user->role === 'Staff') {
-    //         $staff = Staffs::where('user_id', $user->user_id)->first();
-
-    //         if (!$staff) {
-    //             return redirect()->route('signin')->with('error', 'Staff record not found. Please contact support.');
-    //         }
-
-    //         if (is_null($staff->email_verified_at)) {
-    //             return redirect()->route('signin')->with('error', 'Please verify your email before signing in.');
-    //         }
-
-    //         if (strtolower($staff->status) !== 'accepted') {
-    //             return redirect()->route('signin')->with('error', 'Your staff account is not active yet. Kindly wait for verification.');
-    //         }
-    //     } else {
-    //         $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
-
-    //         if (!$accountStatus) {
-    //             return redirect()->route('signin')->with('error', 'Account status not found. Please contact support.');
-    //         }
-
-    //         if (is_null($accountStatus->email_verified_at)) {
-    //             return redirect()->route('signin')->with('error', 'Please verify your email before signing in.');
-    //         }
-
-    //         if (strtolower($accountStatus->account_status) !== 'accepted') {
-    //             return redirect()->route('signin')->with('error', 'Your account is not active yet. Kindly wait for verification.');
-    //         }
-    //     }
-
-    //     Auth::login($user, false);
-    //     $request->session()->regenerate();
-
-    //     return redirect()->route('dashboard.view');
-    // }
-
-//     public function signin(Request $request) 
-// {
-//     $credentials = $request->validate([
-//         'email_address' => 'required|email',
-//         'password' => 'required|string|min:8',
-//     ]);
-
-//     $user = User::where('email_address', $credentials['email_address'])->first();
-
-//     if (!$user) {
-//         return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-//     }
-
-//     // Determine which password column to use based on role
-//     $passwordColumn = $user->role === 'Supplier' ? 'password' : 'gate_password';
-
-//     if (!Hash::check($credentials['password'], $user->$passwordColumn)) {
-//         return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-//     }
-
-//     // --- Optional account status verification ---
-//     if ($user->role === 'Staff') {
-//         $staff = Staffs::where('user_id', $user->user_id)->first();
-//         if (!$staff) {
-//             return back()->withErrors(['loginError' => 'Staff record not found.'])->withInput();
-//         }
-//         if (is_null($staff->email_verified_at)) {
-//             return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
-//         }
-//         if (strtolower($staff->status) !== 'accepted') {
-//             return back()->withErrors(['loginError' => 'Your staff account is not active yet.'])->withInput();
-//         }
-//     } else {
-//         $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
-//         if (!$accountStatus) {
-//             return back()->withErrors(['loginError' => 'Account status not found.'])->withInput();
-//         }
-//         if (is_null($accountStatus->email_verified_at)) {
-//             return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
-//         }
-//         if (strtolower($accountStatus->account_status) !== 'accepted') {
-//             return back()->withErrors(['loginError' => 'Your account is not active yet.'])->withInput();
-//         }
-//     }
-
-//     //  Login user
-//     Auth::login($user, false);
-//     $request->session()->regenerate();
-
-//     //  Redirect to choose account page after gate_password authentication
-//     return redirect()->route('choose.accounts');
-// }
-
-
-    public function signin(Request $request) 
-    {
-        $credentials = $request->validate([
-            'email_address' => 'required|email',
-            'password' => 'required|string|min:8',
-        ]);
-
-        $user = User::where('email_address', $credentials['email_address'])->first();
-
-        if (!$user) {
-            return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-        }
-
-        // Determine which password column to use
-        $passwordColumn = match ($user->role) {
-            'Supplier' => 'password',
-            'Admin', 'Staff' => 'password',
-            default => 'gate_password',
-        };
-
-        if (!Hash::check($credentials['password'], $user->$passwordColumn)) {
-            return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-        }
-
-        // Staff verification
-        if ($user->role === 'Staff') {
-            $staff = Staffs::where('user_id', $user->user_id)->first();
-            if (!$staff) {
-                return back()->withErrors(['loginError' => 'Staff record not found.'])->withInput();
-            }
-            if (is_null($staff->email_verified_at)) {
-                return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
-            }
-            if (strtolower($staff->status) !== 'accepted') {
-                return back()->withErrors(['loginError' => 'Your staff account is not active yet.'])->withInput();
-            }
-        }
-
-        // Supplier or other account verification
-        if ($user->role !== 'Staff') {
-            $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
-            if (!$accountStatus) {
-                return back()->withErrors(['loginError' => 'Account status not found.'])->withInput();
-            }
-            if (is_null($accountStatus->email_verified_at)) {
-                return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
-            }
-            if (strtolower($accountStatus->account_status) !== 'accepted') {
-                return back()->withErrors(['loginError' => 'Your account is not active yet.'])->withInput();
-            }
-        }
-
-        Auth::login($user, false);
-        $request->session()->regenerate();
-
-        // Redirect based on role
-        return match ($user->role) {
-            'Supplier' => redirect()->route('choose.accounts'),
-            default => redirect()->route('dashboard.view'),
-        };
+    if (!$user) {
+        return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
     }
+
+    // Determine which password column to use
+    $passwordColumn = match ($user->role) {
+        'Supplier', 'Admin', 'Staff' => 'password',
+        default => 'gate_password',
+    };
+
+    if (!Hash::check($credentials['password'], $user->$passwordColumn)) {
+        return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
+    }
+
+    // Staff verification
+    if ($user->role === 'Staff') {
+        $staff = Staffs::where('user_id', $user->user_id)->first();
+        if (!$staff) {
+            return back()->withErrors(['loginError' => 'Staff record not found.'])->withInput();
+        }
+        if (is_null($staff->email_verified_at)) {
+            return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
+        }
+        if (strtolower($staff->status) !== 'accepted') {
+            return back()->withErrors(['loginError' => 'Your staff account is not active yet.'])->withInput();
+        }
+    }
+
+    // Non-staff verification
+    if ($user->role !== 'Staff') {
+        $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
+
+        if (!$accountStatus) {
+            return back()->withErrors(['loginError' => 'Account status not found.'])->withInput();
+        }
+
+        if (is_null($accountStatus->email_verified_at)) {
+            return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
+        }
+
+        // 🚫 Handle declined accounts (no login)
+        if (strtolower($accountStatus->account_status) === 'declined') {
+            \Log::info('Declined login attempt', [
+                'email' => $user->email_address,
+                'user_id' => $user->user_id,
+                'timestamp' => now()->toDateTimeString(),
+            ]);
+
+            // Save to session before redirect
+            session()->put('user_id', $user->user_id);
+            session()->put('user_email', $user->email_address);
+
+            return redirect()->route('error.declined');
+        }
+
+        // Pending / other statuses
+        if (strtolower($accountStatus->account_status) !== 'accepted') {
+            return back()->withErrors(['loginError' => 'Your account is not active yet.'])->withInput();
+        }
+    }
+
+    // ✅ Only log in after all checks pass
+    Auth::login($user, false);
+    $request->session()->regenerate();
+
+    // Redirect based on role
+    return match ($user->role) {
+        'Supplier' => redirect()->route('choose.accounts'),
+        default => redirect()->route('dashboard.view'),
+    };
+}
 
 
 }

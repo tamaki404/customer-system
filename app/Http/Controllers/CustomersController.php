@@ -33,7 +33,6 @@ use Users;
 
 class CustomersController extends Controller
 {
-
         public function customersList(Request $request)
         {
             $user = Auth::user();
@@ -65,9 +64,10 @@ class CustomersController extends Controller
             $supplier   = Suppliers::where('supplier_id', $supplier_id)->firstOrFail();
 
             $accStatus  = AccountStatus::where('supplier_id', $supplier_id)->first();
-            $staffs     = User::where('role', 'Staff')
-                                ->where('role_type', 'sales_representative')
-                                ->get();
+            $staffs = User::where('role', 'Staff')
+                ->where('role_type', 'sales_representative')
+                ->with('staff')
+                ->get();
             $delivery = DeliveryRequirements::where('supplier_id', $supplier->supplier_id)->first();
 
             $address = Address::where('supplier_id', $supplier->supplier_id)->first();
@@ -268,6 +268,8 @@ class CustomersController extends Controller
                 $request->merge($input);
             }
 
+
+
             $request->validate([
                 'supplier_id'       => 'required|exists:suppliers,supplier_id',
                 'user_id'           => 'required|exists:users,user_id',
@@ -275,7 +277,7 @@ class CustomersController extends Controller
                 'reason_to_decline' => 'nullable|string|max:200|required_if:account_status,Declined',
                 'to_change'         => 'nullable|string|max:200|required_if:account_status,Declined',
                 'feedback'          => 'nullable|string|max:500|required_if:account_status,Declined',
-                'staff_id'          => 'required|exists:staffs,staff_id',
+                'staff_id'          => 'nullable|required_if:account_status,Accepted|exists:staffs,staff_id', 
                 'credit_limit'      => 'required_if:account_status,Accepted|numeric|min:0',
 
                 'products'          => 'sometimes|required_if:account_status,Accepted|array',

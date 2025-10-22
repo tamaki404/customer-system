@@ -323,7 +323,7 @@
                     @if (auth()->user()->role === 'Supplier')
                         <div class="deskFrame">
                             <p class="inquiry">INQUIRIES</p>
-                            <p>For any inquiries, contact us at rplai_riza@gmail.com or 09123456789</p>
+                            <p>For any inquiries, contact us at sunny&scramble@gmail.com or 09123456789</p>
                         </div>
                     @endif
                     

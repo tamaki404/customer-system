@@ -24,16 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
         // Remove all requirements
         [reasonSelect, toChangeSelect, feedbackInput].forEach(el => el?.removeAttribute("required"));
 
-        // Disable product inputs so they won't be submitted when hidden
+        // Disable all acceptance-related inputs so they won't be submitted when hidden
         const productInputs = productList?.querySelectorAll('input[name*="nego_price"]');
         productInputs?.forEach(input => input.disabled = true);
 
-
-        // Disable credit limit input
         const creditLimitInput = document.querySelector('input[name="credit_limit"]');
         if (creditLimitInput) creditLimitInput.disabled = true;
 
-        // Disable staff select
         const staffSelect = assignAgent?.querySelector('select[name="staff_id"]');
         if (staffSelect) staffSelect.disabled = true;
 

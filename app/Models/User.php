@@ -48,10 +48,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsTo(Suppliers::class, 'user_id', 'user_id');
     }
-    public function staff()
-    {
-        return $this->belongsTo(Staffs::class, 'user_id', 'user_id');
-    }
+
     public function rep()
     {
         return $this->belongsTo(Representatives::class, 'user_id', 'user_id');
@@ -61,6 +58,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(AccountStatus::class, 'user_id', 'user_id');
     }
 
+    public function staff()
+    {
+        return $this->hasOne(Staffs::class, 'user_id', 'user_id');
+    }
 
 
     /**

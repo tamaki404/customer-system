@@ -25,9 +25,22 @@ class AccountStatus extends Model
     public function supplier()
     {
         return $this->belongsTo(Suppliers::class);
-    }public function staff()
+    }
+    public function supp()
+    {
+        return $this->belongsTo(Suppliers::class, 'user_id', 'user_id');
+    }
+    public function staff()
     {
         return $this->belongsTo(Staffs::class, 'approved_by', 'user_id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'approved_by', 'user_id');
+    }
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by', 'user_id');
     }
     public function assignedStaff()
     {
