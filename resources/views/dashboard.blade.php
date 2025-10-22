@@ -15,7 +15,11 @@
                 <p class="heading">
                     <span class="greet">Goodmorning, </span>
                     @if (Auth()->user()->role !== "Supplier")
-                        <span class="company-name">{{ auth()->user()->staff->lastname }} 👋 !</span>
+                        @if (Auth()->user()->role !== "Admin")
+                            <span class="company-name">{{ auth()->user()->staff->lastname }} 👋 !</span>
+                        @elseif (Auth()->user()->role === "Admin")
+                            <span class="company-name">{{ auth()->user()->supplier->company_name }} 👋 !</span>
+                        @endif
                     @else
                         <span class="company-name">{{ auth()->user()->supplier->company_name }} 👋 !</span>
 
