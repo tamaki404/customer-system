@@ -4,13 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/flash-message.css') }}">
 
     <title>Login</title>
 </head>
 <body>
 
     <div class="loginPage" >
+        @if (session('success') || session('error'))
+            <div 
+                id="flash-message"
+                class="flash-message 
+                    {{ session('success') ? 'alert-success' : 'alert-danger' }}">
+                <strong>
+                    {{ session('success') ? '✅ Success:' : '⚠️ Error:' }}
+                </strong>
+                {{ session('success') ?? session('error') }}
+            </div>
+        @endif
+
+
         <div class="left">
             <div class="carousel" aria-label="Promotional images" role="region">
                 <img src="{{ asset('assets/sunny-chickens.jpg') }}" alt="Happy chickens at the farm" class="carousel-image active">
@@ -89,6 +103,19 @@
             if(prevBtn){ prevBtn.addEventListener('click', function(){ prevSlide(); resetTimer(); }); }
             if(nextBtn){ nextBtn.addEventListener('click', function(){ nextSlide(); resetTimer(); }); }
         })();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const flashMessage = document.getElementById('flash-message');
+            if (flashMessage) {
+                flashMessage.style.opacity = 1;
+                setTimeout(() => {
+                    flashMessage.style.opacity = 0;
+                    setTimeout(() => {
+                        flashMessage.remove();
+                    }, 400);
+                }, 3000);
+            }
+        });
     </script>
 </body>
 </html>

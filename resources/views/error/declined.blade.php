@@ -9,12 +9,23 @@
         <link rel="stylesheet" href="{{ asset('css/info/style.css') }}">
 
     <link rel="stylesheet" href="{{ asset('css/error/declined.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layout/flash-message.css') }}">
 
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <title>Modify Account</title>
 
 </head>
 <body>
+    @if (session('success') || session('error'))
+        @php
+            $isSuccess = session('success') !== null;
+            $message = $isSuccess ? session('success') : session('error');
+        @endphp
+        <div id="flash-message" class="flash-message alert {{ $isSuccess ? 'alert-success' : 'alert-danger' }}">
+            {{ $message }}
+        </div>
+    @endif
+
     <div class="container">
         <div class="header-section">
             <p>Your request to join was declined</p>
@@ -53,7 +64,7 @@
 
 
         @if ($reason === "ID image and details")
-            <form action="" method="POST" enctype="multipart/form-data" class="decline-form">
+            <form action="{{ route('declined.update') }}" method="POST" enctype="multipart/form-data" class="decline-form">
                 @csrf
                 <div class="section-row">
                     <section class="group-details first_id">
@@ -61,9 +72,9 @@
 
                         <div class="form-list">
                             <div class="input-forms">
-                                <label for="id-image">
+                                <p for="id-image">
                                     <span class="req-asterisk">*</span> ID image
-                                </label>
+                                </p>
 
                                 @php
                                     $mime = $supplier->id_image ? finfo_buffer(finfo_open(), $supplier->id_image, FILEINFO_MIME_TYPE) : null;
@@ -114,7 +125,7 @@
                         <p class="group-name">Valid IDs Documentation</p>
 
                         <div class="form-list">
-                            <label><span class="req-asterisk">*</span> Documents (2) Valid IDs (PDF)</label>
+                            <p><span class="req-asterisk">*</span> Documents (2) Valid IDs (PDF)</p>
 
                             <div class="pdf-documents-row">
                                 @php
@@ -187,6 +198,22 @@
             <strong>sunny&scramble@gmail.com</strong> or <strong>09123456789</strong></p>
         </div>
     </div>
+
+
+    <script>
+                document.addEventListener('DOMContentLoaded', function () {
+            const flashMessage = document.getElementById('flash-message');
+            if (flashMessage) {
+                flashMessage.style.opacity = 1;
+                setTimeout(() => {
+                    flashMessage.style.opacity = 0;
+                    setTimeout(() => {
+                        flashMessage.remove();
+                    }, 400);
+                }, 3000);
+            }
+        });
+    </script>
 
 </body>
 </html>

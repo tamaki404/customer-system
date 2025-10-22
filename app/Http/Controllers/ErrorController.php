@@ -66,6 +66,106 @@ public function declined(Request $request)
     ));
 }
 
+public function updateDeclined(Request $request)
+{
+    $user_id = session('user_id');
+    
+    // Validate the request
+    $request->validate([
+        'id_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'id_type' => 'required|string',
+        'id_number' => 'required|string|max:100',
+        'birthdate' => 'required|date',
+        'valid_one' => 'nullable|file|mimes:pdf|max:5120',
+        'valid_two' => 'nullable|file|mimes:pdf|max:5120',
+    ]);
+
+    try {
+        // Update Supplier model (ID details)
+        $supplier = Suppliers::where('user_id', $user_id)->first();
+        
+        if (!$supplier) {
+            return back()->with('error', 'Supplier record not found.');
+        }
+
+        // Only update if new image is uploaded
+        if ($request->hasFile('id_image')) {
+            $imageFile = $request->file('id_image');
+            $supplier->id_image = file_get_contents($imageFile->getRealPath());
+        }
+
+        // Update text fields (always update these as they come from the form)
+        $supplier->id_type = $request->id_type;
+        $supplier->id_number = $request->id_number;
+        $supplier->birthdate = $request->birthdate;
+        
+        $supplier->save();
+
+        // Update Documents (PDFs) - only if new files are uploaded
+        $documentsUpdated = false;
+
+        // Handle Valid ID (1)
+        if ($request->hasFile('valid_one')) {
+            $pdfFile = $request->file('valid_one');
+            $pdfContent = file_get_contents($pdfFile->getRealPath());
+            
+            // Check if document exists, update or create
+            $document = Documents::where('user_id', $user_id)
+                ->where('type', 'valid_one')
+                ->first();
+            
+            if ($document) {
+                $document->file = $pdfContent;
+                $document->save();
+            } else {
+                Documents::create([
+                    'user_id' => $user_id,
+                    'type' => 'valid_one',
+                    'file' => $pdfContent,
+                ]);
+            }
+            $documentsUpdated = true;
+        }
+
+        // Handle Valid ID (2)
+        if ($request->hasFile('valid_two')) {
+            $pdfFile = $request->file('valid_two');
+            $pdfContent = file_get_contents($pdfFile->getRealPath());
+            
+            // Check if document exists, update or create
+            $document = Documents::where('user_id', $user_id)
+                ->where('type', 'valid_two')
+                ->first();
+            
+            if ($document) {
+                $document->file = $pdfContent;
+                $document->save();
+            } else {
+                Documents::create([
+                    'user_id' => $user_id,
+                    'type' => 'valid_two',
+                    'file' => $pdfContent,
+                ]);
+            }
+            $documentsUpdated = true;
+        }
+
+
+        // Success message
+        $message = 'Your account has been successfully resubmitted for review.';
+        if ($documentsUpdated) {
+            $message .= ' Updated documents have been uploaded.';
+        }
+
+        return back()->with('success' , $message);
+
+    }catch (\Exception $e) {
+    \Log::error('UpdateDeclined error: ' . $e->getMessage());
+    return back()->with('error', 'An error occurred while updating your information. Please try again.');
+    }
+
+}
+
 
 
 }

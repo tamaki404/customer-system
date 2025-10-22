@@ -925,7 +925,7 @@ public function signin(Request $request)
             return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
         }
 
-        // 🚫 Handle declined accounts (no login)
+        //  Handle declined accounts (no login)
         if (strtolower($accountStatus->account_status) === 'declined') {
             \Log::info('Declined login attempt', [
                 'email' => $user->email_address,
@@ -946,7 +946,7 @@ public function signin(Request $request)
         }
     }
 
-    // ✅ Only log in after all checks pass
+    //  Only log in after all checks pass
     Auth::login($user, false);
     $request->session()->regenerate();
 

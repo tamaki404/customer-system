@@ -82,7 +82,8 @@ Route::get('/email/verify', [UserController::class, 'verifyEmail'])->name('verif
 
     Route::get('/error/declined-request', [ErrorController::class, 'declined'])
         ->name('error.declined');
-    
+    Route::post('/declined/update', [ErrorController::class, 'updateDeclined'])->name('declined.update');    
+
 
 Route::get('/locked', function () {
     return view('lock.locked'); 
@@ -107,7 +108,6 @@ Route::middleware(['auth', 'role:Supplier', 'check.supplier'])->group(function (
         ->name('credits.list');
 
     Route::get('/receipts/list/receipt/{receipt_id}', [ReceiptController::class, 'receiptView'])->name('receipts.receipt');
-
 
     /*
     |-------------------------
