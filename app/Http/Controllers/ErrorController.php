@@ -22,9 +22,8 @@ public function declined(Request $request)
     $supplier = Suppliers::where('user_id', $user_id)->first();
     $accStats = AccountStatus::where('user_id', $user_id)->first();
     $review = Reviews::where('user_id', $user_id)->first();
-
     // Initialize ALL variables to avoid "undefined variable" errors
-    $banks = null;
+    $bank = null;
     $documents = collect();
     $deliveryRequirements = collect();
 
@@ -41,15 +40,13 @@ public function declined(Request $request)
                 break;
 
             case 'Bank details':
-                $banks = Banks::where('user_id', $user_id)->first();
+                $bank = Banks::where('user_id', $user_id)->first();
                 break;
 
             case 'Necessary documents':
-                // Get only valid_one and valid_two, max 2 documents
-                $documents = Documents::where('user_id', $user_id)
-                    ->whereIn('type', ['valid_one', 'valid_two'])
-                    ->orderByRaw("FIELD(type, 'valid_one', 'valid_two')") 
-                    ->limit(2)
+                // Get all 8 documents (application/pdf) mediumBlob of each (SEC, BP, BIR, MP, BS, PB, NCC, AIB) 
+                $documents = Documents::where('supplier_id', $supplier->supplier_id)
+                    ->limit(8)
                     ->get();
                 break;
 
@@ -62,7 +59,7 @@ public function declined(Request $request)
     return view('error.declined', compact(
         'supplier',
         'documents',
-        'banks',
+        'bank',
         'accStats',
         'reason',
         'deliveryRequirements',
@@ -201,146 +198,271 @@ public function reviewConfirm(Request $request)
 
 
 
+// public function updateDeclined(Request $request)
+// {
+//     $user_id = session('user_id');
+    
+//     // Validate the request
+//     $request->validate([
+//         'key' => 'required|in:ids,banks,docx,delreq',
+
+//         'id_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+//         'id_type' => 'required|string',
+//         'id_number' => 'required|string|max:100',
+//         'birthdate' => 'required|date',
+//         'valid_one' => 'nullable|file|mimes:pdf|max:5120',
+//         'valid_two' => 'nullable|file|mimes:pdf|max:5120',
+
+//         // banks to be saved to Banks model whcih it has same supplier_id == supplier_id with
+//         'account_name' => 'nullable|max:255',
+//         'account_number' => 'nullable|max:100',
+//         'bank' => 'nullable|max:100',
+//         'branch' => 'nullable|max:100'
+//     ]);
+
+//     try {
+//         // Update Supplier model (ID details)
+//         $supplier = Suppliers::where('user_id', $user_id)->first();
+
+//         if (!$supplier) {
+//             return back()->with('error', 'Supplier record not found.');
+//         }
+
+
+//         if($request->key === "ids"){
+//             // Only update if new image is uploaded
+//             if ($request->hasFile('id_image')) {
+//                 $imageFile = $request->file('id_image');
+//                 $supplier->id_image = file_get_contents($imageFile->getRealPath());
+//             }
+
+//             $supplier->id_type = $request->id_type;
+//             $supplier->id_number = $request->id_number;
+//             $supplier->birthdate = $request->birthdate;
+            
+//             $supplier->save();
+
+//             // Update Documents (PDFs) - only if new files are uploaded
+//             $documentsUpdated = false;
+
+//             // Handle Valid ID (1)
+//             if ($request->hasFile('valid_one')) {
+//                 $pdfFile = $request->file('valid_one');
+//                 $pdfContent = file_get_contents($pdfFile->getRealPath());
+                
+//                 // Check if document exists, update or create
+//                 $document = Documents::where('user_id', $user_id)
+//                     ->where('type', 'valid_one')
+//                     ->first();
+                
+//                 if ($document) {
+//                     $document->file = $pdfContent;
+//                     $document->save();
+//                 } else {
+//                     Documents::create([
+//                         'user_id' => $user_id,
+//                         'type' => 'valid_one',
+//                         'file' => $pdfContent,
+//                     ]);
+//                 }
+//                 $documentsUpdated = true;
+//             }
+
+//             // Handle Valid ID (2)
+//             if ($request->hasFile('valid_two')) {
+//                 $pdfFile = $request->file('valid_two');
+//                 $pdfContent = file_get_contents($pdfFile->getRealPath());
+                
+//                 // Check if document exists, update or create
+//                 $document = Documents::where('user_id', $user_id)
+//                     ->where('type', 'valid_two')
+//                     ->first();
+                
+//                 if ($document) {
+//                     $document->file = $pdfContent;
+//                     $document->save();
+//                 } else {
+//                     Documents::create([
+//                         'user_id' => $user_id,
+//                         'type' => 'valid_two',
+//                         'file' => $pdfContent,
+//                     ]);
+//                 }
+//                 $documentsUpdated = true;
+//             }
+//         }
+// elseif ($request->key === "banks") {
+//             $bank = Banks::where('supplier_id', $supplier->supplier_id)->first();
+
+//     if (!$bank) {
+//         return back()->with('error', 'Bank record not found.');
+//     }
+    
+//     $bank->fill($request->only(['account_name', 'account_number', 'bank', 'branch']));
+
+//     if ($bank->isDirty()) {
+//         $bank->save();
+//         $message = 'Your bank details have been successfully updated.';
+//     } else {
+//         $message = 'No changes detected in your bank details.';
+//     }
+
+//     // Update review status
+//     $accStats = AccountStatus::where('user_id', $user_id)->first();
+//     if ($accStats) {
+//         $accStats->account_status = 'Under review';
+//         $accStats->updated_at = now();
+//         $accStats->save();
+//     }
+
+//     $review = Reviews::where('user_id', $user_id)->first();
+//     if ($review) {
+//         $review->status = 'Under review';
+//         $review->updated_at = now();
+//         $review->save();
+//     }
+
+//     return redirect()->route('error.success')->with('success', $message);
+// }
+
+
+
+
+
+//         $accStats = AccountStatus::where('user_id', $user_id)->first();
+//         if ($accStats) {
+//             $accStats->account_status = 'Under review'; 
+//             $accStats->updated_at = now();
+//             $accStats->save();
+//         }
+//         $review = Reviews::where('user_id', $user_id)->first();
+//         if ($review) {
+//             $review->status = 'Under review'; 
+//             $review->updated_at = now();
+//             $review->save();
+//         }
+
+
+//         // Success message
+//         $message = 'Your account has been successfully resubmitted for review.';
+//         if ($documentsUpdated) {
+//             $message .= ' Updated documents have been uploaded.';
+//         }
+
+
+//         return redirect()->route('error.success')->with('success' , $message);
+
+//     }catch (\Exception $e) {
+//     \Log::error('UpdateDeclined error: ' . $e->getMessage());
+//     return back()->with('error', 'An error occurred while updating your information. Please try again.');
+//     }
+
+// }
+
 public function updateDeclined(Request $request)
 {
     $user_id = session('user_id');
-    
-    // Validate the request
-    $request->validate([
-        'key' => 'required|in:ids,banks,docx,delreq',
-
-        'id_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'id_type' => 'required|string',
-        'id_number' => 'required|string|max:100',
-        'birthdate' => 'required|date',
-        'valid_one' => 'nullable|file|mimes:pdf|max:5120',
-        'valid_two' => 'nullable|file|mimes:pdf|max:5120',
-
-        // banks to be saved to Banks model whcih it has same supplier_id == supplier_id with
-        'account_name' => 'nullable|max:255',
-        'account_number' => 'nullable|max:100',
-        'bank' => 'nullable|max:100',
-        'branch' => 'nullable|max:100'
-    ]);
 
     try {
-        // Update Supplier model (ID details)
         $supplier = Suppliers::where('user_id', $user_id)->first();
-        $bank = Banks::where('supplier_id', $supplier->supplier_id)->first();
-
         if (!$supplier) {
             return back()->with('error', 'Supplier record not found.');
         }
 
+        $key = $request->input('key');
+        $documentsUpdated = false; 
 
-        if($request->key === "ids"){
-            // Only update if new image is uploaded
+
+        if ($key === 'ids') {
+            $request->validate([
+                'key' => 'required|in:ids,banks,docx,delreq',
+                'id_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'id_type' => 'required|string',
+                'id_number' => 'required|string|max:100',
+                'birthdate' => 'required|date',
+                'valid_one' => 'nullable|file|mimes:pdf|max:5120',
+                'valid_two' => 'nullable|file|mimes:pdf|max:5120',
+            ]);
+
+            /** Update Supplier ID details **/
             if ($request->hasFile('id_image')) {
-                $imageFile = $request->file('id_image');
-                $supplier->id_image = file_get_contents($imageFile->getRealPath());
+                $supplier->id_image = file_get_contents($request->file('id_image')->getRealPath());
             }
 
             $supplier->id_type = $request->id_type;
             $supplier->id_number = $request->id_number;
             $supplier->birthdate = $request->birthdate;
-            
             $supplier->save();
 
-            // Update Documents (PDFs) - only if new files are uploaded
-            $documentsUpdated = false;
-
-            // Handle Valid ID (1)
-            if ($request->hasFile('valid_one')) {
-                $pdfFile = $request->file('valid_one');
-                $pdfContent = file_get_contents($pdfFile->getRealPath());
-                
-                // Check if document exists, update or create
-                $document = Documents::where('user_id', $user_id)
-                    ->where('type', 'valid_one')
-                    ->first();
-                
-                if ($document) {
-                    $document->file = $pdfContent;
-                    $document->save();
-                } else {
-                    Documents::create([
-                        'user_id' => $user_id,
-                        'type' => 'valid_one',
-                        'file' => $pdfContent,
-                    ]);
+            /** Handle valid ID documents **/
+            foreach (['valid_one', 'valid_two'] as $type) {
+                if ($request->hasFile($type)) {
+                    $pdfContent = file_get_contents($request->file($type)->getRealPath());
+                    Documents::updateOrCreate(
+                        ['user_id' => $user_id, 'type' => $type],
+                        ['file' => $pdfContent]
+                    );
+                    $documentsUpdated = true;
                 }
-                $documentsUpdated = true;
             }
 
-            // Handle Valid ID (2)
-            if ($request->hasFile('valid_two')) {
-                $pdfFile = $request->file('valid_two');
-                $pdfContent = file_get_contents($pdfFile->getRealPath());
-                
-                // Check if document exists, update or create
-                $document = Documents::where('user_id', $user_id)
-                    ->where('type', 'valid_two')
-                    ->first();
-                
-                if ($document) {
-                    $document->file = $pdfContent;
-                    $document->save();
-                } else {
-                    Documents::create([
-                        'user_id' => $user_id,
-                        'type' => 'valid_two',
-                        'file' => $pdfContent,
-                    ]);
-                }
-                $documentsUpdated = true;
+            $message = 'Your account has been successfully resubmitted for review.';
+            if ($documentsUpdated) {
+                $message .= ' Updated documents have been uploaded.';
             }
+
+        } elseif ($key === 'banks') {
+
+            $request->validate([
+                'key' => 'required|in:ids,banks,docx,delreq',
+                'account_name' => 'nullable|max:255',
+                'account_number' => 'nullable|max:100',
+                'bank' => 'nullable|max:100',
+                'branch' => 'nullable|max:100',
+            ]);
+
+            $bank = Banks::where('supplier_id', $supplier->supplier_id)->first();
+
+            if (!$bank) {
+                return back()->with('error', 'Bank record not found.');
+            }
+
+            $bank->fill($request->only(['account_name', 'account_number', 'bank', 'branch']));
+
+            if ($bank->isDirty()) {
+                $bank->save();
+                $message = 'Your bank details have been successfully updated and resubmitted for review.';
+            } else {
+                $message = 'No changes detected in your bank details.';
+            }
+        } else {
+            return back()->with('error', 'Invalid form submission.');
         }
-elseif ($request->key === "ids") {
 
-    $bank->account_name = $request->account_name;
-    $bank->account_number = $request->account_number;
-    $bank->bank = $request->bank;
-    $bank->branch = $request->branch;
-
-    // Only save if something actually changed
-    if ($bank->isDirty()) {
-        $bank->save();
-    }
-}
-
-
-
-
+        /** -------------------------
+         * 2️ Update review status
+         * ------------------------- */
         $accStats = AccountStatus::where('user_id', $user_id)->first();
         if ($accStats) {
-            $accStats->account_status = 'Under review'; 
+            $accStats->account_status = 'Under review';
             $accStats->updated_at = now();
             $accStats->save();
         }
+
         $review = Reviews::where('user_id', $user_id)->first();
         if ($review) {
-            $review->status = 'Under review'; 
+            $review->status = 'Under review';
             $review->updated_at = now();
             $review->save();
         }
 
+        return redirect()->route('error.success')->with('success', $message);
 
-        // Success message
-        $message = 'Your account has been successfully resubmitted for review.';
-        if ($documentsUpdated) {
-            $message .= ' Updated documents have been uploaded.';
-        }
-
-
-        return redirect()->route('error.success')->with('success' , $message);
-
-    }catch (\Exception $e) {
-    \Log::error('UpdateDeclined error: ' . $e->getMessage());
-    return back()->with('error', 'An error occurred while updating your information. Please try again.');
+    } catch (\Exception $e) {
+        \Log::error('UpdateDeclined error: ' . $e->getMessage());
+        return back()->with('error', 'An error occurred while updating your information. Please try again.');
     }
-
 }
-
 
 
 }

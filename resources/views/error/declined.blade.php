@@ -94,7 +94,7 @@
             @if ($reason === "ID image and details")
                 <form action="{{ route('declined.update') }}" method="POST" enctype="multipart/form-data" class="decline-form">
                     @csrf
-                    <input type="hidden" value="ids details" name="key">
+                    <input type="hidden" value="ids" name="key">
                     <div class="section-row">
                         <section class="group-details first_id">
                             <p class="group-name">ID details verification</p>
@@ -222,7 +222,7 @@
                     </div>
                 </form>
             @elseif ($reason === "Bank details")
-                <form action="{{ route('declined.update') }}" method="POST" enctype="multipart/form-data" class="decline-form">
+                <form action="{{ route('declined.bank.update') }}" method="POST" enctype="multipart/form-data" class="decline-form">
                     @csrf
                     <input type="hidden" value="banks" name="key">
                     <div class="section-row" style="gap: 5px">
@@ -232,22 +232,22 @@
                                 <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px">
                                     <div class="input-forms">
                                         <label for="account_name"> Account name</label>
-                                        <input type="text" name="account_name" id="account_name" style="width: 300px"  maxlength="255" value="{{$banks->account_name}}">
+                                        <input type="text" name="account_name" id="account_name" style="width: 300px"  maxlength="255" value="{{$bank->account_name}}">
                                         <p class="error-text" style="display: none"></p>
                                     </div>
                                     <div class="input-forms">
                                         <label for="account_number"> Account number</label>
-                                        <input type="text" name="account_number" id="account_number" style="width: 150px"  maxlength="50" value="{{$banks->account_number}}">
+                                        <input type="text" name="account_number" id="account_number" style="width: 150px"  maxlength="50" value="{{$bank->account_number}}">
                                         <p class="error-text" style="display: none"></p>
                                     </div> 
                                     <div class="input-forms">
                                         <label for="bank"> Bank</label>
-                                        <input type="text" name="bank" id="bank" style="width: 300px"  maxlength="255" value="{{$banks->bank}}">
+                                        <input type="text" name="bank" id="bank" value="{{ $bank->bank }}">
                                         <p class="error-text" style="display: none"></p>
                                     </div>
                                     <div class="input-forms">
                                         <label for="branch"> Branch</label>
-                                        <input type="text" name="branch" id="branch" style="width: 150px"  maxlength="200" value="{{$banks->branch}}">
+                                        <input type="text" name="branch" id="branch" style="width: 150px"  maxlength="200" value="{{$bank->branch}}">
                                         <p class="error-text" style="display: none"></p>
                                     </div>   
                                 </div>  
@@ -259,7 +259,77 @@
                         <button type="submit" class="resubmit-btn" style="width: 300px">Submit</button>
                     </div>
                 </form>
-            @endif
+            @elseif ($reason === "Necessary documents")
+                <form action="{{ route('declined.docx.update') }}" method="POST" enctype="multipart/form-data" class="decline-form">
+                    @csrf
+                    <input type="hidden" value="docs" name="key">
+                    <section class="group-details necessary-docs" style="width: 100%">
+                        <p class="group-name">Necessary Documents</p>
+
+                        <div class="form-list">
+                            <p><span class="req-asterisk">*</span> Upload or preview your 8 required PDF documents</p>
+
+                            <div class="pdf-documents-grid" style="display: flex; flex-direction: row; flex: 1; flex-wrap: wrap; gap: 10px;">
+                                @php
+                                    // Map of document type => display name
+                                    $requiredDocs = [
+                                        'SEC' => 'SEC certificate',
+                                        'BP' => 'Business Permit',
+                                        'BIR' => 'BIR Certificate',
+                                        'MP' => 'Mayor’s Permit',
+                                        'BS' => 'Bank Statement',
+                                        'PB' => 'Proof of Billing',
+                                        'NCC' => 'Notarized corporation certificate',
+                                        'AIB' => 'Articles of incorporation and bylaws',
+                                    ];
+                                @endphp
+
+                                @foreach ($requiredDocs as $type => $label)
+                                    @php
+                                        $doc = isset($documents) ? $documents->firstWhere('type', $type) : null;
+                                        $pdfBlob = $doc->file ?? null;
+                                        $mime = $pdfBlob ? finfo_buffer(finfo_open(), $pdfBlob, FILEINFO_MIME_TYPE) : 'application/pdf';
+                                        $pdfData = $pdfBlob ? 'data:' . $mime . ';base64,' . base64_encode($pdfBlob) : null;
+                                    @endphp
+
+                                    <div class="doc-preview-box" data-doc-type="{{ $type }}">
+                                        <p><strong>{{ $label }}</strong></p>
+                                        <div class="preview-container">
+                                            @if ($pdfData)
+                                                <iframe
+                                                    src="{{ $pdfData }}"
+                                                    width="100%"
+                                                    height="200"
+                                                    style="border: 1px solid #ccc; border-radius: 6px;">
+                                                </iframe>
+                                            @else
+                                                <p class="no-preview">No document uploaded yet</p>
+                                            @endif
+                                        </div>
+                                        <input type="file"
+                                            id="{{ strtolower($type) }}"
+                                            name="{{ strtolower($type) }}"
+                                            accept="application/pdf"
+                                            class="pdf-input">
+                                        <p class="selected-file">No file selected</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </section>
+
+                 
+                </form>
+           
+            @elseif ($reason === "Delivery requirements")
+                <form action="{{ route('declined.bank.update') }}" method="POST" enctype="multipart/form-data" class="decline-form">
+                    @csrf
+                    <input type="hidden" value="delreq" name="key">
+
+                 
+                </form>
+           
+            @endif            
         </div>
 
 
