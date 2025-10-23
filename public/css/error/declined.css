@@ -225,3 +225,23 @@ body {
     padding: 10px 20px;
     border-bottom: 1px solid #ddd;
 }
+.head-container .logout-btn{
+    margin-top: 20px; 
+    padding: 10px 10px; 
+    border-radius: 5px; 
+    width: 150px; 
+    cursor: pointer; 
+    color: #333; 
+    font-size: 13px; 
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px; 
+    border: none;
+    font-weight: bold;
+    background: #ed1e255d;
+    color: #ffffffa4;
+
+}
+
+.logout-btn:hover{
+    background: #ed1e26;
+    color: #fff;
+}
