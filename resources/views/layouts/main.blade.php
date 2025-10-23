@@ -47,9 +47,8 @@
 
                         </div>
                         <div class="nameFrame">
-                                @if( auth()->user()->role === 'Admin')
-                                    <p class="userName">{{ auth()->user()->supplier->company_name }}</p>
-                                @elseif(auth()->user()->role === 'Supplier')
+   
+                                @if(auth()->user()->role === 'Supplier')
                                     <p class="userName">{{  auth()->user()->supplier->company_name }}</p>
                                      
 
@@ -69,7 +68,7 @@
 
 
 
-                                @elseif(auth()->user()->role === 'Staff')
+                                @elseif(auth()->user()->role !== 'Supplier')
                                     <p class="userName">
                                         {{  auth()->user()->staff->firstname }}
                                         {{  auth()->user()->staff->lastname }}

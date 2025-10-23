@@ -1,0 +1,19 @@
+document.addEventListener("DOMContentLoaded", function () {
+    const statusSelect = document.getElementById("status");
+    const feedbackContainer = document.getElementById("feedback-container");
+    const feedbackTextarea = document.getElementById("feedback");
+
+    // Hide the feedback box initially
+    feedbackContainer.style.display = "none";
+
+    statusSelect.addEventListener("change", function () {
+        if (this.value === "Declined") {
+            feedbackContainer.style.display = "block";
+            feedbackTextarea.required = true;
+        } else {
+            feedbackContainer.style.display = "none";
+            feedbackTextarea.required = false;
+            feedbackTextarea.value = ""; // clear text if hidden
+        }
+    });
+});

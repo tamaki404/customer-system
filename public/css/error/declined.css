@@ -200,3 +200,28 @@ body {
     color: #333;
 }
 
+.report-details .report-item span{
+    font-weight: normal;
+}
+.report-details .report-item .report-label{
+    font-weight: bold;
+}
+.header a{
+    font-size: 14px; color: #666; text-decoration: none;
+}
+.header a:hover{
+    color: #333;
+}
+.header {
+    position: sticky;
+    top: 0;
+    background-color: white; 
+    z-index: 1000;
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+}

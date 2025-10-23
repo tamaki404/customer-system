@@ -711,8 +711,6 @@
                         </div>
                     @endif
 
-
-
                 </div>
 
                 <div class="content-body" style="padding: 10px; border: none; height: auto;">
@@ -818,29 +816,22 @@
                                         $imgSrc = ($staffAgent && $staffAgent->user && $staffAgent->user->image)
                                             ? 'data:' . $staffAgent->user->image_mime_type . ';base64,' . base64_encode($staffAgent->user->image)
                                             : asset('assets/default-company-logo.png');
-                                            
                                     @endphp
-
                                     @if ($staffAgent !== NULL)
                                         <img class="supplier-image" src="{{ $imgSrc }}" alt="Staff Profile Image" >
-
                                         <p class="name-title">
                                             <span style="font-size: 13px;  color: #333;">
                                                 {{$staffAgent->lastname}},
                                                 {{$staffAgent->firstname}}
                                                 {{$staffAgent->middlename}}
-
                                             </span>
                                             <span style=" font-size: 12px;">Sales agent</span>
                                             <span style="margin: 0; font-size: 12px;">Approved at July 21, 2025</span>
                                         </p>
                                     @else
                                             <span style="margin: 0; font-size: 12px;">No approved sales agent yet</span>
-
                                     @endif
-
                             </div>
-                    
                     </div>
 
                     <div class="tab-div">
@@ -1568,17 +1559,8 @@
                             
                             </div>
                         </div>
-
-
-
                     </div>
-
-
-
-                
-            
                 </div>
-
         </div>
 
 @endsection
