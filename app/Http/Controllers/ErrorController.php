@@ -130,7 +130,7 @@ public function reviewConfirm(Request $request)
     $validated = $request->validate([
         'supplier_id' => 'required|exists:suppliers,supplier_id',
         'reviewed_by' => 'required|exists:users,user_id',
-        'account_status' => 'required|string|in:Accepted,Declined', 
+        'account_status' => 'required|string|in:Accepted,Declined',
         'review_feedback' => 'nullable|string|max:500',
     ]);
 
@@ -141,11 +141,14 @@ public function reviewConfirm(Request $request)
 
     // Check if records exist
     if (!$review || !$status) {
-        return redirect()->back()->with('error', 'Review or status record not found.');
+        return redirect()
+            ->route('customers.customer', ['supplier_id' => $supplier->supplier_id])
+            ->with('error', 'Review or status record not found.');
     }
 
     if ($validated['account_status'] === "Accepted") {
         // Update status timestamp
+        $status->account_status = "To confirm";
         $status->updated_at = now();
         $status->save();
 
@@ -158,16 +161,22 @@ public function reviewConfirm(Request $request)
         $review->review_feedback = null; // Clear previous feedback
         $review->updated_at = now();
         $review->save();
- return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-    }
-        return redirect()->back()->with('success', 'Supplier confirmed successfully and is now pending approval.');
+
+        return redirect()
+            ->route('customers.customer', ['supplier_id' => $supplier->supplier_id])
+            ->with('success', 'Supplier confirmed successfully and is now pending approval.');
     } 
+    
     elseif ($validated['account_status'] === "Declined") {
         // Validate feedback is provided when declining
         if (empty($validated['review_feedback'])) {
-            return redirect()->back()->with('error', 'Please provide feedback when declining.');
+            return redirect()
+                ->route('customers.customer', ['supplier_id' => $supplier->supplier_id])
+                ->with('error', 'Please provide feedback when declining.');
         }
+
         $status->account_status = "Declined";
+        $status->updated_at = now();
         $status->save();
 
         // Keep review active with new feedback
@@ -178,11 +187,16 @@ public function reviewConfirm(Request $request)
         $review->updated_at = now();
         $review->save();
 
-        return redirect()->back()->with('warning', 'Supplier was declined again with feedback.');
+        return redirect()
+            ->route('customers.customer', ['supplier_id' => $supplier->supplier_id])
+            ->with('warning', 'Supplier was declined again with feedback.');
     }
 
-    return redirect()->back()->with('error', 'Invalid action selected.');
+    return redirect()
+        ->route('customers.customer', ['supplier_id' => $supplier->supplier_id])
+        ->with('error', 'Invalid action selected.');
 }
+
 
 
 public function updateDeclined(Request $request)

@@ -593,78 +593,123 @@
                             </div>
                         @endif --}}
 
-
-
-
-
-                        @if ($accStatus->account_status === 'Pending')
-                            <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">
-                                <span class="material-symbols-outlined">
-                                    approval_delegation
-                                </span>
-                                File an action
-                            </button>
-
-                        @elseif ($accStatus->account_status === 'Accepted')
-                            <div>
-                                <button class="btn-transition" data-bs-toggle="modal" data-bs-target="#modify-action">File an action</button>
-                            </div>
-                  
-                        @endif
-
                     </div>
 
 
+                    {{-- Supplier status display --}}
+                    @if ($accStatus->account_status === 'Pending')
+                        <div class="status-box status-box--pending">
+                            <div class="status-header">
+                                <span class="status-title">Pending</span>
+                                <span class="status-date">{{ \Carbon\Carbon::parse($accStatus->updated_at)->format('F j, Y g:i A') }}</span>
+                            </div>
+                            <div class="status-content">
+                                <p class="status-text">
+                                    Supplier request is pending. You can take action to confirm or decline it.
+                                </p>
+                                <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">
+                                    <span class="material-symbols-outlined">approval_delegation</span> File an action
+                                </button>
+                            </div>
+                        </div>
 
-                     @if ($accStatus->account_status === 'Declined')
-                            <div class="status-box status-box--declined">
-                                <div class="declined-header">
-                                    <span class="declined-title">DECLINED</span>
-                                    <span class="declined-date">{{ \Carbon\Carbon::parse($review->raised_at)->format('F j, Y g:i A') }}</span>
-                                </div>
+                    @elseif ($accStatus->account_status === 'Accepted')
+                        <div class="status-box status-box--accepted">
+                            <div class="status-header">
+                                <span class="status-title">Accepted</span>
+                                <span class="status-date">{{ \Carbon\Carbon::parse($accStatus->updated_at)->format('F j, Y g:i A') }}</span>
+                            </div>
+                            <div class="status-content">
+                                <p class="status-text">
+                                    Supplier request has been accepted successfully.
+                                </p>
+                                <button class="btn-transition" data-bs-toggle="modal" data-bs-target="#modify-action">
+                                    File an action
+                                </button>
+                            </div>
+                        </div>
 
-                                <div class="declined-content">
-                                    <div class="declined-staff">
-                                        @php
-                                            $imgSrc = $review->user->image 
-                                                ? ('data:' . $review->user->image_mime_type . ';base64,' . base64_encode($review->user->image))
-                                                : asset('assets/default-company-logo.png');
-                                        @endphp
-                                        <img src="{{ $imgSrc }}" alt="Staff image" class="staff-img">
-                                        <div class="staff-info">
-                                            <small class="label">Handled by:</small>
-                                            <span class="name">{{ $review->staff->lastname }}, {{ $review->staff->firstname }}</span>
-                                        </div>
+                    @elseif ($accStatus->account_status === 'Declined')
+                        <div class="status-box status-box--declined">
+                            <div class="status-header">
+                                <span class="status-title">Declined</span>
+                                @if ($review->review_feedback !== NULL)
+                                    <span class="status-date">{{ \Carbon\Carbon::parse($review->reviewed_at)->format('F j, Y g:i A') }}</span>
+                                @else
+                                    <span class="status-date">{{ \Carbon\Carbon::parse($review->raised_at)->format('F j, Y g:i A') }}</span>
+
+                                @endif
+                            </div>
+                            <div class="status-content" style="display: flex; flex-direction: column; justify-content: center;">
+                                <div class="status-staff">
+                                    @php
+                                        $imgSrc = $review->user->image
+                                            ? ('data:' . $review->user->image_mime_type . ';base64,' . base64_encode($review->user->image))
+                                            : asset('assets/default-company-logo.png');
+                                    @endphp
+                                    <img src="{{ $imgSrc }}" alt="Staff image" class="staff-img">
+                                    <div class="staff-info">
+                                        @if ($review->review_feedback !== NULL)
+                                                <small class="label">Reviewed by by:</small>
+                                                <span class="name">{{ $review->staff->lastname }}, {{ $review->staff->firstname }}</span>
+                                        @else
+                                                <small class="label">Handled by:</small>
+                                                <span class="name">{{ $review->staff->lastname }}, {{ $review->staff->firstname }}</span>
+                                        @endif
                                     </div>
 
-                                    <div class="declined-details">
-                                        <p class="declined-reason">
+                                </div>
+                                <div class="status-details">
+                                    @if ($review->review_feedback !== NULL)
+                                        <p class="status-text">
+                                            <strong>Reason:</strong> “{{ $review->review_feedback }}”
+                                        </p>
+                                    @else
+                                        <p class="status-text">
                                             <strong>Reason:</strong> “{{ $review->head }}” - {{ $review->body }}
                                         </p>
-                                        <p class="footer">Waiting for supplier to modify their request.</p>
-                                    </div>
-                                </div>
-                            </div> 
-                        @elseif ($accStatus->account_status === 'Under review')
-                            <div class="status-box status-box--under-review">
-                                <div class="declined-header">
-                                    <span class="declined-title">To review</span>
-                                    <span class="declined-date">{{ \Carbon\Carbon::parse($accStatus->updated_at)->format('F j, Y g:i A') }}</span>
-                                </div>
+                                    @endif
 
-                                <div class="declined-content">
-            
-
-                                    <div class="declined-details">
-                                        <p class="declined-reason">
-                                            {{$supplier->company_name}} have modified their request, kindly check it out
-                                        </p>
-                                        <p class="footer">Waiting for your confirmation to take action.</p>
-                                    </div>
-                                    <button onclick="window.location.href='{{ route('error.changes', ['user_id' => $accStatus->user_id]) }}'">Review changes</button>
+                                    <p class="footer">Waiting for supplier to modify their request.</p>
                                 </div>
-                            </div> 
-                        @endif
+                            </div>
+                        </div>
+
+                    @elseif ($accStatus->account_status === 'Under review')
+                        <div class="status-box status-box--under-review">
+                            <div class="status-header">
+                                <span class="status-title">Under Review</span>
+                                <span class="status-date">{{ \Carbon\Carbon::parse($accStatus->updated_at)->format('F j, Y g:i A') }}</span>
+                            </div>
+                            <div class="status-content">
+                                <p class="status-text">
+                                    {{ $supplier->company_name }} has modified their request, kindly review it.
+                                </p>
+                                <p class="footer">Waiting for your confirmation to take action.</p>
+                                <button onclick="window.location.href='{{ route('error.changes', ['user_id' => $accStatus->user_id]) }}'">
+                                    Review changes
+                                </button>
+                            </div>
+                        </div>
+
+                    @elseif ($accStatus->account_status === 'To confirm')
+                        <div class="status-box status-box--to-confirm">
+                            <div class="status-header">
+                                <span class="status-title">To Confirm</span>
+                                <span class="status-date">{{ \Carbon\Carbon::parse($accStatus->updated_at)->format('F j, Y g:i A') }}</span>
+                            </div>
+                            <div class="status-content">
+                                <p class="status-text">
+                                    Staff {{ $review->resolved->lastname }}, {{ $review->resolved->firstname }}
+                                    has reviewed and confirmed this request.
+                                </p>
+                                <p class="footer">Waiting for your confirmation to take action.</p>
+                                <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">
+                                    <span class="material-symbols-outlined">approval_delegation</span> File an action
+                                </button>
+                            </div>
+                        </div>
+                    @endif
 
 
 

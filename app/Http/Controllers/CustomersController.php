@@ -86,6 +86,8 @@ class CustomersController extends Controller
                 }
             ])->where('supplier_id', $supplier_id)->get();
 
+            
+
             $prodSpecs   = ProductRequirements::where('supplier_id', $supplier_id)->get();
             $representatives   = Representatives::where('supplier_id', $supplier_id)->get();
             $signatories   = Signatories::where('supplier_id', $supplier_id)->get();

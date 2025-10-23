@@ -28,8 +28,14 @@
 
     <div class="container">
         <div class="header-section">
-            <p>Your request to join was declined</p>
-            <p>Declined at {{ $review->raised_at }}</p>
+            @if ($review->review_feedback !== NULL)
+                <p>Your request has been declined again</p>
+                <p>Declined at {{ $review->reviewed_at }}</p>
+            @else
+                <p>Your request to join was declined</p>
+                <p>Declined at {{ $review->raised_at }}</p>
+            @endif
+
         </div>
 
         <div class="report-section">
@@ -42,18 +48,31 @@
             </p>
 
             <div class="report-details">
-                <div class="report-item">
-                    <span class="report-label">Required Action:</span>
-                    <span class="report-value">{{ $review->head }}</span>
-                </div>
-                <div class="report-item">
-                    <span class="report-label">Feedback from Reviewer:</span>
-                    <span class="report-value">{{ $review->body }}</span>
-                </div>
-                <div class="report-item">
-                    <span class="report-label">Date of Decline:</span>
-                    <span class="report-value">{{ \Carbon\Carbon::parse($review->raised_at)->format('F j, Y g:i A') }}</span>
-                </div>
+                @if ($review->review_feedback !== NULL)
+
+                    <div class="report-item">
+                        <span class="report-label">Feedback from reviewer:</span>
+                        <span class="report-value">{{ $review->review_feedback }}</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="report-label">Date reviewed:</span>
+                        <span class="report-value">{{ \Carbon\Carbon::parse($review->reviewed_at)->format('F j, Y g:i A') }}</span>
+                    </div>
+                @else
+
+                    <div class="report-item">
+                        <span class="report-label">Required Action:</span>
+                        <span class="report-value">{{ $review->head }}</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="report-label">Feedback from reviewer:</span>
+                        <span class="report-value">{{ $review->body }}</span>
+                    </div>
+                    <div class="report-item">
+                        <span class="report-label">Date of Decline:</span>
+                        <span class="report-value">{{ \Carbon\Carbon::parse($review->raised_at)->format('F j, Y g:i A') }}</span>
+                    </div>
+                @endif
             </div>
 
             <p class="report-note">

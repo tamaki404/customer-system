@@ -31,7 +31,13 @@ class Reviews extends Model
     {
         return $this->belongsTo(User::class, 'raised_by', 'user_id');
     }
-
-
+    public function resolved()
+    {
+        return $this->belongsTo(Staffs::class, 'resolved_by', 'user_id');
+    }
+    public function reviewed()
+    {
+        return $this->belongsTo(Staffs::class, 'reviewed_by', 'user_id');
+    }
 
 }

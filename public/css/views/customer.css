@@ -438,144 +438,155 @@
 
 
 
+/* status display style */
+
+.status-box {
+    color: #fff;
+    padding: 12px 14px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: fadeIn 0.4s ease-out;
+}
+.status-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+/* 🟠 Pending */
+.status-box--pending {
+    background: linear-gradient(135deg,  #f57c00,#ffb74d);
+    border-left: 6px solid #e65100;
+}
+
+/* ✅ Accepted */
+.status-box--accepted {
+    background: linear-gradient(135deg, #388e3c, #81c784);
+    border-left: 6px solid #1b5e20;
+}
+
+/* 🔴 Declined */
+.status-box--declined {
+    background: linear-gradient(135deg, #d93636, #ff5c5c);
+    border-left: 6px solid #b71c1c;
+}
+
+/* 🟣 Under Review */
+.status-box--under-review {
+    background: linear-gradient(135deg, #6c3483,#8e44ad );
+    border-left: 6px solid #4a235a;
+}
+
+/* 🟢 To Confirm */
+.status-box--to-confirm {
+    background: linear-gradient(135deg, #1976d2, #64b5f6);
+    border-left: 6px solid #0d47a1;
+}
+
+/* 🖤 Suspended (optional future use) */
+.status-box--suspended {
+    background: linear-gradient(135deg, #757575, #424242);
+    border-left: 6px solid #212121;
+}
+
+/* Header Section */
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.status-title {
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.status-date {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+
+
+/* Staff Section */
+.status-staff {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.staff-img {
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    object-fit: cover;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+.staff-info .label {
+    font-size: 12px;
+    opacity: 0.85;
+}
+
+.staff-info .name {
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+/* Text Details */
+.status-text {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.footer {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.85;
+    font-style: italic;
+}
+
+/* Buttons */
+.status-box button {
+    background: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    align-self: flex-start;
+    margin-top: 5px;
+}
+
+.status-box--declined button { color: #d93636; }
+.status-box--under-review button { color: #6c3483; }
+.status-box--pending button { color: #f57c00; }
+.status-box--accepted button { color: #388e3c; }
+.status-box--to-confirm button { color: #1976d2; }
+.status-box--suspended button { color: #424242; }
+
+.status-box button:hover {
+    background: #f0f0f0;
+    transform: translateY(-1px);
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
 
 
 
-
-
-    .status-box {
-        color: #fff;
-        padding: 10px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        animation: fadeIn 0.4s ease-out;
-    }
-
-    .status-box--declined {
-        background: linear-gradient(135deg, #ff5c5c, #d93636);
-        border-left: 6px solid #b71c1c;
-    }
-
-    .status-box--under-review {
-        background: linear-gradient(135deg, #8e44ad, #6c3483);
-        border-left: 6px solid #4a235a;
-    }
-
-    /* Header */
-    .declined-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .declined-title {
-        font-weight: bold;
-        font-size: 15px;
-        letter-spacing: 0.5px;
-        background: rgba(255, 255, 255, 0.15); 
-        padding: 4px 10px;
-        border-radius: 4px;
-        text-transform: uppercase;
-    }
-
-    .declined-date {
-        font-size: 13px;
-        opacity: 0.9;
-    }
-
-    .declined-content {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-
-    /* Staff Section */
-    .declined-staff {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .staff-img {
-        height: 36px;
-        width: 36px;
-        border-radius: 50%;
-        border: 2px solid #fff;
-        object-fit: cover;
-        box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
-    }
-
-    .staff-info {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.3;
-    }
-
-    .staff-info .label {
-        font-size: 12px;
-        opacity: 0.85;
-    }
-
-    .staff-info .name {
-        font-size: 14.5px;
-        font-weight: 600;
-    }
-
-    /* Details Section */
-    .declined-details {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .declined-reason {
-        font-size: 14px;
-        line-height: 1.5;
-        margin: 0;
-    }
-
-    .footer {
-        margin: 0;
-        font-size: 13px;
-        opacity: 0.85;
-        font-style: italic;
-    }
-
-    .status-box button {
-        background: #ffffff;
-        border: none;
-        padding: 8px 14px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: all 0.2s ease;
-        align-self: flex-start;
-        margin-top: 5px;
-    }
-    
-    .status-box--declined button {
-        color: #d93636;
-    }
-    .status-box--under-review button {
-        color: #6c3483;
-    }
-
-    .status-box button:hover {
-        background: #f0f0f0;
-        transform: translateY(-1px);
-    }
-
-
-    /* Animation */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(8px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
