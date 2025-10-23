@@ -25,7 +25,7 @@ public function declined(Request $request)
     // Initialize ALL variables to avoid "undefined variable" errors
     $bank = null;
     $documents = collect();
-    $deliveryRequirements = collect();
+    $del = collect();
 
     $reason = $review->head ?? '';
 
@@ -75,9 +75,9 @@ public function review($user_id, Request $request){
     $accStats = AccountStatus::where('user_id', $user_id)->first();
     $reviews = Reviews::where('user_id', $user_id)->first();
 
-    $banks = null;
+    $bank = null;
     $documents = collect();
-    $deliveryRequirements = collect();
+    $del = null;
 
     $reason = $reviews->head ?? '';
 
@@ -92,19 +92,16 @@ public function review($user_id, Request $request){
                 break;
 
             case 'Bank details':
-                $banks = Banks::where('user_id', $user_id)->first();
+                $bank = Banks::where('user_id', $user_id)->first();
                 break;
 
             case 'Necessary documents':
-                $documents = Documents::where('user_id', $user_id)
-                    ->whereIn('type', ['valid_one', 'valid_two'])
-                    ->orderByRaw("FIELD(type, 'valid_one', 'valid_two')") 
-                    ->limit(2)
-                    ->get();
+                $documents  = Documents::where('supplier_id', $supplier->supplier_id)->get();
+
                 break;
 
             case 'Delivery requirements':
-                $deliveryRequirements = DeliveryRequirements::where('user_id', $user_id)->get();
+                $del = DeliveryRequirements::where('user_id', $user_id)->first();
                 break;
         }
     }
@@ -113,10 +110,10 @@ public function review($user_id, Request $request){
         'supplier',
         'user',
         'documents',
-        'banks',
+        'bank',
         'accStats',
         'reason',
-        'deliveryRequirements'
+        'del'
     ));
 
 }

@@ -27,16 +27,7 @@
     @endif
 
     <div class="container" style="width: 70%; height: 800px; padding: 0px 5px;">
-        {{-- <div class="header-section">
-            @if ($review->review_feedback !== NULL)
-                <p>Your request has been declined again</p>
-                <p>Declined at {{ $review->reviewed_at }}</p>
-            @else
-                <p>Your request to join was declined</p>
-                <p>Declined at {{ $review->raised_at }}</p>
-            @endif
 
-        </div> --}}
         <div class="head-container">
             <div class="header" style="display: flex; flex: 1; flex-direction: row; justify-content: space-between;">
                 <img src="{{ asset(path: 'assets/sunnyLogo1.png') }}" alt="Owner Image" width="150" class="ownerImage">

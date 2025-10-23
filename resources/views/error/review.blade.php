@@ -249,11 +249,190 @@
 
                         </section>
                     </div>
+                </div>
+            @elseif ($reason === "Bank details")
+                <div>
+                    <div class="section-row" style="width: 60%">
+                        <section class="group-details first_id" style="margin-top: 5px">
+                            <p class="group-name">Bank details</p>
+                            <div class="form-list">
+
+                                <style>
+                                    .details-display p .label{
+                                        color: #666;
+                                        font-size: 13px;
+                                    }
+                                </style>
+                                <div class="details-display">
+                                    <p>
+                                        <span class="label">Account name </span>
+                                        <span>{{$bank->account_name}}</span>
+                                    </p>
+                                    <p>
+                                        <span class="label">Account number</span>
+                                        <span>{{$bank->account_number}}</span>
+                                    </p>
+                                    <p>
+                                        <span class="label">Bank</span>
+                                        <span>{{ $bank->bank }}</span>
+                                    </p>
+
+                                    <p>
+                                        <span class="label">Branch </span>
+                                        <span>{{$bank->branch}}</span>
+                                    </p>
+                
+                                </div>
+
+
+                            </div>
+                        </section>
+                    </div>
+
+
+                </div>            
+            @elseif ($reason === "Necessary documents")
+                <div>
+                    <div class="section-row">
+                        <section class="group-details first_id">
+                            <p class="group-name">ID Details Verification</p>
+                            <div class="pdf-documents-grid d-flex flex-row flex-wrap gap-3 justify-content-around w-100">
+                                @php
+                                    $requiredDocs = [
+                                        'SEC' => 'SEC Certificate',
+                                        'BP' => 'Business Permit',
+                                        'BIR' => 'BIR Certificate',
+                                        'MP' => 'Mayor’s Permit',
+                                        'BS' => 'Bank Statement',
+                                        'PB' => 'Proof of Billing',
+                                        'NCC' => 'Notarized Corporation Certificate',
+                                        'AIB' => 'Articles of Incorporation and Bylaws',
+                                    ];
+                                @endphp
+
+                                @foreach ($requiredDocs as $type => $label)
+                                    @php
+                                        $doc = isset($documents) ? $documents->firstWhere('type', $type) : null;
+                                        $pdfBlob = $doc->file ?? null;
+                                        $mime = $pdfBlob ? finfo_buffer(finfo_open(), $pdfBlob, FILEINFO_MIME_TYPE) : 'application/pdf';
+                                        $pdfData = $pdfBlob ? 'data:' . $mime . ';base64,' . base64_encode($pdfBlob) : null;
+                                        $modalId = 'docModal_' . $type;
+                                    @endphp
+
+                                    <div class="" style="padding: 5px; align-items: center; text-align: center; display: flex; flex-direction: row; flex-wrap: wrap; border-radius: 5px;  width: 300px;" data-doc-type="{{ $type }}" style="width: 300px;">
+                                        <p style="margin: 5px"><strong>{{ $label }}</strong></p>
+
+                                        <div class="preview-container"
+                                            style="width: 100%; cursor: pointer;"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#{{ $modalId }}">
+                                            @if ($pdfData)
+                                                <iframe
+                                                    src="{{ $pdfData }}#toolbar=0&navpanes=0&scrollbar=0&page=1"
+                                                    width="100%"
+                                                    height="200"
+                                                    style="border: 1px solid #ccc; border-radius: 6px; pointer-events: none;">
+                                                </iframe>
+                                            @else
+                                                <p class="text-muted">No document uploaded yet</p>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-xl modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">{{ $label }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body text-center" style="height: 80vh;">
+                                                    @if ($pdfData)
+                                                        <iframe
+                                                            src="{{ $pdfData }}"
+                                                            width="100%"
+                                                            height="100%"
+                                                            style="border: none;"
+                                                            title="{{ $label }} Full View">
+                                                        </iframe>
+                                                    @else
+                                                        <p class="text-danger">Unable to load PDF.</p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
+            @elseif ($reason === "Delivery requirements")
+                <div>
+                    <div class="section-row" style="width: 60%">
+                        <section class="group-details first_id" >
+                            <p class="group-name">Delivery requirements</p>
+                            <div class="form-list">
+                                <style>
+                                    .details-display p .label{
+                                        color: #666;
+                                        font-size: 13px;
+                                    }
+                                </style>
+                                <div class="details-display">
+                                    <p>
+                                        <span class="label">Frequency of delivery </span>
+                                        <span>{{$del->delivery_frequency}}</span>
+                                    </p>
+                                    <p>
+                                        <span class="label">Deliveries per week</span>
+                                        <span>{{$del->deliveries_per_week}}</span>
+                                    </p>
+                                    <p>
+                                        <span class="label">Days of delivery</span>
+                                        <span>{{$del->delivery_days}}</span>
+                                    </p>
+
+                                    <hr>
+
+                                    <p>
+                                        <span class="label">(Monthly) Deliveries in a month </span>
+                                        <span>{{$del->deliveries_per_month}}</span>
+                                    </p>
+
+                                    <hr>
+
+                                    <p>
+                                        <span class="label">Receiving time </span>
+                                        <span>{{$del->receiving_time}}</span>
+                                    </p>
+
+                                    <hr>
+
+                                    <p>
+                                        <span class="label">Delivery address 1 </span>
+                                        <span>{{$del->delivery_address_1}}</span>
+                                    </p>
+                                    <p>
+                                        <span class="label">Delivery address 2 </span>
+                                        <span>{{$del->delivery_address_2}}</span>
+                                    </p>
+                                    <p>
+                                        <span class="label">Delivery address 3 </span>
+                                        <span>{{$del->delivery_address_3}}</span>
+                                    </p>
+                            
+                
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
 
 
                 </div>
-            @elseif ($reason === "ID image and details")
-
             @endif
         </div>
     </div>
