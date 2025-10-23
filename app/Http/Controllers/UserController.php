@@ -900,7 +900,7 @@ public function signin(Request $request)
     }
 
     // Staff verification
-    if ($user->role === 'Staff') {
+    if ($user->role === 'Staff' || $user->role === 'Admin') {
         $staff = Staffs::where('user_id', $user->user_id)->first();
         if (!$staff) {
             return back()->withErrors(['loginError' => 'Staff record not found.'])->withInput();
@@ -914,7 +914,7 @@ public function signin(Request $request)
     }
 
     // Non-staff verification
-    if ($user->role !== 'Staff') {
+    if ($user->role === 'Supplier') {
         $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
 
         if (!$accountStatus) {

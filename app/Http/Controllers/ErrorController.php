@@ -45,9 +45,8 @@ public function declined(Request $request)
 
             case 'Necessary documents':
                 // Get all 8 documents (application/pdf) mediumBlob of each (SEC, BP, BIR, MP, BS, PB, NCC, AIB) 
-                $documents = Documents::where('supplier_id', $supplier->supplier_id)
-                    ->limit(8)
-                    ->get();
+                $documents  = Documents::where('supplier_id', $supplier->supplier_id)->get();
+
                 break;
 
             case 'Delivery requirements':
@@ -438,83 +437,92 @@ public function updateDeclined(Request $request)
             } else {
                 $message = 'No changes detected in your bank details.';
             }
-        } elseif ($request->key === 'docx') {
-                // Define required document types and friendly names (same as in your Blade)
+        } 
+        
+elseif ($request->key === 'docx') {
+    // Define required document types (lowercase keys to match form input names)
+    $requiredDocs = [
+        'sec' => 'SEC',
+        'bp' => 'BP',
+        'bir' => 'BIR',
+        'mp' => 'MP',
+        'bs' => 'BS',
+        'pb' => 'PB',
+        'ncc' => 'NCC',
+        'aib' => 'AIB',
+    ];
 
-            $request->validate([
-                'SEC'             => 'required|file|mimes:pdf|max:2048',
-                'BP'              => 'required|file|mimes:pdf|max:2048',
-                'BIR'             => 'required|file|mimes:pdf|max:2048',
-                'MP'              => 'required|file|mimes:pdf|max:2048',
-                'valid_one'       => 'required|file|mimes:pdf|max:2048',
-                'valid_two'       => 'required|file|mimes:pdf|max:2048',
-                'BS'              => 'required|file|mimes:pdf|max:2048',
-                'PB'              => 'required|file|mimes:pdf|max:2048',
-                'NCC'             => 'required|file|mimes:pdf|max:2048',
-                'AIB'             => 'required|file|mimes:pdf|max:2048',
-            ]);
+    // Validate only the files that are being uploaded (nullable)
+    $validation = [];
+    foreach (array_keys($requiredDocs) as $key) {
+        $validation[$key] = 'nullable|file|mimes:pdf|max:5120';
+    }
+    
+    $request->validate($validation);
 
-                $requiredDocs = [
-                    'SEC' => 'SEC certificate',
-                    'BP' => 'Business Permit',
-                    'BIR' => 'BIR Certificate',
-                    'MP' => 'Mayor’s Permit',
-                    'BS' => 'Bank Statement',
-                    'PB' => 'Proof of Billing',
-                    'NCC' => 'Notarized corporation certificate',
-                    'AIB' => 'Articles of incorporation and bylaws',
-                ];
+    $docsUpdated = false;
 
-                $docsUpdated = false;
+    // Process only the documents that have new files uploaded
+    foreach ($requiredDocs as $inputName => $dbType) {
+        // Only process if a new file was uploaded
+        if ($request->hasFile($inputName)) {
+            $pdfFile = $request->file($inputName);
+            $pdfContent = file_get_contents($pdfFile->getRealPath());
 
-                foreach ($requiredDocs as $key => $label) {
-                    if ($request->hasFile(strtolower($key))) {
-                        $pdfFile = $request->file(strtolower($key));
-                        $pdfContent = file_get_contents($pdfFile->getRealPath());
+            // Find existing document by supplier_id and type
+            $document = Documents::where('supplier_id', $supplier->supplier_id)
+                ->where('type', $dbType)
+                ->first();
 
-                        // Check if the document already exists
-                        $document = Documents::where('user_id', $user_id)
-                            ->where('type', $key)
-                            ->first();
+            if ($document) {
+                // Update only if new file is uploaded
+                $document->file = $pdfContent;
+                $document->updated_at = now();
+                $document->save();
+                
+                \Log::info("Updated document: {$dbType} for supplier_id: {$supplier->supplier_id}");
+            } else {
+                // Create new document if it doesn't exist
+                Documents::create([
+                    'supplier_id' => $supplier->supplier_id,
+                    'type' => $dbType,
+                    'file' => $pdfContent,
+                ]);
+                
+                \Log::info("Created new document: {$dbType} for supplier_id: {$supplier->supplier_id}");
+            }
 
-                        if ($document) {
-                            // Update existing document
-                            $document->file = $pdfContent;
-                            $document->save();
-                        } else {
-                            // Create new document
-                            Documents::create([
-                                'user_id' => $user_id,
-                                'type' => $key,
-                                'file' => $pdfContent,
-                            ]);
-                        }
+            $docsUpdated = true;
+        }
+        // If no file uploaded for this type, skip it completely (leave existing as-is)
+    }
 
-                        $docsUpdated = true;
-                    }
-                }
+    if ($docsUpdated) {
+        // Update review status only if at least one document was changed
+        $accStats = AccountStatus::where('user_id', $user_id)->first();
+        if ($accStats) {
+            $accStats->account_status = 'Under review';
+            $accStats->updated_at = now();
+            $accStats->save();
+        }
 
-                // Update review status after uploading
-                $accStats = AccountStatus::where('user_id', $user_id)->first();
-                if ($accStats) {
-                    $accStats->account_status = 'Under review';
-                    $accStats->updated_at = now();
-                    $accStats->save();
-                }
+        $review = Reviews::where('user_id', $user_id)->first();
+        if ($review) {
+            $review->status = 'Under review';
+            $review->updated_at = now();
+            $review->save();
+        }
 
-                $review = Reviews::where('user_id', $user_id)->first();
-                if ($review) {
-                    $review->status = 'Under review';
-                    $review->updated_at = now();
-                    $review->save();
-                }
+        $message = 'Your necessary documents have been successfully updated and resubmitted for review.';
+    } else {
+        $message = 'No new documents were uploaded. Please select at least one document to update.';
+    }
 
-                $message = $docsUpdated
-                    ? 'Your necessary documents have been successfully updated and resubmitted for review.'
-                    : 'No new documents were uploaded.';
-
-                return redirect()->route('error.success')->with('success', $message);
-        }else {
+    return redirect()->route('error.success')->with($docsUpdated ? 'success' : 'info', $message);
+}
+        
+        
+        else {
             return back()->with('error', 'Invalid form submission.');
         }
 
