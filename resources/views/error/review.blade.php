@@ -98,6 +98,25 @@
             </div>
         </div>
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
+            <div>
+                <p>Report details: {{ $review->head }}</p>
+
+                @if ($review->review_feedback !== NULL)
+                    <p>
+                        <span>Raised</span>
+                        <span>Declined by: {{ $review->raised_by }} at {{ $review->raised_at }}</span>
+                        <span>Feedback: {{ $review->body }}</span>
+                    </p>                    
+                    <p>
+                        <span>Reviewed (Declined again)</span>
+                        <span>Reviewed by: {{ $review->reviewed_by }} at {{ $review->reviewed_at }}</span>
+                        <span>Reviewed (feedback): {{ $review->review_feedback }}</span>
+                    </p>
+                @else
+
+                @endif
+
+            </div>
             @if ($reason === "ID image and details")
                 <div>
                     <div class="section-row">

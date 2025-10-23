@@ -74,6 +74,7 @@ public function review($user_id, Request $request){
     $supplier = Suppliers::where('user_id', $user_id)->first();
     $accStats = AccountStatus::where('user_id', $user_id)->first();
     $reviews = Reviews::where('user_id', $user_id)->first();
+    $review = Reviews::where('user_id', $user_id)->first();
 
     $bank = null;
     $documents = collect();
@@ -113,6 +114,7 @@ public function review($user_id, Request $request){
         'bank',
         'accStats',
         'reason',
+        'review',
         'del'
     ));
 
