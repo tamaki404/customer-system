@@ -216,7 +216,6 @@
                         </section>
                     </div>
                     <div class="form-actions" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center;">
-                        {{-- <button type="submit" class="resubmit-btn">Report issueAsk to resubmit</button> --}}
                         <button type="submit" class="resubmit-btn" style="width: 300px">Submit</button>
 
                     </div>
@@ -255,7 +254,6 @@
                         </section>
                     </div>
                     <div class="form-actions" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center;">
-                        {{-- <button type="submit" class="resubmit-btn">Report issueAsk to resubmit</button> --}}
                         <button type="submit" class="resubmit-btn" style="width: 300px">Submit</button>
                     </div>
                 </form>
@@ -318,7 +316,6 @@
                         </div>
                     </section>
                     <div class="form-actions" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center;">
-                        {{-- <button type="submit" class="resubmit-btn">Report issueAsk to resubmit</button> --}}
                         <button type="submit" class="resubmit-btn" style="width: 300px">Submit</button>
 
                     </div>
@@ -423,6 +420,9 @@
                             </div>
                         </div>
                     </section>
+                    <div class="form-actions" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center;">
+                        <button type="submit" class="resubmit-btn" style="width: 300px">Submit</button>
+                    </div>
                  
                 </form>
            

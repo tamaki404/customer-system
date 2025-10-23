@@ -517,8 +517,47 @@ public function updateDeclined(Request $request)
             }
 
             return redirect()->route('error.success')->with($docsUpdated ? 'success' : 'info', $message);
-        }
         
+        } elseif ($request->key === 'delreq') {
+            $request->validate([
+                'key' => 'required|in:ids,banks,docx,delreq',
+                'delivery_frequency' => 'required|string|max:50',
+                'deliveries_per_week' => 'required|integer|min:1|max:7',
+                'delivery_days' => 'required|array|min:1',
+                'delivery_days.*' => 'string|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
+                'receiving_time' => 'required|date_format:H:i',
+                'delivery_address_1' => 'required|string|max:255',
+                'delivery_address_2' => 'nullable|string|max:255',
+                'delivery_address_3' => 'nullable|string|max:255',
+            ]);
+
+            $delivery = DeliveryRequirements::where('user_id', $user_id)->first();
+
+            if (!$delivery) {
+                // If not found, create a new record
+                $delivery = new DeliveryRequirements(['user_id' => $user_id]);
+            }
+
+            // Convert days array to comma-separated string (or JSON if your model casts it)
+            $deliveryDays = implode(',', $request->delivery_days);
+
+            // Fill new data
+            $delivery->delivery_frequency = $request->delivery_frequency;
+            $delivery->deliveries_per_week = $request->deliveries_per_week;
+            $delivery->delivery_days = $deliveryDays;
+            $delivery->receiving_time = $request->receiving_time;
+            $delivery->delivery_address_1 = $request->delivery_address_1;
+            $delivery->delivery_address_2 = $request->delivery_address_2;
+            $delivery->delivery_address_3 = $request->delivery_address_3;
+
+            if ($delivery->isDirty()) {
+                $delivery->save();
+                $message = 'Your delivery requirements have been successfully updated and resubmitted for review.';
+            } else {
+                $message = 'No changes detected in your delivery requirements.';
+            }
+        }
+
         else {
             return back()->with('error', 'Invalid form submission.');
         }
