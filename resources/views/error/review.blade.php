@@ -13,7 +13,49 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <title>Modify Account</title>
-
+    <style>
+        .modal-option-groups {
+            margin-bottom: 15px;
+        }
+        .modal-option-groups p {
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .modal-option-groups select,
+        .modal-option-groups textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .modal-option-groups textarea {
+            resize: vertical;
+            font-family: inherit;
+        }
+        .note-notify {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 12px;
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .text-muted {
+            display: block;
+            margin-top: 4px;
+            font-size: 11px;
+            color: #6c757d;
+        }
+        #feedback-container {
+            display: none;
+        }
+        #feedback-container.show {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     @if (session('success') || session('error'))
@@ -26,61 +68,89 @@
         </div>
     @endif
 
-    {{-- confirm supplier request --}}
-    <div class="modal fade" id="request-action"tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-        <div class="modal-dialog" >
-            <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-header">
-                    <p class="modal-title">Supplier request action</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+
+<!-- Confirm supplier request modal -->
+<div class="modal fade" id="request-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" method="POST" action="{{ route('review.confirm') }}" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-header">
+                <p class="modal-title">Supplier request action</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+                <p class="note-notify">
+                    <span class="material-symbols-outlined">info</span>
+                    <span>If you confirm this user, they'll be pending for approval and you have to confirm them</span>
+                </p>
+                
+                <!-- Status selection -->
+                <div class="modal-option-groups">
+                    <p>Are the modified data correct now?</p>
+                    <select name="account_status" id="status" required>
+                        <option value="">-- Select status --</option>
+                        <option value="Accepted">Yes, all are good now</option>
+                        <option value="Declined">No, there's something wrong</option>
+                    </select>
                 </div>
                 
-                <div class="modal-body">
-                    <p class="note-notify">
-                        <span class="material-symbols-outlined"> info </span>
-                        <span>Review the profile before taking any action on this request.</span>
-                    </p>
-                    <!-- Status selection -->
-                    <div class="modal-option-groups">
-                        <p>Are the modified data correct now?</p>
-                        <select name="account_status" id="account_status" required>
-                            <option value="">-- Select status --</option>
-                            <option value="To confirm">Yes, all are good now</option>
-                            <option value="Declined again">No, there's something wrong</option>
-                        </select>
-                    </div>
-                    <!-- Reason to decline again (hidden by default) -->
-                        <div class="modal-option-groups" id="feedback_group" style="display: none;">
-                            <p>Kindly specify what needs to be changed and the reason, be specific and on point</p>
-                            <textarea 
-                                name="review_feedback" 
-                                id="feedback" 
-                                rows="4" 
-                                class="form-control" 
-                                placeholder="Provide detailed feedback here..."
-                                maxlength="500"
-                                style="width: 100%; resize: vertical; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"
-                            ></textarea>
-                            <small class="text-muted" style="font-size: 11px;">Maximum 500 characters</small>
-                        </div>
-
-                   
+                <!-- Reason to decline (shown only when Declined is selected) -->
+                <div class="modal-option-groups" id="feedback-container">
+                    <p>Kindly specify what needs to be changed and the reason, be specific and on point</p>
+                    <textarea 
+                        name="review_feedback" 
+                        id="feedback" 
+                        rows="4" 
+                        placeholder="Provide detailed feedback here..."
+                        maxlength="500"
+                    ></textarea>
+                    <small class="text-muted">Maximum 500 characters</small>
                 </div>
-                <input type="hidden" name="supplier_id" value="{{$supplier->supplier_id }}">
-                <input type="hidden" name="reviewed_by" value="{{ Auth()->user()->user_id }}">
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit action</button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <input type="hidden" name="supplier_id" value="{{$supplier->supplier_id }}">
+            <input type="hidden" name="reviewed_by" value="{{ Auth()->user()->user_id }}">
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit action</button>
+            </div>
+        </form>
     </div>
+</div>
+
+<script>
+    // Toggle feedback textarea based on status selection
+    document.getElementById('status').addEventListener('change', function() {
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackTextarea = document.getElementById('feedback');
+        
+        if (this.value === 'Declined') {
+            feedbackContainer.classList.add('show');
+            feedbackTextarea.required = true;
+        } else {
+            feedbackContainer.classList.remove('show');
+            feedbackTextarea.required = false;
+            feedbackTextarea.value = ''; // Clear feedback when not declining
+        }
+    });
+
+    // Reset form when modal is closed
+    document.getElementById('request-action').addEventListener('hidden.bs.modal', function () {
+        const form = this.querySelector('form');
+        form.reset();
+        document.getElementById('feedback-container').classList.remove('show');
+        document.getElementById('feedback').required = false;
+    });
+</script>
+
+
 
 
     <div class="container">
         @if ($reason === "ID image and details")
-            <form action="{{ route('declined.update') }}" method="POST" enctype="multipart/form-data" class="decline-form">
+            <div>
                 @csrf
                 <div class="section-row">
                     <section class="group-details first_id">
@@ -89,7 +159,7 @@
                         <div class="form-list">
                             <div class="input-forms">
                                 <p for="id-image">
-                                    <span class="req-asterisk">*</span> ID image
+                                     ID image
                                 </p>
 
                                 @php
@@ -105,34 +175,22 @@
                                     <span id="preview-text" style="display: none;">No image selected</span>
                                 </div>
 
-                                <input type="file" id="id-image" name="id_image" accept="image/*">
                             </div>
 
                             <div class="input-forms">
-                                <label for="id-type"><span class="req-asterisk">*</span> Type of ID</label>
-                                <select name="id_type" id="id-type" required>
-                                    <option value="{{ $supplier->id_type ?? '' }}" selected>{{ $supplier->id_type ?? 'Select ID Type' }}</option>
-                                    <option value="Passport">Passport</option>
-                                    <option value="Driver's License">Driver's License</option>
-                                    <option value="National ID">National ID</option>
-                                    <option value="SSS ID">SSS ID</option>
-                                    <option value="GSIS ID">GSIS ID</option>
-                                    <option value="UMID">UMID</option>
-                                    <option value="Postal ID">Postal ID</option>
-                                    <option value="PhilHealth ID">PhilHealth ID</option>
-                                    <option value="Voter's ID">Voter's ID</option>
-                                    <option value="PRC ID">PRC ID</option>
-                                </select>
+                                <label for="id-type"> Type of ID</label>
+                                <input name="id_type" id="id-type" type="text" value="{{ $supplier->id_type }}" readonly>
                             </div>
 
                             <div class="input-forms">
-                                <label for="id_number"><span class="req-asterisk">*</span> ID number</label>
-                                <input type="text" name="id_number" id="id_number" maxlength="100" required value="{{ $supplier->id_number ?? '' }}">
+                                <label for="id_number"> ID number</label>
+                                <input name="id_number" id="id_number" type="text" value="{{ $supplier->id_number }}" readonly>
+
                             </div>
 
                             <div class="input-forms">
-                                <label for="birthdate"><span class="req-asterisk">*</span> Birthdate</label>
-                                <input type="date" name="birthdate" id="birthdate" required value="{{ $supplier->birthdate ?? '' }}">
+                                <label for="birthdate"> Birthdate</label>
+                                <input type="date" name="birthdate" id="birthdate" required value="{{ $supplier->birthdate ?? '' }}" readonly>
                             </div>
                         </div>
                     </section>
@@ -141,7 +199,7 @@
                         <p class="group-name">Valid IDs Documentation</p>
 
                         <div class="form-list">
-                            <p><span class="req-asterisk">*</span> Documents (2) Valid IDs (PDF)</p>
+                            <p> Documents (2) Valid IDs (PDF)</p>
 
                             <div class="pdf-documents-row">
                                 @php
@@ -170,8 +228,6 @@
                                             <p class="no-preview">No document uploaded yet</p>
                                         @endif
                                     </div>
-                                    <input type="file" id="valid_one" name="valid_one" accept="application/pdf" class="pdf-input">
-                                    <p class="selected-file">No file selected</p>
                                 </div>
 
                                 {{-- Valid ID (2) --}}
@@ -195,18 +251,14 @@
                                             <p class="no-preview">No document uploaded yet</p>
                                         @endif
                                     </div>
-                                    <input type="file" id="valid_two" name="valid_two" accept="application/pdf" class="pdf-input">
-                                    <p class="selected-file">No file selected</p>
                                 </div>
                             </div>
                         </div>
                     </section>
                 </div>
 
-                <div class="form-actions" style="margin-top: 15px;" >
-                    <button type="submit" class="resubmit-btn">Resubmit for Review</button>
-                </div>
-            </form>
+           
+            </div>
         @endif
 
         <div class="footer-section">
@@ -214,6 +266,8 @@
             <strong>sunny&scramble@gmail.com</strong> or <strong>09123456789</strong></p>
         </div>
     </div>
+
+
 
 
 

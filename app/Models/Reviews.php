@@ -15,8 +15,12 @@ class Reviews extends Model
         'status',
         'raised_by',
         'raised_at',
+        'review_feedback',
+        'reviewed_by',
+        'reviewed_at',
         'resolved_at',
         'resolved_by',
+
     ];
 
     public function staff()

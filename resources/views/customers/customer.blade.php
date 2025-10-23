@@ -645,7 +645,6 @@
                                     </div>
                                 </div>
                             </div> 
-{{-- 
                         @elseif ($accStatus->account_status === 'Under review')
                             <div class="status-box status-box--under-review">
                                 <div class="declined-header">
@@ -664,7 +663,7 @@
                                     </div>
                                     <button onclick="window.location.href='{{ route('error.changes', ['user_id' => $accStatus->user_id]) }}'">Review changes</button>
                                 </div>
-                            </div> --}}
+                            </div> 
                         @endif
 
 

@@ -76,15 +76,16 @@ public function review($user_id, Request $request){
     $user = User::where('user_id', $user_id)->first();
     $supplier = Suppliers::where('user_id', $user_id)->first();
     $accStats = AccountStatus::where('user_id', $user_id)->first();
+    $reviews = Reviews::where('user_id', $user_id)->first();
 
     $banks = null;
     $documents = collect();
     $deliveryRequirements = collect();
 
-    $reason = $accStats->to_change ?? '';
+    $reason = $reviews->head ?? '';
 
-    if ($accStats) {
-        switch ($accStats->to_change) {
+    if ($reviews) {
+        switch ($reviews->head) {
             case 'ID image and details':
                 $documents = Documents::where('user_id', $user_id)
                     ->whereIn('type', ['valid_one', 'valid_two'])
@@ -122,6 +123,67 @@ public function review($user_id, Request $request){
     ));
 
 }
+
+public function reviewConfirm(Request $request)
+{
+    // Validate form inputs
+    $validated = $request->validate([
+        'supplier_id' => 'required|exists:suppliers,supplier_id',
+        'reviewed_by' => 'required|exists:users,user_id',
+        'account_status' => 'required|string|in:Accepted,Declined', 
+        'review_feedback' => 'nullable|string|max:500',
+    ]);
+
+    // Fetch the supplier
+    $supplier = Suppliers::where('supplier_id', $validated['supplier_id'])->first();
+    $review = Reviews::where('user_id', $supplier->user_id)->first();
+    $status = AccountStatus::where('user_id', $supplier->user_id)->first();
+
+    // Check if records exist
+    if (!$review || !$status) {
+        return redirect()->back()->with('error', 'Review or status record not found.');
+    }
+
+    if ($validated['account_status'] === "Accepted") {
+        // Update status timestamp
+        $status->updated_at = now();
+        $status->save();
+
+        // Mark review as resolved
+        $review->status = "Resolved";
+        $review->resolved_by = $validated['reviewed_by'];
+        $review->resolved_at = now();
+        $review->reviewed_by = $validated['reviewed_by'];
+        $review->reviewed_at = now();
+        $review->review_feedback = null; // Clear previous feedback
+        $review->updated_at = now();
+        $review->save();
+ return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
+    }
+        return redirect()->back()->with('success', 'Supplier confirmed successfully and is now pending approval.');
+    } 
+    elseif ($validated['account_status'] === "Declined") {
+        // Validate feedback is provided when declining
+        if (empty($validated['review_feedback'])) {
+            return redirect()->back()->with('error', 'Please provide feedback when declining.');
+        }
+        $status->account_status = "Declined";
+        $status->save();
+
+        // Keep review active with new feedback
+        $review->status = "Active";
+        $review->review_feedback = $validated['review_feedback'];
+        $review->reviewed_by = $validated['reviewed_by'];
+        $review->reviewed_at = now();
+        $review->updated_at = now();
+        $review->save();
+
+        return redirect()->back()->with('warning', 'Supplier was declined again with feedback.');
+    }
+
+    return redirect()->back()->with('error', 'Invalid action selected.');
+}
+
 
 public function updateDeclined(Request $request)
 {

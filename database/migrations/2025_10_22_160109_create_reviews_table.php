@@ -19,6 +19,9 @@ return new class extends Migration
             $table->enum('status', ['Active', 'Resolved', 'Under review', 'Cancelled'])->default('Active');
             $table->string('raised_by', 50)->required();
             $table->timestamp('raised_at')->required();
+            $table->string('review_feedback', 255)->nullable(); 
+            $table->string('reviewed_by', 50)->nullable();
+            $table->timestamp('reviewed_at')->nullable();
             $table->timestamp('resolved_at')->nullable();
             $table->string('resolved_by', 50)->nullable();
             $table->timestamps();
