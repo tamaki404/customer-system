@@ -419,6 +419,9 @@ public function updateDeclined(Request $request)
                 'account_number' => 'nullable|max:100',
                 'bank' => 'nullable|max:100',
                 'branch' => 'nullable|max:100',
+
+
+                
             ]);
 
             $bank = Banks::where('supplier_id', $supplier->supplier_id)->first();
@@ -435,13 +438,86 @@ public function updateDeclined(Request $request)
             } else {
                 $message = 'No changes detected in your bank details.';
             }
-        } else {
+        } elseif ($request->key === 'docx') {
+                // Define required document types and friendly names (same as in your Blade)
+
+            $request->validate([
+                'SEC'             => 'required|file|mimes:pdf|max:2048',
+                'BP'              => 'required|file|mimes:pdf|max:2048',
+                'BIR'             => 'required|file|mimes:pdf|max:2048',
+                'MP'              => 'required|file|mimes:pdf|max:2048',
+                'valid_one'       => 'required|file|mimes:pdf|max:2048',
+                'valid_two'       => 'required|file|mimes:pdf|max:2048',
+                'BS'              => 'required|file|mimes:pdf|max:2048',
+                'PB'              => 'required|file|mimes:pdf|max:2048',
+                'NCC'             => 'required|file|mimes:pdf|max:2048',
+                'AIB'             => 'required|file|mimes:pdf|max:2048',
+            ]);
+
+                $requiredDocs = [
+                    'SEC' => 'SEC certificate',
+                    'BP' => 'Business Permit',
+                    'BIR' => 'BIR Certificate',
+                    'MP' => 'Mayor’s Permit',
+                    'BS' => 'Bank Statement',
+                    'PB' => 'Proof of Billing',
+                    'NCC' => 'Notarized corporation certificate',
+                    'AIB' => 'Articles of incorporation and bylaws',
+                ];
+
+                $docsUpdated = false;
+
+                foreach ($requiredDocs as $key => $label) {
+                    if ($request->hasFile(strtolower($key))) {
+                        $pdfFile = $request->file(strtolower($key));
+                        $pdfContent = file_get_contents($pdfFile->getRealPath());
+
+                        // Check if the document already exists
+                        $document = Documents::where('user_id', $user_id)
+                            ->where('type', $key)
+                            ->first();
+
+                        if ($document) {
+                            // Update existing document
+                            $document->file = $pdfContent;
+                            $document->save();
+                        } else {
+                            // Create new document
+                            Documents::create([
+                                'user_id' => $user_id,
+                                'type' => $key,
+                                'file' => $pdfContent,
+                            ]);
+                        }
+
+                        $docsUpdated = true;
+                    }
+                }
+
+                // Update review status after uploading
+                $accStats = AccountStatus::where('user_id', $user_id)->first();
+                if ($accStats) {
+                    $accStats->account_status = 'Under review';
+                    $accStats->updated_at = now();
+                    $accStats->save();
+                }
+
+                $review = Reviews::where('user_id', $user_id)->first();
+                if ($review) {
+                    $review->status = 'Under review';
+                    $review->updated_at = now();
+                    $review->save();
+                }
+
+                $message = $docsUpdated
+                    ? 'Your necessary documents have been successfully updated and resubmitted for review.'
+                    : 'No new documents were uploaded.';
+
+                return redirect()->route('error.success')->with('success', $message);
+        }else {
             return back()->with('error', 'Invalid form submission.');
         }
 
-        /** -------------------------
-         * 2️ Update review status
-         * ------------------------- */
         $accStats = AccountStatus::where('user_id', $user_id)->first();
         if ($accStats) {
             $accStats->account_status = 'Under review';

@@ -262,7 +262,7 @@
             @elseif ($reason === "Necessary documents")
                 <form action="{{ route('declined.docx.update') }}" method="POST" enctype="multipart/form-data" class="decline-form">
                     @csrf
-                    <input type="hidden" value="docs" name="key">
+                    <input type="hidden" value="docx" name="key">
                     <section class="group-details necessary-docs" style="width: 100%">
                         <p class="group-name">Necessary Documents</p>
 
@@ -317,6 +317,11 @@
                             </div>
                         </div>
                     </section>
+                    <div class="form-actions" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center;">
+                        {{-- <button type="submit" class="resubmit-btn">Report issueAsk to resubmit</button> --}}
+                        <button type="submit" class="resubmit-btn" style="width: 300px">Submit</button>
+
+                    </div>
 
                  
                 </form>
