@@ -85,6 +85,7 @@ Route::get('/email/verify', [UserController::class, 'verifyEmail'])->name('verif
     Route::post('/declined/update', [ErrorController::class, 'updateDeclined'])->name('declined.update');    
     Route::post('/declined/update', [ErrorController::class, 'updateDeclined'])->name('declined.bank.update');    
     Route::post('/declined/update', [ErrorController::class, 'updateDeclined'])->name('declined.docx.update');    
+    Route::post('/declined/update', [ErrorController::class, 'updateDeclined'])->name('declined.bank.update');    
 
     Route::get('/submitted/success', [ErrorController::class, 'success'])->name('error.success');    
 

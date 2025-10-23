@@ -88,7 +88,7 @@
 
                 <p class="report-note">
                     ⚠️ Make sure that all uploaded documents are clear, valid, and correctly labeled before resubmitting.  
-                    Once resubmitted, your application will go through another review process.
+                    Once resubmitted, your application will go through another review process.d
                 </p>
             </div>
             @if ($reason === "ID image and details")
@@ -325,12 +325,104 @@
 
                  
                 </form>
-           
             @elseif ($reason === "Delivery requirements")
                 <form action="{{ route('declined.bank.update') }}" method="POST" enctype="multipart/form-data" class="decline-form">
                     @csrf
                     <input type="hidden" value="delreq" name="key">
+                    <section class="group-details" style="margin-top: 5px; width: 90%">
+                        <p class="group-name">Delivery requirements</p>
+                        <div class="form-list" style="display: flex; flex-direction: row; flex-wrap: wrap;">
 
+                            <!-- Frequency type -->
+                            <div class="input-forms">
+                                <label for="delivery_frequency">
+                                <span class="req-asterisk">*</span> Frequency of delivery
+                                </label>
+                                <select id="delivery_frequency" name="delivery_frequency" required>
+                                <option value="{{$del->delivery_frequency}}">{{$del->delivery_frequency}}</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="biweekly">Bi-weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="custom">Custom</option>
+                                </select>
+                                <p class="error-message"></p>
+                            </div>
+                            <!-- Number of deliveries -->
+                            <div class="input-forms" >
+                                <label for="deliveries_per_week">
+                                <span class="req-asterisk">*</span> How many times per week?
+                                </label>
+                                <input type="number" id="deliveries_per_week" name="deliveries_per_week" min="1" max="7" placeholder="e.g. 2" required value="{{$del->deliveries_per_week}}">
+                                <p class="error-message"></p>
+                            </div>
+                            <!-- Select delivery days -->
+                            <div class="input-forms" style="width: auto">
+                                <a for="delivery_days" style="    font-size: 13px; color: #666;">
+                                    <span class="req-asterisk">*</span> Select days of the week for delivery
+                                </a>
+                                @php
+                                    $selectedDays = is_array($del->delivery_days)
+                                        ? $del->delivery_days
+                                        : explode(',', $del->delivery_days);
+                                @endphp
+
+                                <div id="delivery_days" class="checkbox-group" style="display: flex; width: auto; flex-direction: row; flex-wrap: wrap;">
+                                    @foreach (['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] as $day)
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                name="delivery_days[]"
+                                                value="{{ $day }}"
+                                                {{ in_array($day, $selectedDays ?? []) ? 'checked' : '' }}>
+                                            {{ $day }}
+                                        </label>
+                                    @endforeach
+                                </div>
+
+                                <p class="error-message"></p>
+                            </div>
+                            <!-- If monthly -->
+                            <div class="input-forms" id="monthly_frequency_group" style="display:none;">
+                                <label for="deliveries_per_month">
+                                <span class="req-asterisk">*</span> If monthly, how many times per month?
+                                </label>
+                                <input type="number" id="deliveries_per_month" name="deliveries_per_month" min="1" max="31" placeholder="e.g. 4">
+                                <p class="error-message"></p>
+                            </div>
+                            <!-- Receiving time -->
+                            <div class="input-forms">
+                                <label for="receiving_time">
+                                <span class="req-asterisk">*</span> Preferred receiving time
+                                </label>
+                                <input 
+                                    type="time" 
+                                    id="receiving_time" 
+                                    name="receiving_time" 
+                                    required 
+                                    value="{{ old('receiving_time', \Carbon\Carbon::parse($del->receiving_time)->format('H:i')) }}"
+                                >
+                                <p class="error-message"></p>
+                            </div>
+                            
+                            <div class="input-forms">
+                                <label for="del-add-1"><span class="req-asterisk">*</span> Delivery address 1</label>
+                                <input type="text" id="del-add-1" style="width: 500px" name="delivery_address_1" maxlength="255" required value="{{ $del->delivery_address_1}}">
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            
+                            <div class="input-forms">
+                                <label for="del-add-2">Delivery address 2</label>
+                                <input type="text" id="del-add-2" style="width: 500px" name="delivery_address_2" maxlength="255" required value="{{ $del->delivery_address_2}}">
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                            
+                            <div class="input-forms">
+                                <label for="del-add-3">Delivery address 3</label>
+                                <input type="text" id="del-add-3" style="width: 500px" name="delivery_address_3" maxlength="255" required value="{{ $del->delivery_address_3}}">
+                                <p class="error-text" style="display: none"></p>
+                            </div>
+                        </div>
+                    </section>
                  
                 </form>
            

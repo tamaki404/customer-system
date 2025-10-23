@@ -140,112 +140,112 @@
                         <section class="group-details second_id">
                             <p class="group-name">Valid IDs Documentation</p>
 
-<div class="pdf-documents-row">
-    @php
-        $validOne = isset($documents) ? $documents->firstWhere('type', 'valid_one') : null;
-        $validTwo = isset($documents) ? $documents->firstWhere('type', 'valid_two') : null;
-    @endphp
+                            <div class="pdf-documents-row">
+                                @php
+                                    $validOne = isset($documents) ? $documents->firstWhere('type', 'valid_one') : null;
+                                    $validTwo = isset($documents) ? $documents->firstWhere('type', 'valid_two') : null;
+                                @endphp
 
-    {{-- VALID ID (1) --}}
-    @php
-        $pdfBlob = $validOne->file ?? null;
-        $mime = $pdfBlob ? finfo_buffer(finfo_open(), $pdfBlob, FILEINFO_MIME_TYPE) : 'application/pdf';
-        $pdfData1 = $pdfBlob ? 'data:' . $mime . ';base64,' . base64_encode($pdfBlob) : null;
-        $modalId1 = 'validOneModal';
-    @endphp
+                                {{-- VALID ID (1) --}}
+                                @php
+                                    $pdfBlob = $validOne->file ?? null;
+                                    $mime = $pdfBlob ? finfo_buffer(finfo_open(), $pdfBlob, FILEINFO_MIME_TYPE) : 'application/pdf';
+                                    $pdfData1 = $pdfBlob ? 'data:' . $mime . ';base64,' . base64_encode($pdfBlob) : null;
+                                    $modalId1 = 'validOneModal';
+                                @endphp
 
-    <div class="doc-preview-box text-center" style="width: 220px;">
-        <p><strong>Valid ID (1)</strong></p>
-        <div class="card shadow-sm border-0 rounded-3 overflow-hidden"
-             style="cursor: pointer; height: 300px;"
-             data-bs-toggle="modal" data-bs-target="#{{ $modalId1 }}">
-            <div class="ratio ratio-4x3 bg-light" style="height: 80%">
-                @if ($pdfData1)
-                    <iframe
-                        src="{{ $pdfData1 }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
-                        style="width: 100%; height: 100%; pointer-events: none; border: none;"
-                        title="Valid ID (1) Preview"
-                    ></iframe>
-                @else
-                    <p class="text-danger">No document uploaded yet</p>
-                @endif
-            </div>
-        </div>
-    </div>
+                                <div class="doc-preview-box text-center" style="width: 220px;">
+                                    <p><strong>Valid ID (1)</strong></p>
+                                    <div class="card shadow-sm border-0 rounded-3 overflow-hidden"
+                                        style="cursor: pointer; height: 300px;"
+                                        data-bs-toggle="modal" data-bs-target="#{{ $modalId1 }}">
+                                        <div class="ratio ratio-4x3 bg-light" style="height: 80%">
+                                            @if ($pdfData1)
+                                                <iframe
+                                                    src="{{ $pdfData1 }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
+                                                    style="width: 100%; height: 100%; pointer-events: none; border: none;"
+                                                    title="Valid ID (1) Preview"
+                                                ></iframe>
+                                            @else
+                                                <p class="text-danger">No document uploaded yet</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
 
-    {{-- Modal for VALID ID (1) --}}
-    <div class="modal fade" id="{{ $modalId1 }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Valid ID (1)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center" style="height: 80vh;">
-                    @if ($pdfData1)
-                        <iframe
-                            src="{{ $pdfData1 }}"
-                            style="width: 100%; height: 100%; border: none;"
-                            title="Valid ID (1) Full View"
-                        ></iframe>
-                    @else
-                        <p class="text-danger">Unable to load document.</p>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
+                                {{-- Modal for VALID ID (1) --}}
+                                <div class="modal fade" id="{{ $modalId1 }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Valid ID (1)</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body text-center" style="height: 80vh;">
+                                                @if ($pdfData1)
+                                                    <iframe
+                                                        src="{{ $pdfData1 }}"
+                                                        style="width: 100%; height: 100%; border: none;"
+                                                        title="Valid ID (1) Full View"
+                                                    ></iframe>
+                                                @else
+                                                    <p class="text-danger">Unable to load document.</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-    {{-- VALID ID (2) --}}
-    @php
-        $pdfBlob = $validTwo->file ?? null;
-        $mime = $pdfBlob ? finfo_buffer(finfo_open(), $pdfBlob, FILEINFO_MIME_TYPE) : 'application/pdf';
-        $pdfData2 = $pdfBlob ? 'data:' . $mime . ';base64,' . base64_encode($pdfBlob) : null;
-        $modalId2 = 'validTwoModal';
-    @endphp
+                                {{-- VALID ID (2) --}}
+                                @php
+                                    $pdfBlob = $validTwo->file ?? null;
+                                    $mime = $pdfBlob ? finfo_buffer(finfo_open(), $pdfBlob, FILEINFO_MIME_TYPE) : 'application/pdf';
+                                    $pdfData2 = $pdfBlob ? 'data:' . $mime . ';base64,' . base64_encode($pdfBlob) : null;
+                                    $modalId2 = 'validTwoModal';
+                                @endphp
 
-    <div class="doc-preview-box text-center" style="width: 220px;">
-        <p><strong>Valid ID (2)</strong></p>
-        <div class="card shadow-sm border-0 rounded-3 overflow-hidden"
-             style="cursor: pointer; height: 300px;"
-             data-bs-toggle="modal" data-bs-target="#{{ $modalId2 }}">
-            <div class="ratio ratio-4x3 bg-light" style="height: 80%">
-                @if ($pdfData2)
-                    <iframe
-                        src="{{ $pdfData2 }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
-                        style="width: 100%; height: 100%; pointer-events: none; border: none;"
-                        title="Valid ID (2) Preview"
-                    ></iframe>
-                @else
-                    <p class="text-danger">No document uploaded yet</p>
-                @endif
-            </div>
-        </div>
-    </div>
+                                <div class="doc-preview-box text-center" style="width: 220px;">
+                                    <p><strong>Valid ID (2)</strong></p>
+                                    <div class="card shadow-sm border-0 rounded-3 overflow-hidden"
+                                        style="cursor: pointer; height: 300px;"
+                                        data-bs-toggle="modal" data-bs-target="#{{ $modalId2 }}">
+                                        <div class="ratio ratio-4x3 bg-light" style="height: 80%">
+                                            @if ($pdfData2)
+                                                <iframe
+                                                    src="{{ $pdfData2 }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
+                                                    style="width: 100%; height: 100%; pointer-events: none; border: none;"
+                                                    title="Valid ID (2) Preview"
+                                                ></iframe>
+                                            @else
+                                                <p class="text-danger">No document uploaded yet</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
 
-    {{-- Modal for VALID ID (2) --}}
-    <div class="modal fade" id="{{ $modalId2 }}" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Valid ID (2)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center" style="height: 80vh;">
-                    @if ($pdfData2)
-                        <iframe
-                            src="{{ $pdfData2 }}"
-                            style="width: 100%; height: 100%; border: none;"
-                            title="Valid ID (2) Full View"
-                        ></iframe>
-                    @else
-                        <p class="text-danger">Unable to load document.</p>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                                {{-- Modal for VALID ID (2) --}}
+                                <div class="modal fade" id="{{ $modalId2 }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Valid ID (2)</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body text-center" style="height: 80vh;">
+                                                @if ($pdfData2)
+                                                    <iframe
+                                                        src="{{ $pdfData2 }}"
+                                                        style="width: 100%; height: 100%; border: none;"
+                                                        title="Valid ID (2) Full View"
+                                                    ></iframe>
+                                                @else
+                                                    <p class="text-danger">Unable to load document.</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                         </section>
                     </div>
