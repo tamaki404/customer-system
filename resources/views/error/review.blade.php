@@ -98,25 +98,33 @@
             </div>
         </div>
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
-            <div>
-                <p>Report details: {{ $review->head }}</p>
+            <div class="report-details p-3 border rounded-3 shadow-sm bg-white">
+                <h5 class="mb-3 fw-semibold text-primary">Report Details</h5>
+                <p class="mb-2"><strong>Subject:</strong> {{ $review->head }}</p>
 
-                @if ($review->review_feedback !== NULL)
-                    <p>
-                        <span>Raised</span>
-                        <span>Declined by: {{ $review->raised_by }} at {{ $review->raised_at }}</span>
-                        <span>Feedback: {{ $review->body }}</span>
-                    </p>                    
-                    <p>
-                        <span>Reviewed (Declined again)</span>
-                        <span>Reviewed by: {{ $review->reviewed_by }} at {{ $review->reviewed_at }}</span>
-                        <span>Reviewed (feedback): {{ $review->review_feedback }}</span>
-                    </p>
+                @if ($review->review_feedback !== null)
+                    <div class="mb-3">
+                        <h6 class="text-danger fw-semibold mb-1">Initial Decision</h6>
+                        <p class="mb-1"><strong>Status:</strong> Declined</p>
+                        <p class="mb-1"><strong>Declined By:</strong> {{ $review->raised_by }}</p>
+                        <p class="mb-1"><strong>Date:</strong> {{ \Carbon\Carbon::parse($review->raised_at)->format('M d, Y • h:i A') }}</p>
+                        <p class="mb-0"><strong>Remarks:</strong> {{ $review->body }}</p>
+                    </div>
+
+                    <div>
+                        <h6 class="text-warning fw-semibold mb-1">Review Decision</h6>
+                        <p class="mb-1"><strong>Status:</strong> Declined (upon review)</p>
+                        <p class="mb-1"><strong>Reviewed By:</strong> {{ $review->reviewed_by }}</p>
+                        <p class="mb-1"><strong>Date:</strong> {{ \Carbon\Carbon::parse($review->reviewed_at)->format('M d, Y • h:i A') }}</p>
+                        <p class="mb-0"><strong>Reviewer’s Feedback:</strong> {{ $review->review_feedback }}</p>
+                    </div>
                 @else
-
+                    <div class="text-muted fst-italic">
+                        <p>No review feedback has been submitted yet.</p>
+                    </div>
                 @endif
-
             </div>
+
             @if ($reason === "ID image and details")
                 <div>
                     <div class="section-row">
