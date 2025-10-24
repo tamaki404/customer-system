@@ -81,9 +81,8 @@
         <div class="content-header">
             <div class="contents-display">
                 <p>
-                    <a href="{{ route('customers.list') }}">< Supplier profile</a>
+                    <a href="{{ route('customers.customer', ['supplier_id' => $supplier->supplier_id]) }}">< Supplier profile</a>
                 </p>
-
             </div>
             <div class="title-actions">
                 <p class="heading">Report information</p>
@@ -98,7 +97,7 @@
             </div>
         </div>
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
-            <div class="report-details p-3 border rounded-3 shadow-sm bg-white">
+            <div class="report-details p-3 border rounded-3 shadow-sm bg-white" style="width: 70%">
                 <style>
                     .div-report-display p{
                         display: flex;
@@ -109,31 +108,47 @@
 
                     }
                 </style>
-                <div class="div-report-display">
-                    <div>
-                        <p style="font-weight: bold">Reviewed</p>
-                        <p>
-                            <span>Raised by:</span>
-                            <span>{{ $review->raised_by }}</span>
-                        </p>
-                        <p>
-                            <span>Raised at:</span>
-                            <span>{{ $review->raised_at }}</span>
+                <div class="div-report-display" >
+                    <p style="display: flex; flex-direction: column; margin: 0; gap: 0; background-color: #ffb84d52; border-left: 5px solid #ffb74d; border-radius: 5px; margin-bottom: 10px; padding: 10px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
+                        <span style="font-size: 16px; font-weight: bold;"> {{ $review->head }}</span>
+                        <span style="margin-bottom: 10px; margin-left: 5px;"> {{ $review->body }}</span>
+                        <small style="margin-bottom: 10px; ">( Staff  {{ $review->raised->lastname }}, {{ $review->raised->firstname }} reported this user's request with this title and content )</small>
                     </p>
+                    <div class="review-details-con" style="display: flex; flex-direction: row; gap:10px;">
+                        <style>
+
+                            
+                        </style>
+                        <div>
+                            <p style="font-weight: bold">Reported</p>
+                            <p>
+                                <span class="label">Raised by:</span>
+                                <span>{{ $review->raised_by }}</span>
+                            </p>
+                            <p>
+                                <span class="label">Raised at:</span>
+                                <span>{{ \Carbon\Carbon::parse($review->raised_at)->format('M d, Y - h:i A') }}</span>
+                            </p>
+                        </div>
+
+                        <div>
+                            <p style="font-weight: bold">Reviewed</p>
+                            <p>
+                                <span class="label">Reviewed by:</span>
+                                <span>{{ $review->reviewed_by }}</span>
+                            </p>
+                            <p>
+                                <span class="label">Feedback:</span>
+                                <span>"{{ $review->review_feedback }}"</span>
+
+                            </p>
+                            <p>
+                                <span class="label">Reviewed at:</span>
+                                <span>{{ \Carbon\Carbon::parse($review->reviewed_at)->format('M d, Y - h:i A') }}</span>
+                            </p>
+                        </div>
                     </div>
 
-                    <hr>
-                    <div>
-                        <p style="font-weight: bold">After reviewed</p>
-                        <p>
-                            <span>Raised by:</span>
-                            <span>{{ $review->raised_by }}</span>
-                        </p>
-                        <p>
-                            <span>Raised at:</span>
-                            <span>{{ $review->raised_at }}</span>
-                    </p>
-                    </div>
 
                 </div>
 

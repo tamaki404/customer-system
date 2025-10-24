@@ -229,7 +229,7 @@
                                 @endif
                             </td>
 
-                            <td>{{ $supplier->user->status }}</td>
+                            <td>{{ $supplier->account_status->account_status }}</td>
                             <td>0.00</td>
                         </tr>
 

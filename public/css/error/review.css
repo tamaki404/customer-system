@@ -206,3 +206,18 @@
     font-size: 13px;
     opacity: 0.9;
 }
+
+
+
+/* error details */
+.review-details-con div{
+    width: 49%;
+    height: 100%;
+    background-color: transparent;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    border-radius: 5px;
+}
+.review-details-con div p .label{
+    color: #666;
+}
