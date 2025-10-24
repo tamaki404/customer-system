@@ -99,9 +99,17 @@
         </div>
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
             <div class="report-details p-3 border rounded-3 shadow-sm bg-white">
-                <h5 class="mb-3 fw-semibold text-primary">Report Details</h5>
-                <p class="mb-2"><strong>Subject:</strong> {{ $review->head }}</p>
+                <h5 class="">Report information</h5>
 
+                <div>
+                    <p>
+                        <span>Examining staff</span>
+                    </p>
+                </div>
+
+
+                <p class="mb-2"><strong>Subject:</strong> {{ $review->head }}</p>
+{{-- 
                 @if ($review->review_feedback !== null)
                     <div class="mb-3">
                         <h6 class="text-danger fw-semibold mb-1">Initial Decision</h6>
@@ -122,7 +130,7 @@
                     <div class="text-muted fst-italic">
                         <p>No review feedback has been submitted yet.</p>
                     </div>
-                @endif
+                @endif --}}
             </div>
 
             @if ($reason === "ID image and details")

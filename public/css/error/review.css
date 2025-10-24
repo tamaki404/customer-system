@@ -157,3 +157,52 @@
     align-items: center;
     justify-content: space-between;
 }
+
+
+
+/* status display style */
+
+.status-box {
+    color: #fff;
+    padding: 12px 14px;
+    border-radius: 10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: fadeIn 0.4s ease-out;
+}
+.status-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.status-box{
+    background: linear-gradient(135deg,  #f57c00,#ffb74d);
+    border-left: 6px solid #e65100;
+}
+
+
+/* Header Section */
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.status-title {
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.status-date {
+    font-size: 13px;
+    opacity: 0.9;
+}

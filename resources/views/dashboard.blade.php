@@ -30,9 +30,16 @@
 
             <div class="content-body user-dash" style="padding: 10px; border: none; height: auto; display: flex; flex-direction: row; gap: 5px">
 
+                {{-- <p style="font-size: 17px; border-left: 4px solid red; width: 50%; background-color: #fff; padding: 10px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;">
+                    <span class="material-symbols-outlined" style="font-size: 15px;">
+                        handyman
+                    </span>
+                   The system is still under development, and you may experience some bugs. Kindly report any bugs you encounter, as well as any recommendations you may have. Thank you, and happy testing!
+                    <span>----- If you have any question, you ma</span>
+                </p> --}}
+
+
                 @if(auth()->user()->role === 'Supplier')
-
-
                     <div class="card">
                         <p class="card-head">
                             <span>Oct 1 - 30</span>
@@ -63,18 +70,12 @@
                         </p>
                         <p>Credits</p>
                     </div>
-
-                    <div>
-                        
-                    </div>
-
-                    
                 @endif
 
 
             </div>
 
-            {{-- @if(auth()->user()->role !== 'Supplier')
+        {{-- @if(auth()->user()->role !== 'Supplier')
                 <div class="content-body user-dash" style="padding: 10px; border: none; height: auto; display: flex; flex-direction: row; gap: 5px">
                     <div class="card">
                             <p class="card-head">
@@ -157,12 +158,7 @@
                         @endforeach
 
                     </div>
-
                 </div>
-
-
-
-
 
             @endif --}}
 

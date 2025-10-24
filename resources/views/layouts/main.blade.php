@@ -345,6 +345,26 @@
             </div>
 
             <div class="showScreen" id="showScreen">
+                <style>
+                    .under-construction{
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        width: 100%;
+                        padding: 10px;
+                        border-radius: 10px;
+                        margin-bottom: 5px;
+                        overflow: hidden;
+                        height: auto;
+                        background-color: #ffb74d;
+                        justify-content: center;
+                        
+                    }
+                
+                </style>
+                <div class="under-construction">
+                    <p style="margin: 0; color: #333;">This system is currently under development. You may experience some bugs, please report any issues you find. Thank you! and happy testing?</p>
+                </div>
                 @yield('content')
             </div>
             
@@ -361,20 +381,8 @@
     @endauth
     
     @stack('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const flashMessage = document.getElementById('flash-message');
-            if (flashMessage) {
-                flashMessage.style.opacity = 1;
-                setTimeout(() => {
-                    flashMessage.style.opacity = 0;
-                    setTimeout(() => {
-                        flashMessage.remove();
-                    }, 400);
-                }, 3000);
-            }
-        });
-    </script>
+    <script src="{{ asset('js/errors/flash-message.js') }}"></script>
+
 
 </body>
 </html>
