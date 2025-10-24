@@ -931,9 +931,10 @@
     <script src="{{ asset('js/registration/x/two-mb.js') }}"></script>
     <script src="{{ asset('js/registration/x/digit-only.js') }}"></script>
     <script src="{{ asset('js/registration/x/product-select.js') }}"></script>
+    <script src="{{ asset('js/registration/x/prevent-double-submission.js') }}"></script>
 
-<!-- jQuery (must be first) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
 <script src="{{ asset('js/registration/x/client-side-validation.js') }}"></script>
