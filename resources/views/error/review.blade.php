@@ -97,57 +97,31 @@
             </div>
         </div>
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
-            <div class="report-details p-3 border rounded-3 shadow-sm bg-white" style="width: 70%">
-                <style>
-                    .div-report-display p{
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: space-between;
-                        margin: 0;
-                        gap: 10px
+           
+                <div class="div-report-display" style="width: 700px">
 
-                    }
-                </style>
-                <div class="div-report-display" >
-                    <p style="display: flex; flex-direction: column; margin: 0; gap: 0; background-color: #ffb84d52; border-left: 5px solid #ffb74d; border-radius: 5px; margin-bottom: 10px; padding: 10px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
-                        <span style="font-size: 16px; font-weight: bold;"> {{ $review->head }}</span>
-                        <span style="margin-bottom: 10px; margin-left: 5px;"> {{ $review->body }}</span>
-                        <small style="margin-bottom: 10px; ">( Staff  {{ $review->raised->lastname }}, {{ $review->raised->firstname }} reported this user's request with this title and content )</small>
-                    </p>
-                    <div class="review-details-con" style="display: flex; flex-direction: row; gap:10px;">
-                        <style>
-
-                            
-                        </style>
-                        <div>
-                            <p style="font-weight: bold">Reported</p>
-                            <p>
-                                <span class="label">Raised by:</span>
-                                <span>{{ $review->raised_by }}</span>
-                            </p>
-                            <p>
-                                <span class="label">Raised at:</span>
-                                <span>{{ \Carbon\Carbon::parse($review->raised_at)->format('M d, Y - h:i A') }}</span>
-                            </p>
+                    <div style="display: flex; flex-direction: column; margin: 0; gap: 10; background-color: #ff4d4d52; border-left: 5px solid #ff4d4d; border-radius: 5px; margin-bottom: 10px; padding: 10px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
+                        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                            <div style="display: flex; flex-direction: row; gap: 10px; align-items: center; justify-content: center;">
+                                @php
+                                    $imgSrc = $review->user->image
+                                        ? ('data:' . $review->user->image_mime_type . ';base64,' . base64_encode($review->user->image))
+                                        : asset('assets/default-company-logo.png');
+                                @endphp
+                                <img src="{{ $imgSrc }}" alt="Staff image" class="staff-img" style="height: 30px; border-radius: 9999%; border: 1px solid #ffb74d;">
+                                <p style="margin: 0;">{{ $review->raised->lastname }}, {{ $review->raised->firstname }}</p>
+                            </div>
+                            <p>{{ \Carbon\Carbon::parse($review->raised_at)->format('M d, Y - h:i A') }}</p>
                         </div>
 
-                        <div>
-                            <p style="font-weight: bold">Reviewed</p>
-                            <p>
-                                <span class="label">Reviewed by:</span>
-                                <span>{{ $review->reviewed_by }}</span>
-                            </p>
-                            <p>
-                                <span class="label">Feedback:</span>
-                                <span>"{{ $review->review_feedback }}"</span>
 
-                            </p>
-                            <p>
-                                <span class="label">Reviewed at:</span>
-                                <span>{{ \Carbon\Carbon::parse($review->reviewed_at)->format('M d, Y - h:i A') }}</span>
-                            </p>
-                        </div>
+                        <p style="display: flex; flex-direction: column; margin: 0; padding: 5px; margin-left: 20px">
+                            <span style="margin:0; font-size: 16px; font-weight: bold;"> {{ $review->head }}</span>
+                            <span style="margin:0; font-size: 13px;">"{{ $review->body }}"</span>
+                        </p>
+
                     </div>
+
 
 
                 </div>
@@ -175,7 +149,6 @@
                         <p>No review feedback has been submitted yet.</p>
                     </div>
                 @endif --}}
-            </div>
 
             @if ($reason === "ID image and details")
                 <div>
@@ -331,6 +304,9 @@
                 </div>
             @elseif ($reason === "Bank details")
                 <div>
+                    <div>
+                        Below is the group of information that got declined
+                    </div>
                     <div class="section-row" style="width: 60%">
                         <section class="group-details first_id" style="margin-top: 5px">
                             <p class="group-name">Bank details</p>
