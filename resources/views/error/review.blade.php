@@ -86,7 +86,7 @@
 
             </div>
             <div class="title-actions">
-                <p class="heading">Review modified data</p>
+                <p class="heading">Report information</p>
                 <button 
                     class="btn-transition"
                     type="button"
@@ -99,16 +99,45 @@
         </div>
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
             <div class="report-details p-3 border rounded-3 shadow-sm bg-white">
-                <h5 class="">Report information</h5>
+                <style>
+                    .div-report-display p{
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        margin: 0;
+                        gap: 10px
 
-                <div>
-                    <p>
-                        <span>Examining staff</span>
+                    }
+                </style>
+                <div class="div-report-display">
+                    <div>
+                        <p style="font-weight: bold">Reviewed</p>
+                        <p>
+                            <span>Raised by:</span>
+                            <span>{{ $review->raised_by }}</span>
+                        </p>
+                        <p>
+                            <span>Raised at:</span>
+                            <span>{{ $review->raised_at }}</span>
                     </p>
+                    </div>
+
+                    <hr>
+                    <div>
+                        <p style="font-weight: bold">After reviewed</p>
+                        <p>
+                            <span>Raised by:</span>
+                            <span>{{ $review->raised_by }}</span>
+                        </p>
+                        <p>
+                            <span>Raised at:</span>
+                            <span>{{ $review->raised_at }}</span>
+                    </p>
+                    </div>
+
                 </div>
 
 
-                <p class="mb-2"><strong>Subject:</strong> {{ $review->head }}</p>
 {{-- 
                 @if ($review->review_feedback !== null)
                     <div class="mb-3">

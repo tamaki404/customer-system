@@ -36,7 +36,6 @@
                 </div>
             @endif
             
-
             {{-- confirm supplier request --}}
             <div class="modal fade" id="request-action"tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
                 <div class="modal-dialog" >

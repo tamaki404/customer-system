@@ -25,7 +25,7 @@ function addAuthRow() {
 
     newRow.innerHTML = `
         <div class="input-forms">
-            <label><span class="req-asterisk">*</span> Name</label>
+            <a><span class="req-asterisk">*</span> Name</a>
             <div>
                 <input type="text" name="rep_lastname[]" placeholder="Last name" required maxlength="50">
                 <input type="text" name="rep_firstname[]" placeholder="First name" required maxlength="50">
@@ -34,14 +34,14 @@ function addAuthRow() {
             <p class="error-text" style="display: none"></p>
         </div>
         <div class="input-forms">
-            <label><span class="req-asterisk">*</span> Position</label>
+            <a><span class="req-asterisk">*</span> Position</a>
             <div>
                 <input type="text" name="auth_position[]" required maxlength="50">
             </div>
             <p class="error-text" style="display: none"></p>
         </div>
         <div class="input-forms">
-            <label><span class="req-asterisk">*</span> Contact no.</label>
+            <a><span class="req-asterisk">*</span> Contact no.</a>
             <div>
                 <input type="text" name="rep_contact[]" placeholder="ex: 09XX-XXX-XXXX" required maxlength="11">
             </div>

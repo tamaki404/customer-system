@@ -317,7 +317,7 @@
                             
                             <div class="sign-set" style="display: flex; flex-direction: row; flex-wrap: wrap; gap:10px; ">
                                 <div class="input-forms">
-                                    <label for="sign-name"><span class="req-asterisk">*</span> Name</label>
+                                    <a for="sign-name"><span class="req-asterisk">*</span> Name</a>
                                     <div>
                                         {{-- <input id="sign-name" type="text" name="sign_lastname" placeholder="Last name" required maxlength="50" value="{{ old('sign_lastname') }}">
                                         <input type="text" name="sign_firstname" placeholder="First name" required maxlength="50" value="{{ old('sign_firstname') }}">
@@ -330,7 +330,7 @@
                                     <p class="error-text" style="display: none"></p>
                                 </div>
                                 <div class="input-forms">
-                                    <label for="position"><span class="req-asterisk">*</span> Position</label>
+                                    <a for="position"><span class="req-asterisk">*</span> Position</a>
                                     <div>
                                         {{-- <input id="position" type="text" name="sign_position" required maxlength="50" value="{{ old('sign_position') }}"> --}}
                                         <input type="text" name="sign_position[]" required maxlength="50" value="{{ old('sign_position.0') }}">
@@ -736,9 +736,9 @@
 
                                     <!-- Select delivery days -->
                                     <div class="input-forms" style="width: auto">
-                                        <label for="delivery_days">
+                                        <a for="delivery_days">
                                             <span class="req-asterisk">*</span> Select days of the week for delivery
-                                        </label>
+                                        </a>
                                         <div id="delivery_days" class="checkbox-group" style="display: flex; width: auto; flex-direction: row; flex-wrap: wrap;">
                                             <label><input type="checkbox" name="delivery_days[]" value="Monday" > Monday</label>
                                             <label><input type="checkbox" name="delivery_days[]" value="Tuesday"> Tuesday</label>
@@ -936,6 +936,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
+<script src="{{ asset('js/registration/x/client-side-validation.js') }}"></script>
 
 </body>
 
