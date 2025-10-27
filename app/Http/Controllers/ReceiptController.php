@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\PurchaseOrders;
 use Illuminate\Http\Request;
 use App\Models\Receipts;
 use Illuminate\Support\Facades\DB;
@@ -122,6 +123,20 @@ class ReceiptController extends Controller
 
             ]);
         }
+        public function orderReceipts($order_id, Request $request)
+        {
+
+            $receipts = Receipts::where('order_id', $order_id)
+            ->where('status', "Verified")
+            ->get();
+            $order = Orders::where('order_id', $order_id)
+            ->first();
+
+            return view('orders.receipts', [
+                'order' => $order,
+                'receipts' => $receipts,
+            ]);            
+        }
 
         public function receiptView($receipt_id, Request $request)
         {
@@ -190,6 +205,11 @@ class ReceiptController extends Controller
                 DB::beginTransaction();
 
                 $receipt = Receipts::where('receipt_id', $receipt_id)->firstOrFail();
+                $updated_at = [
+                    'updated_at' => now(),
+                ];
+                $receipt->update($updated_at);
+
 
                 // Check if already processed
                 if (in_array($receipt->status, ['Verified', 'Rejected'])) {
@@ -254,8 +274,8 @@ class ReceiptController extends Controller
                     'order_id' => $request->order_id,
                     'action_at' => now(),
                     'history_id' => $history_id,
-                    'label' => 'Order',
-                    'amount' => $order->total_amount,
+                    'label' => 'Receipt',
+                    'amount' => $request->amount,
                     'status' => $request->status,
                 ]);
 

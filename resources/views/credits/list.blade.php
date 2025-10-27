@@ -170,7 +170,7 @@
                                         </thead>
                                         <tbody>                                
                                             @foreach ($transactionHistory as $transaction)
-                                                <tr >
+                                                <tr>
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ \Carbon\Carbon::parse($transaction->action_at)->format('M d, Y') }}</td>
                                                     <td>{{ $transaction->order_id }}</td>
@@ -209,9 +209,10 @@
 
                                             </tr>
                                         </thead>
-                                        <tbody>                                
+                                        <tbody>                             
+                                        
                                             @foreach ($oustandingPayments as $oustandingPayment)
-                                                <tr>
+                                                <tr onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $oustandingPayment->order_id]) }}'">
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ \Carbon\Carbon::parse($oustandingPayment->order_date)->format('M d, Y') }}</td>
                                                     <td>{{ $oustandingPayment->order_id }}</td>

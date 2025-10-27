@@ -1,0 +1,28 @@
+.receipt-box{
+    gap: 10px;
+    background-color: #ffffff89;
+    padding: 10px;
+    border-radius: 10px;
+}
+.receipt-box img{
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+.more-info{
+    display: flex;
+    flex-direction: column;
+}
+.more-info p{
+    margin: 0;
+}
+.more-info .paid{
+    font-size: 15px; color: #333;
+    font-weight: bold;
+}
+.status-date{
+    display: flex;
+    flex-direction: row;
+    font-size: 13px; 
+    gap: 5px;
+    color: #666;
+}

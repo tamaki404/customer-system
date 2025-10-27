@@ -213,8 +213,6 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     Route::get('/groups/view', [GroupsController::class, 'groupsView'])->middleware('check.rep.permission:Groups')->name('groups.view');
     Route::post('/groups/modify/account', [GroupsController::class, 'modifyAccount'])->middleware('check.rep.permission:Groups')->name('group.modify');
 
-
-
     /*
     |-------------------------
     | Delivery
@@ -222,6 +220,15 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     */
     Route::post('/delivery/confirm', [DeliveryController::class, 'confirmDelivery'])->name('delivery.confirm');
     Route::get('/order/deliveries/{delivery_id}', [DeliveryController::class, 'deliveryView'])->name('order.delivery_items');
+
+    /*
+    |-------------------------
+    | Credits
+    |-------------------------
+    */
+    Route::get('/orders/receipt/{order_id}', [ReceiptController::class, 'orderReceipts'])->middleware('check.rep.permission:Credits')->name('orders.receipt');
+
+
 });
 
 /*
