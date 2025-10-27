@@ -426,14 +426,19 @@ function updateSummary() {
             totalItems += data.heads;
             grandTotal += data.price * data.heads;
         } else if (data.measurementType === 'Heads&Kilos') {
-            //  Total is based on kilos only
             totalItems += data.kilos;
             grandTotal += data.price * data.kilos;
         }
     });
 
     document.getElementById('selectedCount').textContent = selectedProducts.size;
-    document.getElementById('grandTotal').textContent = `₱${grandTotal.toFixed(2)}`;
+
+    document.getElementById('grandTotal').textContent = grandTotal.toLocaleString('en-PH', {
+        style: 'currency',
+        currency: 'PHP',
+        minimumFractionDigits: 2
+    });
+
     document.getElementById('submitBtn').disabled = selectedProducts.size === 0;
 }
 
