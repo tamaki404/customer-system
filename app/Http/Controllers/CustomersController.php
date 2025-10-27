@@ -362,7 +362,7 @@ class CustomersController extends Controller
                     $credit_id = 'CRDT-' . $date . '-' . randomBase36String(5);
                     
                     Credits::updateOrCreate(
-                        ['user_id' => $user->user_id],
+                        ['user_id' => $supplier->user_id],
                         [
                             'credit_id'   => $credit_id,
                             'status'      => 'Active',

@@ -590,3 +590,11 @@
 
 
 
+.credit-summary{
+    display: flex;
+    flex-direction: column;
+    height: 100px;
+}
+.credit-row{
+    display: flex;
+}

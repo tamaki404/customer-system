@@ -10,40 +10,32 @@
 @section('content')
 
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-@if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
+    @if ($errors->any())
+        <div class="alert alert-danger" style="margin: 10px;">
+            <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
+            <ul style="margin: 0; padding-left: 20px;">
+                @foreach ($errors->all() as $error)
+                    <li style="font-size: 14px;">{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    @if (session('success') || session('error'))
+        <div 
+            id="flash-message"
+            class="flash-message 
+                {{ session('success') ? 'alert-success' : 'alert-danger' }}">
+            <strong>
+                {{ session('success') ? 'Success:' : ' Error:' }}
+            </strong>
+            {{ session('success') ?? session('error') }}
+        </div>
+    @endif
 
         <div class="modal fade" id="add-receipt-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <form class="modal-content"  method="POST" action="{{ route('receipt.create') }}"  enctype="multipart/form-data">
                     @csrf
-            
-                    @if (session('success'))
-                        <div class="alert alert-success" style="margin: 10px;">
-                            <h6 style="margin-bottom: 5px; font-weight: bold;">Success:</h6>
-                            <p style="margin: 0; font-size: 14px;">{{ session('success') }}</p>
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="alert alert-danger" style="margin: 10px;">
-                            <h6 style="margin-bottom: 5px; font-weight: bold;">Error:</h6>
-                            <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
-                        </div>
-                    @endif
                 
                     <div class="modal-header">
                         <p class="modal-title" id="requestActionLabel">Payment receipt form</p>
@@ -66,9 +58,8 @@
                                         <option value="{{ $unpaidOrder->order_id }}">
                                             {{ $unpaidOrder->order_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->created_at)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->total_amount, 2) }}
                                         </option>
-
                                     @endforeach
-                                </select>r
+                                </select>
                             </div>
                             <div class="form-group">
                                     <p><span class="req-asterisk">*</span>Upload receipt image</p>
@@ -109,55 +100,65 @@
                             <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
                             Upload a receipt
                         </button>
-                    
-
-
+                
                     </div>
 
 
                 </div>
 
                 <div class="content-body" style="padding: 10px; border: none; height: auto; gap: 10px">
-
-                    <div class="credit-summary" style="gap: 5px">
-                        <div class="credit-row" style="display: flex; flex-direction: column;">
-                            <span class="credit-label">Available Credit</span>
-                            <span class="credit-value available" style="font-size: 30px">₱{{ number_format($availableCredit, 2) }}</span>
-                        </div>
-                        <div class="credit-row">
-                            <span class="credit-label" >Credit Limit: </span>
-                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($credit->credit_limit, 2) }}</span>
-                        </div>
-                        <div class="credit-row">
-                            <span class="credit-label">Outstanding Balance: </span>
-                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($usedCredit, 2) }}</span>
-                        </div>
-
-                    </div>
-
                     <style>
-                        .credit-summary{
-                            display: flex;
-                            flex-direction: column;
-                            height: 100px;
+                        .credit-row span{
+                            margin: 0;
                         }
-                        .credit-row{
-                            display: flex;
-                            
+                        .credit-row .credit-label{
+                            font-size: 13px;
+                            color: #888;
+
+                        }
+                        .credit-row .credit-value{
+                            color: #333;
+                            font-weight: bold;
                         }
                     </style>
 
+                    <div class="credit-summary" style="padding: 10px; height: auto; border-radius: 5px; width: 400px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; background-color: #fff; border: none;">
+                        <div class="credit-row" style="display: flex; flex-direction: column;">
+                            <span class="credit-label">Available credit:</span>
+                            <span class="credit-value available" style="font-size: 30px; color: #f8912a;">₱{{ number_format($availableCredit, 2) }}</span>
+                        </div>
+                        <div class="credit-row">
+                            <span class="credit-label" >Credit limit: </span>
+                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($credit->credit_limit, 2) }}</span>
+                        </div>
+                        <div class="credit-row">
+                            <span class="credit-label">Outstanding balance: </span>
+                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($usedCredit, 2) }}</span>
+                        </div>
+                    </div>
 
+                    <div class="tab-div" style="margin-top: 20px;">
 
-                 
+                        <div class="tabs" role="tablist">
+                            <button class="tab-button active" data-tab="transaction" role="tab" aria-selected="false" aria-controls="transaction-content" id="transaction-tab">
+                                Transaction history
+                            </button>
+                            <button class="tab-button " data-tab="payables" role="tab" aria-selected="true" aria-controls="payables-content" id="payables-tab">
+                                Payables
+                            </button>
+                            <button class="tab-button" data-tab="balance" role="tab" aria-selected="true" aria-controls="balance-content" id="balance-tab">
+                                Outstanding balance
+                            </button>
 
+                        </div>
 
-                
-                            <div class="table-body" style="margin-top: 50px">
+                        {{-- Transaction history --}}
+                        <div id="transaction-content" class="tab-content active" role="tabpanel" aria-labelledby="transaction-tab">
+                            <div class="table-body">
                                 <p style="margin: 5px; font-weight: bold;">Transaction history</p>
-                                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
+                                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
                                     <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                                        <thead style="background-color: #fff;">
+                                        <thead style="background-color: #fff; position:sticky; z-index: 1; top: 0;">
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
                                                 <th>Date</th>
@@ -165,21 +166,20 @@
                                                 <th>Label</th>
                                                 <th>Status</th>
                                                 <th>Amount</th>
-                                                
                                             </tr>
                                         </thead>
                                         <tbody>                                
                                             @foreach ($transactionHistory as $transaction)
                                                 <tr >
                                                     <td>{{$loop->iteration}}</td>
-                                                    <td>{{ $transaction->action_at }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($transaction->action_at)->format('M d, Y') }}</td>
                                                     <td>{{ $transaction->order_id }}</td>
                                                     <td>{{ $transaction->label }}</td>
                                                     <td>{{ $transaction->status }}</td>
                                                     @if ($transaction->label === 'Receipt')
-                                                       <td>₱ +{{ number_format($transaction->amount, 2) }}</td>
+                                                       <td style="color: green">₱ +{{ number_format($transaction->amount, 2) }}</td>
                                                     @elseif ($transaction->label === 'Order')
-                                                       <td>₱ -{{ number_format($transaction->amount, 2) }}</td>
+                                                       <td style="color: #dc3545">₱ -{{ number_format($transaction->amount, 2) }}</td>
                                                     @endif
                                                   
                                          
@@ -192,17 +192,57 @@
 
                         
                             </div>
-
+                        </div>
+                        {{-- Payables --}}
+                        <div id="payables-content" class="tab-content" role="tabpanel" aria-labelledby="payables-tab">
                             <div class="table-body" style="margin-top: 10px">
-                                <p style="margin: 5px; font-weight: bold;">Outstanding balance</p>
-                                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
+                                <p style="margin: 5px; font-weight: bold;">Payables</p>
+                                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
                                     <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                                        <thead style="background-color: #fff;">
+                                        <thead style="background-color: #fff; position:sticky; z-index: 1; top: 0;">
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
                                                 <th>Date</th>
                                                 <th>Order ID</th>
-                                                <th>Description</th>
+                                                <th>Balance</th>
+                                                <th>Status</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>                                
+                                            @foreach ($oustandingPayments as $oustandingPayment)
+                                                <tr>
+                                                    <td>{{$loop->iteration}}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($oustandingPayment->order_date)->format('M d, Y') }}</td>
+                                                    <td>{{ $oustandingPayment->order_id }}</td>
+                                                    {{-- <td>
+                                                        @foreach ($oustandingPayment->items as $item)
+                                                            {{$item->quantity}} {{ $item->product->name }},
+                                                        @endforeach
+                                                    </td> --}}
+                                                    <td><strong>₱{{ number_format($oustandingPayment->outstanding_balance, 2) }}</strong></td>
+                                                    <td>--</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                        
+                            </div>
+                        </div>
+                        {{-- Outstanding balance --}}
+                        <div id="balance-content" class="tab-content" role="tabpanel" aria-labelledby="balance-tab">
+                            <div class="table-body" style="margin-top: 10px">
+                                <p style="margin: 5px; font-weight: bold;">Outstanding balance</p>
+                                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
+                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                                        <thead style="background-color: #fff; position:sticky; z-index: 1; top: 0;">
+                                            <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                                <th>#</th>
+                                                <th>Date</th>
+                                                <th>Order ID</th>
+                                                {{-- <th>Description</th> --}}
                                                 <th>Running Balance</th>
                                                 <th>Status</th>
                                                 
@@ -212,13 +252,13 @@
                                             @foreach ($oustandingPayments as $oustandingPayment)
                                                 <tr>
                                                     <td>{{$loop->iteration}}</td>
-                                                    <td>{{ $oustandingPayment->order_date }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($oustandingPayment->order_date)->format('M d, Y') }}</td>
                                                     <td>{{ $oustandingPayment->order_id }}</td>
-                                                    <td>
+                                                    {{-- <td>
                                                         @foreach ($oustandingPayment->items as $item)
-                                                            x{{$item->quantity}} {{ $item->product->name }},
+                                                            {{$item->quantity}} {{ $item->product->name }},
                                                         @endforeach
-                                                    </td>
+                                                    </td> --}}
                                                     <td><strong>₱{{ number_format($oustandingPayment->outstanding_balance, 2) }}</strong></td>
                                                     <td>{{ $oustandingPayment->status }}</td>
                                                 </tr>
@@ -229,9 +269,16 @@
 
                         
                             </div>
+                        </div>
+                        
 
+
+                    </div>
 
                 
+
+
+
                 
             
                 </div>
@@ -243,6 +290,7 @@
 
 
 @push('scripts')
+    <script src="{{ asset('js/global/x/profile-tab.js') }}"></script>
 
     <script src="{{ asset('js/global/two_mb.js') }}"></script>
     <script src="{{ asset('js/global/file-preview.js') }}"></script>

@@ -215,7 +215,6 @@ class ReceiptController extends Controller
                     }
                 }
 
-                // ✅ Update receipt with action_by and action_at
                 $updateData = [
                     'status'     => $request->status,
                     'action_by'  => Auth::user()->user_id,   // who processed it
@@ -233,6 +232,8 @@ class ReceiptController extends Controller
                 // Logging
                 $date = now()->format('Ymd');
                 $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
+
                 $user_id = Auth::user()->user_id;
 
                 $logDescription = $request->status === 'Verified'
@@ -246,6 +247,16 @@ class ReceiptController extends Controller
                     'description' => $logDescription,
                     'entity'      => 'Receipts',
                     'entity_id'   => $receipt->id,
+                ]);
+
+                OrderHistory::create([
+                    'action_by' => Auth::user()->user_id,
+                    'order_id' => $request->order_id,
+                    'action_at' => now(),
+                    'history_id' => $history_id,
+                    'label' => 'Order',
+                    'amount' => $order->total_amount,
+                    'status' => $request->status,
                 ]);
 
                 DB::commit();
