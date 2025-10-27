@@ -48,7 +48,20 @@ class DeliveryController extends Controller
                     throw new \Exception('Supplier delivery requirements are missing.');
                 }
 
-                $deliveryDays = $supplierDelivery->delivery_days ?? [];
+                $rawDays = $supplierDelivery->delivery_days ?? '';
+                
+                if (is_array($rawDays)) {
+                    $deliveryDays = $rawDays;
+                } elseif (is_string($rawDays) && !empty($rawDays)) {
+                    if (strpos($rawDays, ',') !== false) {
+                        $deliveryDays = array_map('trim', explode(',', $rawDays));
+                    } else {
+                        $deliveryDays = json_decode($rawDays, true) ?? [$rawDays];
+                    }
+                } else {
+                    $deliveryDays = [];
+                }
+
                 if (empty($deliveryDays)) {
                     throw new \Exception('No delivery days defined for this supplier.');
                 }
@@ -56,6 +69,7 @@ class DeliveryController extends Controller
                 $dateNow = now()->format('Ymd');
 
                 foreach ($deliveryDays as $dayName) {
+                    $dayName = trim($dayName); 
 
                     $deliveryId = 'DEL-' . $dateNow . '-' . strtoupper(Str::random(5));
                     $deliveryDate = Carbon::parse($dayName)->toDateString();
@@ -68,9 +82,7 @@ class DeliveryController extends Controller
                         'status'        => 'Scheduled',
                     ]);
 
-
                     foreach ($order->items as $item) {
-
                         $inputHeads = $request->input("items.{$item->id}.{$dayName}.heads");
                         $inputKilos = $request->input("items.{$item->id}.{$dayName}.kilos");
 
