@@ -8,8 +8,8 @@
 
     {{-- create order --}}
     @if (auth()->user()->role === 'Supplier')
-        <div class="modal fade" id="create-order-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
+        <div class="modal fade" id="create-order-modal" style="overflow: hidden;"  tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl " style="overflow: hidden; height: 90%;">
                 <form class="modal-content" method="POST"  style="width: 800px" action="{{ route('purchaseorders.create') }}">
                     @csrf
             
@@ -28,7 +28,7 @@
                     @endif
                 
                     <div class="modal-header">
-                        <p class="modal-title" id="requestActionLabel">Create Purchase Order</p>
+                        <p class="modal-title" id="requestActionLabel">Create purchase order</p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     
@@ -43,9 +43,9 @@
                             <input name="notes" style="font-size: 14px" id="notes" rows="3" placeholder="Add any additional notes for this purchase order...">
                         </div>
 
-                        <div style="overflow-x: auto;">
-                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                <thead style="background-color: #f9f9f9;">
+                        <div style="height: 400px; overflow-y: scroll; display: flex; ">
+                           <table style="width:100%; border-collapse:collapse;  border: 1px solid #f7f7fa;">
+                                <thead style="background-color: #f9f9f9; position: sticky; z-index: 1; top: 0;">
                                     <tr style="background:#f7f7fa; text-align: center; height: 30px">
                                         <td>Select</td>
                                         <td>#</td>
@@ -113,15 +113,7 @@
                                                 onchange="calculateRowTotal('{{ $setProd->set_id }}')"
                                                 disabled>
                                         </td>
-                                        {{-- <td>
-                                            <input type="number" 
-                                                name="quantities[{{ $setProd->set_id }}]" 
-                                                value="1" 
-                                                min="1"
-                                                class="form-control quantity-input"
-                                                onchange="calculateRowTotal('{{ $setProd->set_id }}')"
-                                                disabled>
-                                        </td> --}}
+                                     
                                         <td>
                                             <span id="total_{{ $setProd->set_id }}" class="row-total">
                                                 ₱{{ number_format($setProd->nego_price, 2) }}
@@ -137,10 +129,10 @@
                         <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <strong>Selected Items: <span id="selectedCount">0</span></strong>
+                                    <strong><span id="selectedCount">0</span> selected</strong>
                                 </div>
                                 <div>
-                                    <strong>Grand Total: <span id="grandTotal">₱0.00</span></strong>
+                                    <p style="color: #888">Total: <span id="grandTotal" style="font-size: 15px; color: #333; font-weight: bold;">₱0.00</span></p>
                                 </div>
                             </div>
                         </div>

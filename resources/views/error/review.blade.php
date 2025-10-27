@@ -4,6 +4,11 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/error/review.css') }}">
+    <style>
+        .section-row{
+            margin-top: 0;
+        }
+    </style>
 @endpush
 
 
@@ -303,9 +308,9 @@
                     </div>
                 </div>
             @elseif ($reason === "Bank details")
-                <div>
-                    <div>
-                        Below is the group of information that got declined
+                <div style="margin-top: 15px">
+                    <div style="font-size: 13px; color:#666">
+                        Review the information below if it satisfies the requirements and correct information for the user
                     </div>
                     <div class="section-row" style="width: 60%">
                         <section class="group-details first_id" style="margin-top: 5px">

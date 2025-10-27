@@ -363,7 +363,7 @@
                 
                 </style>
                 <div class="under-construction">
-                    <p style="margin: 0; color: #333;">This system is currently under development. You may experience some bugs, please report any issues you find. Thank you! and happy testing?</p>
+                    <p style="margin: 0; color: #333;">This system is currently under development. You may experience some bugs, please report any issues you find. Thank you! and happy testing!</p>
                 </div>
                 @yield('content')
             </div>
