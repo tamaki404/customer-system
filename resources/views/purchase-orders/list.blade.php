@@ -66,6 +66,7 @@
                                             ->get();
                                     @endphp
                                     @foreach($setProds as $setProd)
+
                                     <tr class="product-row" 
                                         data-set-id="{{ $setProd->set_id }}" 
                                         data-product-id="{{ $setProd->product->product_id }}" 
@@ -83,18 +84,18 @@
                                         <td>{{ $setProd->product->category }}</td>
 
                                         <td>{{ $setProd->product->measurement_type }}</td>
-<td>
-    @if($setProd->on_sale)
-        <span style="text-decoration: line-through; color: #888;">
-            ₱{{ number_format($setProd->original_price, 2) }}
-        </span>
-        <span style="color: #fe8d29; font-weight: bold; margin-left: 5px;">
-            ₱{{ number_format($setProd->nego_price, 2) }}
-        </span>
-    @else
-        ₱{{ number_format($setProd->nego_price, 2) }}
-    @endif
-</td>
+                                        <td>
+                                            @if($setProd->on_sale)
+                                                <span style="text-decoration: line-through; color: #888;">
+                                                    ₱{{ number_format($setProd->original_price, 2) }}
+                                                </span>
+                                                <span style="color: #fe8d29; font-weight: bold; margin-left: 5px;">
+                                                    ₱{{ number_format($setProd->nego_price, 2) }}
+                                                </span>
+                                            @else
+                                                ₱{{ number_format($setProd->nego_price, 2) }}
+                                            @endif
+                                        </td>
 
                                         <td>
                                             <input type="number" 

@@ -32,123 +32,104 @@ class PurchaseOrderController extends Controller
             }
             return $str;
         }
-    public function purchaseOrderlist(Request $request)
-    {
-        $user = Auth::user();
-        $supplier = null;
-        $pos = collect();
-        $setProds = collect();
+        public function purchaseOrderlist(Request $request)
+        {
+            $user = Auth::user();
+            $supplier = null;
+            $pos = collect();
 
-        if ($user->role === "Supplier") {
-            $supplier = Suppliers::where('user_id', $user->user_id)->first();
+            if ($user->role === "Supplier") {
+                $supplier = Suppliers::where('user_id', $user->user_id)->first();
 
-            if ($supplier) {
-                $query = PurchaseOrders::where('supplier_id', $supplier->supplier_id)
-                    ->with(['items', 'supplier']);
+                if ($supplier) {
+                    $query = PurchaseOrders::where('supplier_id', $supplier->supplier_id)
+                        ->with(['items', 'supplier']);
 
-                // Apply search filter
+                    // Apply search filter
+                    if ($request->filled('search')) {
+                        $search = $request->search;
+                        $query->where(function($q) use ($search) {
+                            $q->where('po_id', 'like', "%{$search}%")
+                            ->orWhere('status', 'like', "%{$search}%");
+                        });
+                    }
+
+                    // Apply date filter
+                    if ($request->filled('from_date')) {
+                        $query->whereDate('created_at', '>=', $request->from_date);
+                    }
+                    if ($request->filled('to_date')) {                                                   
+                        $query->whereDate('created_at', '<=', $request->to_date);
+                    }
+
+                    $pos = $query->orderBy('created_at', 'desc')->get();
+
+
+
+                    $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
+                    ->with('product')
+                    ->get() 
+                    ->unique('product_id')
+                    ->values()
+                    ->map(function($setProduct) {
+                        $activeSale = SaleDiscount::where('product_id', $setProduct->product_id)
+                            ->whereDate('start_date', '<=', now())
+                            ->whereDate('end_date', '>=', now())
+                            ->first();
+
+                        $setProduct->original_price = $setProduct->nego_price;
+                        $setProduct->on_sale = false;
+
+                        if ($activeSale) {
+                            if ($activeSale->value_type === "Fixed") {
+                                $setProduct->nego_price = $activeSale->value;
+                                $setProduct->on_sale = true;
+                            } elseif ($activeSale->value_type === "Percentage") {
+                                $discountAmount = ($setProduct->original_price * $activeSale->value) / 100;
+                                $setProduct->nego_price = $setProduct->original_price - $discountAmount;
+                                $setProduct->on_sale = true;
+                            }
+                        }
+
+                        return $setProduct;
+                    });
+
+
+
+
+                }
+            } 
+            elseif ($user->role === "Staff" || $user->role === "Admin") {
+                $query = PurchaseOrders::with(['items', 'supplier', 'staff']);
+
                 if ($request->filled('search')) {
                     $search = $request->search;
                     $query->where(function($q) use ($search) {
                         $q->where('po_id', 'like', "%{$search}%")
-                        ->orWhere('status', 'like', "%{$search}%");
+                        ->orWhere('status', 'like', "%{$search}%")
+                        ->orWhereHas('supplier', function($supplierQuery) use ($search) {
+                            $supplierQuery->where('company_name', 'like', "%{$search}%");
+                        });
                     });
                 }
 
-                // Apply date filter
                 if ($request->filled('from_date')) {
                     $query->whereDate('created_at', '>=', $request->from_date);
                 }
-                if ($request->filled('to_date')) {                                                   
+                if ($request->filled('to_date')) {
                     $query->whereDate('created_at', '<=', $request->to_date);
                 }
 
                 $pos = $query->orderBy('created_at', 'desc')->get();
-
-                // $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
-                //     ->with('product')
-                //     ->get()
-                //     ->map(function($setProduct) {
-                //         $activeSale = ProductSales::where('set_id', $setProduct->set_id)
-                //             ->whereDate('start_date', '<=', now())
-                //             ->whereDate('end_date', '>=', now())
-                //             ->first();
-                //         $setProduct->original_price = $setProduct->nego_price;
-                //         if ($activeSale) {
-                //             $setProduct->nego_price = $activeSale->sale_price;
-                //             $setProduct->on_sale = true;
-                //         } else {
-                //             $setProduct->on_sale = false;
-                //         }
-
-                //         return $setProduct;
-                //     });
-
- $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
-    ->with('product')
-    ->get()
-    ->map(function($setProduct) {
-        $activeSale = SaleDiscount::where('product_id', $setProduct->product_id)
-            ->whereDate('start_date', '<=', now())
-            ->whereDate('end_date', '>=', now())
-            ->first();
-
-        $setProduct->original_price = $setProduct->nego_price;
-
-        if ($activeSale) {
-            if ($activeSale->value_type === "Fixed") {
-                // Fixed discount (direct price)
-                $setProduct->nego_price = $activeSale->value;
-                $setProduct->on_sale = true;
             }
-            elseif ($activeSale->value_type === "Percentage") {
-                // Percentage discount
-                $discountAmount = ($setProduct->original_price * $activeSale->value) / 100;
-                $setProduct->nego_price = $setProduct->original_price - $discountAmount;
-                $setProduct->on_sale = true;
-            }
-        } else {
-            $setProduct->on_sale = false;
+
+            return view('purchase-orders.list', [
+                'user' => $user,
+                'supplier' => $supplier,
+                'setProds' => $setProds,
+                'pos' => $pos,
+            ]);
         }
-
-        return $setProduct;
-    });
-
-
-
-            }
-        } 
-        elseif ($user->role === "Staff" || $user->role === "Admin") {
-            $query = PurchaseOrders::with(['items', 'supplier', 'staff']);
-
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $query->where(function($q) use ($search) {
-                    $q->where('po_id', 'like', "%{$search}%")
-                    ->orWhere('status', 'like', "%{$search}%")
-                    ->orWhereHas('supplier', function($supplierQuery) use ($search) {
-                        $supplierQuery->where('company_name', 'like', "%{$search}%");
-                    });
-                });
-            }
-
-            if ($request->filled('from_date')) {
-                $query->whereDate('created_at', '>=', $request->from_date);
-            }
-            if ($request->filled('to_date')) {
-                $query->whereDate('created_at', '<=', $request->to_date);
-            }
-
-            $pos = $query->orderBy('created_at', 'desc')->get();
-        }
-
-        return view('purchase-orders.list', [
-            'user' => $user,
-            'supplier' => $supplier,
-            'setProds' => $setProds,
-            'pos' => $pos,
-        ]);
-    }
         public function purchaseOrderView($po_id, Request $request)
         {
             $user = Auth::user();
