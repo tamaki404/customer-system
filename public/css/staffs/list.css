@@ -12,6 +12,12 @@
     padding: 10px;
     font-size: 15px;
     outline: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+}
+.btn-transition:hover{
+    background-color: #d7b941; 
+    
 
 }
 .form-group p{
@@ -100,17 +106,29 @@
     flex-wrap: wrap;
     gap: 10px;
 }
-.order-list .order-box{
+.order-list .order-box {
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    padding: 15px;
     width: 300px;
     height: 300px;
     background-color: #fff;
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    transform: scale(1);
 }
+
+.order-list .order-box:hover {
+    transform: scale(1.05);
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 10px 30px, rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
+    z-index: 5;
+}
+
 .order-box .supplier{
     display: flex;
     flex-direction: row;
@@ -142,14 +160,18 @@
     max-width: 150px;           
     display: block; 
 }
-
-.order-box p{
+.order-box .header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.order-box .header p{
     margin: 0;
     font-size: 13px;
     color: #666;
     align-items: center;
 }
-.order-box p span{
+.order-box .header p span{
     font-size: 13px;
 
 }
@@ -202,4 +224,13 @@ box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 
     font-size: 13px;
     margin-left: auto;
 
+}
+.dropdown .scale span{
+    font-size: 14px;
+}
+.dropdown .scale{
+box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.heads-kilos p span{
+    font-size: 13px;
 }

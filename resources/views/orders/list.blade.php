@@ -50,7 +50,7 @@
 
                 @if (auth()->user()->role !== 'Supplier')
                     <div class="content-body order-list" style="border: none">
-
+{{-- 
                         <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                             <thead style="background-color: #fff;">
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
@@ -148,10 +148,10 @@
                                     </tr>
                                 @endforeach
                             </tbody>
-                        </table>
+                        </table> --}}
 
                         @foreach ($orders as $order)
-                            <div class="order-box">
+                            <a class="order-box" href="{{ route('orders.order', ['order_id' => $order->order_id]) }}">
                                 @php
                                     // Supplier image setup
                                     $imgSrc =  $order->supplier->user->image 
@@ -216,12 +216,35 @@
                                         $deliveryStatus = 'Mixed';
                                     }
                                 @endphp
-                                <p>
-                                    <span>{{ $order->order_id }}</span>
-                                    <span class="material-symbols-outlined" style="font-size: 15px">
-                                    content_copy
-                                    </span>                                
-                                </p>
+                                <div class="header">
+                                    <p>
+                                        <span>{{ $order->order_id }}</span>
+                                        <span class="material-symbols-outlined" style="font-size: 15px">
+                                        content_copy
+                                        </span>                                
+                                    </p>
+                                    @if ($order->all_scheduled || $order->deliveries->isEmpty())
+                                        
+                                    @else
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm dropdown-toggle scale" type="button" style="" data-bs-toggle="dropdown">
+                                                {{-- {{ $order->running_balance[0]['heads'] }} heads / {{ $order->running_balance[0]['kilos'] }} kg --}} 
+                                                <span class="material-symbols-outlined">
+                                                    scale
+                                                </span>
+                                            </button>
+                                            <ul class="dropdown-menu p-2" style="min-width: 200px;">
+                                                @foreach ($order->running_balance as $balance)
+                                                    <li style="font-size: 13px">
+                                                        {{ $balance['heads'] }} heads / {{ $balance['kilos'] }} kg
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                  
+                                    @endif
+                                </div>
+
 
                                 <div class="supplier">
                                     <div class="profile">
@@ -233,153 +256,160 @@
                                         @if ($deliveryRatio !== '0/0')
                                             {{ $deliveryStatus }} ({{ $deliveryRatio }})
                                         @else
-                                            Not set
+                                           
                                         @endif
                                     </p>
 
 
                                 </div>
+                                @if ($deliveryRatio !== '0/0')
 
-                                <div class="deliveries">
-                                    
-                                    @foreach ($order->deliveries as $del)
+                                    <div class="deliveries">
+                                        
+                                        @foreach ($order->deliveries as $del)
 
 
-                                        <div class="delivery-box">
-                                            @php
-                                                $isToday = \Carbon\Carbon::parse($del->delivery_date)->isToday();
-                                                $color = match($del->status) {
-                                                    'Completed', 'Delivered' => 'green',
-                                                    'Scheduled' => 'orange',
-                                                    'In Transit' => 'blue',
-                                                    'Cancelled' => 'gray',
-                                                    default => 'black',
-                                                };
-                                            @endphp
-                                            <p>
-                                                <span>{{ $del->delivery_date->format('F j') }}</span>
-
-                                                <span style="color: {{ $color }}; font-size: 12px" >
-                                                    @if($isToday && $del->status === 'Scheduled')
-                                                        <strong style="color: green; font-size: 12px">Today</strong>
-                                                    @else
-                                                            <strong>{{ $del->status }}</strong>
-                                                   
-                                                    @endif
-                                                </span>
-                                            </p>
-
-                                            <div class="headKilos">
+                                            <div class="delivery-box" style="gap: 5px">
                                                 @php
-                                                    $plannedHeads = $del->deliveryItems->sum('planned_heads');
-                                                    $plannedKilos = $del->deliveryItems->sum('planned_kilos');
+                                                    $isToday = \Carbon\Carbon::parse($del->delivery_date)->isToday();
+                                                    $color = match($del->status) {
+                                                        'Completed', 'Delivered' => 'green',
+                                                        'Scheduled' => 'orange',
+                                                        'In Transit' => 'blue',
+                                                        'Cancelled' => 'gray',
+                                                        default => 'black',
+                                                    };
                                                 @endphp
-                                                <div style="display: flex; gap: 5px;">
-                                                    @if ($plannedHeads > 0 && $plannedKilos > 0)
-                                                        <p>
-                                                            <span class="material-symbols-outlined">
-                                                            egg
-                                                            </span>      
-                                                            <span style="font-weight: bold">{{$plannedHeads}}</span>                                          
-                                                        </p>
-                                                        -
-                                                        <p>
-                                                            <span class="material-symbols-outlined">
-                                                            weight
-                                                            </span>      
-                                                            <span style="font-weight: bold">{{$plannedKilos}} kg</span>                                          
-                                                        </p>
+                                                <p>
+                                                    <span>{{ $del->delivery_date->format('F j') }}</span>
 
-                                                    @elseif ($plannedHeads > 0)
-                                                        <p>
-                                                            <span class="material-symbols-outlined">
-                                                            egg
-                                                            </span>      
-                                                            <span style="font-weight: bold">{{$plannedHeads}}</span>                                          
-                                                        </p>
-                                                    @elseif ($plannedKilos > 0)
-                                                        <p>
-                                                            <span class="material-symbols-outlined">
-                                                            weight
-                                                            </span>      
-                                                            <span style="font-weight: bold">{{$plannedKilos}} kg</span>                                          
-                                                        </p>
-                                                    @else
-                                                        —
-                                                    @endif
-                                                    {{-- RECEIVED --}}
+                                                    <span style="color: {{ $color }}; font-size: 12px" >
+                                                        @if($isToday && $del->status === 'Scheduled')
+                                                            <strong style="color: green; font-size: 12px">Today</strong>
+                                                        @else
+                                                                <strong>{{ $del->status }}</strong>
+                                                    
+                                                        @endif
+                                                    </span>
+                                                </p>
+
+                                                <div class="headKilos">
                                                     @php
-                                                        $receivedHeads = $del->deliveryItems->sum('received_heads');
-                                                        $receivedKilos = $del->deliveryItems->sum('received_kilos');
-                                                        $hasReceived = $receivedHeads > 0 || $receivedKilos > 0;
+                                                        $plannedHeads = $del->deliveryItems->sum('planned_heads');
+                                                        $plannedKilos = $del->deliveryItems->sum('planned_kilos');
                                                     @endphp
-                                                </div>
+                                                    <div style="display: flex; gap: 5px;" class="heads-kilos">
+                                                        @if ($plannedHeads > 0 && $plannedKilos > 0)
+                                                            <p>
+                                                                <span class="material-symbols-outlined">
+                                                                egg
+                                                                </span>      
+                                                                <span style="font-weight: bold">{{$plannedHeads}}</span>                                          
+                                                            </p>
+                                                            -
+                                                            <p>
+                                                                <span class="material-symbols-outlined">
+                                                                weight
+                                                                </span>      
+                                                                <span style="font-weight: bold">{{$plannedKilos}} kg</span>                                          
+                                                            </p>
 
-                                                {{-- <td>
-                                                        @if ($hasReceived)
-                                                            @if ($receivedHeads > 0 && $receivedKilos > 0)
-                                                                {{ $receivedHeads }} heads<br>{{ $receivedKilos }} kg
-                                                            @elseif ($receivedHeads > 0)
-                                                                {{ $receivedHeads }} heads
-                                                            @elseif ($receivedKilos > 0)
-                                                                {{ $receivedKilos }} kg
-                                                            @endif
+                                                        @elseif ($plannedHeads > 0)
+                                                            <p>
+                                                                <span class="material-symbols-outlined">
+                                                                egg
+                                                                </span>      
+                                                                <span style="font-weight: bold">{{$plannedHeads}}</span>                                          
+                                                            </p>
+                                                        @elseif ($plannedKilos > 0)
+                                                            <p>
+                                                                <span class="material-symbols-outlined">
+                                                                weight
+                                                                </span>      
+                                                                <span style="font-weight: bold">{{$plannedKilos}} kg</span>                                          
+                                                            </p>
                                                         @else
                                                             —
                                                         @endif
-                                                    </td> --}}
-                                                        @if ($del->status === "Delivered")
-                                                            @php
-                                                                $varianceHeads = $del->deliveryItems->sum('variance_heads');
-                                                                $varianceKilos = $del->deliveryItems->sum('variance_kilos');
-                                                                $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
-                                                            @endphp
-                                                                @if ($hasReceived && $hasVariance)
-                                                                <p class="variance-display" style="gap: 5px">
-                                                                    @if ($varianceHeads != 0 && $varianceKilos != 0)
-                                                                        <span  style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
-                                                                            {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
-                                                                        </span>
-                                                                        <br>
-                                                                        <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
-                                                                            {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
-                                                                        </span>
-                                                                    @elseif ($varianceHeads != 0)
-                                                                        <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
-                                                                            {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
-                                                                        </span>
-                                                                    @elseif ($varianceKilos != 0)
-                                                                        <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
-                                                                            {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
-                                                                        </span>
-                                                                    @else
-                                                                        <span style="color: green;">Exact</span>
-                                                                    @endif
-                                                                </p>
-                                                                @elseif($hasReceived && !$hasVariance)
-                                                                <p style="margin: 0; display: flex; flex-direction: row; gap: 5px; align-items: center; margin-left: auto;">
-                                                                    <span title="Exact" style="color: green; font-size: 16px;" class="material-symbols-outlined">check_circle</span>
-                                                                    <span style="font-size: 12px; color: green;">Exact</span>                                                                
-                                                                </p>
+                                                        {{-- RECEIVED --}}
+                                                        @php
+                                                            $receivedHeads = $del->deliveryItems->sum('received_heads');
+                                                            $receivedKilos = $del->deliveryItems->sum('received_kilos');
+                                                            $hasReceived = $receivedHeads > 0 || $receivedKilos > 0;
+                                                        @endphp
+                                                    </div>
 
-                                                                @else
-                                                                    —
+                                                    {{-- <td>
+                                                            @if ($hasReceived)
+                                                                @if ($receivedHeads > 0 && $receivedKilos > 0)
+                                                                    {{ $receivedHeads }} heads<br>{{ $receivedKilos }} kg
+                                                                @elseif ($receivedHeads > 0)
+                                                                    {{ $receivedHeads }} heads
+                                                                @elseif ($receivedKilos > 0)
+                                                                    {{ $receivedKilos }} kg
                                                                 @endif
-                                                            
-                                                        @endif
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </td> --}}
+                                                            @if ($del->status === "Delivered")
+                                                                @php
+                                                                    $varianceHeads = $del->deliveryItems->sum('variance_heads');
+                                                                    $varianceKilos = $del->deliveryItems->sum('variance_kilos');
+                                                                    $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
+                                                                @endphp
+                                                                    @if ($hasReceived && $hasVariance)
+                                                                    <p class="variance-display" style="gap: 5px">
+                                                                        @if ($varianceHeads != 0 && $varianceKilos != 0)
+                                                                            <span  style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
+                                                                                {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
+                                                                            </span>
+                                                                            <br>
+                                                                            <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
+                                                                                {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
+                                                                            </span>
+                                                                        @elseif ($varianceHeads != 0)
+                                                                            <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
+                                                                                {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
+                                                                            </span>
+                                                                        @elseif ($varianceKilos != 0)
+                                                                            <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
+                                                                                {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
+                                                                            </span>
+                                                                        @else
+                                                                            <span style="color: green;">Exact</span>
+                                                                        @endif
+                                                                    </p>
+                                                                    @elseif($hasReceived && !$hasVariance)
+                                                                    <p style="margin: 0; display: flex; flex-direction: row; gap: 5px; align-items: center; margin-left: auto;">
+                                                                        <span title="Exact" style="color: green; font-size: 16px;" class="material-symbols-outlined">check_circle</span>
+                                                                        <span style="font-size: 12px; color: green;">Exact</span>                                                                
+                                                                    </p>
+
+                                                                    @else
+                                                                        —
+                                                                    @endif
+                                                                
+                                                            @endif
+
+                                                </div>
+
+
 
                                             </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p style="margin: auto; color: #666;">No delivery schedule has been set yet. </p>
+                                @endif
 
 
-
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
+                            </a>
                         @endforeach
 
                 
                     </div>
+
                 @elseif (auth()->user()->role === 'Supplier')
 
                     <div class="content-body" style="background: #fff">
