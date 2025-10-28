@@ -54,11 +54,25 @@ class OrderController extends Controller
                 $plannedHeads = $order->deliveries->flatMap->deliveryItems->sum('planned_heads');
                 $plannedKilos = $order->deliveries->flatMap->deliveryItems->sum('planned_kilos');
 
-                //  Get related deliveries (ordered)
                 $deliveries = Delivery::where('order_id', $order->order_id)
-                    ->orderBy('delivery_date', 'asc')
                     ->with('deliveryItems')
-                    ->get();
+                    ->get()
+                    ->sortBy(function ($delivery) {
+                        $statusOrder = [
+                            'Scheduled'   => 1,
+                            'In Transit'  => 2,
+                            'Delivered'   => 3,
+                            'Cancelled'   => 4,
+                        ];
+
+                        return [
+                            $statusOrder[$delivery->status] ?? 99, 
+                            $delivery->delivery_date,
+                        ];
+                    })
+                    ->values(); // reindex
+
+
 
                 // Attach to the order
                 $order->setRelation('deliveries', $deliveries);
