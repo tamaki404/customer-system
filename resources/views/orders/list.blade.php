@@ -41,7 +41,7 @@
                     </div>
 
                     <div class="title-actions">
-                        <p class="heading">Deliveries sumamry</p>
+                        <p class="heading">Deliveries summary</p>
                 
                     </div>
 
@@ -255,8 +255,6 @@
                                     <p class="status">
                                         @if ($deliveryRatio !== '0/0')
                                             {{ $deliveryStatus }} ({{ $deliveryRatio }})
-                                        @else
-                                           
                                         @endif
                                     </p>
 

@@ -144,7 +144,7 @@
 
                             <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
                                 <span class="material-symbols-outlined">receipt_long</span>
-                                <p>Orders</p>
+                                <p>Deliveries summary</p>
                                 <div class="nav-indicator"></div>
                             </a>
                             <a class="nav-item{{ $currentRoute == 'deliveries.list' ? ' active' : '' }}" href="{{ route('deliveries.list') }}">

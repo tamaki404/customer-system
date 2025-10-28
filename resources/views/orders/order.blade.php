@@ -387,325 +387,375 @@
     </div>
 
    <div class="content-bg" >
-        <div class="content-header">
-            <div class="contents-display">
-                <p>
-                    <a href="{{ route('orders.list') }}">< Orders list</a>
-                </p>
-            </div>
-
-            <div class="title-actions">
-                <p class="heading" >
-                    <span>Order</span>
-                </p>
-                <div>
-                    
+        <div class="left">
+            <div class="content-header">
+                <div class="contents-display">
+                    <p>
+                        <a href="{{ route('orders.list') }}">< Orders list</a>
+                    </p>
                 </div>
+                <div class="title-actions">
+                        <p class="heading" >
+                            <span>Order #{{ $order->order_id }}</span>
+                            <span class="order-status"> {{ $order->status }} </span>
+                        </p>
+                        <div class="upper-con" style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
+                            <div class="buttons">
+                                <!-- Buttons -->
+                                @if ($order->status === 'Accepted' && Auth()->user()->role !== 'Supplier')
+                                    <button type="button" 
+                                        data-bs-toggle="modal" data-bs-target="#processModal" 
+                                        data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                                        class="process"
+                                        >
+                                        <span class="material-symbols-outlined" >
+                                        component_exchange
+                                        </span>
+                                        Process order
+                                    </button>
+                                @elseif ($order->status === 'Processed' && Auth()->user()->role !== 'Supplier')
+                                    <button type="button" 
+                                        data-bs-toggle="modal" data-bs-target="#exportModal" 
+                                        data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                                        class="export"
+                                        >
+                                        <span class="material-symbols-outlined"> download</span>
+                                        Export
+                                    </button>
+                                    <button class="collection-btn" onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $order->order_id]) }}'">
+                                        <span class="material-symbols-outlined" >
+                                        grain
+                                        </span>
+                                        Receipt collection
+                                    </button> 
+                                @endif
+                            </div>
+                        </div>
+                </div>
+                <div class="modal fade" id="exportModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="width: auto">
+                            <div class="modal-header">
+                                <p class="modal-title">Export</p>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body" style="height: auto;">
+                                <button type="button" 
+                                    data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                    data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                                    >
+                                    <span class="material-symbols-outlined"> print</span>
+                                    Customer Order
+                                </button>
+                                <button type="button" 
+                                        data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                        data-url="{{ route('orders.delivery.pdf', $order->order_id) }}"
+                                        >
+                                    <span class="material-symbols-outlined"> print</span>
+                                    Delivery receipt                               
+                                </button>
+                                <button type="button" 
+                                        data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                        data-url="{{ route('orders.invoice.pdf', $order->order_id) }}"
+                                    >
+                                    <span class="material-symbols-outlined"> print</span>
+                                    Sales Invoice
+                                </button>                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content" style="width: 100%">
+                                <div class="modal-header">
+                                    <p class="modal-title">PDF Preview</p>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body" style="height: 80vh;">
+                                    <iframe id="pdfFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+                                </div>
+                                </div>
+                            </div>
+                </div>
+                {{-- @if ($order->status === "Accepted")
+                    <p style="padding: 5px; width: 300px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;">Waiting for scheduled delivery</p>
+                @else
+                <p>{{ $order->status}}</p>
+                @endif --}}
+                {{-- 
                 @if (Auth()->user()->role !== 'Supplier' && $order->status === 'Pending')
                     <div>
-                        <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">Modify account</button>
+                                    <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">Modify account</button>
                     </div>
                 @elseif (Auth()->user()->role === 'Supplier')
                     <div>
                         <button data-bs-toggle="modal"  class="btn-transition">Purchase order</button>
                     </div>
-                @endif
-
-            </div>
-            <div class="order-details">
-                <p style="display: flex; flex-direction: column;">
-                    <span><strong>Supplier:</strong> {{ $order->supplier->company_name }}</span>
-                    <span><strong>Order ID:</strong> {{ $order->order_id }}</span>
-                    <span><strong>Order date:</strong> {{ $order->created_at->format('F j, Y')}}</span>
-                    <span><strong>Total amount: </strong> ₱{{ number_format($order->total_amount, 2) }}</span>
-                    <span><strong>Payment status: </strong> {{ $order->payment_status }}</span>
-                    @if ($order->status === "Delivered")
-                        <span><strong>Delivered at:</strong> {{ $order->delivered_at->format('F j, Y') }}</span>
-                    @elseif($order->status === "Rejected")
-                        <span><strong>Rejected at:</strong> {{ $order->rejected_at->format('F j, Y') }}</span>
-                    @elseif($order->status === "Completed")
-                        <span>
-                            <strong>Completed at:</strong> 
-                            {{ $order->completed_at?->format('F j, Y') ?? 'Not yet completed' }}
-                        </span>
-
-                    @elseif($order->status === "Accepted")
-                        <span><strong>Acccepted at:</strong> {{ $order->created_at->format('F j, Y') }}</span>
-                    
-                    @endif
-                    <style>
-                        .collection-btn{
-                            padding: 5px;
-                            font-size: 13px;
-                            border: none;
-                            border-radius: 5px;
-                            width: 150px;
-                            background-color: #f8912a;
-                            color: #ffffff;
-                            transition: background-color 0.3s ease, color 0.3s ease;
-                            box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-                        }
-                        .collection-btn:hover{
-                            background-color: #c5721e;
-                        }
-                    </style>
-                    
-                    <button class="collection-btn" onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $order->order_id]) }}'">View receipts collection</button> 
-
-                </p>
-            </div>
-            <div>
-                <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
-                    <div style="display: flex; flex-direction: row; gap: 10px">
-                        <!-- Buttons -->
-                        @if ($order->status === 'Accepted' && Auth()->user()->role !== 'Supplier')
-                            <button type="button" 
-                                data-bs-toggle="modal" data-bs-target="#processModal" 
-                                data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
-                                class="btn-transition">
-                                    Process order
-                            </button>
-                        @elseif ($order->status === 'Processed' && Auth()->user()->role !== 'Supplier')
-                            <button type="button" 
-                                data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
-                                class="btn-transition">
-                                    Customer Order
-                            </button>
-
-                            <button type="button" 
-                                    data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                    data-url="{{ route('orders.delivery.pdf', $order->order_id) }}"
-                                    class="btn-transition">
-                                Delivery receipt
-                            </button>
-
-                            <button type="button" 
-                                    data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                    data-url="{{ route('orders.invoice.pdf', $order->order_id) }}"
-                                    class="btn-transition">
-                                Sales Invoice
-                            </button>
-                        @endif
-
+                @endif --}}
+                <div class="details">
+                    <div class="">
+                        <p>
+                            <span class="material-symbols-outlined">
+                            room_service
+                            </span>                        
+                            <span class="value">{{ $itemCount }} Product(s)</span>
+                        </p>
+                        -
+                        <p>
+                            <span class="material-symbols-outlined">
+                            local_shipping
+                            </span>                        
+                            <span class="value">{{ $delCount }} Deliveries</span>
+                        </p>
                     </div>
+                    <p class="placed_on" style="margin: 0">
+                        <span >Order placed on</span>
+                        <strong> {{ $order->created_at->format('F j, Y') }}</strong>
+                    </p>
                 </div>
-
-                <!-- Modal -->
-                <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-xl">
-                    <div class="modal-content" style="width: 100%">
-                    <div class="modal-header">
-                        <p class="modal-title">PDF Preview</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body" style="height: 80vh;">
-                        <iframe id="pdfFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
-                    </div>
-                    </div>
-                </div>
-                </div>
-                @if ($order->status === "Accepted")
-                    <p style="padding: 5px; width: 300px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;">Waiting for scheduled delivery</p>
-                @else
-                   <p>{{ $order->status}}</p>
-                @endif
-              
-            </div>
-
-
-        </div>
-
-
-        {{-- <div>
-           <p>Delivery frequency: <span>{{$order->supplier->delivery->delivery_frequency}}</span></p>
-        </div> --}}
-
-        <div class="content-body" style="padding: 10px; border: none; height: auto;">
-            <div class="table-body" style="margin-top: 50px">
-                <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                    <p style="margin: 5px; font-weight: bold;">Scheduled deliveries</p>
-
-                </div>
-
-                    <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden; align-items: center;">
-                        @if ($activeDelivery > 0)
-
-                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                            <thead style="background-color: #f8f8f8;">
-                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                    <th>#</th>
-                                    <th>Delivery ID</th>
-                                    <th>Scheduled Date</th>
-                                    <th>Delivered Date</th>
-                                    <th>Items</th>
-                                    <th>Planned</th>
-                                    <th>Received</th>
-                                    <th>Variance</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($deliveries as $delivery)
-                                    <tr onclick="window.location.href='{{ route('order.delivery_items', ['delivery_id' => $delivery->delivery_id]) }}'">
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $delivery->delivery_id }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
-                                        <td>
-                                            @if($delivery->delivered_at)
-                                                {{ \Carbon\Carbon::parse($delivery->delivered_at)->format('F j, Y') }}
-                                            @else
-                                                —
-                                            @endif
-                                        </td>
-                                        <td>{{ $delivery->deliveryItems->count() }}</td>
-
-                                        {{-- PLANNED --}}
-                                        @php
-                                            $plannedHeads = $delivery->deliveryItems->sum('planned_heads');
-                                            $plannedKilos = $delivery->deliveryItems->sum('planned_kilos');
-                                        @endphp
-                                        <td>
-                                            @if ($plannedHeads > 0 && $plannedKilos > 0)
-                                                {{ $plannedHeads }} heads<br>{{ $plannedKilos }} kg
-                                            @elseif ($plannedHeads > 0)
-                                                {{ $plannedHeads }} heads
-                                            @elseif ($plannedKilos > 0)
-                                                {{ $plannedKilos }} kg
-                                            @else
-                                                —
-                                            @endif
-                                        </td>
-
-                                        {{-- RECEIVED --}}
-                                        @php
-                                            $receivedHeads = $delivery->deliveryItems->sum('received_heads');
-                                            $receivedKilos = $delivery->deliveryItems->sum('received_kilos');
-                                            $hasReceived = $receivedHeads > 0 || $receivedKilos > 0;
-                                        @endphp
-                                        <td>
-                                            @if ($hasReceived)
-                                                @if ($receivedHeads > 0 && $receivedKilos > 0)
-                                                    {{ $receivedHeads }} heads<br>{{ $receivedKilos }} kg
-                                                @elseif ($receivedHeads > 0)
-                                                    {{ $receivedHeads }} heads
-                                                @elseif ($receivedKilos > 0)
-                                                    {{ $receivedKilos }} kg
-                                                @endif
-                                            @else
-                                                —
-                                            @endif
-                                        </td>
-
-                                        {{-- VARIANCE --}}
-                                        @php
-                                            $varianceHeads = $delivery->deliveryItems->sum('variance_heads');
-                                            $varianceKilos = $delivery->deliveryItems->sum('variance_kilos');
-                                            $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
-                                        @endphp
-                                        <td>
-                                            @if ($hasReceived && $hasVariance)
-                                                @if ($varianceHeads != 0 && $varianceKilos != 0)
-                                                    <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
-                                                        {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
-                                                    </span>
-                                                    <br>
-                                                    <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
-                                                        {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
-                                                    </span>
-                                                @elseif ($varianceHeads != 0)
-                                                    <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
-                                                        {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
-                                                    </span>
-                                                @elseif ($varianceKilos != 0)
-                                                    <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
-                                                        {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
-                                                    </span>
-                                                @else
-                                                    <span style="color: green;">Exact</span>
-                                                @endif
-                                            @elseif($hasReceived && !$hasVariance)
-                                                <span style="color: green;">Exact</span>
-                                            @else
-                                                —
-                                            @endif
-                                        </td>
-
-                                        {{-- STATUS --}}
-                                        <td>
-                                            @php
-                                                $isToday = \Carbon\Carbon::parse($delivery->delivery_date)->isToday();
-                                                $color = match($delivery->status) {
-                                                    'Completed', 'Delivered' => 'green',
-                                                    'Scheduled' => 'orange',
-                                                    'In Transit' => 'blue',
-                                                    'Cancelled' => 'gray',
-                                                    default => 'black',
-                                                };
-                                            @endphp
-                                            <span style="color: {{ $color }};">
-                                                @if($isToday && $delivery->status === 'Scheduled')
-                                                    <strong style="color: green;">Delivery Today</strong>
-                                                @else
-                                                    {{ $delivery->status }}
-                                                @endif
+                <div class="details-box">
+                    <div class="supplier">
+                        @php
+                                    $imgSrc =  $order->supplier->user->image 
+                                        ? ('data:' . $order->supplier->user->image_mime_type . ';base64,' . base64_encode($order->supplier->user->image))
+                                        : asset('images/default-avatar.png');
+                        @endphp
+                        <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image">
+                        <div class="name-redirect">
+                            <div>
+                                        <p>{{ $order->supplier->company_name ?? 'N/A' }}</p>
+                                        <button href="">
+                                            <span class="material-symbols-outlined">
+                                                arrow_outward
                                             </span>
-                                        </td>
-
-
-
-                                    </tr>
-
-                                @endforeach
-                            </tbody>
-                        </table>
-                        @else
-                            <p style="margin: 10px; color: #666;">This order has no confirmed delivery days yet.</p>
-                        @endif
+                                        </button>
+                            </div>
+                            <p class="category">{{ $order->supplier->category }}</p>
+                        </div>                        
                     </div>
-
-
-            </div>
-            <div class="table-body" style="margin-top: 50px">
-                <p style="margin: 5px; font-weight: bold;">Order items</p>
-                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
-                    <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                        <thead style="background-color: #fff;">
-                            <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Unit price</th>
-                                <th>Heads/Kilos</th>
-                                <th>Total amount</th>                                                
-                            </tr>
-                        </thead>
-                        <tbody>                                
-                            @foreach ($items as $item)
-                                <tr >
-                                    <td>{{$loop->iteration}}</td>
-                                    <td>{{ $item->product->name }}</td>
-                                    <td>₱{{ number_format($item->productSetting?->nego_price ?? '--', 2) }}</td>
-                                    <td>
-                                        @if ($item->product->measurement_type === "Kilos")
-                                            {{ $item->placed_kilos }}kg
-                                        @elseif ($item->product->measurement_type === "Heads")
-                                            {{ $item->placed_heads }}
-                                        @endif
-                                    </td>
-                                    <td>₱{{ number_format($item->total_price, 2) }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="un-named">
+                    </div>
                 </div>
+                {{-- <p style="display: flex; flex-direction: column;">
+                                <span><strong>Supplier:</strong> {{ $order->supplier->company_name }}</span>
+                                <span><strong>Order ID:</strong> {{ $order->order_id }}</span>
+                                <span><strong>Total amount: </strong> ₱{{ number_format($order->total_amount, 2) }}</span>
+                                <span><strong>Payment status: </strong> {{ $order->payment_status }}</span>
+                                @if ($order->status === "Delivered")
+                                    <span><strong>Delivered at:</strong> {{ $order->delivered_at->format('F j, Y') }}</span>
+                                @elseif($order->status === "Rejected")
+                                    <span><strong>Rejected at:</strong> {{ $order->rejected_at->format('F j, Y') }}</span>
+                                @elseif($order->status === "Completed")
+                                    <span>
+                                        <strong>Completed at:</strong> 
+                                        {{ $order->completed_at?->format('F j, Y') ?? 'Not yet completed' }}
+                                    </span>
 
-                            
+                                @elseif($order->status === "Accepted")
+                                    <span><strong>Acccepted at:</strong> {{ $order->created_at->format('F j, Y') }}</span>
+                                
+                                @endif
+
+                                
+
+                </p> --}}
             </div>
-       
+
+            {{-- <div>
+            <p>Delivery frequency: <span>{{$order->supplier->delivery->delivery_frequency}}</span></p>
+            </div> --}}
+
+            <div class="content-body" style="padding: 10px; border: none; height: auto;">
+                <div class="table-body" style="margin-top: 50px">
+                                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                    <p style="margin: 5px; font-weight: bold;">Scheduled deliveries</p>
+
+                                </div>
+
+                                    <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden; align-items: center;">
+                                        @if ($activeDelivery > 0)
+
+                                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                                            <thead style="background-color: #f8f8f8;">
+                                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                                    <th>#</th>
+                                                    <th>Delivery ID</th>
+                                                    <th>Scheduled Date</th>
+                                                    <th>Delivered Date</th>
+                                                    <th>Items</th>
+                                                    <th>Planned</th>
+                                                    <th>Received</th>
+                                                    <th>Variance</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($deliveries as $delivery)
+                                                    <tr onclick="window.location.href='{{ route('order.delivery_items', ['delivery_id' => $delivery->delivery_id]) }}'">
+                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td>{{ $delivery->delivery_id }}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
+                                                        <td>
+                                                            @if($delivery->delivered_at)
+                                                                {{ \Carbon\Carbon::parse($delivery->delivered_at)->format('F j, Y') }}
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $delivery->deliveryItems->count() }}</td>
+
+                                                        {{-- PLANNED --}}
+                                                        @php
+                                                            $plannedHeads = $delivery->deliveryItems->sum('planned_heads');
+                                                            $plannedKilos = $delivery->deliveryItems->sum('planned_kilos');
+                                                        @endphp
+                                                        <td>
+                                                            @if ($plannedHeads > 0 && $plannedKilos > 0)
+                                                                {{ $plannedHeads }} heads<br>{{ $plannedKilos }} kg
+                                                            @elseif ($plannedHeads > 0)
+                                                                {{ $plannedHeads }} heads
+                                                            @elseif ($plannedKilos > 0)
+                                                                {{ $plannedKilos }} kg
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </td>
+
+                                                        {{-- RECEIVED --}}
+                                                        @php
+                                                            $receivedHeads = $delivery->deliveryItems->sum('received_heads');
+                                                            $receivedKilos = $delivery->deliveryItems->sum('received_kilos');
+                                                            $hasReceived = $receivedHeads > 0 || $receivedKilos > 0;
+                                                        @endphp
+                                                        <td>
+                                                            @if ($hasReceived)
+                                                                @if ($receivedHeads > 0 && $receivedKilos > 0)
+                                                                    {{ $receivedHeads }} heads<br>{{ $receivedKilos }} kg
+                                                                @elseif ($receivedHeads > 0)
+                                                                    {{ $receivedHeads }} heads
+                                                                @elseif ($receivedKilos > 0)
+                                                                    {{ $receivedKilos }} kg
+                                                                @endif
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </td>
+
+                                                        {{-- VARIANCE --}}
+                                                        @php
+                                                            $varianceHeads = $delivery->deliveryItems->sum('variance_heads');
+                                                            $varianceKilos = $delivery->deliveryItems->sum('variance_kilos');
+                                                            $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
+                                                        @endphp
+                                                        <td>
+                                                            @if ($hasReceived && $hasVariance)
+                                                                @if ($varianceHeads != 0 && $varianceKilos != 0)
+                                                                    <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
+                                                                        {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
+                                                                    </span>
+                                                                    <br>
+                                                                    <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
+                                                                        {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
+                                                                    </span>
+                                                                @elseif ($varianceHeads != 0)
+                                                                    <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
+                                                                        {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
+                                                                    </span>
+                                                                @elseif ($varianceKilos != 0)
+                                                                    <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
+                                                                        {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
+                                                                    </span>
+                                                                @else
+                                                                    <span style="color: green;">Exact</span>
+                                                                @endif
+                                                            @elseif($hasReceived && !$hasVariance)
+                                                                <span style="color: green;">Exact</span>
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </td>
+
+                                                        {{-- STATUS --}}
+                                                        <td>
+                                                            @php
+                                                                $isToday = \Carbon\Carbon::parse($delivery->delivery_date)->isToday();
+                                                                $color = match($delivery->status) {
+                                                                    'Completed', 'Delivered' => 'green',
+                                                                    'Scheduled' => 'orange',
+                                                                    'In Transit' => 'blue',
+                                                                    'Cancelled' => 'gray',
+                                                                    default => 'black',
+                                                                };
+                                                            @endphp
+                                                            <span style="color: {{ $color }};">
+                                                                @if($isToday && $delivery->status === 'Scheduled')
+                                                                    <strong style="color: green;">Delivery Today</strong>
+                                                                @else
+                                                                    {{ $delivery->status }}
+                                                                @endif
+                                                            </span>
+                                                        </td>
+
+
+
+                                                    </tr>
+
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        @else
+                                            <p style="margin: 10px; color: #666;">This order has no confirmed delivery days yet.</p>
+                                        @endif
+                                    </div>
+
+
+                </div>
+                <div class="table-body" style="margin-top: 50px">
+                                <p style="margin: 5px; font-weight: bold;">Order items</p>
+                                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
+                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                                        <thead style="background-color: #fff;">
+                                            <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Unit price</th>
+                                                <th>Heads/Kilos</th>
+                                                <th>Total amount</th>                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>                                
+                                            @foreach ($items as $item)
+                                                <tr >
+                                                    <td>{{$loop->iteration}}</td>
+                                                    <td>{{ $item->product->name }}</td>
+                                                    <td>₱{{ number_format($item->productSetting?->nego_price ?? '--', 2) }}</td>
+                                                    <td>
+                                                        @if ($item->product->measurement_type === "Kilos")
+                                                            {{ $item->placed_kilos }}kg
+                                                        @elseif ($item->product->measurement_type === "Heads")
+                                                            {{ $item->placed_heads }}
+                                                        @endif
+                                                    </td>
+                                                    <td>₱{{ number_format($item->total_price, 2) }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                            
+                </div>
+            </div>
+        
+        </div>
+        <div class="right">
+            
         </div>
 
+    </div>
 
-   </div>
+
 
 @endsection
 

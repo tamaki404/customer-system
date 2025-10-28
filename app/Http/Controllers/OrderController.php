@@ -205,6 +205,9 @@ class OrderController extends Controller
             $user = Auth::user();
          
             $order = Orders::with(['items.productSetting'])->where('order_id', $order_id)->first();
+            $itemCount = OrderItem::where('order_id', $order_id)->count();
+            $delCount = Delivery::where('order_id', $order_id)->count();
+
             $items = $order->items;
             $deliveries = Delivery::when($order_id, function ($query) use ($order_id) {
                     $query->where('order_id', $order_id);
@@ -220,7 +223,9 @@ class OrderController extends Controller
                 'order' => $order,
                 'items' => $items,
                 'deliveries' => $deliveries,
-                'activeDelivery' => $activeDelivery
+                'activeDelivery' => $activeDelivery,
+                'itemCount' => $itemCount,
+                'delCount' => $delCount
 
             ]);
         }

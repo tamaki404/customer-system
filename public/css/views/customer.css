@@ -598,3 +598,185 @@
 .credit-row{
     display: flex;
 }
+
+
+
+
+
+
+
+
+
+.heading .order-status{
+    font-size: 12px;
+    font-weight: normal;
+    margin-left: 15px;
+    color: #fff;
+    background-color: #f57c00;
+    border-radius: 20px;
+    padding: 5px;
+}
+.title-actions{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.upper-con{
+    display: flex;
+    flex-direction: row;
+}
+.upper-con .buttons button{
+    border-radius: 6px;
+}
+.upper-con .buttons button span{
+    font-size: 15px;
+}
+.upper-con .buttons{
+    gap: 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+.upper-con .buttons .export{
+    font-size: 13px;
+    color: #333;
+    border: none;
+    padding: 8px;
+    gap: 5px;
+    display: flex;
+    align-items: center;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.collection-btn{
+    background-color: #f8912a;
+    font-size: 13px;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    gap: 5px;
+    display: flex;
+    align-items: center;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.collection-btn span{
+    color: #ffff;
+}
+.buttons .process{
+    background-color: #f8912a;
+    font-size: 13px;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    gap: 5px;
+    display: flex;
+    align-items: center;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+.upper-con .buttons button{
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    transform: scale(1);
+}
+
+.upper-con .buttons button:hover{
+    transform: scale(1.05);
+    z-index: 5;
+}
+.content-header .details{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.content-header .details div{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+.content-header .details div p{
+    margin: 0;
+    align-items: center;
+    display: flex;
+    gap: 3px;
+    font-weight: bold;
+}
+.content-header .details div p span{
+    margin: 0;
+    font-size: 15px;
+    color: #333;
+}
+.content-header .details div p .value{
+    margin: 0;
+    font-size: 13px;
+    color: #333;
+}
+.details .placed_on{
+    font-weight: normal;
+    color: #333;
+}
+.details .placed_on span{
+    font-weight: normal;
+    color: #333;
+    font-size: 13px
+}
+.content-header .details-box{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+    background-color: #fff;
+    padding: 15px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+.content-header .details-box .supplier{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+.details-box img{
+    height: 80px;
+    border-radius: 999%;
+    border: 4px solid #f57c00;
+}
+.supplier .name-redirect div{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+.supplier .name-redirect div p{
+    font-size: 20px;
+    margin: 0;
+    font-weight: bold;
+    color: #333;
+}
+.supplier .name-redirect div button{
+    text-decoration: none;
+    align-items: center;
+    display: flex;
+    border-radius: 10px;
+    padding: 8px;
+    border: none;
+    background-color: #e6e6e68f;
+    color: #888;
+}
+.supplier .name-redirect div button:hover{
+
+    background-color: #e6e6e6;
+    color: #f57c00;
+}
+.supplier .name-redirect div button span{
+    font-size: 15px;
+}
+.name-redirect .category{
+    margin: 0;
+    color: #666;
+    font-size: 13px;
+}
