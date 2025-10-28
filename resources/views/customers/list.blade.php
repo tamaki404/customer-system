@@ -130,7 +130,7 @@
                         </div>
 
                         {{-- Hidden --}}
-                        <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}">
+                        <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}" required>
                     </div>
 
                     {{-- Footer --}}

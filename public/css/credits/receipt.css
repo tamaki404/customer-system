@@ -3,6 +3,12 @@
     background-color: #ffffff89;
     padding: 10px;
     border-radius: 10px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+
+}
+.receipt-box:hover{
+    background-color: #ffffff;
 }
 .receipt-box img{
     border-radius: 5px;
@@ -25,4 +31,18 @@
     font-size: 13px; 
     gap: 5px;
     color: #666;
+}
+.contents-display button{
+    padding: 5px;
+    font-size: 13px;
+    border: none;
+    border-radius: 5px;
+    width: 130px;
+    background-color: #f8912a;
+    color: #ffffff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.contents-display button:hover{
+    background-color: #c5721e;
 }

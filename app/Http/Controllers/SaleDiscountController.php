@@ -20,7 +20,7 @@ class SaleDiscountController extends Controller
             'product' => 'required|string|exists:products,product_id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'user_id' => 'required|string',
+            'user_id' => 'required|string|exists:users,user_id',
             'quantity' => 'required|integer|min:0',
         ]);
 

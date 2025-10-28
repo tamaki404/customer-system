@@ -433,6 +433,25 @@
                         <span><strong>Acccepted at:</strong> {{ $order->created_at->format('F j, Y') }}</span>
                     
                     @endif
+                    <style>
+                        .collection-btn{
+                            padding: 5px;
+                            font-size: 13px;
+                            border: none;
+                            border-radius: 5px;
+                            width: 150px;
+                            background-color: #f8912a;
+                            color: #ffffff;
+                            transition: background-color 0.3s ease, color 0.3s ease;
+                            box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+                        }
+                        .collection-btn:hover{
+                            background-color: #c5721e;
+                        }
+                    </style>
+                    
+                    <button class="collection-btn" onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $order->order_id]) }}'">View receipts collection</button> 
+
                 </p>
             </div>
             <div>
@@ -504,7 +523,11 @@
 
         <div class="content-body" style="padding: 10px; border: none; height: auto;">
             <div class="table-body" style="margin-top: 50px">
-                <p style="margin: 5px; font-weight: bold;">Scheduled deliveries</p>
+                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <p style="margin: 5px; font-weight: bold;">Scheduled deliveries</p>
+
+                </div>
+
                     <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden; align-items: center;">
                         @if ($activeDelivery > 0)
 

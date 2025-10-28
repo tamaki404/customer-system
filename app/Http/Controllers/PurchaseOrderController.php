@@ -17,6 +17,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Logs;
 use App\Models\OrderHistory;
 use App\Models\ProductSales;
+use App\Models\SaleDiscount;
+
 use Illuminate\Support\Str;
 class PurchaseOrderController extends Controller
 {
@@ -63,23 +65,55 @@ class PurchaseOrderController extends Controller
 
                 $pos = $query->orderBy('created_at', 'desc')->get();
 
-                $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
+                // $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
+                //     ->with('product')
+                //     ->get()
+                //     ->map(function($setProduct) {
+                //         $activeSale = ProductSales::where('set_id', $setProduct->set_id)
+                //             ->whereDate('start_date', '<=', now())
+                //             ->whereDate('end_date', '>=', now())
+                //             ->first();
+                //         $setProduct->original_price = $setProduct->nego_price;
+                //         if ($activeSale) {
+                //             $setProduct->nego_price = $activeSale->sale_price;
+                //             $setProduct->on_sale = true;
+                //         } else {
+                //             $setProduct->on_sale = false;
+                //         }
+
+                //         return $setProduct;
+                //     });
+
+                    $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
                     ->with('product')
                     ->get()
                     ->map(function($setProduct) {
-                        $activeSale = ProductSales::where('set_id', $setProduct->set_id)
+                        $activeSale = SaleDiscount::where('product_id', $setProduct->product_id)
                             ->whereDate('start_date', '<=', now())
                             ->whereDate('end_date', '>=', now())
                             ->first();
-
-                        // Store both prices
                         $setProduct->original_price = $setProduct->nego_price;
-                        if ($activeSale) {
-                            $setProduct->nego_price = $activeSale->sale_price;
-                            $setProduct->on_sale = true;
-                        } else {
-                            $setProduct->on_sale = false;
+                        if($setProduct->value_type === "Fixed"){
+                            if ($activeSale) {
+                                $setProduct->nego_price = $activeSale->value;
+                                $setProduct->on_sale = true;
+                            } else {
+                                $setProduct->on_sale = false;
+                            }
+
                         }
+                        elseif($setProduct->value_type === "Percentage"){
+                            if ($activeSale) {
+                                $discountAmount = ($setProduct->nego_price * $activeSale->value) / 100;
+                                $setProduct->nego_price = $setProduct->price - $discountAmount;
+                                $setProduct->on_sale=true;
+                   
+                            } else {
+                                $setProduct->on_sale = false;
+                            }
+                        }
+
+
 
                         return $setProduct;
                     });
