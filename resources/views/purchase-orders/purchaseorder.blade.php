@@ -73,45 +73,45 @@
                                             <td>{{ $item->product->measurement_type }}</td>
                                             <td>₱{{ number_format($item->unit_price, 2) }}</td>
                                             <td style="display: flex; justify-content: center;">
-@if ($item->product->measurement_type === "Kilos")
-    {{-- Kilos only --}}
-    <input type="number" 
-        name="alt_kilos[{{ $item->po_item_id }}]" 
-        value="{{ $item->placed_kilos }}" 
-        min="0"
-        class="form-control staff-quantity-input"
-        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
-        style="width:100px">
-@elseif ($item->product->measurement_type === "Heads")
-    {{-- Heads only --}}
-    <input type="number" 
-        name="alt_heads[{{ $item->po_item_id }}]" 
-        value="{{ $item->placed_heads }}" 
-        min="0"
-        class="form-control staff-quantity-input"
-        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
-        style="width:100px">
-@elseif ($item->product->measurement_type === "Heads&Kilos")
-    {{-- Heads --}}
-    <input type="number" 
-        name="alt_heads[{{ $item->po_item_id }}]" 
-        value="{{ $item->placed_heads }}" 
-        min="0"
-        class="form-control staff-quantity-input mb-1"
-        placeholder="Heads"
-        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
-        style="width:100px">
+                                                @if ($item->product->measurement_type === "Kilos")
+                                                    {{-- Kilos only --}}
+                                                    <input type="number" 
+                                                        name="alt_kilos[{{ $item->po_item_id }}]" 
+                                                        value="{{ $item->placed_kilos }}" 
+                                                        min="0"
+                                                        class="form-control staff-quantity-input"
+                                                        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
+                                                        style="width:100px">
+                                                @elseif ($item->product->measurement_type === "Heads")
+                                                    {{-- Heads only --}}
+                                                    <input type="number" 
+                                                        name="alt_heads[{{ $item->po_item_id }}]" 
+                                                        value="{{ $item->placed_heads }}" 
+                                                        min="0"
+                                                        class="form-control staff-quantity-input"
+                                                        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
+                                                        style="width:100px">
+                                                @elseif ($item->product->measurement_type === "Heads&Kilos")
+                                                    {{-- Heads --}}
+                                                    <input type="number" 
+                                                        name="alt_heads[{{ $item->po_item_id }}]" 
+                                                        value="{{ $item->placed_heads }}" 
+                                                        min="0"
+                                                        class="form-control staff-quantity-input mb-1"
+                                                        placeholder="Heads"
+                                                        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
+                                                        style="width:100px">
 
-    {{-- Kilos --}}
-    <input type="number" 
-        name="alt_kilos[{{ $item->po_item_id }}]" 
-        value="{{ $item->placed_kilos }}" 
-        min="0"
-        class="form-control staff-quantity-input"
-        placeholder="Kilos"
-        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
-        style="width:100px">
-@endif
+                                                    {{-- Kilos --}}
+                                                    <input type="number" 
+                                                        name="alt_kilos[{{ $item->po_item_id }}]" 
+                                                        value="{{ $item->placed_kilos }}" 
+                                                        min="0"
+                                                        class="form-control staff-quantity-input"
+                                                        placeholder="Kilos"
+                                                        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
+                                                        style="width:100px">
+                                                @endif
 
 
                                             </td>
@@ -149,18 +149,24 @@
     @endif
 
     @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
+        <div class="alert alert-danger" style="margin: 10px;">
+            <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
+            <ul style="margin: 0; padding-left: 20px;">
                 @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
+                    <li style="font-size: 14px;">{{ $error }}</li>
                 @endforeach
             </ul>
         </div>
     @endif
-
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+    @if (session('success') || session('error'))
+        <div 
+            id="flash-message"
+            class="flash-message 
+                {{ session('success') ? 'alert-success' : 'alert-danger' }}">
+            <strong>
+                {{ session('success') ? 'Success:' : ' Error:' }}
+            </strong>
+            {{ session('success') ?? session('error') }}
         </div>
     @endif
 

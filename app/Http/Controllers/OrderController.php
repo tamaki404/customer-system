@@ -35,113 +35,72 @@ class OrderController extends Controller
             $user = Auth::user();
             $supplier = null;
 
+            $ordersQuery = Orders::with(['deliveries.deliveryItems'])
+                ->withSum('receipts', 'total_amount')
+                ->orderBy('created_at', 'desc');
+
             if ($user->role === "Supplier") {
-                $orders = Orders::with(['deliveries.deliveryItems'])
-                    ->where('supplier_id', Suppliers::where('user_id', $user->user_id)->value('supplier_id'))
-                    ->withSum('receipts', 'total_amount')
-                    ->orderBy('created_at', 'desc')
-                    ->get()
-                    ->map(function ($order) {
-                        $paid = $order->receipts_sum_total_amount ?? 0;
-                        $order->balance = max($order->total_amount - $paid, 0);
-                        $order->payment_status = $paid >= $order->total_amount
-                            ? 'Fully paid'
-                            : ($paid > 0 ? 'Partially settled' : 'Unpaid');
-
-                        $plannedHeads = $order->deliveries->flatMap->deliveryItems->sum('planned_heads');
-                        $plannedKilos = $order->deliveries->flatMap->deliveryItems->sum('planned_kilos');
-
-                        $deliveredDeliveries = $order->deliveries
-                            ->where('status', 'Delivered')
-                            ->sortBy('delivery_date');
-
-                        $runningHeads = $plannedHeads;
-                        $runningKilos = $plannedKilos;
-
-                        $runningBalance = [];
-                        $runningBalance[] = [
-                            'heads' => $runningHeads,
-                            'kilos' => $runningKilos,
-                            'label' => 'Planned'
-                        ];
-
-                        foreach ($deliveredDeliveries as $index => $delivery) {
-                            $deliveredHeads = $delivery->deliveryItems->sum('received_heads');
-                            $deliveredKilos = $delivery->deliveryItems->sum('received_kilos');
-
-                            $runningHeads -= $deliveredHeads;
-                            $runningKilos -= $deliveredKilos;
-
-                            $runningBalance[] = [
-                                'heads' => $runningHeads,
-                                'kilos' => $runningKilos,
-                                'label' => 'After Delivery #' . ($index + 1)
-                            ];
-                        }
-
-                        $runningBalance = array_reverse($runningBalance);
-                        $order->setAttribute('running_balance', $runningBalance);
-
-                        $order->all_scheduled = $order->deliveries->count() > 0
-                            && $order->deliveries->every(fn($d) => $d->status === 'Scheduled');
-
-                        return $order;
-                    });
-            } elseif ($user->role === "Staff" || $user->role === "Admin") {
-                $orders = Orders::with(['deliveries.deliveryItems'])
-                    ->withSum('receipts', 'total_amount')
-                    ->orderBy('created_at', 'desc')
-                    ->get()
-                    ->map(function ($order) {
-                        $paid = $order->receipts_sum_total_amount ?? 0;
-                        $order->balance = max($order->total_amount - $paid, 0);
-                        $order->payment_status = $paid >= $order->total_amount
-                            ? 'Fully paid'
-                            : ($paid > 0 ? 'Partially settled' : 'Unpaid');
-
-                        $plannedHeads = $order->deliveries->flatMap->deliveryItems->sum('planned_heads');
-                        $plannedKilos = $order->deliveries->flatMap->deliveryItems->sum('planned_kilos');
-
-                        $deliveredDeliveries = $order->deliveries
-                            ->where('status', 'Delivered')
-                            ->sortBy('delivery_date');
-
-                        $runningHeads = $plannedHeads;
-                        $runningKilos = $plannedKilos;
-
-                        $runningBalance = [];
-                        $runningBalance[] = [
-                            'heads' => $runningHeads,
-                            'kilos' => $runningKilos,
-                            'label' => 'Planned'
-                        ];
-
-                        foreach ($deliveredDeliveries as $index => $delivery) {
-                            $deliveredHeads = $delivery->deliveryItems->sum('received_heads');
-                            $deliveredKilos = $delivery->deliveryItems->sum('received_kilos');
-
-                            $runningHeads -= $deliveredHeads;
-                            $runningKilos -= $deliveredKilos;
-
-                            $runningBalance[] = [
-                                'heads' => $runningHeads,
-                                'kilos' => $runningKilos,
-                                'label' => 'After Delivery #' . ($index + 1)
-                            ];
-                        }
-
-                        $runningBalance = array_reverse($runningBalance);
-                        $order->setAttribute('running_balance', $runningBalance);
-
-                        $order->all_scheduled = $order->deliveries->count() > 0
-                            && $order->deliveries->every(fn($d) => $d->status === 'Scheduled');
-
-                        return $order;
-                    });
+                $supplierId = Suppliers::where('user_id', $user->user_id)->value('supplier_id');
+                $ordersQuery->where('supplier_id', $supplierId);
             }
+
+            $orders = $ordersQuery->get()->map(function ($order) {
+                $paid = $order->receipts_sum_total_amount ?? 0;
+                $order->balance = max($order->total_amount - $paid, 0);
+                $order->payment_status = $paid >= $order->total_amount
+                    ? 'Fully paid'
+                    : ($paid > 0 ? 'Partially settled' : 'Unpaid');
+
+                $plannedHeads = $order->deliveries->flatMap->deliveryItems->sum('planned_heads');
+                $plannedKilos = $order->deliveries->flatMap->deliveryItems->sum('planned_kilos');
+
+                // ✅ Get related deliveries (ordered)
+                $deliveries = Delivery::where('order_id', $order->order_id)
+                    ->orderBy('delivery_date', 'asc')
+                    ->with('deliveryItems')
+                    ->get();
+
+                // Attach to the order
+                $order->setRelation('deliveries', $deliveries);
+
+                $deliveredDeliveries = $deliveries
+                    ->where('status', 'Delivered')
+                    ->sortBy('delivery_date');
+
+                $runningHeads = $plannedHeads;
+                $runningKilos = $plannedKilos;
+
+                $runningBalance = [];
+                $runningBalance[] = [
+                    'heads' => $runningHeads,
+                    'kilos' => $runningKilos,
+                    'label' => 'Planned'
+                ];
+
+                foreach ($deliveredDeliveries as $index => $delivery) {
+                    $deliveredHeads = $delivery->deliveryItems->sum('received_heads');
+                    $deliveredKilos = $delivery->deliveryItems->sum('received_kilos');
+
+                    $runningHeads -= $deliveredHeads;
+                    $runningKilos -= $deliveredKilos;
+
+                    $runningBalance[] = [
+                        'heads' => $runningHeads,
+                        'kilos' => $runningKilos,
+                        'label' => 'After Delivery #' . ($index + 1)
+                    ];
+                }
+
+                $order->setAttribute('running_balance', array_reverse($runningBalance));
+                $order->all_scheduled = $deliveries->count() > 0
+                    && $deliveries->every(fn($d) => $d->status === 'Scheduled');
+
+                return $order;
+            });
 
             return view('orders.list', compact('user', 'supplier', 'orders'));
         }
+
 
         public function createorder(Request $request){
 

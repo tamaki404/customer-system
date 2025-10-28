@@ -41,7 +41,7 @@
                     </div>
 
                     <div class="title-actions">
-                        <p class="heading">Orders list</p>
+                        <p class="heading">Deliveries sumamry</p>
                 
                     </div>
 
@@ -51,7 +51,7 @@
                 @if (auth()->user()->role !== 'Supplier')
                     <div class="content-body" style="background: #fff">
 
-                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                        {{-- <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                             <thead style="background-color: #fff;">
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
@@ -84,10 +84,8 @@
                                             }
                                         }
 
-                                        // Compute ratio
                                         $deliveryRatio = $totalDeliveries > 0 ? "{$deliveredCount}/{$totalDeliveries}" : "0/0";
 
-                                        // Determine delivery status
                                         if ($totalDeliveries === 0) {
                                             $deliveryStatus = 'No Delivery';
                                         } elseif ($deliveredCount === $totalDeliveries) {
@@ -100,7 +98,6 @@
                                             $deliveryStatus = 'Mixed';
                                         }
                                     @endphp
-                                    {{-- <tr > --}}
                                     <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $order->created_at->format('F j, Y') }}</td>
@@ -137,7 +134,6 @@
                                         <td>{{$order->payment_status}}</td>
                                         <td>₱{{ number_format($order->total_amount, 2) }}</td>
 
-                                        {{-- DELIVERY STATUS --}}
                                         <td>
                                             @if ($deliveryRatio !== '0/0')
                                                 {{ $deliveryStatus }} ({{ $deliveryRatio }})
@@ -152,7 +148,20 @@
                                     </tr>
                                 @endforeach
                             </tbody>
-                        </table>
+                        </table> --}}
+
+                        <div class="content-body" style="background: #fff">
+                            @foreach ($orders as $order)
+                                <div class="order-box">
+                                    <div>
+                                        <p>{{$order->supplier->company_name}}</p>
+                                    </div>
+                                    <div>
+                                        
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                 
                     </div>
                 @elseif (auth()->user()->role === 'Supplier')
@@ -163,10 +172,12 @@
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
                                     <th>Date</th>
+                                    <th>Supplier</th>
                                     <th>Order ID</th>
                                     <th>Heads/Kilos</th>
-                                    <th>Payment</th>
+                        
                                     <th>Status</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>                                
@@ -187,10 +198,8 @@
                                             }
                                         }
 
-                                        // Compute ratio
                                         $deliveryRatio = $totalDeliveries > 0 ? "{$deliveredCount}/{$totalDeliveries}" : "0/0";
 
-                                        // Determine delivery status
                                         if ($totalDeliveries === 0) {
                                             $deliveryStatus = 'No Delivery';
                                         } elseif ($deliveredCount === $totalDeliveries) {
@@ -203,33 +212,54 @@
                                             $deliveryStatus = 'Mixed';
                                         }
                                     @endphp
-                                    <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">
+                                    <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $order->created_at->format('F j, Y') }}</td>
-
+                                        <td>{{$order->supplier->company_name}}</td>
                                         <td>{{$order->order_id}}</td>
-                                        <td>{{$order->item->product->measurement_type}}</td>
-                                        <td>{{$order->payment_status}}</td>
-
-                                        <td>{{$order->status}}</td>
                                         <td>
-                                            @if($order->delivery_ratio !== '0/0')
-                                                {{ $order->delivery_ratio }} {{ $order->delivery_note }}
+                                            @if ($order->all_scheduled || $order->deliveries->isEmpty())
+                                                —
                                             @else
-                                                No deliveries yet
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm dropdown-toggle" type="button" style="border: 1px solid #333" data-bs-toggle="dropdown">
+                                                        {{ $order->running_balance[0]['heads'] }} heads / {{ $order->running_balance[0]['kilos'] }} kg
+                                                    </button>
+                                                    <ul class="dropdown-menu p-2" style="min-width: auto;">
+                                                        @foreach ($order->running_balance as $balance)
+                                                            <li>
+                                                                {{ $balance['heads'] }} heads / {{ $balance['kilos'] }} kg
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                                <style>
+                                                    .dropdown-menu li{
+                                                        font-size: 14px;
+                                                        padding: 2px;
+                                                    }
+                                                </style>
                                             @endif
                                         </td>
+
+                                                                <td>
+                                            @if ($deliveryRatio !== '0/0')
+                                                {{ $deliveryStatus }} ({{ $deliveryRatio }})
+                                            @else
+
+                                                No deliveries set yet
+                                            @endif
+                                        </td>    
                                         
-
-
-
-
+                                        <td><button onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">View</button></td>
 
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
+
+           
 
                 @endif
 
