@@ -196,58 +196,60 @@ class PurchaseOrderController extends Controller
                         throw new \Exception("Invalid product setting for set_id: $setId");
                     }
 
-                    // Get placed_heads and placed_kilos from request
                     $placedHeads = $request->placed_heads[$setId] ?? 0;
                     $placedKilos = $request->placed_kilos[$setId] ?? 0;
-
-                    // Get the measurement type to determine which value to use for calculation
                     $measurementType = $productSetting->product->measurement_type;
-                    
-                    // Determine quantity for price calculation based on measurement type
+
+                    // Determine which quantity to use
                     if ($measurementType === 'Kilos') {
                         $quantityForCalculation = $placedKilos;
-                        
                         if ($quantityForCalculation <= 0) {
                             throw new \Exception("Invalid kilos for product: {$productSetting->product->name}");
                         }
                     } else {
                         $quantityForCalculation = $placedHeads;
-                        
                         if ($quantityForCalculation <= 0) {
                             throw new \Exception("Invalid heads for product: {$productSetting->product->name}");
                         }
                     }
 
-                    $originalPrice  = $productSetting->nego_price;
+                    // Base negotiation price
+                    $originalPrice = $productSetting->nego_price;
                     $finalUnitPrice = $originalPrice;
 
-                    // Check if there's an active sale
-                    $activeSale = ProductSales::where('set_id', $setId)
+                    //  Apply active sale discount (same logic as in purchaseOrderlist)
+                    $activeSale = SaleDiscount::where('product_id', $productSetting->product_id)
                         ->whereDate('start_date', '<=', now())
                         ->whereDate('end_date', '>=', now())
                         ->first();
 
                     if ($activeSale) {
-                        $finalUnitPrice = $activeSale->sale_price;
+                        if ($activeSale->value_type === "Fixed") {
+                            $finalUnitPrice = $activeSale->value;
+                        } elseif ($activeSale->value_type === "Percentage") {
+                            $discountAmount = ($originalPrice * $activeSale->value) / 100;
+                            $finalUnitPrice = $originalPrice - $discountAmount;
+                        }
                     }
 
+                    // Calculate totals
                     $itemTotal = $finalUnitPrice * $quantityForCalculation;
 
                     $poItemId = 'POI-' . $date . '-' . Str::upper(Str::random(5));
 
                     PurchaseOrderItem::create([
-                        'po_item_id'        => $poItemId,
-                        'po_id'             => $po_id,
-                        'product_id'        => $productSetting->product_id,
-                        'set_id'            => $setId,
-                        'placed_heads'      => $placedHeads,
-                        'placed_kilos'      => $placedKilos,
-                        'alt_heads'      => $placedHeads,
-                        'alt_kilos'      => $placedKilos,
-                        'original_price'    => $originalPrice,
-                        'unit_price'        => $finalUnitPrice,
-                        'total_price'       => $itemTotal,
-                        'status'            => 'Pending',
+                        'po_item_id'      => $poItemId,
+                        'po_id'           => $po_id,
+                        'product_id'      => $productSetting->product_id,
+                        'set_id'          => $setId,
+                        'placed_heads'    => $placedHeads,
+                        'placed_kilos'    => $placedKilos,
+                        'alt_heads'       => $placedHeads,
+                        'alt_kilos'       => $placedKilos,
+                        'original_price'  => $originalPrice,
+                        'unit_price'      => $finalUnitPrice, //  now includes discount if active
+                        'total_price'     => $itemTotal,
+                        'status'          => 'Pending',
                     ]);
 
                     $totalAmount += $itemTotal;

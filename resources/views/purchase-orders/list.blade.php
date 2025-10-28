@@ -67,61 +67,140 @@
                                     @endphp
                                     @foreach($setProds as $setProd)
 
-                                    <tr class="product-row" 
-                                        data-set-id="{{ $setProd->set_id }}" 
-                                        data-product-id="{{ $setProd->product->product_id }}" 
-                                        data-price="{{ $setProd->nego_price }}"
-                                        data-measurement-type="{{ $setProd->product->measurement_type }}">                                   
-                                        <td class="checkbox-cell">
-                                            <input type="checkbox" 
-                                                name="selected_products[]" 
-                                                value="{{ $setProd->set_id }}"
-                                                class="product-checkbox"
-                                                onchange="toggleProductRow(this, '{{ $setProd->set_id }}')">
-                                        </td>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $setProd->product->name }}</td>
-                                        <td>{{ $setProd->product->category }}</td>
+<tr class="product-row" 
+    data-set-id="{{ $setProd->set_id }}" 
+    data-product-id="{{ $setProd->product->product_id }}" 
+    data-price="{{ $setProd->nego_price }}"
+    data-original-price="{{ $setProd->original_price }}"
+    data-on-sale="{{ $setProd->on_sale ? 'true' : 'false' }}"
+    data-measurement-type="{{ $setProd->product->measurement_type }}">                                   
+    <td class="checkbox-cell">
+        <input type="checkbox" 
+            name="selected_products[]" 
+            value="{{ $setProd->set_id }}"
+            class="product-checkbox"
+            onchange="toggleProductRow(this, '{{ $setProd->set_id }}')">
+    </td>
+    <td>{{ $loop->iteration }}</td>
+    <td>{{ $setProd->product->name }}</td>
+    <td>{{ $setProd->product->category }}</td>
+    <td>{{ $setProd->product->measurement_type }}</td>
+    <td>
+        @if($setProd->on_sale)
+            <span style="text-decoration: line-through; color: #888;">
+                ₱{{ number_format($setProd->original_price, 2) }}
+            </span>
+            <span style="color: #fe8d29; font-weight: bold; margin-left: 5px;">
+                ₱{{ number_format($setProd->nego_price, 2) }}
+            </span>
+        @else
+            ₱{{ number_format($setProd->nego_price, 2) }}
+        @endif
+    </td>
+    <td>
+        <input type="number" 
+            name="placed_heads[{{ $setProd->set_id }}]" 
+            value="0" 
+            min="1"
+            class="form-control heads-input"
+            onchange="calculateRowTotal('{{ $setProd->set_id }}')"
+            disabled>
+    </td>                                        
+    <td>
+        <input type="number" 
+            name="placed_kilos[{{ $setProd->set_id }}]" 
+            value="0" 
+            min="1"
+            class="form-control kilos-input"
+            onchange="calculateRowTotal('{{ $setProd->set_id }}')"
+            disabled>
+    </td>
+    <td>
+        <span id="total_{{ $setProd->set_id }}" class="row-total">
+            ₱0.00
+        </span>
+    </td>
+</tr>
 
-                                        <td>{{ $setProd->product->measurement_type }}</td>
-                                        <td>
-                                            @if($setProd->on_sale)
-                                                <span style="text-decoration: line-through; color: #888;">
-                                                    ₱{{ number_format($setProd->original_price, 2) }}
-                                                </span>
-                                                <span style="color: #fe8d29; font-weight: bold; margin-left: 5px;">
-                                                    ₱{{ number_format($setProd->nego_price, 2) }}
-                                                </span>
-                                            @else
-                                                ₱{{ number_format($setProd->nego_price, 2) }}
-                                            @endif
-                                        </td>
+<script>
+function toggleProductRow(checkbox, setId) {
+    const row = checkbox.closest('.product-row');
+    const headsInput = row.querySelector('.heads-input');
+    const kilosInput = row.querySelector('.kilos-input');
+    const measurementType = row.dataset.measurementType;
+    
+    if (checkbox.checked) {
+        // Enable appropriate input based on measurement type
+        if (measurementType === 'Kilos') {
+            kilosInput.disabled = false;
+            kilosInput.value = 1;
+            headsInput.disabled = true;
+            headsInput.value = 0;
+        } else {
+            headsInput.disabled = false;
+            headsInput.value = 1;
+            kilosInput.disabled = true;
+            kilosInput.value = 0;
+        }
+    } else {
+        headsInput.disabled = true;
+        kilosInput.disabled = true;
+        headsInput.value = 0;
+        kilosInput.value = 0;
+    }
+    
+    calculateRowTotal(setId);
+    updateGrandTotal();
+}
 
-                                        <td>
-                                            <input type="number" 
-                                                name="placed_heads[{{ $setProd->set_id }}]" 
-                                                value="0" 
-                                                min="1"
-                                                class="form-control heads-input"
-                                                onchange="calculateRowTotal('{{ $setProd->set_id }}')"
-                                                disabled>
-                                        </td>                                        
-                                        <td>
-                                            <input type="number" 
-                                                name="placed_kilos[{{ $setProd->set_id }}]" 
-                                                value="0" 
-                                                min="1"
-                                                class="form-control kilos-input"
-                                                onchange="calculateRowTotal('{{ $setProd->set_id }}')"
-                                                disabled>
-                                        </td>
-                                     
-                                        <td>
-                                            <span id="total_{{ $setProd->set_id }}" class="row-total">
-                                                ₱{{ number_format($setProd->nego_price, 2) }}
-                                            </span>
-                                        </td>
-                                    </tr>
+function calculateRowTotal(setId) {
+    const row = document.querySelector(`[data-set-id="${setId}"]`);
+    const checkbox = row.querySelector('.product-checkbox');
+    
+    if (!checkbox.checked) {
+        document.getElementById(`total_${setId}`).textContent = '₱0.00';
+        updateGrandTotal();
+        return;
+    }
+    
+    const measurementType = row.dataset.measurementType;
+    const price = parseFloat(row.dataset.price); // This is already the sale price if on sale
+    const headsInput = row.querySelector('.heads-input');
+    const kilosInput = row.querySelector('.kilos-input');
+    
+    let quantity = 0;
+    if (measurementType === 'Kilos') {
+        quantity = parseFloat(kilosInput.value) || 0;
+    } else {
+        quantity = parseFloat(headsInput.value) || 0;
+    }
+    
+    const total = price * quantity;
+    document.getElementById(`total_${setId}`).textContent = '₱' + total.toFixed(2);
+    
+    updateGrandTotal();
+}
+
+function updateGrandTotal() {
+    let grandTotal = 0;
+    let selectedCount = 0;
+    
+    document.querySelectorAll('.product-checkbox:checked').forEach(checkbox => {
+        selectedCount++;
+        const setId = checkbox.value;
+        const totalText = document.getElementById(`total_${setId}`).textContent;
+        const totalValue = parseFloat(totalText.replace('₱', '').replace(',', ''));
+        grandTotal += totalValue;
+    });
+    
+    document.getElementById('selectedCount').textContent = selectedCount;
+    document.getElementById('grandTotal').textContent = '₱' + grandTotal.toFixed(2);
+    
+    // Enable/disable submit button
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = selectedCount === 0;
+}
+</script>
                                     @endforeach
 
                                 </tbody>
