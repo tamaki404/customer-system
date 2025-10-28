@@ -6,26 +6,35 @@
 
 @section('content')
 
+            @if ($errors->any())
+                <div class="alert alert-danger" style="margin: 10px;">
+                    <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        @foreach ($errors->all() as $error)
+                            <li style="font-size: 14px;">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if (session('success') || session('error'))
+                <div 
+                    id="flash-message"
+                    class="flash-message 
+                        {{ session('success') ? 'alert-success' : 'alert-danger' }}">
+                    <strong>
+                        {{ session('success') ? 'Success:' : ' Error:' }}
+                    </strong>
+                    {{ session('success') ?? session('error') }}
+                </div>
+            @endif
     {{-- create order --}}
     @if (auth()->user()->role === 'Supplier')
         <div class="modal fade" id="create-order-modal" style="overflow: hidden;"  tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl " style="overflow: hidden; height: 90%;">
                 <form class="modal-content" method="POST"  style="width: 800px" action="{{ route('purchaseorders.create') }}">
                     @csrf
-            
-                    @if (session('success'))
-                        <div class="alert alert-success" style="margin: 10px;">
-                            <h6 style="margin-bottom: 5px; font-weight: bold;">Success:</h6>
-                            <p style="margin: 0; font-size: 14px;">{{ session('success') }}</p>
-                        </div>
-                    @endif
 
-                    @if (session('error'))
-                        <div class="alert alert-danger" style="margin: 10px;">
-                            <h6 style="margin-bottom: 5px; font-weight: bold;">Error:</h6>
-                            <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
-                        </div>
-                    @endif
                 
                     <div class="modal-header">
                         <p class="modal-title" id="requestActionLabel">Create purchase order</p>
@@ -67,62 +76,62 @@
                                     @endphp
                                     @foreach($setProds as $setProd)
 
-<tr class="product-row" 
-    data-set-id="{{ $setProd->set_id }}" 
-    data-product-id="{{ $setProd->product->product_id }}" 
-    data-price="{{ $setProd->nego_price }}"
-    data-original-price="{{ $setProd->original_price }}"
-    data-on-sale="{{ $setProd->on_sale ? 'true' : 'false' }}"
-    data-measurement-type="{{ $setProd->product->measurement_type }}">                                   
-    <td class="checkbox-cell">
-        <input type="checkbox" 
-            name="selected_products[]" 
-            value="{{ $setProd->set_id }}"
-            class="product-checkbox"
-            onchange="toggleProductRow(this, '{{ $setProd->set_id }}')">
-    </td>
-    <td>{{ $loop->iteration }}</td>
-    <td>{{ $setProd->product->name }}</td>
-    <td>{{ $setProd->product->category }}</td>
-    <td>{{ $setProd->product->measurement_type }}</td>
-    <td>
-        @if($setProd->on_sale)
-            <span style="text-decoration: line-through; color: #888;">
-                ₱{{ number_format($setProd->original_price, 2) }}
-            </span>
-            <span style="color: #fe8d29; font-weight: bold; margin-left: 5px;">
-                ₱{{ number_format($setProd->nego_price, 2) }}
-            </span>
-        @else
-            ₱{{ number_format($setProd->nego_price, 2) }}
-        @endif
-    </td>
-    <td>
-        <input type="number" 
-            name="placed_heads[{{ $setProd->set_id }}]" 
-            value="0" 
-            min="1"
-            class="form-control heads-input"
-            onchange="calculateRowTotal('{{ $setProd->set_id }}')"
-            disabled>
-    </td>                                        
-    <td>
-        <input type="number" 
-            name="placed_kilos[{{ $setProd->set_id }}]" 
-            value="0" 
-            min="1"
-            class="form-control kilos-input"
-            onchange="calculateRowTotal('{{ $setProd->set_id }}')"
-            disabled>
-    </td>
-    <td>
-        <span id="total_{{ $setProd->set_id }}" class="row-total">
-            ₱0.00
-        </span>
-    </td>
-</tr>
+                                        <tr class="product-row" 
+                                            data-set-id="{{ $setProd->set_id }}" 
+                                            data-product-id="{{ $setProd->product->product_id }}" 
+                                            data-price="{{ $setProd->nego_price }}"
+                                            data-original-price="{{ $setProd->original_price }}"
+                                            data-on-sale="{{ $setProd->on_sale ? 'true' : 'false' }}"
+                                            data-measurement-type="{{ $setProd->product->measurement_type }}">                                   
+                                            <td class="checkbox-cell">
+                                                <input type="checkbox" 
+                                                    name="selected_products[]" 
+                                                    value="{{ $setProd->set_id }}"
+                                                    class="product-checkbox"
+                                                    onchange="toggleProductRow(this, '{{ $setProd->set_id }}')">
+                                            </td>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $setProd->product->name }}</td>
+                                            <td>{{ $setProd->product->category }}</td>
+                                            <td>{{ $setProd->product->measurement_type }}</td>
+                                            <td>
+                                                @if($setProd->on_sale)
+                                                    <span style="text-decoration: line-through; color: #888;">
+                                                        ₱{{ number_format($setProd->original_price, 2) }}
+                                                    </span>
+                                                    <span style="color: #fe8d29; font-weight: bold; margin-left: 5px;">
+                                                        ₱{{ number_format($setProd->nego_price, 2) }}
+                                                    </span>
+                                                @else
+                                                    ₱{{ number_format($setProd->nego_price, 2) }}
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <input type="number" 
+                                                    name="placed_heads[{{ $setProd->set_id }}]" 
+                                                    value="0" 
+                                                    min="1"
+                                                    class="form-control heads-input"
+                                                    onchange="calculateRowTotal('{{ $setProd->set_id }}')"
+                                                    disabled>
+                                            </td>                                        
+                                            <td>
+                                                <input type="number" 
+                                                    name="placed_kilos[{{ $setProd->set_id }}]" 
+                                                    value="0" 
+                                                    min="1"
+                                                    class="form-control kilos-input"
+                                                    onchange="calculateRowTotal('{{ $setProd->set_id }}')"
+                                                    disabled>
+                                            </td>
+                                            <td>
+                                                <span id="total_{{ $setProd->set_id }}" class="row-total">
+                                                    ₱0.00
+                                                </span>
+                                            </td>
+                                        </tr>
 
-<script>
+                                        <script>
 function toggleProductRow(checkbox, setId) {
     const row = checkbox.closest('.product-row');
     const headsInput = row.querySelector('.heads-input');
@@ -130,23 +139,30 @@ function toggleProductRow(checkbox, setId) {
     const measurementType = row.dataset.measurementType;
     
     if (checkbox.checked) {
-        // Enable appropriate input based on measurement type
-        if (measurementType === 'Kilos') {
+        // For Heads&Kilos or Kilos: ALWAYS use kilos and make it required
+        if (measurementType === 'Heads&Kilos' || measurementType === 'Kilos') {
             kilosInput.disabled = false;
             kilosInput.value = 1;
+            kilosInput.required = true;
             headsInput.disabled = true;
             headsInput.value = 0;
+            headsInput.required = false;
         } else {
+            // For Heads only
             headsInput.disabled = false;
             headsInput.value = 1;
+            headsInput.required = true;
             kilosInput.disabled = true;
             kilosInput.value = 0;
+            kilosInput.required = false;
         }
     } else {
         headsInput.disabled = true;
         kilosInput.disabled = true;
         headsInput.value = 0;
         kilosInput.value = 0;
+        headsInput.required = false;
+        kilosInput.required = false;
     }
     
     calculateRowTotal(setId);
@@ -169,9 +185,12 @@ function calculateRowTotal(setId) {
     const kilosInput = row.querySelector('.kilos-input');
     
     let quantity = 0;
-    if (measurementType === 'Kilos') {
+    
+    // For Heads&Kilos or Kilos: ALWAYS use kilos
+    if (measurementType === 'Heads&Kilos' || measurementType === 'Kilos') {
         quantity = parseFloat(kilosInput.value) || 0;
     } else {
+        // For Heads only
         quantity = parseFloat(headsInput.value) || 0;
     }
     
@@ -194,13 +213,58 @@ function updateGrandTotal() {
     });
     
     document.getElementById('selectedCount').textContent = selectedCount;
-    document.getElementById('grandTotal').textContent = '₱' + grandTotal.toFixed(2);
+    document.getElementById('grandTotal').textContent = '₱' + grandTotal.toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
     
     // Enable/disable submit button
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.disabled = selectedCount === 0;
 }
-</script>
+
+// Add validation before form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            const errorMessages = [];
+            
+            document.querySelectorAll('.product-checkbox:checked').forEach(checkbox => {
+                const row = checkbox.closest('.product-row');
+                const measurementType = row.dataset.measurementType;
+                const kilosInput = row.querySelector('.kilos-input');
+                const headsInput = row.querySelector('.heads-input');
+                const productName = row.querySelector('td:nth-child(3)').textContent;
+                
+                // Validate Heads&Kilos and Kilos products must have kilos > 0
+                if (measurementType === 'Heads&Kilos' || measurementType === 'Kilos') {
+                    const kilos = parseFloat(kilosInput.value) || 0;
+                    if (kilos <= 0) {
+                        isValid = false;
+                        errorMessages.push(`${productName} requires kilos to be greater than 0`);
+                    }
+                }
+                
+                // Validate Heads only products must have heads > 0
+                if (measurementType === 'Heads') {
+                    const heads = parseFloat(headsInput.value) || 0;
+                    if (heads <= 0) {
+                        isValid = false;
+                        errorMessages.push(`${productName} requires heads to be greater than 0`);
+                    }
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fix the following errors:\n\n' + errorMessages.join('\n'));
+            }
+        });
+    }
+});
+                                        </script>
                                     @endforeach
 
                                 </tbody>

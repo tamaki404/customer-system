@@ -150,133 +150,150 @@ class PurchaseOrderController extends Controller
             ]);
         }
 
-        public function createPurchaseOrder(Request $request) {
-            $user = Auth::user();
-            
-            if ($user->role !== "Supplier") {
-                return redirect()->back()->with('error', 'Only suppliers can create purchase orders.');
+public function createPurchaseOrder(Request $request) {
+    $user = Auth::user();
+    
+    if ($user->role !== "Supplier") {
+        return redirect()->back()->with('error', 'Only suppliers can create purchase orders.');
+    }
+
+    $supplier = Suppliers::where('user_id', $user->user_id)->first();
+    
+    if (!$supplier) {
+        return redirect()->back()->with('error', 'Supplier profile not found.');
+    }
+
+    try {
+        $request->validate([
+            'selected_products'   => 'required|array|min:1',
+            'selected_products.*' => 'exists:product_settings,set_id',
+            'placed_kilos'        => 'nullable|array',
+            'placed_kilos.*'      => 'nullable|numeric|min:0',
+            'placed_heads'        => 'nullable|array',
+            'placed_heads.*'      => 'nullable|numeric|min:0',
+            'notes'               => 'nullable|string|max:1000',
+        ]);
+
+        DB::beginTransaction();
+
+        $date  = date('Ymd');
+        $po_id = 'PO-' . $date . '-' . Str::upper(Str::random(5));
+
+        // Create purchase order
+        $purchaseOrder = PurchaseOrders::create([
+            'po_id'        => $po_id,
+            'supplier_id'  => $supplier->supplier_id,
+            'status'       => 'Pending',
+            'notes'        => $request->notes,
+            'total_amount' => 0,
+            'placed_at'    => now(),
+        ]);
+
+        $totalAmount = 0;
+
+        foreach ($request->selected_products as $setId) {
+            $productSetting = ProductSetting::with('product')->where('set_id', $setId)->first();
+
+            if (!$productSetting) {
+                throw new \Exception("Invalid product setting for set_id: $setId");
             }
 
-            $supplier = Suppliers::where('user_id', $user->user_id)->first();
-            
-            if (!$supplier) {
-                return redirect()->back()->with('error', 'Supplier profile not found.');
-            }
+            $placedHeads = $request->placed_heads[$setId] ?? 0;
+            $placedKilos = $request->placed_kilos[$setId] ?? 0;
+            $measurementType = $productSetting->product->measurement_type;
 
-            try {
-                $request->validate([
-                    'selected_products'   => 'required|array|min:1',
-                    'selected_products.*' => 'exists:product_settings,set_id',
-                    'placed_kilos'        => 'nullable|array',
-                    'placed_kilos.*'      => 'nullable|numeric|min:0',
-                    'notes'               => 'nullable|string|max:1000',
-                ]);
-
-                DB::beginTransaction();
-
-                $date  = date('Ymd');
-                $po_id = 'PO-' . $date . '-' . Str::upper(Str::random(5));
-
-                // Create purchase order
-                $purchaseOrder = PurchaseOrders::create([
-                    'po_id'        => $po_id,
-                    'supplier_id'  => $supplier->supplier_id,
-                    'status'       => 'Pending',
-                    'notes'        => $request->notes,
-                    'total_amount' => 0,
-                    'placed_at'    => now(),
-                ]);
-
-                $totalAmount = 0;
-
-                foreach ($request->selected_products as $setId) {
-                    $productSetting = ProductSetting::with('product')->where('set_id', $setId)->first();
-
-                    if (!$productSetting) {
-                        throw new \Exception("Invalid product setting for set_id: $setId");
-                    }
-
-                    $placedHeads = $request->placed_heads[$setId] ?? 0;
-                    $placedKilos = $request->placed_kilos[$setId] ?? 0;
-                    $measurementType = $productSetting->product->measurement_type;
-
-                    // Determine which quantity to use
-                    if ($measurementType === 'Kilos') {
-                        $quantityForCalculation = $placedKilos;
-                        if ($quantityForCalculation <= 0) {
-                            throw new \Exception("Invalid kilos for product: {$productSetting->product->name}");
-                        }
-                    } else {
-                        $quantityForCalculation = $placedHeads;
-                        if ($quantityForCalculation <= 0) {
-                            throw new \Exception("Invalid heads for product: {$productSetting->product->name}");
-                        }
-                    }
-
-                    // Base negotiation price
-                    $originalPrice = $productSetting->nego_price;
-                    $finalUnitPrice = $originalPrice;
-
-                    //  Apply active sale discount (same logic as in purchaseOrderlist)
-                    $activeSale = SaleDiscount::where('product_id', $productSetting->product_id)
-                        ->whereDate('start_date', '<=', now())
-                        ->whereDate('end_date', '>=', now())
-                        ->first();
-
-                    if ($activeSale) {
-                        if ($activeSale->value_type === "Fixed") {
-                            $finalUnitPrice = $activeSale->value;
-                        } elseif ($activeSale->value_type === "Percentage") {
-                            $discountAmount = ($originalPrice * $activeSale->value) / 100;
-                            $finalUnitPrice = $originalPrice - $discountAmount;
-                        }
-                    }
-
-                    // Calculate totals
-                    $itemTotal = $finalUnitPrice * $quantityForCalculation;
-
-                    $poItemId = 'POI-' . $date . '-' . Str::upper(Str::random(5));
-
-                    PurchaseOrderItem::create([
-                        'po_item_id'      => $poItemId,
-                        'po_id'           => $po_id,
-                        'product_id'      => $productSetting->product_id,
-                        'set_id'          => $setId,
-                        'placed_heads'    => $placedHeads,
-                        'placed_kilos'    => $placedKilos,
-                        'alt_heads'       => $placedHeads,
-                        'alt_kilos'       => $placedKilos,
-                        'original_price'  => $originalPrice,
-                        'unit_price'      => $finalUnitPrice, //  now includes discount if active
-                        'total_price'     => $itemTotal,
-                        'status'          => 'Pending',
-                    ]);
-
-                    $totalAmount += $itemTotal;
+            // Determine which quantity to use based on measurement type
+            // For "Heads&Kilos" or "Kilos": ALWAYS use kilos
+            if ($measurementType === 'Heads&Kilos' || $measurementType === 'Kilos') {
+                $quantityForCalculation = $placedKilos;
+                
+                if ($quantityForCalculation <= 0) {
+                    throw new \Exception("Kilos is required for product: {$productSetting->product->name}");
                 }
-
-                // Update total
-                $purchaseOrder->update(['total_amount' => $totalAmount]);
-
-                DB::commit();
-
-                return redirect()
-                    ->route('purchaseorders.purchaseorder', ['po_id' => $po_id])
-                    ->with('success', 'Purchase order created successfully! PO ID: ' . $po_id);
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                \Log::error('Purchase order creation failed:', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'request_data' => $request->all(),
-                ]);
-
-                return redirect()->back()
-                    ->with('error', 'Purchase order creation failed: ' . $e->getMessage())
-                    ->withInput();
+                
+                // Set heads to 0 when using kilos
+                $placedHeads = 0;
+                
+            } elseif ($measurementType === 'Heads') {
+                $quantityForCalculation = $placedHeads;
+                
+                if ($quantityForCalculation <= 0) {
+                    throw new \Exception("Heads is required for product: {$productSetting->product->name}");
+                }
+                
+                // Set kilos to 0 when using heads
+                $placedKilos = 0;
+                
+            } else {
+                throw new \Exception("Invalid measurement type for product: {$productSetting->product->name}");
             }
+
+            // Base negotiation price
+            $originalPrice = $productSetting->nego_price;
+            $finalUnitPrice = $originalPrice;
+
+            // Apply active sale discount
+            $activeSale = SaleDiscount::where('product_id', $productSetting->product_id)
+                ->whereDate('start_date', '<=', now())
+                ->whereDate('end_date', '>=', now())
+                ->first();
+
+            if ($activeSale) {
+                if ($activeSale->value_type === "Fixed") {
+                    $finalUnitPrice = $activeSale->value;
+                } elseif ($activeSale->value_type === "Percentage") {
+                    $discountAmount = ($originalPrice * $activeSale->value) / 100;
+                    $finalUnitPrice = $originalPrice - $discountAmount;
+                }
+            }
+
+            // Calculate totals using the determined quantity
+            // For Heads&Kilos and Kilos: total = placed_kilos * unit_price
+            // For Heads: total = placed_heads * unit_price
+            $itemTotal = $finalUnitPrice * $quantityForCalculation;
+
+            $poItemId = 'POI-' . $date . '-' . Str::upper(Str::random(5));
+
+            PurchaseOrderItem::create([
+                'po_item_id'      => $poItemId,
+                'po_id'           => $po_id,
+                'product_id'      => $productSetting->product_id,
+                'set_id'          => $setId,
+                'placed_heads'    => $placedHeads,  // Will be 0 for Heads&Kilos and Kilos
+                'placed_kilos'    => $placedKilos,  // Will be 0 for Heads
+                'alt_heads'       => $placedHeads,
+                'alt_kilos'       => $placedKilos,
+                'original_price'  => $originalPrice,
+                'unit_price'      => $finalUnitPrice,  // Sale price if active, otherwise nego_price
+                'total_price'     => $itemTotal,       // quantity * unit_price
+                'status'          => 'Pending',
+            ]);
+
+            $totalAmount += $itemTotal;
         }
+
+        // Update total
+        $purchaseOrder->update(['total_amount' => $totalAmount]);
+
+        DB::commit();
+
+        return redirect()
+            ->route('purchaseorders.purchaseorder', ['po_id' => $po_id])
+            ->with('success', 'Purchase order created successfully! PO ID: ' . $po_id);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Purchase order creation failed:', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'request_data' => $request->all(),
+        ]);
+
+        return redirect()->back()
+            ->with('error', 'Purchase order creation failed: ' . $e->getMessage())
+            ->withInput();
+    }
+}
 
         public function confirmPurchaseOrder(Request $request, $po_id)
         {
