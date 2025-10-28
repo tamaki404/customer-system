@@ -84,39 +84,37 @@ class PurchaseOrderController extends Controller
                 //         return $setProduct;
                 //     });
 
-                    $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
-                    ->with('product')
-                    ->get()
-                    ->map(function($setProduct) {
-                        $activeSale = SaleDiscount::where('product_id', $setProduct->product_id)
-                            ->whereDate('start_date', '<=', now())
-                            ->whereDate('end_date', '>=', now())
-                            ->first();
-                        $setProduct->original_price = $setProduct->nego_price;
-                        if($setProduct->value_type === "Fixed"){
-                            if ($activeSale) {
-                                $setProduct->nego_price = $activeSale->value;
-                                $setProduct->on_sale = true;
-                            } else {
-                                $setProduct->on_sale = false;
-                            }
+ $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
+    ->with('product')
+    ->get()
+    ->map(function($setProduct) {
+        $activeSale = SaleDiscount::where('product_id', $setProduct->product_id)
+            ->whereDate('start_date', '<=', now())
+            ->whereDate('end_date', '>=', now())
+            ->first();
 
-                        }
-                        elseif($setProduct->value_type === "Percentage"){
-                            if ($activeSale) {
-                                $discountAmount = ($setProduct->nego_price * $activeSale->value) / 100;
-                                $setProduct->nego_price = $setProduct->price - $discountAmount;
-                                $setProduct->on_sale=true;
-                   
-                            } else {
-                                $setProduct->on_sale = false;
-                            }
-                        }
+        $setProduct->original_price = $setProduct->nego_price;
+
+        if ($activeSale) {
+            if ($activeSale->value_type === "Fixed") {
+                // Fixed discount (direct price)
+                $setProduct->nego_price = $activeSale->value;
+                $setProduct->on_sale = true;
+            }
+            elseif ($activeSale->value_type === "Percentage") {
+                // Percentage discount
+                $discountAmount = ($setProduct->original_price * $activeSale->value) / 100;
+                $setProduct->nego_price = $setProduct->original_price - $discountAmount;
+                $setProduct->on_sale = true;
+            }
+        } else {
+            $setProduct->on_sale = false;
+        }
+
+        return $setProduct;
+    });
 
 
-
-                        return $setProduct;
-                    });
 
             }
         } 
