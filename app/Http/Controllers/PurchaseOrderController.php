@@ -37,6 +37,7 @@ class PurchaseOrderController extends Controller
             $user = Auth::user();
             $supplier = null;
             $pos = collect();
+            $setProds = collect(); 
 
             if ($user->role === "Supplier") {
                 $supplier = Suppliers::where('user_id', $user->user_id)->first();
@@ -64,39 +65,34 @@ class PurchaseOrderController extends Controller
 
                     $pos = $query->orderBy('created_at', 'desc')->get();
 
-
-
+                    // Get products with sale prices
                     $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
-                    ->with('product')
-                    ->get() 
-                    ->unique('product_id')
-                    ->values()
-                    ->map(function($setProduct) {
-                        $activeSale = SaleDiscount::where('product_id', $setProduct->product_id)
-                            ->whereDate('start_date', '<=', now())
-                            ->whereDate('end_date', '>=', now())
-                            ->first();
+                        ->with('product')
+                        ->get() 
+                        ->unique('product_id')
+                        ->values()
+                        ->map(function($setProduct) {
+                            $activeSale = SaleDiscount::where('product_id', $setProduct->product_id)
+                                ->whereDate('start_date', '<=', now())
+                                ->whereDate('end_date', '>=', now())
+                                ->first();
 
-                        $setProduct->original_price = $setProduct->nego_price;
-                        $setProduct->on_sale = false;
+                            $setProduct->original_price = $setProduct->nego_price;
+                            $setProduct->on_sale = false;
 
-                        if ($activeSale) {
-                            if ($activeSale->value_type === "Fixed") {
-                                $setProduct->nego_price = $activeSale->value;
-                                $setProduct->on_sale = true;
-                            } elseif ($activeSale->value_type === "Percentage") {
-                                $discountAmount = ($setProduct->original_price * $activeSale->value) / 100;
-                                $setProduct->nego_price = $setProduct->original_price - $discountAmount;
-                                $setProduct->on_sale = true;
+                            if ($activeSale) {
+                                if ($activeSale->value_type === "Fixed") {
+                                    $setProduct->nego_price = $activeSale->value;
+                                    $setProduct->on_sale = true;
+                                } elseif ($activeSale->value_type === "Percentage") {
+                                    $discountAmount = ($setProduct->original_price * $activeSale->value) / 100;
+                                    $setProduct->nego_price = $setProduct->original_price - $discountAmount;
+                                    $setProduct->on_sale = true;
+                                }
                             }
-                        }
 
-                        return $setProduct;
-                    });
-
-
-
-
+                            return $setProduct;
+                        });
                 }
             } 
             elseif ($user->role === "Staff" || $user->role === "Admin") {
@@ -126,7 +122,7 @@ class PurchaseOrderController extends Controller
             return view('purchase-orders.list', [
                 'user' => $user,
                 'supplier' => $supplier,
-                'setProds' => $setProds,
+                'setProds' => $setProds, 
                 'pos' => $pos,
             ]);
         }

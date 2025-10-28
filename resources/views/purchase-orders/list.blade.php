@@ -74,63 +74,63 @@
                                             ->with('product')
                                             ->get();
                                     @endphp
-@foreach($setProds as $setProd)
-    <tr class="product-row" 
-        data-set-id="{{ $setProd->set_id }}" 
-        data-product-id="{{ $setProd->product->product_id }}" 
-        data-price="{{ $setProd->nego_price }}"
-        data-original-price="{{ $setProd->original_price }}"
-        data-on-sale="{{ $setProd->on_sale ? 'true' : 'false' }}"
-        data-measurement-type="{{ $setProd->product->measurement_type }}">                                   
-        <td class="checkbox-cell">
-            <input type="checkbox" 
-                name="selected_products[]" 
-                value="{{ $setProd->set_id }}"
-                class="product-checkbox"
-                onchange="toggleProductRow(this, '{{ $setProd->set_id }}')">
-        </td>
-        <td>{{ $loop->iteration }}</td>
-        <td>{{ $setProd->product->name }}</td>
-        <td>{{ $setProd->product->category }}</td>
-        <td>{{ $setProd->product->measurement_type }}</td>
-        <td>
-            @if($setProd->on_sale)
-                <span style="text-decoration: line-through; color: #888;">
-                    ₱{{ number_format($setProd->original_price, 2) }}
-                </span>
-                <span style="color: #fe8d29; font-weight: bold; margin-left: 5px;">
-                    ₱{{ number_format($setProd->nego_price, 2) }}
-                </span>
-            @else
-                ₱{{ number_format($setProd->nego_price, 2) }}
-            @endif
-        </td>
-        <td>
-            <input type="number" 
-                name="placed_heads[{{ $setProd->set_id }}]" 
-                value="0" 
-                min="1"
-                class="form-control heads-input"
-                onchange="calculateRowTotal('{{ $setProd->set_id }}')"
-                disabled>
-        </td>                                        
-        <td>
-            <input type="number" 
-                name="placed_kilos[{{ $setProd->set_id }}]" 
-                value="0" 
-                min="0.01"
-                step="0.01"
-                class="form-control kilos-input"
-                onchange="calculateRowTotal('{{ $setProd->set_id }}')"
-                disabled>
-        </td>
-        <td>
-            <span id="total_{{ $setProd->set_id }}" class="row-total">
-                ₱0.00
-            </span>
-        </td>
-    </tr>
-@endforeach
+                                        @foreach($setProds as $setProd)
+                                            <tr class="product-row" 
+                                                data-set-id="{{ $setProd->set_id }}" 
+                                                data-product-id="{{ $setProd->product->product_id }}" 
+                                                data-price="{{ $setProd->nego_price }}"
+                                                data-original-price="{{ $setProd->original_price }}"
+                                                data-on-sale="{{ $setProd->on_sale ? 'true' : 'false' }}"
+                                                data-measurement-type="{{ $setProd->product->measurement_type }}">                                   
+                                                <td class="checkbox-cell">
+                                                    <input type="checkbox" 
+                                                        name="selected_products[]" 
+                                                        value="{{ $setProd->set_id }}"
+                                                        class="product-checkbox"
+                                                        onchange="toggleProductRow(this, '{{ $setProd->set_id }}')">
+                                                </td>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $setProd->product->name }}</td>
+                                                <td>{{ $setProd->product->category }}</td>
+                                                <td>{{ $setProd->product->measurement_type }}</td>
+                                                <td>
+                                                    @if($setProd->on_sale)
+                                                        <span style="text-decoration: line-through; color: #888;">
+                                                            ₱{{ number_format($setProd->original_price, 2) }}
+                                                        </span>
+                                                        <span style="color: #fe8d29; font-weight: bold; margin-left: 5px;">
+                                                            ₱{{ number_format($setProd->nego_price, 2) }}
+                                                        </span>
+                                                    @else
+                                                        ₱{{ number_format($setProd->nego_price, 2) }}
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <input type="number" 
+                                                        name="placed_heads[{{ $setProd->set_id }}]" 
+                                                        value="0" 
+                                                        min="1"
+                                                        class="form-control heads-input"
+                                                        onchange="calculateRowTotal('{{ $setProd->set_id }}')"
+                                                        disabled>
+                                                </td>                                        
+                                                <td>
+                                                    <input type="number" 
+                                                        name="placed_kilos[{{ $setProd->set_id }}]" 
+                                                        value="0" 
+                                                        min="0.01"
+                                                        step="0.01"
+                                                        class="form-control kilos-input"
+                                                        onchange="calculateRowTotal('{{ $setProd->set_id }}')"
+                                                        disabled>
+                                                </td>
+                                                <td>
+                                                    <span id="total_{{ $setProd->set_id }}" class="row-total">
+                                                        ₱0.00
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
 
                                 </tbody>
                             </table>
