@@ -54,7 +54,7 @@ class OrderController extends Controller
                 $plannedHeads = $order->deliveries->flatMap->deliveryItems->sum('planned_heads');
                 $plannedKilos = $order->deliveries->flatMap->deliveryItems->sum('planned_kilos');
 
-                // ✅ Get related deliveries (ordered)
+                //  Get related deliveries (ordered)
                 $deliveries = Delivery::where('order_id', $order->order_id)
                     ->orderBy('delivery_date', 'asc')
                     ->with('deliveryItems')
