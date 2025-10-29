@@ -203,11 +203,10 @@ class OrderController extends Controller
         public function orderView($order_id, Request $request)
         {
             $user = Auth::user();
-         
             $order = Orders::with(['items.productSetting'])->where('order_id', $order_id)->first();
             $itemCount = OrderItem::where('order_id', $order_id)->count();
             $delCount = Delivery::where('order_id', $order_id)->count();
-
+            $orderDeets = Orders::where('order_id', $order_id)->first();
             $items = $order->items;
             $deliveries = Delivery::when($order_id, function ($query) use ($order_id) {
                     $query->where('order_id', $order_id);
@@ -215,9 +214,7 @@ class OrderController extends Controller
                 ->orderBy('delivery_date', 'asc')
                 ->get();
             $activeDelivery = Delivery::where('order_id', $order_id)->count();
-
             
-
             return view('orders.order', [
                 'user' => $user,
                 'order' => $order,
@@ -225,8 +222,8 @@ class OrderController extends Controller
                 'deliveries' => $deliveries,
                 'activeDelivery' => $activeDelivery,
                 'itemCount' => $itemCount,
-                'delCount' => $delCount
-
+                'delCount' => $delCount,
+                'orderDeets' => $orderDeets
             ]);
         }
 

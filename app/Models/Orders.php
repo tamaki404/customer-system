@@ -60,5 +60,9 @@ public function del()
 {
     return $this->hasMany(Delivery::class, 'order_id', 'order_id');
 }
+    public function requirements()
+    {
+        return $this->belongsTo(DeliveryRequirements::class, 'supplier_id', 'supplier_id');
+    }
 
 }

@@ -59,7 +59,10 @@ class Delivery extends Model
     {
         return $this->belongsTo(DeliveryRequirements::class, 'delivery_requirement_id');
     }
-
+    public function requirements()
+    {
+        return $this->belongsTo(DeliveryRequirements::class, 'supplier_id');
+    }
     public function scopeScheduled($query)
     {
         return $query->where('status', 'Scheduled');

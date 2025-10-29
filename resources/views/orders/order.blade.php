@@ -466,17 +466,17 @@
                     </div>
                 </div>
                 <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-xl">
-                                <div class="modal-content" style="width: 100%">
-                                <div class="modal-header">
-                                    <p class="modal-title">PDF Preview</p>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body" style="height: 80vh;">
-                                    <iframe id="pdfFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
-                                </div>
-                                </div>
-                            </div>
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content" style="width: 100%">
+                        <div class="modal-header">
+                            <p class="modal-title">PDF Preview</p>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body" style="height: 80vh;">
+                            <iframe id="pdfFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+                        </div>
+                        </div>
+                    </div>
                 </div>
                 {{-- @if ($order->status === "Accepted")
                     <p style="padding: 5px; width: 300px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;">Waiting for scheduled delivery</p>
@@ -515,50 +515,89 @@
                     </p>
                 </div>
                 <div class="details-box">
-                    <div class="supplier">
-                        @php
-                                    $imgSrc =  $order->supplier->user->image 
-                                        ? ('data:' . $order->supplier->user->image_mime_type . ';base64,' . base64_encode($order->supplier->user->image))
-                                        : asset('images/default-avatar.png');
-                        @endphp
-                        <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image">
-                        <div class="name-redirect">
+                    <div class="first" style="justify-content: space-between">
+                        <div class="supplier">
+                            @php
+                                $imgSrc =  $order->supplier->user->image 
+                                    ? ('data:' . $order->supplier->user->image_mime_type . ';base64,' . base64_encode($order->supplier->user->image))
+                                    : asset('images/default-avatar.png');
+                            @endphp
+                            <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image">
+                            <div class="name-redirect">
+                                <div>
+                                    <p>{{ $order->supplier->company_name ?? 'N/A' }}</p>
+                                    <button href="">
+                                        <span class="material-symbols-outlined">
+                                            arrow_outward
+                                        </span>
+                                    </button>
+                                </div>
+                                <p class="category">{{ $order->supplier->category }}</p>
+                            </div>                        
+                        </div>
+                        <div class="un-named">
                             <div>
-                                        <p>{{ $order->supplier->company_name ?? 'N/A' }}</p>
-                                        <button href="">
-                                            <span class="material-symbols-outlined">
-                                                arrow_outward
-                                            </span>
-                                        </button>
+                                <p class="time">
+                                    <span class="label">Receiving time</span>
+                                    <span> {{ $order->requirements->receiving_time->format('h:i:s a') }}</span>
+                                </p>
+                                <p  class="date">
+                                    <span class="label">Delivery days</span>
+                                    <span>{{ $order->requirements->delivery_days }}</span>
+
+                                </p>
                             </div>
-                            <p class="category">{{ $order->supplier->category }}</p>
-                        </div>                        
+                        </div>
                     </div>
-                    <div class="un-named">
+
+                    <div class="address">
+                        <div class="location">
+                            <span class="material-symbols-outlined icon">
+                            location_on
+                            </span>
+                            <p>
+                                <span class="label">Address line 1</span>
+                                <span>{{ ($order->requirements->delivery_address_1 ) ?? NULL}}</span>
+                            </p>
+                        </div>
+                        <div class="location">
+                            <span class="material-symbols-outlined icon">
+                            location_on
+                            </span>
+                            <p>
+                                <span class="label">Address line 2</span>
+                                <span>{{ ($order->requirements->delivery_address_2 ) ?? NULL}}</span>
+                            </p>
+                        </div>
+                        <div class="location">
+                            <span class="material-symbols-outlined icon">
+                            location_on
+                            </span>
+                            <p>
+                                <span class="label">Address line 3</span>
+                                <span>{{ ($order->requirements->delivery_address_3 ) ?? NULL}}</span>
+                            </p>
+                        </div>                    
                     </div>
                 </div>
                 {{-- <p style="display: flex; flex-direction: column;">
-                                <span><strong>Supplier:</strong> {{ $order->supplier->company_name }}</span>
-                                <span><strong>Order ID:</strong> {{ $order->order_id }}</span>
-                                <span><strong>Total amount: </strong> ₱{{ number_format($order->total_amount, 2) }}</span>
-                                <span><strong>Payment status: </strong> {{ $order->payment_status }}</span>
-                                @if ($order->status === "Delivered")
-                                    <span><strong>Delivered at:</strong> {{ $order->delivered_at->format('F j, Y') }}</span>
-                                @elseif($order->status === "Rejected")
-                                    <span><strong>Rejected at:</strong> {{ $order->rejected_at->format('F j, Y') }}</span>
-                                @elseif($order->status === "Completed")
-                                    <span>
-                                        <strong>Completed at:</strong> 
-                                        {{ $order->completed_at?->format('F j, Y') ?? 'Not yet completed' }}
-                                    </span>
+                        <span><strong>Supplier:</strong> {{ $order->supplier->company_name }}</span>
+                        <span><strong>Order ID:</strong> {{ $order->order_id }}</span>
+                        <span><strong>Total amount: </strong> ₱{{ number_format($order->total_amount, 2) }}</span>
+                        <span><strong>Payment status: </strong> {{ $order->payment_status }}</span>
+                        @if ($order->status === "Delivered")
+                            <span><strong>Delivered at:</strong> {{ $order->delivered_at->format('F j, Y') }}</span>
+                        @elseif($order->status === "Rejected")
+                            <span><strong>Rejected at:</strong> {{ $order->rejected_at->format('F j, Y') }}</span>
+                        @elseif($order->status === "Completed")
+                            <span>
+                                <strong>Completed at:</strong> 
+                                {{ $order->completed_at?->format('F j, Y') ?? 'Not yet completed' }}
+                            </span>
+                        @elseif($order->status === "Accepted")
+                            <span><strong>Acccepted at:</strong> {{ $order->created_at->format('F j, Y') }}</span>
 
-                                @elseif($order->status === "Accepted")
-                                    <span><strong>Acccepted at:</strong> {{ $order->created_at->format('F j, Y') }}</span>
-                                
-                                @endif
-
-                                
-
+                        @endif
                 </p> --}}
             </div>
 
