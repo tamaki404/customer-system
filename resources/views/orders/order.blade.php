@@ -234,7 +234,7 @@
                                                             if (is_array($rawDays)) {
                                                                 $deliveryDays = $rawDays;
                                                             } elseif (is_string($rawDays) && !empty($rawDays)) {
-                                                                // Try comma-separated first
+                                                                // comma-separated first
                                                                 if (strpos($rawDays, ',') !== false) {
                                                                     $deliveryDays = array_map('trim', explode(',', $rawDays));
                                                                 } else {
@@ -289,92 +289,6 @@
                         </div>
                     </div>
 
-
-                    <script>
-                    document.querySelectorAll('.order-item').forEach(itemDiv => {
-                        const type = itemDiv.dataset.type;
-                        const totalHeads = parseFloat(itemDiv.dataset.totalHeads || 0);
-                        const totalKilos = parseFloat(itemDiv.dataset.totalKilos || 0);
-
-                        if (type.includes('Heads')) {
-                            setupAutoAdjust(itemDiv, 'heads', totalHeads);
-                        }
-                        if (type.includes('Kilos')) {
-                            setupAutoAdjust(itemDiv, 'kilos', totalKilos);
-                        }
-                    });
-
-                    function setupAutoAdjust(itemDiv, key, total) {
-                        const inputs = Array.from(itemDiv.querySelectorAll(`input[name*="[${key}]"]`));
-
-                        //  Distribute initial values properly (handle decimals nicely)
-                        distributeInitial(inputs, total);
-
-                        inputs.forEach((input, index) => {
-                            input.addEventListener('input', () => {
-                                adjustRemaining(itemDiv, key, total, index);
-                            });
-                        });
-                    }
-
-                    function distributeInitial(inputs, total) {
-                        const count = inputs.length;
-                        let base = Math.floor(total / count);
-                        let remainder = total % count;
-
-                        inputs.forEach((input, i) => {
-                            let value = base;
-                            if (remainder > 0) {
-                                value += 1;
-                                remainder -= 1;
-                            }
-                            input.value = value;
-                        });
-                    }
-
-                    function adjustRemaining(itemDiv, key, total, changedIndex) {
-                        const inputs = Array.from(itemDiv.querySelectorAll(`input[name*="[${key}]"]`));
-                        let sumExceptChanged = 0;
-
-                        inputs.forEach((i, idx) => {
-                            if (idx !== changedIndex) {
-                                sumExceptChanged += parseFloat(i.value) || 0;
-                            }
-                        });
-
-                        const remaining = total - sumExceptChanged;
-                        const changedInput = inputs[changedIndex];
-                        let changedValue = parseFloat(changedInput.value) || 0;
-
-                        //  Prevent exceeding total
-                        if (changedValue > remaining) {
-                            changedValue = remaining;
-                            changedInput.value = changedValue;
-                        }
-
-                        //  Recalculate other fields proportionally
-                        const diff = total - (changedValue + sumExceptChanged);
-                        if (diff !== 0) {
-                            distributeDiff(inputs, changedIndex, diff);
-                        }
-                    }
-
-                    function distributeDiff(inputs, changedIndex, diff) {
-                        const otherInputs = inputs.filter((_, idx) => idx !== changedIndex);
-                        let remainingDiff = diff;
-
-                        // Adjust each input evenly to absorb or give back the difference
-                        otherInputs.forEach((input, i) => {
-                            if (remainingDiff === 0) return;
-
-                            let value = parseFloat(input.value) || 0;
-                            const adjustment = Math.sign(remainingDiff); // +1 or -1
-                            input.value = value + adjustment;
-                            remainingDiff -= adjustment;
-                        });
-                    }
-                    </script>
-
                 </div>
 
                 <div class="modal-footer">
@@ -395,72 +309,76 @@
                     </p>
                 </div>
                 <div class="title-actions">
-                        <p class="heading" >
-                            <span>Order #{{ $order->order_id }}</span>
-                            <span class="order-status"> {{ $order->status }} </span>
-                        </p>
-                        <div class="upper-con" style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
-                            <div class="buttons">
-                                <!-- Buttons -->
-                                @if ($order->status === 'Accepted' && Auth()->user()->role !== 'Supplier')
-                                    <button type="button" 
-                                        data-bs-toggle="modal" data-bs-target="#processModal" 
-                                        data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
-                                        class="process"
-                                        >
-                                        <span class="material-symbols-outlined" >
-                                        component_exchange
-                                        </span>
-                                        Process order
-                                    </button>
-                                @elseif ($order->status === 'Processed' && Auth()->user()->role !== 'Supplier')
-                                    <button type="button" 
-                                        data-bs-toggle="modal" data-bs-target="#exportModal" 
-                                        data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
-                                        class="export"
-                                        >
-                                        <span class="material-symbols-outlined"> download</span>
-                                        Export
-                                    </button>
-                                    <button class="collection-btn" onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $order->order_id]) }}'">
-                                        <span class="material-symbols-outlined" >
-                                        grain
-                                        </span>
-                                        Receipt collection
-                                    </button> 
-                                @endif
-                            </div>
+                    <p class="heading" >
+                        <span>Order #{{ $order->order_id }}</span>
+                        <span class="order-status"> {{ $order->status }} </span>
+                    </p>
+                    <div class="upper-con" style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
+                        <div class="buttons">
+                            <!-- Buttons -->
+                            @if ($order->status === 'Accepted' && Auth()->user()->role !== 'Supplier')
+                                <button type="button" 
+                                    data-bs-toggle="modal" data-bs-target="#processModal" 
+                                    data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                                    class="process"
+                                    >
+                                    <span class="material-symbols-outlined" >
+                                    component_exchange
+                                    </span>
+                                    Process order
+                                </button>
+                            @elseif ($order->status === 'Processed' && Auth()->user()->role !== 'Supplier')
+                                <button type="button" 
+                                    data-bs-toggle="modal" data-bs-target="#exportModal" 
+                                    data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                                    class="export"
+                                    >
+                                    <span class="material-symbols-outlined"> download</span>
+                                    Export
+                                </button>
+                                <button class="collection-btn" onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $order->order_id]) }}'">
+                                    <span class="material-symbols-outlined" >
+                                    grain
+                                    </span>
+                                    Receipt collection
+                                </button> 
+                            @endif
                         </div>
+                    </div>
                 </div>
                 <div class="modal fade" id="exportModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content" style="width: auto">
                             <div class="modal-header">
-                                <p class="modal-title">Export</p>
+                                <p class="modal-title"><span class="material-symbols-outlined icon"> print</span>Export as PDF</p>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
-                            <div class="modal-body" style="height: auto;">
-                                <button type="button" 
-                                    data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                    data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
-                                    >
-                                    <span class="material-symbols-outlined"> print</span>
-                                    Customer Order
-                                </button>
-                                <button type="button" 
+                            <div class="modal-body modal-btn" style="height: auto;">
+                                <p style="margin-bottom: 10px; font-size: 13px; color: #333;">You can download these files as pdf</p>
+                                <div>
+                                    <button type="button" 
                                         data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                        data-url="{{ route('orders.delivery.pdf', $order->order_id) }}"
-                                        >
-                                    <span class="material-symbols-outlined"> print</span>
-                                    Delivery receipt                               
-                                </button>
-                                <button type="button" 
-                                        data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                        data-url="{{ route('orders.invoice.pdf', $order->order_id) }}"
-                                    >
-                                    <span class="material-symbols-outlined"> print</span>
-                                    Sales Invoice
-                                </button>                    
+                                        data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
+                                        class="pdfBtn">
+                                        <span class="material-symbols-outlined icon"> shopping_basket</span>
+                                        Customer Order
+                                    </button>
+                                    <button type="button" 
+                                            data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                            data-url="{{ route('orders.delivery.pdf', $order->order_id) }}"
+                                            class="pdfBtn">
+                                        <span class="material-symbols-outlined icon"> receipt_long</span>
+                                        Delivery receipt                               
+                                    </button>
+                                    <button type="button" 
+                                            data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                                            data-url="{{ route('orders.invoice.pdf', $order->order_id) }}"
+                                        class="pdfBtn">
+                                        <span class="material-symbols-outlined icon"> request_page</span>
+                                        Sales Invoice
+                                    </button> 
+                                </div>
+                   
                             </div>
                         </div>
                     </div>
@@ -546,6 +464,11 @@
                                     <span>{{ $order->requirements->delivery_days }}</span>
 
                                 </p>
+                                <p  class="date">
+                                    <span class="label">Purchase order</span>
+                                    <a href="{{ route('purchaseorders.purchaseorder',$order->po_id) }}" style="color: #f8912a">{{ $order->po_id }}</a>
+
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -612,7 +535,6 @@
                     </div>
                     <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden; align-items: center;">
                                         @if ($activeDelivery > 0)
-
                                         <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                                             <thead style="background-color: #f8f8f8;">
                                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
@@ -770,7 +692,11 @@
                                                 {{ $item->placed_kilos }}kg
                                             @elseif ($item->product->measurement_type === "Heads")
                                                 {{ $item->placed_heads }}
-                                            @endif
+                                            @elseif ($item->product->measurement_type === "Heads&Kilos")
+                                                {{ $item->placed_heads }} 
+                                                {{ $item->placed_kilos }}kg
+
+                                            @endif                                        
                                         </td>
                                         <td>₱{{ number_format($item->total_price, 2) }}</td>
                                     </tr>
@@ -782,14 +708,14 @@
             </div>
         
         </div>
-        <div class="right" style="width: 25%; height: 100%;">
-            <p>
+        <div class="right" style="width: 25%; height: 100%; background-color: #fff">
+            <p style="box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
                 <span class="material-symbols-outlined">
                 payments
                 </span>
                 <span>Balance</span>
             </p>
-            <div class="right-bg">
+            <div class="right-bg" >
 
                 <p style="background: transparent"> 
                     <span class="label">Status</span>
@@ -808,37 +734,38 @@
                     </p>
                 </div>
 
-                <div class="cons" style="height: 50px">
-                    <p class="label-con" style="gap: 3px">
-                        <span class="material-symbols-outlined icon" >
-                        payment_arrow_down
-                        </span>
-                        <span>Payment received</span>
-                    </p>
-                    <p style="justify-content: flex-end">
-                        <span style="color: #333; font-weight: bold; font-size: 12px">{{ $receivedPaymentCount }}</span>
-                    </p>
-                </div>
-                <div class="payment-con" style="padding: 5px">
-                    @foreach ( $payments as  $payment)
-                        <button class="cons-receipt" style="margin: 0; padding: 10px;" onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $payment->receipt_id]) }}'">
-                            <p style="display: flex; gap: 0; margin: 0; padding: 0; background-color: transparent;">
-                                <span class="loop" style="font-size: 12px; color: #666;">#{{ $loop->iteration }}</span>
-                                <span style="margin-left: 7px">{{ $payment->created_at->format('j F, Y') }}</span>
-                                <span style="color: green; margin-left: auto;">+ ₱{{ number_format($payment->total_amount, 2) }}</span>
-                            </p>
-                            <p class="receipt-label" style="margin: 0; height: auto; padding: 0; ; background-color: transparent;">
-                                <span>Bank transfer</span>
-                            </p>
 
-
-                        </button>
-                            <hr style="margin: 10px;   
-                                border-top: 1px dashed #666;
-                                border-bottom: none;
-                                border-left: none;
-                                border-right: none;">
-                    @endforeach
+                <div class="payment-con" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset; border-radius: 5px; background-color: #f2f2f26f;" >
+                    <div class="cons" style="height: auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; background-color:#ffb74d;">
+                        <p class="label-con" style="gap: 3px; background-color: transparent;">
+                            <span class="material-symbols-outlined icon" style="color: #333; font-weight: bold">
+                            payment_arrow_down
+                            </span>
+                            <span style="color: #333; font-weight: bold;">Payment received</span>
+                        </p>
+                        <p style="justify-content: flex-end;background-color: transparent;">
+                            <span style="color: #333; font-weight: bold; font-size: 12px">{{ $receivedPaymentCount }}</span>
+                        </p>
+                    </div>
+                    <div style="padding: 10px; ">
+                        @foreach ( $payments as  $payment)
+                            <button class="cons-receipt" style="margin: 0; padding: 10px;" onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $payment->receipt_id]) }}'">
+                                <p style="display: flex; gap: 0; margin: 0; padding: 0; background-color: transparent;">
+                                    <span class="loop" style="font-size: 12px; color: #666;">#{{ $loop->iteration }}</span>
+                                    <span style="margin-left: 7px">{{ $payment->created_at->format('j F, Y') }}</span>
+                                    <span style="color: #f8912a; margin-left: auto;">+ ₱{{ number_format($payment->total_amount, 2) }}</span>
+                                </p>
+                                <p class="receipt-label" style="margin: 0; height: auto; padding: 0; ; background-color: transparent;">
+                                    <span>Bank transfer</span>
+                                </p>
+                            </button>
+                                <hr style="margin: 10px;   
+                                    border-top: 1px dashed #666;
+                                    border-bottom: none;
+                                    border-left: none;
+                                    border-right: none;">
+                        @endforeach
+                    </div>
                 </div>
 
                 <hr>
@@ -852,7 +779,7 @@
                             $remainingBalance = ($order->total_amount) - ($verifiedPaidAmount);
                         @endphp
                         <span class="label">Balance</span>
-                        <span class="value">₱{{ number_format($remainingBalance, 2) }}</span>
+                        <span class="value" style="font-size: 15px; color: #f8912a;">₱{{ number_format($remainingBalance, 2) }}</span>
                     </p>
 
                 </div>
@@ -872,7 +799,76 @@
     <script src="{{ asset('js/global/two_mb.js') }}"></script>
     <script src="{{ asset('js/global/pdf_view.js') }}"></script>
     <script src="{{ asset('js/order/modal-values.js') }}"></script>
-
+    <script>
+        document.querySelectorAll('.order-item').forEach(itemDiv => {
+            const type = itemDiv.dataset.type;
+            const totalHeads = parseFloat(itemDiv.dataset.totalHeads || 0);
+            const totalKilos = parseFloat(itemDiv.dataset.totalKilos || 0);
+            if (type.includes('Heads')) {
+                setupAutoAdjust(itemDiv, 'heads', totalHeads);
+            }
+            if (type.includes('Kilos')) {
+                setupAutoAdjust(itemDiv, 'kilos', totalKilos);
+            }
+        });
+        function setupAutoAdjust(itemDiv, key, total) {
+            const inputs = Array.from(itemDiv.querySelectorAll(`input[name*="[${key}]"]`));
+            //  Distribute initial values properly (handle decimals nicely)
+            distributeInitial(inputs, total);
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', () => {
+                    adjustRemaining(itemDiv, key, total, index);
+                });
+            });
+        }
+        function distributeInitial(inputs, total) {
+            const count = inputs.length;
+            let base = Math.floor(total / count);
+            let remainder = total % count;
+            inputs.forEach((input, i) => {
+                let value = base;
+                if (remainder > 0) {
+                    value += 1;
+                    remainder -= 1;
+                }
+                input.value = value;
+            });
+        }
+            function adjustRemaining(itemDiv, key, total, changedIndex) {
+                const inputs = Array.from(itemDiv.querySelectorAll(`input[name*="[${key}]"]`));
+                let sumExceptChanged = 0;
+                inputs.forEach((i, idx) => {
+                    if (idx !== changedIndex) {
+                        sumExceptChanged += parseFloat(i.value) || 0;
+                    }
+                });
+                const remaining = total - sumExceptChanged;
+                const changedInput = inputs[changedIndex];
+                let changedValue = parseFloat(changedInput.value) || 0;
+                //  Prevent exceeding total
+                if (changedValue > remaining) {
+                    changedValue = remaining;
+                    changedInput.value = changedValue;
+                }
+                //  Recalculate other fields proportionally
+                const diff = total - (changedValue + sumExceptChanged);
+                if (diff !== 0) {
+                    distributeDiff(inputs, changedIndex, diff);
+                }
+            }
+            function distributeDiff(inputs, changedIndex, diff) {
+            const otherInputs = inputs.filter((_, idx) => idx !== changedIndex);
+            let remainingDiff = diff;
+            // Adjust each input evenly to absorb or give back the difference
+            otherInputs.forEach((input, i) => {
+                if (remainingDiff === 0) return;
+                let value = parseFloat(input.value) || 0;
+                const adjustment = Math.sign(remainingDiff); // +1 or -1
+                input.value = value + adjustment;
+                remainingDiff -= adjustment;
+            });
+        }
+    </script>
 
 
 @endpush

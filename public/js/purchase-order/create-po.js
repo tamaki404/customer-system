@@ -1,6 +1,6 @@
 /**
  * Purchase Order Creation - Product Selection and Calculation
- * Handles product selection, quantity input, and total calculations
+ * Handles product selection, quantity input, and total calculations with sale quantity limits
  */
 
 let selectedProducts = new Map();
@@ -13,6 +13,8 @@ function toggleProductRow(checkbox, setId) {
     const headsInput = document.querySelector(`input[name="placed_heads[${setId}]"]`);
     const kilosInput = document.querySelector(`input[name="placed_kilos[${setId}]"]`);
     const measurementType = row.dataset.measurementType;
+    const onSale = row.dataset.onSale === 'true';
+    const saleQuantity = parseFloat(row.dataset.saleQuantity);
 
     if (checkbox.checked) {
         row.classList.remove('disabled');
@@ -26,6 +28,11 @@ function toggleProductRow(checkbox, setId) {
             kilosInput.disabled = false;
             kilosInput.value = 1;
             kilosInput.required = true;
+            
+            // Set max for kilos if on sale
+            if (onSale && !isNaN(saleQuantity) && saleQuantity > 0) {
+                kilosInput.setAttribute('max', saleQuantity);
+            }
         } else if (measurementType === 'Kilos') {
             // Only kilos for Kilos products
             kilosInput.disabled = false;
@@ -34,6 +41,11 @@ function toggleProductRow(checkbox, setId) {
             headsInput.disabled = true;
             headsInput.value = 0;
             headsInput.required = false;
+            
+            // Set max for kilos if on sale
+            if (onSale && !isNaN(saleQuantity) && saleQuantity > 0) {
+                kilosInput.setAttribute('max', saleQuantity);
+            }
         } else if (measurementType === 'Heads') {
             // Only heads for Heads products
             headsInput.disabled = false;
@@ -42,6 +54,11 @@ function toggleProductRow(checkbox, setId) {
             kilosInput.disabled = true;
             kilosInput.value = 0;
             kilosInput.required = false;
+            
+            // Set max for heads if on sale
+            if (onSale && !isNaN(saleQuantity) && saleQuantity > 0) {
+                headsInput.setAttribute('max', saleQuantity);
+            }
         }
 
         // Store product data
@@ -49,7 +66,8 @@ function toggleProductRow(checkbox, setId) {
             productId: row.dataset.productId,
             price: parseFloat(row.dataset.price),
             originalPrice: parseFloat(row.dataset.originalPrice),
-            onSale: row.dataset.onSale === 'true',
+            onSale: onSale,
+            saleQuantity: saleQuantity,
             measurementType: measurementType,
             heads: parseInt(headsInput.value) || 0,
             kilos: parseFloat(kilosInput.value) || 0
@@ -64,6 +82,10 @@ function toggleProductRow(checkbox, setId) {
         kilosInput.required = false;
         headsInput.value = 0;
         kilosInput.value = 0;
+        
+        // Remove max attributes
+        headsInput.removeAttribute('max');
+        kilosInput.removeAttribute('max');
 
         document.getElementById(`total_${setId}`).textContent = '₱0.00';
         selectedProducts.delete(setId);
@@ -88,9 +110,25 @@ function calculateRowTotal(setId) {
         return;
     }
 
-    const price = parseFloat(row.dataset.price); // Already includes sale price if active
-    const heads = parseInt(headsInput.value) || 0;
-    const kilos = parseFloat(kilosInput.value) || 0;
+    const price = parseFloat(row.dataset.price);
+    const onSale = row.dataset.onSale === 'true';
+    const saleQuantity = parseFloat(row.dataset.saleQuantity);
+    
+    let heads = parseInt(headsInput.value) || 0;
+    let kilos = parseFloat(kilosInput.value) || 0;
+
+    // Validate against sale quantity limits
+    if (onSale && !isNaN(saleQuantity) && saleQuantity > 0) {
+        if (measurementType === 'Heads' && heads > saleQuantity) {
+            headsInput.value = saleQuantity;
+            heads = saleQuantity;
+            showSaleQuantityWarning(row, saleQuantity, 'heads');
+        } else if ((measurementType === 'Kilos' || measurementType === 'Heads&Kilos') && kilos > saleQuantity) {
+            kilosInput.value = saleQuantity;
+            kilos = saleQuantity;
+            showSaleQuantityWarning(row, saleQuantity, 'kilos');
+        }
+    }
 
     let total = 0;
 
@@ -110,6 +148,31 @@ function calculateRowTotal(setId) {
     }
 
     updateSummary();
+}
+
+/**
+ * Show warning when user exceeds sale quantity
+ */
+function showSaleQuantityWarning(row, maxQuantity, unit) {
+    const productName = row.querySelector('td:nth-child(3)').textContent.trim();
+    const unitText = unit === 'heads' ? 'pcs' : 'kg';
+    
+    // Create temporary warning message
+    const warningDiv = document.createElement('div');
+    warningDiv.className = 'alert alert-warning';
+    warningDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px; animation: slideIn 0.3s;';
+    warningDiv.innerHTML = `
+        <strong>Sale Limit Reached!</strong><br>
+        Maximum ${maxQuantity} ${unitText} available for <strong>${productName}</strong>
+    `;
+    
+    document.body.appendChild(warningDiv);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        warningDiv.style.animation = 'slideOut 0.3s';
+        setTimeout(() => warningDiv.remove(), 300);
+    }, 3000);
 }
 
 /**
@@ -156,6 +219,17 @@ function validateForm() {
         const row = document.querySelector(`tr[data-set-id="${setId}"]`);
         const productName = row ? row.querySelector('td:nth-child(3)').textContent.trim() : `Product ${setId}`;
 
+        // Validate sale quantity limits
+        if (data.onSale && !isNaN(data.saleQuantity) && data.saleQuantity > 0) {
+            if (data.measurementType === 'Heads' && data.heads > data.saleQuantity) {
+                errors.push(`${productName}: Maximum ${data.saleQuantity} pcs available for this sale.`);
+                hasErrors = true;
+            } else if ((data.measurementType === 'Kilos' || data.measurementType === 'Heads&Kilos') && data.kilos > data.saleQuantity) {
+                errors.push(`${productName}: Maximum ${data.saleQuantity} kg available for this sale.`);
+                hasErrors = true;
+            }
+        }
+
         // For Heads&Kilos or Kilos: only kilos is required
         if (data.measurementType === 'Heads&Kilos' || data.measurementType === 'Kilos') {
             if (data.kilos <= 0) {
@@ -182,7 +256,21 @@ function validateForm() {
  * Initialize event listeners when DOM is ready
  */
 document.addEventListener('DOMContentLoaded', function () {
-    // Find the form (adjust selector if needed)
+    // Add CSS for warning animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Find the form
     const form = document.querySelector('form[action*="purchaseorders.create"]');
     
     if (form) {
@@ -192,6 +280,25 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // Add real-time validation for inputs
+    document.querySelectorAll('.heads-input, .kilos-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const max = parseFloat(this.getAttribute('max'));
+            if (max && parseFloat(this.value) > max) {
+                this.value = max;
+                const row = this.closest('tr');
+                const setId = row.dataset.setId;
+                calculateRowTotal(setId);
+            }
+        });
+        
+        input.addEventListener('change', function() {
+            const row = this.closest('tr');
+            const setId = row.dataset.setId;
+            calculateRowTotal(setId);
+        });
+    });
 
     // Initialize summary on page load
     updateSummary();

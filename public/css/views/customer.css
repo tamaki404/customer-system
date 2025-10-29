@@ -986,10 +986,11 @@
     background-color: #fff;
     box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
     border-radius: 5px;
-    border-top: 3px solid green;
+    border-top: 3px solid #f8912a;
 }
 .payment-con .cons-receipt:hover{
     background-color: #f2f2f2;
+
 }
 .cons-receipt p,
 .cons-receipt p span{
@@ -1017,4 +1018,57 @@
 /* Scrollbar thumb on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+.modal-btn div {
+    justify-content: space-evenly;
+    display: flex;
+    flex-direction: row;
+}
+.modal-body .pdfBtn{
+    border-radius: 5px;
+    padding: 10px 10px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    gap: 5px;
+    align-items: center;
+    display: flex;
+    color: #333;
+    background-color: #f8912a;
+    color: #fff;
+}
+.modal-body .pdfBtn:hover{
+    border-radius: 5px;
+    padding: 10px 10px;
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    gap: 5px;
+    align-items: center;
+    display: flex;
+    color: #333;
+    background-color: #f8912a;
+    color: #fff;
+}
+.pdfBtn .icon{
+    font-size: 15px;
+}
+.modal-title{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+.modal-title .icon{
+    color: #333;
+    font-size: 18px;
+}
+
+.modal-btn div button{
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    transform: scale(1);
+}
+
+.modal-btn div button:hover{
+    transform: scale(1.05);
+    z-index: 5;
 }

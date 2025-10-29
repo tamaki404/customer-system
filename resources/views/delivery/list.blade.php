@@ -62,7 +62,7 @@
                                     <th>Heads</th>
                                     <th>Kilos</th>
                                     <th>Status</th>
-                                    <th>POD</th>
+                                    <th>Delivery receipt</th>
 
                                 </tr>
                             </thead>
@@ -87,6 +87,7 @@
                                                 @else
                                                     {{ $date->format('M d, Y h:i A') }}
                                                 @endif
+                                    
                                         </td>
 
                                         @php
@@ -106,17 +107,24 @@
                                         @endphp
 
                                         <td>
-                                            @if ($del->status === '7 days late')
-                                                <span class="text-success">Delivered</span>
-                                            @elseif ($date->isToday())
-                                                <span class="text-warning">Delivery today</span>
-                                            @elseif ($date->isFuture())
-                                                <span class="text-primary">Upcoming</span>
-                                            @elseif ($date->isPast())
-                                                @php $daysLate = $date->diffInDays($today); @endphp
-                                                <span class="text-danger">
-                                                    {{ $daysLate }} {{ Illuminate\Support\Str::plural('day', $daysLate) }} late
-                                                </span>
+                                            @if ($del->status !== "Delivered")
+
+                                                @if ($del->status === '7 days late')
+                                                    <span class="text-success">Late</span>
+                                                @elseif ($date->isToday())
+                                                    <span class="text-warning">Delivery today</span>
+                                                @elseif ($date->isFuture())
+                                                    <span class="text-primary">Upcoming</span>
+                                                @elseif ($date->isPast())
+                                                    @php $daysLate = $date->diffInDays($today); @endphp
+                                                    <span class="text-danger">
+                                                        {{ $daysLate }} {{ Illuminate\Support\Str::plural('day', $daysLate) }} late
+                                                    </span>
+                                                @endif
+                                            @elseif ($del->status === "Delivered")
+
+                                                    {{ $del->status }}
+
                                             @endif
                                         </td>
 

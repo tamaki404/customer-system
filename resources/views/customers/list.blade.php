@@ -209,7 +209,6 @@
                         <th>Type</th>
                         <th>Sales Agent</th>
                         <th>Status</th>
-                        <th>Balance</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -230,7 +229,6 @@
                             </td>
 
                             <td>{{ $supplier->account_status->account_status }}</td>
-                            <td>0.00</td>
                         </tr>
 
                     @endforeach

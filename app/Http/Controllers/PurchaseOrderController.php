@@ -66,6 +66,7 @@ class PurchaseOrderController extends Controller
                     $pos = $query->orderBy('created_at', 'desc')->get();
 
                     // Get products with sale prices
+                    // Get products with sale prices
                     $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
                         ->with('product')
                         ->get() 
@@ -79,8 +80,10 @@ class PurchaseOrderController extends Controller
 
                             $setProduct->original_price = $setProduct->nego_price;
                             $setProduct->on_sale = false;
+                            $setProduct->activeSale = null; // Initialize
 
-                            if ($activeSale) {
+                            if ($activeSale && $activeSale->quantity > 0) {
+                                // Only apply sale if quantity is available
                                 if ($activeSale->value_type === "Fixed") {
                                     $setProduct->nego_price = $activeSale->value;
                                     $setProduct->on_sale = true;
@@ -89,6 +92,12 @@ class PurchaseOrderController extends Controller
                                     $setProduct->nego_price = $setProduct->original_price - $discountAmount;
                                     $setProduct->on_sale = true;
                                 }
+                                $setProduct->activeSale = $activeSale; // Attach the sale object
+                            } elseif ($activeSale && $activeSale->quantity <= 0) {
+                                // Sale exists but quantity depleted - use original price
+                                $setProduct->nego_price = $setProduct->original_price;
+                                $setProduct->on_sale = false;
+                                $setProduct->activeSale = $activeSale; // Still attach for reference
                             }
 
                             return $setProduct;
@@ -200,7 +209,6 @@ class PurchaseOrderController extends Controller
 
                     // Determine which quantity to use based on measurement type
                     if ($measurementType === 'Heads&Kilos') {
-                        // For Heads&Kilos: Store BOTH values but use ONLY kilos for price calculation
                         $quantityForCalculation = $placedKilos;
                         
                         if ($placedKilos <= 0) {
@@ -209,10 +217,8 @@ class PurchaseOrderController extends Controller
                         if ($placedHeads <= 0) {
                             throw new \Exception("Heads is required for product: {$productSetting->product->name}");
                         }
-                        // Keep both values as entered by user
                         
                     } elseif ($measurementType === 'Kilos') {
-                        // For Kilos only: Use kilos, set heads to 0
                         $quantityForCalculation = $placedKilos;
                         
                         if ($quantityForCalculation <= 0) {
@@ -222,7 +228,6 @@ class PurchaseOrderController extends Controller
                         $placedHeads = 0;
                         
                     } elseif ($measurementType === 'Heads') {
-                        // For Heads only: Use heads, set kilos to 0
                         $quantityForCalculation = $placedHeads;
                         
                         if ($quantityForCalculation <= 0) {
@@ -239,24 +244,39 @@ class PurchaseOrderController extends Controller
                     $originalPrice = $productSetting->nego_price;
                     $finalUnitPrice = $originalPrice;
 
-                    // Apply active sale discount
+                    // Check for active sale discount
                     $activeSale = SaleDiscount::where('product_id', $productSetting->product_id)
                         ->whereDate('start_date', '<=', now())
                         ->whereDate('end_date', '>=', now())
                         ->first();
 
-                    if ($activeSale) {
+                    if ($activeSale && $activeSale->quantity > 0) {
+                        // Check if there's enough quantity available
+                        $availableQuantity = $activeSale->quantity;
+                        
+                        if ($quantityForCalculation > $availableQuantity) {
+                            throw new \Exception(
+                                "Insufficient sale quantity for product: {$productSetting->product->name}. " .
+                                "There are only {$availableQuantity} " . 
+                                ($measurementType === 'Heads' ? 'heads' : 'kilos') . 
+                                " left for this sale item."
+                            );
+                        }
+
+                        // Apply sale discount
                         if ($activeSale->value_type === "Fixed") {
                             $finalUnitPrice = $activeSale->value;
                         } elseif ($activeSale->value_type === "Percentage") {
                             $discountAmount = ($originalPrice * $activeSale->value) / 100;
                             $finalUnitPrice = $originalPrice - $discountAmount;
                         }
+
+                        // Deduct the quantity from sale discount
+                        $newQuantity = $availableQuantity - $quantityForCalculation;
+                        $activeSale->update(['quantity' => $newQuantity]);
                     }
 
                     // Calculate totals using the determined quantity
-                    // For Heads&Kilos and Kilos: total = placed_kilos * unit_price
-                    // For Heads: total = placed_heads * unit_price
                     $itemTotal = $finalUnitPrice * $quantityForCalculation;
 
                     $poItemId = 'POI-' . $date . '-' . Str::upper(Str::random(5));
@@ -266,13 +286,13 @@ class PurchaseOrderController extends Controller
                         'po_id'           => $po_id,
                         'product_id'      => $productSetting->product_id,
                         'set_id'          => $setId,
-                        'placed_heads'    => $placedHeads,  // Will be 0 for Heads&Kilos and Kilos
-                        'placed_kilos'    => $placedKilos,  // Will be 0 for Heads
+                        'placed_heads'    => $placedHeads,
+                        'placed_kilos'    => $placedKilos,
                         'alt_heads'       => $placedHeads,
                         'alt_kilos'       => $placedKilos,
                         'original_price'  => $originalPrice,
-                        'unit_price'      => $finalUnitPrice,  // Sale price if active, otherwise nego_price
-                        'total_price'     => $itemTotal,       // quantity * unit_price
+                        'unit_price'      => $finalUnitPrice,
+                        'total_price'     => $itemTotal,
                         'status'          => 'Pending',
                     ]);
 

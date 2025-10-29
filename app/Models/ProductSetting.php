@@ -33,5 +33,8 @@ class ProductSetting extends Model
     {
         return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
     }
-
+        public function activeSale()
+    {
+        return $this->belongsTo(SaleDiscount::class, 'product_id', 'product_id');
+    }
 }

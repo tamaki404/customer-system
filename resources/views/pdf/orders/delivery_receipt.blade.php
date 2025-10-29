@@ -364,13 +364,10 @@
                     <th style="width: 5%;">#</th>
                     <th style="width: 20%;">Product</th>
                     <th style="width: 12%;">Condition</th>
-                    <th style="width: 18%;">Packaging</th>
-                    <th style="width: 14%;">Labeling Req.</th>
-                        <th style="width: 14%;">Rejection Param.</th>
+
                     <th style="width: 6%;">Heads</th>
                     <th style="width: 6%;">Kilos</th>
                     <th style="width: 13%;">Received</th>
-                    <th style="width: 20%;">Remarks</th>
                 </tr>
             </thead>
             <tbody>
@@ -380,16 +377,8 @@
                         <td style="text-align: left; font-weight: bold;">
                             {{ $item->orderItem->product->name ?? '—' }}
                         </td>
-                            <td>{{ $item->product->req->condition ?? '—' }}</td>
-                        <td>
-                            <div class="packaging-details">
-                                <div><strong>Primary:</strong> {{ $item->orderItem->product->req->primary_packaging ?? '—' }}</div>
-                                <div><strong>Secondary:</strong> {{ $item->orderItem->product->req->secondary_packaging ?? '—' }}</div>
-                            </div>
-                        </td>
-                        <td>{{ $item->product->req->labeling_requirement ?? '—' }}</td>
-                        <td>{{ $item->product->req->rejection_parameter ?? '—' }}</td>
-
+                        <td>{{ $item->product->req->condition ?? '—' }}</td>
+                      
                         <td>
 
                                 <strong>{{ $item->planned_heads }}</strong> heads
@@ -399,7 +388,6 @@
                       
                         </td>
                         <td class="empty-cell">___________</td>
-                        <td style="text-align: left;">{{ $item->remarks ?? '—' }}</td>
                     </tr>
                 @endforeach
             </tbody>
