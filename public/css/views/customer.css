@@ -881,3 +881,117 @@
     font-size: 14px;
     color: #666;
 }
+
+
+.content-bg .right{
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    border-top: 4px solid #f57c00;
+    overflow: hidden;
+}
+.content-bg .right p{
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    width: 100%;
+    padding: 10px;
+    height: auto;
+    background-color: #fff;
+}
+.right .right-bg{
+    padding: 10px;
+    width: 100%;
+    background-color: transparent;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.right-bg p .label{
+    font-size: 13px;
+    color: #666;
+}
+.right-bg p span{
+    font-size: 13px;
+    color: #333;
+    font-weight: normal;
+
+}
+.right-bg p{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.right-bg .cons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.right-bg .cons p{
+    margin: 0;
+    justify-content: flex-start;
+}
+.cons .label-con{
+    display: flex;
+    gap: 2px;
+}
+.cons-receipt{
+    padding: 10px;
+}
+.payment-con{
+    height: 400px;
+    background-color: transparent;
+}
+.right-bg .summary{
+    margin-top: auto;
+    height: auto;
+    padding: 10px;
+    gap: 0px;
+}
+.right-bg  .summary p{
+    margin: 0;
+    background-color: transparent;
+}
+.payment-con button{
+    width: 100%;
+    border: none;
+}
+.summary p .label{
+    font-size: 13px;
+    color: #666;
+}
+.summary p .value{
+    font-size: 13px;
+    color: #333;
+    font-weight: bold;
+}
+.cons-receipt .receipt-label{
+    margin: 0;
+}
+.cons-receipt .receipt-label span{
+    margin: 0;
+    font-size: 12px;
+    color: #666;
+}
+.cons-receipt p span{
+    margin: 0;
+}
+.payment-con .cons-receipt{
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
+    border-radius: 5px;
+    border-top: 3px solid green;
+}
+.payment-con .cons-receipt:hover{
+    background-color: #f2f2f2;
+}
+.cons-receipt p,
+.cons-receipt p span{
+    background-color: transparent;
+}

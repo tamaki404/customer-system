@@ -16,6 +16,7 @@ use App\Models\OrderItem;
 use App\Models\Logs;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\OrderHistory;
+use App\Models\Receipts;
 
 class OrderController extends Controller
 {   
@@ -208,24 +209,46 @@ class OrderController extends Controller
             $delCount = Delivery::where('order_id', $order_id)->count();
             $orderDeets = Orders::where('order_id', $order_id)->first();
             $items = $order->items;
+
+            // Get delivery data
             $deliveries = Delivery::when($order_id, function ($query) use ($order_id) {
-                    $query->where('order_id', $order_id);
-                })
-                ->orderBy('delivery_date', 'asc')
-                ->get();
-            $activeDelivery = Delivery::where('order_id', $order_id)->count();
-            
+                $query->where('order_id', $order_id);
+            })->orderBy('delivery_date', 'asc')->get();
+
+            $verifiedPaidAmount = Receipts::where('order_id', $order_id)
+                ->where('status', 'Verified')
+                ->sum('total_amount');
+
+            //  Determine payment status
+            $paymentStatus = 'Not Paid';
+            if ($verifiedPaidAmount >= $order->total_amount) {
+                $paymentStatus = 'Paid';
+            } elseif ($verifiedPaidAmount > 0 && $verifiedPaidAmount < $order->total_amount) {
+                $paymentStatus = 'Partially Paid';
+            }
+
+            $payments =Receipts::where('order_id', $order_id)
+            ->where('status', "Verified")->get();
+            $receivedPaymentCount =Receipts::where('order_id', $order_id)
+            ->where('status', "Verified")->count();
+
             return view('orders.order', [
                 'user' => $user,
                 'order' => $order,
                 'items' => $items,
                 'deliveries' => $deliveries,
-                'activeDelivery' => $activeDelivery,
+                'activeDelivery' => $deliveries->count(),
                 'itemCount' => $itemCount,
                 'delCount' => $delCount,
-                'orderDeets' => $orderDeets
+                'orderDeets' => $orderDeets,
+                'verifiedPaidAmount' => $verifiedPaidAmount,
+                'paymentStatus' => $paymentStatus,
+                'payments' => $payments,
+                'receivedPaymentCount' => $receivedPaymentCount,
+
             ]);
         }
+
 
         public function placeOrderItems(Request $request)
         {

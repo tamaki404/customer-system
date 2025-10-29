@@ -386,8 +386,8 @@
         </div>
     </div>
 
-   <div class="content-bg" >
-        <div class="left">
+   <div class="content-bg" style="display: flex; flex-direction: row;">
+        <div class="left" style="width: 75%">
             <div class="content-header">
                 <div class="contents-display">
                     <p>
@@ -609,7 +609,6 @@
                 <div class="table-body" style="margin-top: 50px">
                                 <div style="display: flex; flex-direction: row; justify-content: space-between;">
                                     <p style="margin: 5px; font-weight: bold;">Scheduled deliveries</p>
-
                                 </div>
 
                                     <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden; align-items: center;">
@@ -751,45 +750,116 @@
 
                 </div>
                 <div class="table-body" style="margin-top: 50px">
-                                <p style="margin: 5px; font-weight: bold;">Order items</p>
-                                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
-                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                                        <thead style="background-color: #fff;">
-                                            <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                                <th>#</th>
-                                                <th>Name</th>
-                                                <th>Unit price</th>
-                                                <th>Heads/Kilos</th>
-                                                <th>Total amount</th>                                                
-                                            </tr>
-                                        </thead>
-                                        <tbody>                                
-                                            @foreach ($items as $item)
-                                                <tr >
-                                                    <td>{{$loop->iteration}}</td>
-                                                    <td>{{ $item->product->name }}</td>
-                                                    <td>₱{{ number_format($item->productSetting?->nego_price ?? '--', 2) }}</td>
-                                                    <td>
-                                                        @if ($item->product->measurement_type === "Kilos")
-                                                            {{ $item->placed_kilos }}kg
-                                                        @elseif ($item->product->measurement_type === "Heads")
-                                                            {{ $item->placed_heads }}
-                                                        @endif
-                                                    </td>
-                                                    <td>₱{{ number_format($item->total_price, 2) }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                            
+                    <p style="margin: 5px; font-weight: bold;">Order items</p>
+                    <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden;">
+                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                            <thead style="background-color: #fff;">
+                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Unit price</th>
+                                    <th>Heads/Kilos</th>
+                                    <th>Total amount</th>                                                
+                                </tr>
+                            </thead>
+                            <tbody>                                
+                                @foreach ($items as $item)
+                                    <tr >
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{ $item->product->name }}</td>
+                                        <td>₱{{ number_format($item->productSetting?->nego_price ?? '--', 2) }}</td>
+                                        <td>
+                                            @if ($item->product->measurement_type === "Kilos")
+                                                {{ $item->placed_kilos }}kg
+                                            @elseif ($item->product->measurement_type === "Heads")
+                                                {{ $item->placed_heads }}
+                                            @endif
+                                        </td>
+                                        <td>₱{{ number_format($item->total_price, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         
         </div>
-        <div class="right">
-            
+        <div class="right" style="width: 25%; height: 100%;">
+            <p>
+                <span class="material-symbols-outlined">
+                payments
+                </span>
+                <span>Balance</span>
+            </p>
+            <div class="right-bg">
+
+                <p style="background: transparent"> 
+                    <span class="label">Status</span>
+                    <span>{{ $paymentStatus }}</span>
+                        {{-- <p>Paid Amount: ₱{{ number_format($verifiedPaidAmount, 2) }} / ₱{{ number_format($order->total_amount, 2) }}</p> --}}
+                </p>
+                <div class="cons">
+                    <p class="label-con" style="gap: 3px">
+                        <span class="material-symbols-outlined icon" >
+                        request_page
+                        </span>
+                        <span>Bill</span>
+                    </p>
+                    <p style="justify-content: flex-end">
+                        <span style="color: #333; font-weight: bold;">₱{{ number_format($order->total_amount, 2) }}</span>
+                    </p>
+                </div>
+
+                <div class="cons" style="height: 50px">
+                    <p class="label-con" style="gap: 3px">
+                        <span class="material-symbols-outlined icon" >
+                        payment_arrow_down
+                        </span>
+                        <span>Payment received</span>
+                    </p>
+                    <p style="justify-content: flex-end">
+                        <span style="color: #333; font-weight: bold; font-size: 12px">{{ $receivedPaymentCount }}</span>
+                    </p>
+                </div>
+                <div class="payment-con" style="padding: 5px">
+                    @foreach ( $payments as  $payment)
+                        <button class="cons-receipt" style="margin: 0; padding: 10px;">
+                            <p style="display: flex; gap: 0; margin: 0; padding: 0; background-color: transparent;">
+                                <span class="loop" style="font-size: 12px; color: #666;">#{{ $loop->iteration }}</span>
+                                <span style="margin-left: 7px">{{ $payment->created_at->format('j F, Y') }}</span>
+                                <span style="color: green; margin-left: auto;">+ ₱{{ number_format($order->total_amount, 2) }}</span>
+                            </p>
+                            <p class="receipt-label" style="margin: 0; height: auto; padding: 0; ; background-color: transparent;">
+                                <span>Bank transfer</span>
+                            </p>
+
+
+                        </button>
+                            <hr style="margin: 10px;   
+                                border-top: 1px dashed #666;
+                                border-bottom: none;
+                                border-left: none;
+                                border-right: none;">
+                    @endforeach
+                </div>
+
+                <hr>
+                <div class="summary">
+                    <p style="padding: 0; margin: 0;">
+                        <span class="label">Paid</span>
+                        <span class="value">₱{{ number_format($verifiedPaidAmount, 2) }}</span>
+                    </p>
+                    <p style="padding: 0">
+                        @php
+                            $remainingBalance = ($order->total_amount) - ($verifiedPaidAmount);
+                        @endphp
+                        <span class="label">Balance</span>
+                        <span class="value">₱{{ number_format($remainingBalance, 2) }}</span>
+                    </p>
+
+                </div>
+            </div>
         </div>
 
     </div>
