@@ -995,3 +995,26 @@
 .cons-receipt p span{
     background-color: transparent;
 }
+
+/* Overall scrollbar */
+::-webkit-scrollbar {
+    width: 10px; /* Width of vertical scrollbar */
+    height: 10px; /* Height of horizontal scrollbar */
+}
+
+/* Scrollbar track */
+::-webkit-scrollbar-track {
+    background: pink;
+    border-radius: 5px;
+}
+
+/* Scrollbar thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+/* Scrollbar thumb on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

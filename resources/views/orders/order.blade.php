@@ -386,7 +386,7 @@
         </div>
     </div>
 
-   <div class="content-bg" style="display: flex; flex-direction: row;">
+   <div class="content-bg" style="display: flex; flex-direction: row; overflow: hidden;">
         <div class="left" style="width: 75%">
             <div class="content-header">
                 <div class="contents-display">
@@ -605,13 +605,12 @@
             <p>Delivery frequency: <span>{{$order->supplier->delivery->delivery_frequency}}</span></p>
             </div> --}}
 
-            <div class="content-body" style="padding: 10px; border: none; height: auto;">
-                <div class="table-body" style="margin-top: 50px">
-                                <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                    <p style="margin: 5px; font-weight: bold;">Scheduled deliveries</p>
-                                </div>
-
-                                    <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden; align-items: center;">
+            <div class="content-body" style="padding: 10px; border: none; height: auto; overflow-x: auto; height: 450px;  border-radius: 0;">
+                <div class="table-body" >
+                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                        <p style="margin: 5px; font-weight: bold;">Scheduled deliveries</p>
+                    </div>
+                    <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden; align-items: center;">
                                         @if ($activeDelivery > 0)
 
                                         <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
@@ -745,9 +744,7 @@
                                         @else
                                             <p style="margin: 10px; color: #666;">This order has no confirmed delivery days yet.</p>
                                         @endif
-                                    </div>
-
-
+                    </div>
                 </div>
                 <div class="table-body" style="margin-top: 50px">
                     <p style="margin: 5px; font-weight: bold;">Order items</p>
@@ -824,11 +821,11 @@
                 </div>
                 <div class="payment-con" style="padding: 5px">
                     @foreach ( $payments as  $payment)
-                        <button class="cons-receipt" style="margin: 0; padding: 10px;">
+                        <button class="cons-receipt" style="margin: 0; padding: 10px;" onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $payment->receipt_id]) }}'">
                             <p style="display: flex; gap: 0; margin: 0; padding: 0; background-color: transparent;">
                                 <span class="loop" style="font-size: 12px; color: #666;">#{{ $loop->iteration }}</span>
                                 <span style="margin-left: 7px">{{ $payment->created_at->format('j F, Y') }}</span>
-                                <span style="color: green; margin-left: auto;">+ ₱{{ number_format($order->total_amount, 2) }}</span>
+                                <span style="color: green; margin-left: auto;">+ ₱{{ number_format($payment->total_amount, 2) }}</span>
                             </p>
                             <p class="receipt-label" style="margin: 0; height: auto; padding: 0; ; background-color: transparent;">
                                 <span>Bank transfer</span>
