@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\SaleDiscount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Suppliers;
@@ -32,9 +33,7 @@ class ProfileController extends Controller
             $documents  = Documents::where('supplier_id', $supplier->supplier_id)->get();
             $products   = Products::where('status', 'Listed')->get();
             $productRequirements   = ProductRequirements::where('supplier_id', $supplier->supplier_id)->get();
-            $salesHistos   = ProductSales::where('supplier_id', $supplier->supplier_id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+  
             $prices   = PriceHistory::where('supplier_id', $supplier->supplier_id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -47,9 +46,21 @@ class ProfileController extends Controller
             $business   = Business::where('supplier_id', $supplier->supplier_id)->first();
 
             $isTherePriceHistory = PriceHistory::where('supplier_id', $supplier->supplier_id)->exists();
-            $isThereSalesHistory = ProductSales::where('supplier_id', $supplier->supplier_id)->exists();
 
-            $sales = ProductSales::where('supplier_id', $supplier->supplier_id)->get();
+            $prodSpecs   = ProductRequirements::where('supplier_id', $supplier->supplier_id)->get();
+            $sales = SaleDiscount::where('category', $supplier->category)->get();
+            // Get all product_ids for this supplier
+            $productIds = ProductRequirements::where('supplier_id', $supplier->supplier_id)
+                ->pluck('product_id');
+
+            // Query all sale discounts that match category AND product_id
+            $salesHistos = SaleDiscount::where('category', $supplier->category)
+                ->whereIn('product_id', $productIds)
+                ->orderBy('created_at', 'desc')
+            ->get();
+     
+            // Check if any matching sales exist
+            $isThereSalesHistory = $sales->isNotEmpty();
 
             return view('profile.profile', [
                 'user' => $user,

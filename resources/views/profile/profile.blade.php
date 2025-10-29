@@ -485,6 +485,83 @@
                                                     @else
                                                         @foreach ($salesHistos as $salesHisto)
                                                             @php
+                                                                $hours = \Carbon\Carbon::parse($salesHisto->start_date)
+                                                                    ->diffInHours(\Carbon\Carbon::parse($salesHisto->end_date));
+                                                                $days = round($hours / 24, 1);
+                                                                // original negotiated supplier price
+                                                                $original = $salesHisto->set->nego_price ?? 0;
+                                                                $value = $salesHisto->value;
+
+                                                                $afterPromo = $original;
+                                                                $discount = 0;
+
+                                                                if ($salesHisto->type === 'Discount') {
+                                                                    // value = percent
+                                                                    $discount = $value; // percent itself
+                                                                    $afterPromo = $original - ($original * ($discount / 100));
+
+                                                                } elseif ($salesHisto->type === 'Sale') {
+                                                                    // value = promo price
+                                                                    $afterPromo = $value;
+                                                                    $discount = $original > 0
+                                                                        ? round((($original - $afterPromo) / $original) * 100)
+                                                                        : 0;
+                                                                }
+                                                            @endphp
+
+
+                                                            <tr>
+                                                                <td>{{ $loop->iteration }}</td>
+                                                                <td>{{ $salesHisto->created_at->format('F j, Y') }}</td>
+                                                                <td>{{ $salesHisto->product->name }}</td>
+                                                                <td>{{ $salesHisto->promo_id }}</td>
+                                                                <td>₱{{ number_format($afterPromo, 2) }}</td>
+                                                                <td>{{ $discount }}% OFF</td>
+
+
+                                                                <td>{{ $days }} day/s sale</td>
+                                                                 <td>{{ \Carbon\Carbon::parse($salesHisto->start_date)->format('M d, Y h:i A') }}</td>
+                                                                <td>{{ \Carbon\Carbon::parse($salesHisto->end_date)->format('M d, Y h:i A') }}</td>
+                                                                    @php
+                                                                        $now = \Carbon\Carbon::now();
+                                                                        $start = \Carbon\Carbon::parse($salesHisto->start_date);
+                                                                        $end = \Carbon\Carbon::parse($salesHisto->end_date);
+
+                                                                        if ($now->lt($start)) {
+                                                                            // Before start date
+                                                                            if ($now->diffInDays($start) <= 3) {
+                                                                                $status = 'Starting Soon';
+                                                                            } else {
+                                                                                $status = 'Upcoming';
+                                                                            }
+                                                                        } elseif ($now->between($start, $end)) {
+                                                                            // Active now
+                                                                            if ($now->diffInDays($end) <= 3) {
+                                                                                $status = 'Ending Soon';
+                                                                            } else {
+                                                                                $status = 'Active';
+                                                                            }
+                                                                        } else {
+                                                                            // Past end date
+                                                                            $status = 'Expired';
+                                                                        }
+                                                                    @endphp
+
+                                                                    <td>
+                                                                        <span style="font-size: 13px; font-weight: normal;" class="badge 
+                                                                            @if($status === 'Active') bg-success
+                                                                            @elseif($status === 'Ending Soon') bg-warning
+                                                                            @elseif($status === 'Starting Soon') bg-info
+                                                                            @elseif($status === 'Upcoming') bg-primary
+                                                                            @else bg-secondary @endif">
+                                                                            {{ $status }}
+                                                                        </span>
+                                                                    </td>
+
+
+                                                                
+                                                            </tr>
+                                                            {{-- @php
                                                                 $hours = \Carbon\Carbon::parse($salesHisto->start_date)->diffInHours(\Carbon\Carbon::parse($salesHisto->end_date));
                                                                 $days = round($hours / 24, 1);
                                                                 $original = $salesHisto->set->nego_price;
@@ -539,7 +616,7 @@
                                                                     </td>
 
 
-                                                            </tr>
+                                                            </tr> --}}
                                                         @endforeach
                                                     @endif
 

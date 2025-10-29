@@ -29,7 +29,10 @@ class SaleDiscount extends Model
     {
         return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }
-
+    public function set()
+    {
+        return $this->belongsTo(ProductSetting::class, 'product_id', 'product_id');
+    }
     public function user()
     {
         return $this->belongsTo(Staffs::class, 'user_id', 'user_id');
