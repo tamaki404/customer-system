@@ -19,46 +19,47 @@ use App\Models\SaleDiscount;
 class ProductController extends Controller
 {
 
-        public function productList(Request $request)
-        {
-            $now = Carbon::now();
+public function productList(Request $request)
+{
+    $now = Carbon::now();
 
-            $user = Auth::user();
-            $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
+    $user = Auth::user();
+    $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
 
-            $products = Products::where('status', 'Listed')->get(); 
-            $setProducts = $supplier 
-                ? ProductSetting::where('supplier_id', $supplier->supplier_id)->get() 
-                : collect(); 
-            $cities = Address::selectRaw('LOWER(office_city) as city')
-                ->distinct()
-                ->pluck('city');
+    $products = Products::where('status', 'Listed')->get(); 
+    $setProducts = $supplier 
+        ? ProductSetting::where('supplier_id', $supplier->supplier_id)->get() 
+        : collect(); 
+    $cities = Address::selectRaw('LOWER(office_city) as city')
+        ->distinct()
+        ->pluck('city');
 
+    // Supplier counts per city
+    $supplierCounts = Address::selectRaw('LOWER(office_city) as city, COUNT(DISTINCT supplier_id) as count')
+        ->groupBy('city')
+        ->pluck('count', 'city');
+    
+    $ceilings = GlobalCeiling::orderBy('start_date', 'desc')->get();
+    
+    // Load active promos with product relationship and filter by quantity > 0
+    $activePromos = SaleDiscount::with('product')
+        ->where('start_date', '<=', now())
+        ->where('end_date', '>=', now())
+        ->where('quantity', '>', 0) // Only show promos with available quantity
+        ->orderBy('quantity', 'asc') // Show items running low first
+        ->limit(11)
+        ->get();
 
-            // Supplier counts per city
-            $supplierCounts = Address::selectRaw('LOWER(office_city) as city, COUNT(DISTINCT supplier_id) as count')
-                ->groupBy('city')
-                ->pluck('count', 'city');
-            $ceilings = GlobalCeiling::orderBy('start_date', 'desc')->get();
-            $activePromos = SaleDiscount::where('start_date', '<=', now())
-                ->where('end_date', '>=', now())
-                ->limit(11)
-                ->get();
-
-
-            return view('products.list', [
-                'user' => $user,
-                'products' => $products,
-                'setProducts' => $setProducts,
-                'cities' => $cities,
-                'ceilings' => $ceilings,
-
-                'supplierCounts' => $supplierCounts,
-
-                'activePromos' => $activePromos,
-
-            ]);
-        }
+    return view('products.list', [
+        'user' => $user,
+        'products' => $products,
+        'setProducts' => $setProducts,
+        'cities' => $cities,
+        'ceilings' => $ceilings,
+        'supplierCounts' => $supplierCounts,
+        'activePromos' => $activePromos,
+    ]);
+}
 
         public function productView($product_id, Request $request)
         {

@@ -263,19 +263,23 @@
                                 </thead>
                                     <tbody>
                                         @foreach($activePromos as $promo)
-                                            @php
-                                                $now = \Carbon\Carbon::now();
-                                                if($promo->start_date <= $now && $promo->end_date >= $now) {
-                                                    $status = 'Active';
-                                                    $badge = 'success';
-                                                } elseif($promo->start_date > $now) {
-                                                    $status = 'Upcoming';
-                                                    $badge = 'warning';
-                                                } else {
-                                                    $status = 'Expired';
-                                                    $badge = 'secondary';
-                                                }
-                                            @endphp
+                    @php
+                        $now = \Carbon\Carbon::now();
+                        if($promo->start_date <= $now && $promo->end_date >= $now) {
+                            $status = 'Active';
+                            $badge = 'success';
+                        } elseif($promo->start_date > $now) {
+                            $status = 'Upcoming';
+                            $badge = 'warning';
+                        } else {
+                            $status = 'Expired';
+                            $badge = 'secondary';
+                        }
+                        
+                        // Get remaining quantity
+                        $remainingQty = $promo->quantity ?? 0;
+                        $measurementUnit = $promo->product->measurement_type === 'Heads' ? 'pcs' : 'kg';
+                    @endphp
 
                                             <tr>
                                                 <td title="Click to view details" style="cursor: pointer;" onclick="window.location.href='{{ route('products.product', ['product_id' => $promo->product->product_id]) }}'">
@@ -291,7 +295,18 @@
                                                         {{ $promo->value }}%
                                                         <span class="badge bg-{{ $badge }}">{{ $promo->type }}</span>
                                                     @endif
-                                                    <br>
+
+
+                                                    @if($remainingQty > 0)
+                                                        <span style="background: #e8f5e9; color: #2e7d32; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                                            <i class="fas fa-box"></i> {{ $remainingQty }} {{ $measurementUnit }} left
+                                                        </span>
+                                                    @else
+                                                        <span style="background: #ffebee; color: #c62828; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                                            <i class="fas fa-times-circle"></i> Sold Out
+                                                        </span>
+                                                    @endif 
+                                                        <br>
                                                     <small class="text-muted">
                                                         {{ \Carbon\Carbon::parse($promo->start_date)->format('M d, Y') }} → 
                                                         {{ \Carbon\Carbon::parse($promo->end_date)->format('M d, Y') }}
