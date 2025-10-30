@@ -222,7 +222,7 @@
                         </p>
                         <p>
                             <span class="detail-name">Description</span>
-                            <span class="detail-value">{{ $product->description }}</span>
+                            <span class="detail-value">{{ ($product->description) ?? "-" }}</span>
                         </p>
                         <p>
                             <span class="detail-name">Base price</span>
@@ -255,7 +255,7 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Price</th>
+                                    <th>Base price</th>
                                     <th>Updated</th>
                                     <th>Updated by</th>
                                 </tr>
@@ -288,13 +288,13 @@
                     </div>
                     <div class="body">
                         <p>
-                            <span style="color:#f57c00 ">31</span>
+                            <span style="color:#f57c00 ">{{$currentSale}}</span>
                             <span class="title">Total sales</span>
                         </p>
-                        <p>
-                            <span style="color:#888">15</span>
+                        {{-- <p>
+                            <span style="color:#888">{{$previousSale}}</span>
                             <span class="title">Previous period</span>
-                        </p>
+                        </p> --}}
                     </div>
                     <div class="chart">
                         Chart

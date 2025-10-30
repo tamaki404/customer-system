@@ -14,6 +14,7 @@ use App\Models\ProductSetting;
 use App\Models\Address;
 use Carbon\Carbon;
 use App\Models\SaleDiscount;
+use App\Models\DeliveryItems;
 
 
 class ProductController extends Controller
@@ -75,10 +76,19 @@ class ProductController extends Controller
 
             $products = Products::all(); 
 
+            // current sale total
+            $currentSale = DeliveryItems::where('product_id', $product_id)
+                ->count();
+
+
+
             return view('products.product', [
                 'user' => $user,
                 'products' => $products,
                 'product' => $product,
+                
+                'currentSale' => $currentSale,
+
 
 
             ]);
