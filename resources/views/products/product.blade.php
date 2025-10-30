@@ -288,13 +288,13 @@
                     </div>
                     <div class="body">
                         <p>
-                            <span style="color:#f57c00 ">{{$currentSale}}</span>
+                            <span style="color:#f57c00 ">{{shortNumber($currentSale)}}</span>
                             <span class="title">Total sales</span>
                         </p>
-                        {{-- <p>
-                            <span style="color:#888">{{$previousSale}}</span>
+                        <p>
+                            <span style="color:#888">{{shortNumber($lastWeekSale)}}</span>
                             <span class="title">Previous period</span>
-                        </p> --}}
+                        </p>
                     </div>
                     <div class="chart">
                         Chart
@@ -343,4 +343,6 @@
 
 @push('scripts')
     <script src="{{ asset('js/global/copy-btn.js') }}"></script>
+    <script src="{{ asset('js/global/short-num.js') }}"></script>
+
 @endpush

@@ -72,22 +72,52 @@ class ProductController extends Controller
         public function productView($product_id, Request $request)
         {
             $user = Auth::user();
-            $product = Products::where('product_id', $product_id)->first(); 
-
-            $products = Products::all(); 
+            $product = Products::where('product_id', $product_id)->first();  
 
             // current sale total
-            $currentSale = DeliveryItems::where('product_id', $product_id)
-                ->count();
 
+            $currentSaleQuery = DeliveryItems::where('product_id', $product_id)
+                ->where('status', 'Delivered')
+                ->whereBetween('created_at', [
+                    now()->startOfWeek(),
+                    now()->endOfWeek(),
+                ])->get()
+                ;
+            $lastWeekSaleQuery = DeliveryItems::where('product_id', $product_id)
+                ->where('status', 'Delivered')
+                ->whereBetween('created_at', [
+                    now()->subWeek()->startOfWeek(),
+                    now()->subWeek()->endOfWeek(),
+                ]);
+            switch ($product->measurement_type) {
+                case 'Heads':
+                    $currentSale = $currentSaleQuery->sum('planned_heads');
+                    $lastWeekSale = $lastWeekSaleQuery->sum('planned_heads');
+                    break;
 
+                case 'Kilos':
+                    $currentSale = $currentSaleQuery->sum('planned_kilos');
+                    $lastWeekSale = $lastWeekSaleQuery->sum('planned_kilos');
+                    break;
+
+                case 'Heads&Kilos':
+                    // Your rule: use planned_kilos
+                    $currentSale = $currentSaleQuery->sum('planned_heads');
+                    $lastWeekSale = $lastWeekSaleQuery->sum('planned_heads');
+                    break;
+
+                default:
+                    $currentSale = 0;
+                    $lastWeekSale = 0;
+                    break;
+            }
 
             return view('products.product', [
                 'user' => $user,
-                'products' => $products,
                 'product' => $product,
                 
                 'currentSale' => $currentSale,
+                'lastWeekSale' => $lastWeekSale,
 
 
 
