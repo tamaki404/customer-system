@@ -3,6 +3,8 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/views/customer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/views/products/product.css') }}">
+
 @endpush
 
 
@@ -25,23 +27,47 @@
                     <a href="{{ route('products.list') }}">< Products list</a>
                 </p>
             </div>
-
             <div class="title-actions">
-                <p class="heading">{{$product->name}}</p>
+                <div class="heading">
+                    <div class="name">
+                        <span>{{ $product->name }}</span>
+                        @if ($product->status === "Listed")
+                            <p class="status" data-state="Listed">
+                                <span class="material-symbols-outlined icon">check_circle</span>Listed
+                            </p>
+                        @elseif ($product->status === "Unlisted")
+                            <p class="status" data-state="Unlisted">
+                                <span class="material-symbols-outlined icon">cancel</span>Unlisted
+                            </p>
+                        @endif
+                    </div>
+                    <div class="prod-details">
+                        <p class="price">
+                            <strong>{{ $product->base_price }}</strong>
+                            <span>PHP</span>
+                        </p>
+                        -
+                        <p>
+                            <span>{{$product->category}}</span>
+                        </p>
+                        -
+                        <div class="id">
+                            <span id="product_id">{{ $product->product_id }}</span>
+                            <button id="copy-btn"><span class="material-symbols-outlined">content_copy</span></button>
+                        </div>
 
+                        <div id="flash-message" class="flash-message alert" style="display:none;"></div>
+
+                    </div>
+                </div>
                 <div>
                     <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">
                         <span class="material-symbols-outlined">edit</span>
                         Modify product
                     </button>
                 </div>
-
             </div>
-       
-
-
         </div>
-
 
         <!-- Modify Product Modal -->
         <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="modifyProductLabel" aria-hidden="true">
@@ -50,8 +76,6 @@
                         @csrf
                         @method('PUT')
 
-
-                    
                         <div class="modal-header">
                             <p class="modal-title" id="modifyProductLabel">Modify product</p>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -180,6 +204,136 @@
                 </div>
         </div>
 
+        <div class="product-con">
+            <div class="left-board">
+                <div class="revenue-details">
+                    <p class="upper-revenue">
+                        <span class="title">Monthly recurring revenue</span>
+                        <span class="revenue">12,000 PHP</span>
+                        <span class="total">200 Total invoice</span>
+                    </p>
+                </div>
+                <div class="product-det">
+                    <div class="width">
+                        <p class="detail-title">Details</p>
+                        <p>
+                            <span class="detail-name">Name</span>
+                            <span class="detail-value">{{ $product->name }}</span>
+                        </p>
+                        <p>
+                            <span class="detail-name">Description</span>
+                            <span class="detail-value">{{ $product->description }}</span>
+                        </p>
+                        <p>
+                            <span class="detail-name">Base price</span>
+                            <span class="detail-value">Php {{ $product->base_price }} </span>
+                        </p>
+                        <p>
+                            <span class="detail-name">Category</span>
+                            <span class="detail-value">{{ $product->category }}</span>
+                        </p>
+                        <p>
+                            <span class="detail-name">Measurement</span>
+                            <span class="detail-value">{{ $product->measurement_type }}</span>
+                        </p>
+                        <p>
+                            <span class="detail-name">Added by</span>
+                            <span class="detail-value">{{ $product->added_by }}</span>
+                        </p>
+                        <p>
+                            <span class="detail-name">Created</span>
+                            <span class="detail-value">{{ $product->created_at->format('j F, Y') }}</span>
+                        </p>
+                        <p>
+                            <span class="detail-name">Last update</span>
+                            <span class="detail-value">{{ $product->updated_at->format('j F, Y') }}</span>
+                        </p>
+
+                    </div>
+                    <div class="width pricing-table">
+                        <p class="detail-title">Pricing</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Price</th>
+                                    <th>Updated</th>
+                                    <th>Updated by</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="text-align: left">₱ {{ $product->base_price }}</td>
+                                    <th style="text-align: left">{{ $product->updated_at->format('j F, Y') }}</th>
+                                    <th style="text-align: left">{{ $product->added_by }}</th>
+                                </tr>
+                            </tbody>
+                        </table>
+        
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="right-board">
+                <div class="product-sales">
+                    <div class="head">
+                        <p>
+                            <strong>Product sales</strong>
+                            <span style="margin-left: 5px;" class="material-symbols-outlined">info</span>
+                            <span style="margin-left: 15px; font-size: 13px;"> + 20% </span>
+                        </p>
+                        <p style="font-size: 11px; color: #666; ">
+                           Last 7 days
+                        </p>
+                    </div>
+                    <div class="body">
+                        <p>
+                            <span style="color:#f57c00 ">31</span>
+                            <span class="title">Total sales</span>
+                        </p>
+                        <p>
+                            <span style="color:#888">15</span>
+                            <span class="title">Previous period</span>
+                        </p>
+                    </div>
+                    <div class="chart">
+                        Chart
+                    </div>
+                    <div class="footer">
+                        <p>Updated at 11:30 am</p>
+                    </div>
+                </div>
+                <div class="product-sales">
+                    <div class="head">
+                        <p>
+                            <strong>Product revenue</strong>
+                            <span style="margin-left: 5px;" class="material-symbols-outlined">info</span>
+                            <span style="margin-left: 15px; font-size: 13px;"> + 20% </span>
+                        </p>
+                        <p style="font-size: 11px; color: #666; ">
+                           Last 7 days
+                        </p>
+                    </div>
+                    <div class="body">
+                        <p>
+                            <span style="color:#f57c00 ">31</span>
+                            <span class="title">Total revenue</span>
+                        </p>
+                        <p>
+                            <span style="color:#888">15</span>
+                            <span class="title">Previous period</span>
+                        </p>
+                    </div>
+                    <div class="chart">
+                        Chart
+                    </div>
+                    <div class="footer">
+                        <p>Updated at 11:30 am</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 
    </div>
@@ -188,5 +342,5 @@
 
 
 @push('scripts')
-
+    <script src="{{ asset('js/global/copy-btn.js') }}"></script>
 @endpush

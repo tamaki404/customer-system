@@ -46,9 +46,15 @@ class ProductController extends Controller
                 ->where('start_date', '<=', now())
                 ->where('end_date', '>=', now())
                 ->where('quantity', '>', 0) // Only show promos with available quantity
-                ->orderBy('quantity', 'asc') // Show items running low first
-                ->limit(11)
+                ->orderBy('quantity', 'asc') 
                 ->get();
+
+            $activePromosCount = SaleDiscount::with('product')
+                ->where('start_date', '<=', now())
+                ->where('end_date', '>=', now())
+                ->where('quantity', '>', 0) 
+                ->orderBy('quantity', 'asc') 
+                ->count();
 
             return view('products.list', [
                 'user' => $user,
@@ -58,6 +64,7 @@ class ProductController extends Controller
                 'ceilings' => $ceilings,
                 'supplierCounts' => $supplierCounts,
                 'activePromos' => $activePromos,
+                'activePromosCount' => $activePromosCount,
             ]);
         }
 

@@ -1,0 +1,244 @@
+
+.title-actions .heading{
+    display: flex;
+    flex-direction: column;
+}
+.title-actions .heading .name{
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    align-items: center;
+    display: flex;
+    gap: 10px;
+}
+.title-actions .heading .prod-details{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    color: #666;
+    font-size: 13px;
+} 
+.prod-details .price{
+    font-size: 13px;
+    color: #f57c00;
+}
+.prod-details p{
+    margin: 0;
+    font-weight: normal;
+    font-size: 13px;
+    color: #666;
+}
+.prod-details .id{
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+}
+.prod-details .id span{
+    font-size: 13px;
+    font-weight: normal;
+    color: #666;
+}
+.prod-details .id button{
+    border: none;
+}
+.prod-details .id button:hover{
+    border: none;
+    background-color: #d5d5d5;
+    border-radius: 10px;
+    font-weight: bold;
+}
+.prod-details .id button span{
+    font-weight: normal;
+}
+.heading .name .status[data-state="Listed"] {
+    font-size: 13px;
+    color: green;
+    background-color: rgba(147, 230, 147, 0.497);
+    padding: 3px 7px;
+    border-radius: 10px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.heading .name .status[data-state="Unlisted"] {
+    font-size: 13px;
+    color: red;
+    background-color: rgba(230, 147, 147, 0.497);
+    padding: 3px 7px;
+    border-radius: 10px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+.name .status .icon {
+    font-size: 14px;
+}
+.product-con{
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;    padding: 10px;
+    overflow-x: auto;
+    height: 85%;
+    background-color: #f6f8fa;
+    overflow-x: auto;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+
+}
+.product-con .left-board{
+    padding: 5px;
+    width: 70%;
+    height: 100%; 
+    background-color: transparent;
+}
+.product-con .right-board{
+    padding: 5px;
+    width: 30%;
+    height: 100%; 
+    background-color: transparent;
+    justify-content: space-evenly;
+    display: flex;
+    flex-direction: column;
+}
+.right-board .product-sales,
+.right-board .product-revenue{
+    border-radius: 5px;
+    background-color: #fff;
+    height: 47%;
+    width: 100%;
+    padding: 10px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.product-sales{
+    display: flex;
+    flex-direction: column;
+}
+.product-sales .head{
+    display: flex;
+    flex-direction: column;
+}
+.product-sales .head p{
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.product-sales .head p span{
+    font-size: 14px;
+    color: #333;
+}
+.product-sales .body{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 5px;
+    width: 100%;
+    border-radius: 5px;
+    min-height: 50px;
+}
+.product-sales .body p{
+    margin: 0;
+    height: 100%;
+    width: 48%;
+    justify-content: center;
+    align-items: center ;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border-radius: 5px;
+    padding: 5px;
+    box-shadow: rgba(14, 63, 126, 0.06) 0px 0px 0px 1px, rgba(42, 51, 70, 0.03) 0px 1px 1px -0.5px, rgba(42, 51, 70, 0.04) 0px 2px 2px -1px, rgba(42, 51, 70, 0.04) 0px 3px 3px -1.5px, rgba(42, 51, 70, 0.03) 0px 5px 5px -2.5px, rgba(42, 51, 70, 0.03) 0px 10px 10px -5px, rgba(42, 51, 70, 0.03) 0px 24px 24px -8px;
+}
+.body p span{
+    color: #333;
+    font-size: 15px;
+    font-weight: bold;
+}
+.body p .title{
+    font-size: 12px;
+    color: #666;
+    font-weight: normal;
+}
+.product-sales .footer{
+    margin-top: auto;
+    margin-left: auto;
+}
+.product-sales .footer p{
+    margin: 0;
+    font-size: 12px;
+    color: #888;
+    font-style:normal;
+}
+.product-sales .chart{
+    height: 50%;
+    background-color: transparent;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.left-board div .upper-revenue{
+    display: flex;
+    flex-direction: column;
+}
+.upper-revenue .title{
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+}
+.upper-revenue .revenue{
+    color: #333;
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+.upper-revenue .total{
+    color: #666;
+    font-size: 13px;
+}
+.left-board .revenue-details{
+    padding: 10px;
+}
+.left-board .product-det{
+    width: 100%;
+    height: 75%;
+    padding: 10px;
+    border-top: 2px solid #d5d5d5;
+    gap: 15px;
+    overflow-x: auto;
+}
+.product-det .width{
+    width: 70%;
+
+}
+.product-det .width p{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 5px;
+
+}
+.product-det .width p .detail-value{
+    text-align: start;
+    display: flex;
+    align-items: flex-start;
+}
+.width p .detail-name{
+    color: #666;
+}
+.width .detail-title{
+    font-weight: bold;
+    font-size: 14px;
+    margin: 10px;
+}
+.product-det .pricing-table{
+    width: 100%;
+    margin-top: 30px;
+}

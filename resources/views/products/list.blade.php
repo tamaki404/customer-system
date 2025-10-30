@@ -192,95 +192,85 @@
 
     @endif
         <div class="content-bg" style="overflow: hidden">
-                <div class="content-header">
-                    <div class="contents-display">
-                        <form action="{{ route('products.list') }}" id="text-search" class="search-text-con" method="GET">
-                            <input type="text" name="search" class="search-bar"
-                                placeholder="Search by SUP ID. , Supplier, Representative and status"
-                                value="{{ request('search') }}"
-                                style="outline:none;"
-                            >
-                            <button type="submit" class="search-btn"><span class="material-symbols-outlined">search</span></button>
-                        </form>
-
-
-                        <form action="{{ route('products.list') }}" class="date-search" id="from-to-date" method="GET">
-                            <p>Date range</p>
-                            <div class="from-to-picker">
-                                <div class="month-div">
-                                    <span>From</span>
-                                    <input type="date" name="from_date" class="input-date"
-                                        value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
-                                        onchange="this.form.submit()">
-                                </div>
-                                <div class="month-div">
-                                    <span>To</span>
-                                    <input type="date" name="to_date" class="input-date"
-                                        value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
-                                        onchange="this.form.submit()">
-                                </div>
+            <div class="content-header">
+                <div class="contents-display">
+                    <form action="{{ route('products.list') }}" id="text-search" class="search-text-con" method="GET">
+                        <input type="text" name="search" class="search-bar"
+                            placeholder="Search by SUP ID. , Supplier, Representative and status"
+                            value="{{ request('search') }}"
+                            style="outline:none;"
+                        >
+                        <button type="submit" class="search-btn"><span class="material-symbols-outlined">search</span></button>
+                    </form>
+                    <form action="{{ route('products.list') }}" class="date-search" id="from-to-date" method="GET">
+                        <p>Date range</p>
+                        <div class="from-to-picker">
+                            <div class="month-div">
+                                <span>From</span>
+                                <input type="date" name="from_date" class="input-date"
+                                    value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                                    onchange="this.form.submit()">
                             </div>
-                        </form>
-                    </div>
-
-                    <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
-                        <p class="heading">Products list</p>
-                            @if ( auth()->user()->role === 'Admin')
-                                <div style="display: flex; flex-direction: row; margin-left: auto; gap: 10px">
-                                    <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#add-product-modal">
-                                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
-                                        Add products
-                                    </button>
-                                    {{-- <button class="set-ceiling-btn btn-transition" data-bs-toggle="modal" data-bs-target="#set-promo-modal">
-                                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">shoppingmode</span>
-                                        Sales & discounts
-                                    </button> --}}
-                                </div>
-                            @endif
-
-
-                    </div>
-
+                            <div class="month-div">
+                                <span>To</span>
+                                <input type="date" name="to_date" class="input-date"
+                                    value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                                    onchange="this.form.submit()">
+                            </div>
+                        </div>
+                    </form>
                 </div>
-
+                <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
+                    <p class="heading">Products list</p>
+                        @if ( auth()->user()->role === 'Admin')
+                            <div style="display: flex; flex-direction: row; margin-left: auto; gap: 10px">
+                                <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#add-product-modal">
+                                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
+                                    Add products
+                                </button>
+                                {{-- <button class="set-ceiling-btn btn-transition" data-bs-toggle="modal" data-bs-target="#set-promo-modal">
+                                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">shoppingmode</span>
+                                    Sales & discounts
+                                </button> --}}
+                            </div>
+                        @endif
+                </div>
+            </div>
 
                 @if (auth()->user()->role !== 'Supplier')
                 <div class="main-board">
-                    <div class="ceiling-table">
-                        <div class="table-section">
-                            <table>
-                                <thead style="background-color: #fff; padding: 10px;">
-                                    <tr style="text-align: left;height: 30px;">
-
-                                        <th style="display: flex; flex-direction: row; gap: 5px; align-items:center;">
+                    <div class="ceiling-table" style="height: 90%; padding: 0;" >
+                        <div class="table-section" style="height:100%; overflow: auto; padding: 0;">
+                            <table style="position: relative; border-collapse: collapse; padding: 0;">
+                                <thead style="background-color: #fff; padding: 10px; z-index: 1; position: sticky; top: 0; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
+                                    <tr style="text-align: left; height: 30px;">
+                                        <th style="width: 100%">
                                             <span class="material-symbols-outlined" style="font-size: 16px">
                                                 price_change
                                             </span>
                                              Active Promos & Discounts
                                         </th>
+                                        <th>{{ $activePromosCount }}</th>
                                     </tr>
-                                    
                                 </thead>
-                                    <tbody>
+                                    <tbody >
                                         @foreach($activePromos as $promo)
-                    @php
-                        $now = \Carbon\Carbon::now();
-                        if($promo->start_date <= $now && $promo->end_date >= $now) {
-                            $status = 'Active';
-                            $badge = 'success';
-                        } elseif($promo->start_date > $now) {
-                            $status = 'Upcoming';
-                            $badge = 'warning';
-                        } else {
-                            $status = 'Expired';
-                            $badge = 'secondary';
-                        }
-                        
-                        // Get remaining quantity
-                        $remainingQty = $promo->quantity ?? 0;
-                        $measurementUnit = $promo->product->measurement_type === 'Heads' ? 'pcs' : 'kg';
-                    @endphp
-
+                                            @php
+                                                $now = \Carbon\Carbon::now();
+                                                if($promo->start_date <= $now && $promo->end_date >= $now) {
+                                                    $status = 'Active';
+                                                    $badge = 'success';
+                                                } elseif($promo->start_date > $now) {
+                                                    $status = 'Upcoming';
+                                                    $badge = 'warning';
+                                                } else {
+                                                    $status = 'Expired';
+                                                    $badge = 'secondary';
+                                                }
+                                                // Get remaining quantity
+                                                $remainingQty = $promo->quantity ?? 0;
+                                                $measurementUnit = $promo->product->measurement_type === 'Heads' ? 'pcs' : 'kg';
+                                            @endphp
                                             <tr>
                                                 <td title="Click to view details" style="cursor: pointer;" onclick="window.location.href='{{ route('products.product', ['product_id' => $promo->product->product_id]) }}'">
                                                     <strong>[{{ $promo->category }}] - {{ ucfirst($promo->name) }}</strong>
@@ -314,21 +304,18 @@
                                                     &nbsp;&nbsp;
                                                     {{-- <span class="badge bg-{{ $badge }}">{{ $status }}</span> --}}
                                                 </td>
+                                                <td style="color: #888; font-size: 12px;">#{{ $loop->iteration }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
-
                             </table>
                         </div>
-                        
-
                     </div>
                     <div class="table-div">
-                        <div class="content-body" style="background: #fff; height: 600px; overflow: hidden;">
-
-                            <div style="max-height: 100%; overflow-y: auto;">
-                                <table style="width:100%; height: 100%; border-collapse:collapse; border: 1px solid #fff;">
-                                    <thead style="background-color: #fff; position: sticky; top: 0; z-index: 1;">
+                        <div class="content-body" style="background: #fff; height: 600px; overflow: hidden; padding: 0;">
+                            <div style="overflow: auto; height: 100%; padding: 0;">
+                                <table style=" width:100%; height: 100%; border-collapse:collapse; border: 1px solid #fff; padding: 0;">
+                                    <thead style="background-color: #fff; position: sticky; top: 0; z-index: 1; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
                                         <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                             <th>#</th>
                                             <th>Product ID</th>
@@ -337,10 +324,9 @@
                                             <th>Base price</th>
                                             <th>Measurement</th>
                                             <th>Sold</th>
-
                                         </tr>
                                     </thead>
-                                    <tbody style="overflow: auto;">
+                                    <tbody>
                                         @foreach ($products as $product)
                                             <tr onclick="window.location.href='{{ route('products.product', ['product_id' => $product->product_id]) }}'">
                                                 <th>{{ $loop->iteration }}</th>
@@ -349,16 +335,12 @@
                                                 <td>{{ $product->category }}</td>
                                                 <td>₱{{ number_format($product->base_price, 2) }}</td>
                                                 <td>{{ $product->measurement_type }}</td>
-                                 
                                                 <td>--</td>
                                             </tr>
-
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
-
-                    
                         </div>
 
                         <div class="pagination-div">
@@ -375,7 +357,6 @@
                 @elseif (auth()->user()->role === 'Supplier')
 
                     <div class="content-body" style="background: #fff">
-
                         <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                             <thead style="background-color: #fff;">
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">

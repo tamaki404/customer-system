@@ -281,8 +281,6 @@ class CustomersController extends Controller
                 $request->merge($input);
             }
 
-
-
             $request->validate([
                 'supplier_id'       => 'required|exists:suppliers,supplier_id',
                 'user_id'           => 'required|exists:users,user_id',
