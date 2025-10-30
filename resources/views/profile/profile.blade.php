@@ -548,7 +548,7 @@
                                                                     @endphp
 
                                                                     <td>
-                                                                        <span style="font-size: 13px; font-weight: normal;" class="badge 
+                                                                        <span style="font-size: 12px; font-weight: normal;" class="badge 
                                                                             @if($status === 'Active') bg-success
                                                                             @elseif($status === 'Ending Soon') bg-warning
                                                                             @elseif($status === 'Starting Soon') bg-info

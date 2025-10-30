@@ -81,8 +81,6 @@ class UserController extends Controller
         return redirect()->route('dashboard.view')->with('success', 'Representative signed in successfully.');
     }
     public function registerSupplier(Request $request)
-
-
         {
             $request->validate([
                 // User
@@ -118,11 +116,7 @@ class UserController extends Controller
                 'birthdate'       => 'required|date|before:today',
 
                 // Representatives 
-                // 'rep_lastname'    => 'required|string|max:50',
-                // 'rep_firstname'   => 'required|string|max:50',
-                // 'rep_middlename'  => 'nullable|string|max:50',
-                // 'auth_position'   => 'required|string|max:50',
-                // 'rep_contact'     => 'required|string|regex:/^09[0-9]{9}$/|size:11',
+
 
                 'rep_lastname'    => 'required|array|min:1',
                 'rep_lastname.*'  => 'required|string|max:50',
@@ -135,13 +129,8 @@ class UserController extends Controller
                 'rep_contact'     => 'required|array|min:1',
                 'rep_contact.*'   => 'required|string|regex:/^09[0-9]{9}$/|size:11',
 
-
                 // Signatories 
-                // 'sign_lastname'   => 'required|string|max:50',
-                // 'sign_firstname'  => 'required|string|max:50',
-                // 'sign_middlename' => 'nullable|string|max:50',
-                // 'sign_position'   => 'required|string|max:50',
-                // 'e_image'         => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+
                 'sign_lastname'   => 'required|array|min:1',
                 'sign_lastname.*' => 'required|string|max:50',
                 'sign_firstname'  => 'required|array|min:1',
@@ -217,7 +206,6 @@ class UserController extends Controller
             $user_id = 'USR-' . $date . '-' . $this->randomBase36String(5);
             $supplier_id = 'SUP-' . $date . '-' . $this->randomBase36String(5);
             $status_id = 'STAT-' . $date . '-' . $this->randomBase36String(5);
-            $rep_id = 'REP-' . $date . '-' . $this->randomBase36String(5);
 
             // Define document types for later use
             $documentTypes = [
@@ -268,18 +256,6 @@ class UserController extends Controller
                     $idImageSize = $idImage->getSize();
                 }
 
-                // Handle e-signature image upload
-                // $eSignatureBinary = null;
-                // $eSignatureMime = null;
-                // $eSignatureName = null;
-                // $eSignatureSize = null;
-                // if ($request->hasFile('e_image')) {
-                //     $eSignature = $request->file('e_image');
-                //     $eSignatureBinary = file_get_contents($eSignature->getRealPath());
-                //     $eSignatureMime = $eSignature->getMimeType();
-                //     $eSignatureName = $eSignature->getClientOriginalName();
-                //     $eSignatureSize = $eSignature->getSize();
-                // }
 
                 // Create User
                 $user = User::create([
@@ -358,6 +334,10 @@ class UserController extends Controller
                 $repContacts = $request->input('rep_contact', []);
 
                 foreach ($repLastnames as $index => $lastname) {
+
+                    // Generate unique rep_id per representative
+                    $rep_id = 'REP-' . $date . '-' . $this->randomBase36String(5);
+
                     // Default permissions (empty or limited)
                     $permissions = [];
 
@@ -384,11 +364,9 @@ class UserController extends Controller
                         'rep_middlename' => $repMiddlenames[$index] ?? null,
                         'auth_position'  => $authPositions[$index] ?? '',
                         'rep_contact'    => $repContacts[$index] ?? '',
-                        'permissions'    => $permissions, 
+                        'permissions'    => $permissions,
                     ]);
-
                 }
-
 
                 // Create Signatories (loop through all)
                 $signLastnames = $request->input('sign_lastname', []);
@@ -502,25 +480,23 @@ class UserController extends Controller
                 ]);
 
                 // Create and send verification token
-                            $plainToken = Str::random(64);
-                            DB::table('email_verification_tokens')->insert([
-                                'user_id'    => $user->user_id,
-                                'email'      => $user->email_address,
-                                'token'      => hash('sha256', $plainToken),
-                                'expires_at' => now()->addDay(),
-                                'created_at' => now(),
-                                'updated_at' => now(),
-                            ]);
-
-                            $verifyUrl = url('/email/verify?token=' . $plainToken . '&uid=' . urlencode($user->user_id));
-
-                            try {
-                                Mail::send('emails.verify', ['verifyUrl' => $verifyUrl], function($message) use ($user) {
-                                    $message->to($user->email_address)->subject('Verify your email address');
-                                });
-                            } catch (\Throwable $mailErr) {
-                                Log::error('Verification email send failed: ' . $mailErr->getMessage());
-                            }
+                $plainToken = Str::random(64);
+                DB::table('email_verification_tokens')->insert([
+                    'user_id'    => $user->user_id,
+                    'email'      => $user->email_address,
+                    'token'      => hash('sha256', $plainToken),
+                    'expires_at' => now()->addDay(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                $verifyUrl = url('/email/verify?token=' . $plainToken . '&uid=' . urlencode($user->user_id));
+                try {
+                    Mail::send('emails.verify', ['verifyUrl' => $verifyUrl], function($message) use ($user) {
+                        $message->to($user->email_address)->subject('Verify your email address');
+                    });
+                } catch (\Throwable $mailErr) {
+                    Log::error('Verification email send failed: ' . $mailErr->getMessage());
+                }
 
 
                 DB::commit();

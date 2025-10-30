@@ -26,7 +26,7 @@
     </div>
 @endif
 
-    {{-- process action --}}
+    {{-- modify action --}}
     <div class="modal fade" id="modify-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content" method="POST" enctype="multipart/form-data" action="{{ route('group.modify') }}" style=" overflow-x: auto; display: flex; flex-direction: column;">
