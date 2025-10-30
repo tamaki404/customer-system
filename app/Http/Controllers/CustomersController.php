@@ -22,11 +22,10 @@ use App\Models\ProductRequirements;
 use App\Models\PriceHistory;
 use App\Models\GlobalCeiling;
 use App\Models\Reviews;
-
+use App\Models\SaleDiscount;
 use App\Models\ProductSetting;
 use App\Models\Credits;
 use Illuminate\Support\Facades\Log;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Users;
@@ -71,7 +70,6 @@ class CustomersController extends Controller
                 ->with('staff')
                 ->get();
             $delivery = DeliveryRequirements::where('supplier_id', $supplier->supplier_id)->first();
-
             $address = Address::where('supplier_id', $supplier->supplier_id)->first();
             $ceilingPrice = GlobalCeiling::whereRaw('LOWER(city_selected) = ?', [strtolower($address->office_city)])->first();
 
@@ -85,9 +83,6 @@ class CustomersController extends Controller
                     $query->where('supplier_id', $supplier_id);
                 }
             ])->where('supplier_id', $supplier_id)->get();
-
-            
-
             $prodSpecs   = ProductRequirements::where('supplier_id', $supplier_id)->get();
             $representatives   = Representatives::where('supplier_id', $supplier_id)->get();
             $signatories   = Signatories::where('supplier_id', $supplier_id)->get();
@@ -98,9 +93,22 @@ class CustomersController extends Controller
             $prices   = PriceHistory::where('supplier_id', $supplier_id)
             ->orderBy('created_at', 'desc')
             ->get();
-            $salesHistos   = ProductSales::where('supplier_id', $supplier_id)
-            ->orderBy('created_at', 'desc')
+
+
+            $prodSpecs   = ProductRequirements::where('supplier_id', $supplier->supplier_id)->get();
+            $sales = SaleDiscount::where('category', $supplier->category)->get();
+
+            // Get all product_ids for this supplier
+            $productIds = ProductRequirements::where('supplier_id', $supplier->supplier_id)
+                ->pluck('product_id');
+
+            // Query all sale discounts that match category AND product_id
+            $salesHistos = SaleDiscount::where('category', $supplier->category)
+                ->whereIn('product_id', $productIds)
+                ->orderBy('created_at', 'desc')
             ->get();
+     
+            // Check if any matching sales exist
 
             return view('customers.customer', [
                 'user'       => $user,

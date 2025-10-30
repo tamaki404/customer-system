@@ -32,82 +32,66 @@
         @endif
         
         <div class="modal fade" id="profile-modify" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <form class="modal-content" method="POST" enctype="multipart/form-data">
-                     
-                        @csrf
-                        
-                        @if ($errors->any())
-                            <div class="alert alert-danger" style="margin: 10px;">
-                                <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
-                                <ul style="margin: 0; padding-left: 20px;">
-                                    @foreach ($errors->all() as $error)
-                                        <li style="font-size: 14px;">{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                        
-                        @if (session('success'))
-                            <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
-                        @endif
-
-                        @if (session('error'))
-                            <div class="alert alert-danger" style="margin: 10px;">
-                                <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
-                                <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
-                            </div>
-                        @endif
-
-                        <!-- Hidden field for staff ID -->
-
-                        
-                        <div class="modal-header">
-                            <p class="modal-title" id="requestActionLabel">Profile modify</p>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-dialog">
+                <form class="modal-content" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @if ($errors->any())
+                        <div class="alert alert-danger" style="margin: 10px;">
+                            <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
+                            <ul style="margin: 0; padding-left: 20px;">
+                                @foreach ($errors->all() as $error)
+                                    <li style="font-size: 14px;">{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
-                        
-                        <div class="modal-body">
-                            <p class="note-notify">
-                                <span class="material-symbols-outlined"> info </span>
-                                <span>Changes require confirmation before they take effect.</span>
-                            </p>
-                            
-                            <div class="modal-option-groups">
-                                <p>Profile picture</p>
-                                
-                                
-                            </div>
-                            
-                       
+                    @endif
+                    @if (session('success'))
+                        <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
+                    @endif
+                    @if (session('error'))
+                        <div class="alert alert-danger" style="margin: 10px;">
+                            <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
+                            <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
                         </div>
-                        
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Submit action</button>
+                    @endif
+                    <!-- Hidden field for staff ID -->
+                    <div class="modal-header">
+                        <p class="modal-title" id="requestActionLabel">Profile modify</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined"> info </span>
+                            <span>Changes require confirmation before they take effect.</span>
+                        </p>
+                        <div class="modal-option-groups">
+                            <p>Profile picture</p>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit action</button>
+                    </div>
+                </form>
+            </div>
         </div>
-            {{-- view e-signature --}}
-            <div class="modal fade" id="view-sign-action" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <p class="modal-title" id="modal-signatory-name">E-signature</p>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-                        <div class="modal-body text-center">
-                            <img id="view-sign-image" src="" alt="E-signature" style="max-width: 100%; height: auto;"/>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
+        {{-- view e-signature --}}
+        <div class="modal fade" id="view-sign-action" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title" id="modal-signatory-name">E-signature</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="view-sign-image" src="" alt="E-signature" style="max-width: 100%; height: auto;"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
+        </div>
         <div class="content-bg" >
             <div class="content-header">
                     <div class="contents-display">
@@ -236,8 +220,6 @@
                             Documents
                             </button>
                         </div>
-
-
 
                         {{-- product requirements --}}
                         <div id="product-content" class="tab-content active" role="tabpanel" aria-labelledby="product-tab">
@@ -508,8 +490,6 @@
                                                                         : 0;
                                                                 }
                                                             @endphp
-
-
                                                             <tr>
                                                                 <td>{{ $loop->iteration }}</td>
                                                                 <td>{{ $salesHisto->created_at->format('F j, Y') }}</td>
@@ -517,8 +497,6 @@
                                                                 <td>{{ $salesHisto->promo_id }}</td>
                                                                 <td>₱{{ number_format($afterPromo, 2) }}</td>
                                                                 <td>{{ $discount }}% OFF</td>
-
-
                                                                 <td>{{ $days }} day/s sale</td>
                                                                  <td>{{ \Carbon\Carbon::parse($salesHisto->start_date)->format('M d, Y h:i A') }}</td>
                                                                 <td>{{ \Carbon\Carbon::parse($salesHisto->end_date)->format('M d, Y h:i A') }}</td>
@@ -546,7 +524,6 @@
                                                                             $status = 'Expired';
                                                                         }
                                                                     @endphp
-
                                                                     <td>
                                                                         <span style="font-size: 12px; font-weight: normal;" class="badge 
                                                                             @if($status === 'Active') bg-success
@@ -557,66 +534,7 @@
                                                                             {{ $status }}
                                                                         </span>
                                                                     </td>
-
-
-                                                                
                                                             </tr>
-                                                            {{-- @php
-                                                                $hours = \Carbon\Carbon::parse($salesHisto->start_date)->diffInHours(\Carbon\Carbon::parse($salesHisto->end_date));
-                                                                $days = round($hours / 24, 1);
-                                                                $original = $salesHisto->set->nego_price;
-                                                                $salePrice = $salesHisto->sale_price;
-                                                                $discount = $original > 0 ? round((($original - $salePrice) / $original) * 100) : 0;
-                                                            @endphp
-
-                                                            <tr>
-                                                                <td>{{ $loop->iteration }}</td>
-                                                                <td>{{ \Carbon\Carbon::parse($salesHisto->created_at)->format('M d, Y h:i A') }}</td>
-                                                                <td>{{ $salesHisto->set->product->name }}</td>
-                                                                <td>{{ $salesHisto->set_id }}</td>
-                                                                <td>₱{{ $salesHisto->sale_price }}</td>
-                                                                <td>{{ $discount }}% OFF</td>
-                                                                <td>{{ $days }} day/s sale</td>
-                                                                <td>{{ \Carbon\Carbon::parse($salesHisto->start_date)->format('M d, Y h:i A') }}</td>
-                                                                <td>{{ \Carbon\Carbon::parse($salesHisto->end_date)->format('M d, Y h:i A') }}</td>
-                                                                    @php
-                                                                        $now = \Carbon\Carbon::now();
-                                                                        $start = \Carbon\Carbon::parse($salesHisto->start_date);
-                                                                        $end = \Carbon\Carbon::parse($salesHisto->end_date);
-
-                                                                        if ($now->lt($start)) {
-                                                                            // Before start date
-                                                                            if ($now->diffInDays($start) <= 3) {
-                                                                                $status = 'Starting Soon';
-                                                                            } else {
-                                                                                $status = 'Upcoming';
-                                                                            }
-                                                                        } elseif ($now->between($start, $end)) {
-                                                                            // Active now
-                                                                            if ($now->diffInDays($end) <= 3) {
-                                                                                $status = 'Ending Soon';
-                                                                            } else {
-                                                                                $status = 'Active';
-                                                                            }
-                                                                        } else {
-                                                                            // Past end date
-                                                                            $status = 'Expired';
-                                                                        }
-                                                                    @endphp
-
-                                                                    <td>
-                                                                        <span style="font-size: 13px; font-weight: normal;" class="badge 
-                                                                            @if($status === 'Active') bg-success
-                                                                            @elseif($status === 'Ending Soon') bg-warning
-                                                                            @elseif($status === 'Starting Soon') bg-info
-                                                                            @elseif($status === 'Upcoming') bg-primary
-                                                                            @else bg-secondary @endif">
-                                                                            {{ $status }}
-                                                                        </span>
-                                                                    </td>
-
-
-                                                            </tr> --}}
                                                         @endforeach
                                                     @endif
 
