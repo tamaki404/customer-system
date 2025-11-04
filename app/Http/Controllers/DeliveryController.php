@@ -13,6 +13,7 @@ use App\Models\DeliveryItems;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ProductSetting;
+use App\Models\OrderHistory;
 
 class DeliveryController extends Controller
 {
@@ -196,45 +197,97 @@ class DeliveryController extends Controller
             if ($totalDeliveries > 0 && $totalDeliveries === $deliveredCount) {
                 $order->update(['status' => 'Completed']);
             }
+            // after updating delivery items above
+
+            // Get all DELIVERED items for this delivery
+            $items = DeliveryItems::where('delivery_id', $delivery->delivery_id)
+                ->where('status', 'Delivered')
+                ->with('productSetting')
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+            $receivedTotal = 0;
+
+            foreach ($items as $item) {
+                if ($item->productSetting) {
+                    $lineTotal = $item->received_kilos * $item->productSetting->nego_price;
+                    $receivedTotal += $lineTotal;
+                }
+            }
+
+            $date  = date('Ymd');
+
+            $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
+
+            OrderHistory::create([
+                'action_by' => Auth::user()->user_id,
+                'order_id' => $delivery->order_id,
+                'action_at' => now(),
+                'history_id' => $history_id,
+                'label' => 'Order',
+                'amount' => $receivedTotal,
+                'status' => $request->status,
+            ]); 
+                        
 
             return back()->with('success', 'Delivery successfully confirmed with variance recorded.');
         }
 
-public function deliveryView($delivery_id, Request $request)
-{
-    $user = Auth::user();
-    $delivery = Delivery::where('delivery_id', $delivery_id)->first();
+        public function deliveryView($delivery_id, Request $request)
+        {
+            $user = Auth::user();
+            $delivery = Delivery::where('delivery_id', $delivery_id)->first();
 
-    // Get all DELIVERED items for this delivery
-    $items = DeliveryItems::where('delivery_id', $delivery_id)
-        ->where('status', 'Delivered')
-        ->with('productSetting') // eager load (optional but faster)
-        ->orderBy('created_at', 'asc')
-        ->get();
+            // Always show ALL delivery items in the view
+            $items = DeliveryItems::where('delivery_id', $delivery_id)
+                ->with('productSetting')
+                ->orderBy('created_at', 'asc')
+                ->get();
 
-    $receivedTotal = 0;
+            // Only count DELIVERED items for total
+            $deliveredItems = DeliveryItems::where('delivery_id', $delivery_id)
+                ->where('status', 'Delivered')
+                ->with('productSetting')
+                ->get();
 
-    foreach ($items as $item) {
+            $receivedTotal = 0;
+            foreach ($deliveredItems as $item) {
 
-        // Fetch negotiated price by CUSTOMER + PRODUCT
-        $productSetting = ProductSetting::where('product_id', $item->product_id)
-            ->where('customer_id', $item->customer_id)
-            ->first();
+                $productSetting = ProductSetting::where('product_id', $item->product_id)
+                    ->where('customer_id', $item->customer_id)
+                    ->first();
 
-        if ($productSetting) {
-            // Received value = received kilos × negotiated unit price
-            $lineTotal = $item->received_kilos * $productSetting->nego_price;
-            $receivedTotal += $lineTotal;
+                if ($productSetting) {
+                    $receivedTotal += $item->received_kilos * $productSetting->nego_price;
+                }
+            }
+
+
+            $receivedTotal = 0;
+
+            foreach ($items as $item) {
+
+                // Fetch negotiated price by CUSTOMER + PRODUCT
+                $productSetting = ProductSetting::where('product_id', $item->product_id)
+                    ->where('customer_id', $item->customer_id)
+                    ->first();
+
+                if ($productSetting) {
+                    // Received value = received kilos × negotiated unit price
+                    $lineTotal = $item->received_kilos * $productSetting->nego_price;
+                    $receivedTotal += $lineTotal;
+                }
+            }
+
+            return view('deliveries.items', [
+                'user' => $user,
+                'items' => $items,
+                'delivery' => $delivery,
+                'receivedTotal' => $receivedTotal
+            ]);
         }
-    }
 
-    return view('deliveries.items', [
-        'user' => $user,
-        'items' => $items,
-        'delivery' => $delivery,
-        'receivedTotal' => $receivedTotal
-    ]);
-}
+
 
 
 
