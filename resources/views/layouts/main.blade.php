@@ -296,13 +296,13 @@
                                 @endif
 
                                 {{-- Proof of Payments --}}
-                                @if(!empty($permissions['POP']) && $permissions['POP'])
+                                {{-- @if(!empty($permissions['POP']) && $permissions['POP'])
                                     <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
                                         <span class="material-symbols-outlined">receipt</span>
                                         <p>Proof of payments</p>
                                         <div class="nav-indicator"></div>
                                     </a>
-                                @endif
+                                @endif --}}
                             @else
                                 <div class="locked">
                                     <p title="Please wait for a staff member to set it up.">

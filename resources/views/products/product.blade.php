@@ -288,11 +288,11 @@
                     </div>
                     <div class="body">
                         <p>
-                            <span style="color:#f57c00 ">{{shortNumber($currentSale)}}</span>
+                            <span style="color:#f57c00 " id="currentSale">{{($currentSale)}}</span>
                             <span class="title">Total sales</span>
                         </p>
                         <p>
-                            <span style="color:#888">{{shortNumber($lastWeekSale)}}</span>
+                            <span style="color:#888" id="lastWeekSale">{{$lastWeekSale}}</span>
                             <span class="title">Previous period</span>
                         </p>
                     </div>
@@ -300,7 +300,7 @@
                         Chart
                     </div>
                     <div class="footer">
-                        <p>Updated at 11:30 am</p>
+                        <p>Updated at  {{ $lastUpdateProductSale->created_at }}</p>
                     </div>
                 </div>
                 <div class="product-sales">

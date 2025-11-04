@@ -146,8 +146,8 @@
                             <button class="tab-button " data-tab="payables" role="tab" aria-selected="true" aria-controls="payables-content" id="payables-tab">
                                 Payables
                             </button>
-                            <button class="tab-button" data-tab="balance" role="tab" aria-selected="true" aria-controls="balance-content" id="balance-tab">
-                                Outstanding balance
+                            <button class="tab-button" data-tab="payment" role="tab" aria-selected="true" aria-controls="payment-content" id="payment-tab">
+                                Payments
                             </button>
 
                         </div>
@@ -232,36 +232,29 @@
                         
                             </div>
                         </div>
-                        {{-- Outstanding balance --}}
-                        <div id="balance-content" class="tab-content" role="tabpanel" aria-labelledby="balance-tab">
+                        {{-- Payments --}}
+                        <div id="payment-content" class="tab-content" role="tabpanel" aria-labelledby="payment-tab">
                             <div class="table-body" style="margin-top: 10px">
-                                <p style="margin: 5px; font-weight: bold;">Outstanding balance</p>
+                                <p style="margin: 5px; font-weight: bold;">Payments</p>
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
                                     <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                                        <thead style="background-color: #fff; position:sticky; z-index: 1; top: 0;">
+                                        <thead style="background-color: #fff;">
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
                                                 <th>Date</th>
-                                                <th>Order ID</th>
-                                                {{-- <th>Description</th> --}}
-                                                <th>Running Balance</th>
+                                                <th>Receipt ID</th>
+                                                <th>Amount</th>
                                                 <th>Status</th>
-                                                
                                             </tr>
                                         </thead>
                                         <tbody>                                
-                                            @foreach ($oustandingPayments as $oustandingPayment)
-                                                <tr>
+                                            @foreach ($receipts as $receipt)
+                                                <tr onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $receipt->receipt_id]) }}'">
                                                     <td>{{$loop->iteration}}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($oustandingPayment->order_date)->format('M d, Y') }}</td>
-                                                    <td>{{ $oustandingPayment->order_id }}</td>
-                                                    {{-- <td>
-                                                        @foreach ($oustandingPayment->items as $item)
-                                                            {{$item->quantity}} {{ $item->product->name }},
-                                                        @endforeach
-                                                    </td> --}}
-                                                    <td><strong>₱{{ number_format($oustandingPayment->outstanding_balance, 2) }}</strong></td>
-                                                    <td>{{ $oustandingPayment->status }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($receipt->created_at)->format('F j, Y') }}</td>
+                                                    <td>{{$receipt->receipt_id}}</td>
+                                                    <td>₱{{$receipt->total_amount}}</td>
+                                                    <td>{{$receipt->status}}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>

@@ -748,23 +748,25 @@
                         </p>
                     </div>
                     <div style="padding: 10px; ">
-                        @foreach ( $payments as  $payment)
-                            <button class="cons-receipt" style="margin: 0; padding: 10px;" onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $payment->receipt_id]) }}'">
-                                <p style="display: flex; gap: 0; margin: 0; padding: 0; background-color: transparent;">
-                                    <span class="loop" style="font-size: 12px; color: #666;">#{{ $loop->iteration }}</span>
-                                    <span style="margin-left: 7px">{{ $payment->created_at->format('j F, Y') }}</span>
-                                    <span style="color: #f8912a; margin-left: auto;">+ ₱{{ number_format($payment->total_amount, 2) }}</span>
-                                </p>
-                                <p class="receipt-label" style="margin: 0; height: auto; padding: 0; ; background-color: transparent;">
-                                    <span>Bank transfer</span>
-                                </p>
-                            </button>
-                                <hr style="margin: 10px;   
-                                    border-top: 1px dashed #666;
-                                    border-bottom: none;
-                                    border-left: none;
-                                    border-right: none;">
-                        @endforeach
+                            @foreach ( $payments as  $payment)
+                                <button class="cons-receipt" style="margin: 0; padding: 10px;" onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $payment->receipt_id]) }}'">
+                                    <p style="display: flex; gap: 0; margin: 0; padding: 0; background-color: transparent;">
+                                        <span class="loop" style="font-size: 12px; color: #666;">#{{ $loop->iteration }}</span>
+                                        <span style="margin-left: 7px">{{ $payment->created_at->format('j F, Y') }}</span>
+                                        <span style="color: #f8912a; margin-left: auto;">+ ₱{{ number_format($payment->total_amount, 2) }}</span>
+                                    </p>
+                                    <p class="receipt-label" style="margin: 0; height: auto; padding: 0; ; background-color: transparent;">
+                                        <span>Bank transfer</span>
+                                    </p>
+                                </button>
+                                    <hr style="margin: 10px;   
+                                        border-top: 1px dashed #666;
+                                        border-bottom: none;
+                                        border-left: none;
+                                        border-right: none;">
+                            @endforeach
+                       
+
                     </div>
                 </div>
 

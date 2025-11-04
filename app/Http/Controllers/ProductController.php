@@ -75,7 +75,6 @@ class ProductController extends Controller
             $product = Products::where('product_id', $product_id)->first();  
 
             // current sale total
-
             $currentSaleQuery = DeliveryItems::where('product_id', $product_id)
                 ->where('status', 'Delivered')
                 ->whereBetween('created_at', [
@@ -112,12 +111,15 @@ class ProductController extends Controller
                     break;
             }
 
+            $lastUpdateProductSale = DeliveryItems::orderBy('created_at', 'desc')->first();
+
             return view('products.product', [
                 'user' => $user,
                 'product' => $product,
                 
                 'currentSale' => $currentSale,
                 'lastWeekSale' => $lastWeekSale,
+                'lastUpdateProductSale' => $lastUpdateProductSale,
 
 
 

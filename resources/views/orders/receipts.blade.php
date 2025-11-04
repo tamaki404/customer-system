@@ -37,9 +37,16 @@
             
                 <div class="content-header">
                     <div class="contents-display">
-                        <p>
-                            <a href="{{ route('credits.list') }}">< Credits</a>
-                        </p>
+                        @if (Auth()->user()->role === "Supplier")
+                            <p>
+                                <a href="{{ route('credits.list') }}">< Credits</a>
+                            </p>
+                        @elseif(Auth()->user()->role !== "Supplier")
+                            <p>
+                                <a href="{{ route('orders.order', $order->order_id) }}">< Go back to order</a>
+                            </p>
+                        @endif
+
                         <button onclick="window.location.href='{{ route('orders.order', ['order_id' => $order->order_id]) }}'">View order</button> 
 
                     </div>

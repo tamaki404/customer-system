@@ -239,7 +239,7 @@
 
                 @if (auth()->user()->role !== 'Supplier')
                 <div class="main-board">
-                    <div class="ceiling-table" style="height: 90%; padding: 0;" >
+                    <div class="ceiling-table" style="height: 80%; padding: 0;" >
                         <div class="table-section" style="height:100%; overflow: auto; padding: 0;">
                             <table style="position: relative; border-collapse: collapse; padding: 0;">
                                 <thead style="background-color: #fff; padding: 10px; z-index: 1; position: sticky; top: 0; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">

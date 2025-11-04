@@ -22,6 +22,8 @@ class CreditsController extends Controller
 
             if ($user->role !== "Supplier") {
                 $orders = Credits::all();
+                $receipts = Receipts::orderBy('created_at', 'desc')->get();
+
             } 
             elseif ($user->role === "Supplier") {
                 $credit = Credits::where('user_id', $user->user_id)->first();
@@ -40,7 +42,6 @@ class CreditsController extends Controller
                     ->value('outstanding_balance');
 
                 $availableCredit = $credit->credit_limit - $usedCredit;
-                $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->get();
                 $oustandingPayments = Orders::where('orders.supplier_id', $supplier->supplier_id)
                     ->whereIn('orders.payment_status', ['Unpaid', 'Partially settled'])
                     ->select('orders.*')
@@ -56,6 +57,7 @@ class CreditsController extends Controller
                         where receipts.order_id = orders.order_id
                         and receipts.status = "Verified"
                     )') 
+                    ->orderBy('created_at', 'desc')
                     ->get()
                     ->map(function ($order) {
                         $order->outstanding_balance = $order->total_amount - $order->verified_receipts_total;
@@ -75,8 +77,8 @@ class CreditsController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->get();
 
-
-
+                $supplier = Suppliers::where('user_id', $user->user_id)->first();
+                $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->orderBy('created_at', 'desc')->get();
 
             }
             return view('credits.list', [
@@ -85,9 +87,10 @@ class CreditsController extends Controller
                 'credit' => $credit,
                 'usedCredit' => $usedCredit,
                 'availableCredit' => $availableCredit,
-                'receipts' => $receipts,
                 'transactionHistory' => $transactionHistory,
-                'unpaidOrders' => $unpaidOrders
+                'unpaidOrders' => $unpaidOrders,
+                'receipts' => $receipts,
+                'supplier' => $supplier,
 
             ]);
         }

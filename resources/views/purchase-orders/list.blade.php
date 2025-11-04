@@ -31,8 +31,8 @@
     {{-- create order --}}
     @if (auth()->user()->role === 'Supplier')
         <div class="modal fade" id="create-order-modal" style="overflow: hidden;"  tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl " style="overflow: hidden; height: 90%;">
-                <form class="modal-content" method="POST"  style="width: 800px" action="{{ route('purchaseorders.create') }}">
+            <div class="modal-dialog modal-xl " style="overflow: hidden; height: 90%; overflow: auto;">
+                <form class="modal-content" method="POST"  style="width: 800px;overflow: auto;" action="{{ route('purchaseorders.create') }}">
                     @csrf
 
                 
@@ -45,6 +45,7 @@
                         <p class="note-notify">
                             <span class="material-symbols-outlined"> info </span>
                             <span>Select products from your available inventory and specify quantities.</span>
+                            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Create Purchase Order</button>
                         </p>
 
                         <div class="form-group" style="margin-bottom: 20px; flex-direction: column; display: flex;">
