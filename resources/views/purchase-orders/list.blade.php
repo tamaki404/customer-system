@@ -38,15 +38,20 @@
                 
                     <div class="modal-header">
                         <p class="modal-title" id="requestActionLabel">Create purchase order</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     
                     <div class="modal-body">
                         <p class="note-notify">
                             <span class="material-symbols-outlined"> info </span>
                             <span>Select products from your available inventory and specify quantities.</span>
-                            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Create Purchase Order</button>
                         </p>
+                        <p style="color:#555;">
+                            Credit Limit: ₱{{ number_format($creditLimit, 2) }}<br>
+                            Allowed +20%: ₱{{ number_format($maxAllowedCredit, 2) }}<br>
+                            Outstanding: ₱{{ number_format($usedCredit, 2) }}<br>
+                            Available to spend: ₱{{ number_format($maxAllowedCredit - $usedCredit, 2) }}
+                        </p>
+
 
                         <div class="form-group" style="margin-bottom: 20px; flex-direction: column; display: flex;">
                             <label for="notes">Notes (Optional)</label>

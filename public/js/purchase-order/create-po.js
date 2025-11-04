@@ -182,7 +182,6 @@ function updateSummary() {
     let grandTotal = 0;
 
     selectedProducts.forEach((data) => {
-        // For Heads&Kilos or Kilos: use kilos
         if (data.measurementType === 'Heads&Kilos' || data.measurementType === 'Kilos') {
             grandTotal += data.price * data.kilos;
         } else if (data.measurementType === 'Heads') {
@@ -198,10 +197,22 @@ function updateSummary() {
     });
 
     const submitBtn = document.getElementById('submitBtn');
-    if (submitBtn) {
+
+    if (!submitBtn) return;
+
+    if (grandTotal > maxAllowed) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Exceeds Credit Limit";
+        submitBtn.classList.add('btn-warning');
+        submitBtn.classList.remove('btn-primary');
+    } else {
         submitBtn.disabled = selectedProducts.size === 0;
+        submitBtn.innerText = "Create Purchase Order";
+        submitBtn.classList.remove('btn-warning');
+        submitBtn.classList.add('btn-primary');
     }
 }
+
 
 /**
  * Validate form before submission

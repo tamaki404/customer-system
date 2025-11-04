@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Control;
+use App\Models\Credits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Orders;
@@ -41,7 +42,6 @@ class PurchaseOrderController extends Controller
 
             if ($user->role === "Customer") {
                 $customer = Customers::where('user_id', $user->user_id)->first();
-
                 if ($customer) {
                     $query = PurchaseOrders::where('customer_id', $customer->customer_id)
                         ->with(['items', 'customer']);
@@ -102,6 +102,26 @@ class PurchaseOrderController extends Controller
                             return $setProduct;
                         });
                 }
+                $credit = Credits::where('user_id', $user->user_id)->first();
+                $usedCredit = Orders::where('customer_id', $customer->customer_id)
+                    ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
+                    ->selectRaw('
+                        SUM(
+                            orders.total_amount - COALESCE(
+                                (SELECT SUM(r.total_amount) 
+                                FROM receipts r 
+                                WHERE r.order_id = orders.order_id 
+                                AND r.status = "Verified"), 0
+                            )
+                        ) as outstanding_balance
+                    ')
+                    ->value('outstanding_balance');
+
+                $availableCredit = $credit->credit_limit - $usedCredit;
+                $creditLimit      = $credit->credit_limit;
+                $exceedAllowance  = $creditLimit * 0.20;
+                $exceedLimit      = $creditLimit + $exceedAllowance;
+
             } 
             elseif ($user->role === "Staff" || $user->role === "Admin") {
                 $query = PurchaseOrders::with(['items', 'customer', 'staff']);
@@ -132,6 +152,9 @@ class PurchaseOrderController extends Controller
                 'customer' => $customer,
                 'setProds' => $setProds, 
                 'pos' => $pos,
+                'availableCredit' => $availableCredit,
+                'exceedLimit' => $exceedLimit,
+
             ]);
         }
         public function purchaseOrderView($po_id, Request $request)
@@ -154,19 +177,46 @@ class PurchaseOrderController extends Controller
             ]);
         }
 
-        public function createPurchaseOrder(Request $request) {
+        public function createPurchaseOrder(Request $request)
+        {
             $user = Auth::user();
-            
+        
             if ($user->role !== "Customer") {
                 return redirect()->back()->with('error', 'Only customers can create purchase orders.');
             }
-
+        
             $customer = Customers::where('user_id', $user->user_id)->first();
-            
+        
             if (!$customer) {
                 return redirect()->back()->with('error', 'Customer profile not found.');
             }
+        
+            // Fetch user credit
+            $credit = Credits::where('user_id', $user->user_id)->first();
+        
+            if (!$credit) {
+                return redirect()->back()->with('error', 'Credit profile not found.');
+            }
+        
+            // Fetch outstanding unpaid balances
+            $usedCredit = Orders::where('customer_id', $customer->customer_id)
+                ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
+                ->selectRaw('
+                    SUM(
+                        orders.total_amount - COALESCE(
+                            (SELECT SUM(r.total_amount) 
+                            FROM receipts r 
+                            WHERE r.order_id = orders.order_id 
+                            AND r.status = "Verified"), 0
+                        )
+                    ) as outstanding_balance
+                ')
+                ->value('outstanding_balance') ?? 0;
 
+            $creditLimit     = $credit->credit_limit;
+            $exceedAllowance = $creditLimit * 0.20;
+            $maxAllowed      = $creditLimit + $exceedAllowance;
+                
             try {
                 $request->validate([
                     'selected_products'   => 'required|array|min:1',
@@ -177,13 +227,12 @@ class PurchaseOrderController extends Controller
                     'placed_heads.*'      => 'nullable|numeric|min:0',
                     'notes'               => 'nullable|string|max:1000',
                 ]);
-
+            
                 DB::beginTransaction();
-
+            
                 $date  = date('Ymd');
                 $po_id = 'PO-' . $date . '-' . Str::upper(Str::random(5));
-
-                // Create purchase order
+            
                 $purchaseOrder = PurchaseOrders::create([
                     'po_id'        => $po_id,
                     'customer_id'  => $customer->customer_id,
@@ -192,134 +241,124 @@ class PurchaseOrderController extends Controller
                     'total_amount' => 0,
                     'placed_at'    => now(),
                 ]);
-
+            
                 $totalAmount = 0;
-
+            
                 foreach ($request->selected_products as $setId) {
-                    $productSetting = ProductSetting::with('product')->where('set_id', $setId)->first();
+            $productSetting = ProductSetting::with('product')->where('set_id', $setId)->first();
 
-                    if (!$productSetting) {
-                        throw new \Exception("Invalid product setting for set_id: $setId");
-                    }
+            if (!$productSetting) {
+                throw new \Exception("Invalid product setting for set_id: $setId");
+            }
 
-                    $placedHeads = $request->placed_heads[$setId] ?? 0;
-                    $placedKilos = $request->placed_kilos[$setId] ?? 0;
-                    $measurementType = $productSetting->product->measurement_type;
+            $placedHeads = $request->placed_heads[$setId] ?? 0;
+            $placedKilos = $request->placed_kilos[$setId] ?? 0;
+            $measurementType = $productSetting->product->measurement_type;
 
-                    // Determine which quantity to use based on measurement type
-                    if ($measurementType === 'Heads&Kilos') {
-                        $quantityForCalculation = $placedKilos;
-                        
-                        if ($placedKilos <= 0) {
-                            throw new \Exception("Kilos is required for product: {$productSetting->product->name}");
-                        }
-                        if ($placedHeads <= 0) {
-                            throw new \Exception("Heads is required for product: {$productSetting->product->name}");
-                        }
-                        
-                    } elseif ($measurementType === 'Kilos') {
-                        $quantityForCalculation = $placedKilos;
-                        
-                        if ($quantityForCalculation <= 0) {
-                            throw new \Exception("Kilos is required for product: {$productSetting->product->name}");
-                        }
-                        
-                        $placedHeads = 0;
-                        
-                    } elseif ($measurementType === 'Heads') {
-                        $quantityForCalculation = $placedHeads;
-                        
-                        if ($quantityForCalculation <= 0) {
-                            throw new \Exception("Heads is required for product: {$productSetting->product->name}");
-                        }
-                        
-                        $placedKilos = 0;
-                        
-                    } else {
-                        throw new \Exception("Invalid measurement type for product: {$productSetting->product->name}");
-                    }
+            if ($measurementType === 'Heads&Kilos') {
+                $quantityForCalculation = $placedKilos;
+                if ($placedKilos <= 0 || $placedHeads <= 0) {
+                    throw new \Exception("Both heads & kilos are required for {$productSetting->product->name}");
+                }
+            } elseif ($measurementType === 'Kilos') {
+                $quantityForCalculation = $placedKilos;
+                if ($quantityForCalculation <= 0) {
+                    throw new \Exception("Kilos is required for {$productSetting->product->name}");
+                }
+                $placedHeads = 0;
+            } elseif ($measurementType === 'Heads') {
+                $quantityForCalculation = $placedHeads;
+                if ($quantityForCalculation <= 0) {
+                    throw new \Exception("Heads is required for {$productSetting->product->name}");
+                }
+                $placedKilos = 0;
+            } else {
+                throw new \Exception("Invalid measurement type for {$productSetting->product->name}");
+            }
 
-                    // Base negotiation price
-                    $originalPrice = $productSetting->nego_price;
-                    $finalUnitPrice = $originalPrice;
+            $originalPrice = $productSetting->nego_price;
+            $finalUnitPrice = $originalPrice;
 
-                    // Check for active sale discount
-                    $activeSale = SaleDiscount::where('product_id', $productSetting->product_id)
-                        ->whereDate('start_date', '<=', now())
-                        ->whereDate('end_date', '>=', now())
-                        ->first();
+            $activeSale = SaleDiscount::where('product_id', $productSetting->product_id)
+                ->whereDate('start_date', '<=', now())
+                ->whereDate('end_date', '>=', now())
+                ->first();
 
-                    if ($activeSale && $activeSale->quantity > 0) {
-                        // Check if there's enough quantity available
-                        $availableQuantity = $activeSale->quantity;
-                        
-                        if ($quantityForCalculation > $availableQuantity) {
-                            throw new \Exception(
-                                "Insufficient sale quantity for product: {$productSetting->product->name}. " .
-                                "There are only {$availableQuantity} " . 
-                                ($measurementType === 'Heads' ? 'heads' : 'kilos') . 
-                                " left for this sale item."
-                            );
-                        }
+            if ($activeSale && $activeSale->quantity > 0) {
+                $availableQuantity = $activeSale->quantity;
 
-                        // Apply sale discount
-                        if ($activeSale->value_type === "Fixed") {
-                            $finalUnitPrice = $activeSale->value;
-                        } elseif ($activeSale->value_type === "Percentage") {
-                            $discountAmount = ($originalPrice * $activeSale->value) / 100;
-                            $finalUnitPrice = $originalPrice - $discountAmount;
-                        }
-
-                        // Deduct the quantity from sale discount
-                        $newQuantity = $availableQuantity - $quantityForCalculation;
-                        $activeSale->update(['quantity' => $newQuantity]);
-                    }
-
-                    // Calculate totals using the determined quantity
-                    $itemTotal = $finalUnitPrice * $quantityForCalculation;
-
-                    $poItemId = 'POI-' . $date . '-' . Str::upper(Str::random(5));
-
-                    PurchaseOrderItem::create([
-                        'po_item_id'      => $poItemId,
-                        'po_id'           => $po_id,
-                        'product_id'      => $productSetting->product_id,
-                        'set_id'          => $setId,
-                        'placed_heads'    => $placedHeads,
-                        'placed_kilos'    => $placedKilos,
-                        'alt_heads'       => $placedHeads,
-                        'alt_kilos'       => $placedKilos,
-                        'original_price'  => $originalPrice,
-                        'unit_price'      => $finalUnitPrice,
-                        'total_price'     => $itemTotal,
-                        'status'          => 'Pending',
-                    ]);
-
-                    $totalAmount += $itemTotal;
+                if ($quantityForCalculation > $availableQuantity) {
+                    throw new \Exception(
+                        "Insufficient sale quantity for {$productSetting->product->name}. Only {$availableQuantity} left."
+                    );
                 }
 
-                // Update total
-                $purchaseOrder->update(['total_amount' => $totalAmount]);
+                if ($activeSale->value_type === "Fixed") {
+                    $finalUnitPrice = $activeSale->value;
+                } elseif ($activeSale->value_type === "Percentage") {
+                    $discountAmount = ($originalPrice * $activeSale->value) / 100;
+                    $finalUnitPrice = $originalPrice - $discountAmount;
+                }
 
-                DB::commit();
-
-                return redirect()
-                    ->route('purchaseorders.purchaseorder', ['po_id' => $po_id])
-                    ->with('success', 'Purchase order created successfully! PO ID: ' . $po_id);
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                \Log::error('Purchase order creation failed:', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'request_data' => $request->all(),
+                $activeSale->update([
+                    'quantity' => $availableQuantity - $quantityForCalculation
                 ]);
-
-                return redirect()->back()
-                    ->with('error', 'Purchase order creation failed: ' . $e->getMessage())
-                    ->withInput();
             }
+
+            $itemTotal = $finalUnitPrice * $quantityForCalculation;
+            $poItemId  = 'POI-' . $date . '-' . Str::upper(Str::random(5));
+
+            PurchaseOrderItem::create([
+                'po_item_id'      => $poItemId,
+                'po_id'           => $po_id,
+                'product_id'      => $productSetting->product_id,
+                'set_id'          => $setId,
+                'placed_heads'    => $placedHeads,
+                'placed_kilos'    => $placedKilos,
+                'alt_heads'       => $placedHeads,
+                'alt_kilos'       => $placedKilos,
+                'original_price'  => $originalPrice,
+                'unit_price'      => $finalUnitPrice,
+                'total_price'     => $itemTotal,
+                'status'          => 'Pending',
+            ]);
+
+            $totalAmount += $itemTotal;
         }
+
+        // ✅ CREDIT LIMIT VALIDATION HERE
+        $newUsage = $usedCredit + $totalAmount;
+
+        if ($newUsage > $maxAllowed) {
+            throw new \Exception(
+                "This purchase will exceed your available credit capacity. Maximum allowed: ₱"
+                . number_format($maxAllowed, 2)
+            );
+        }
+
+        $purchaseOrder->update(['total_amount' => $totalAmount]);
+
+        DB::commit();
+
+        return redirect()
+            ->route('purchaseorders.purchaseorder', ['po_id' => $po_id])
+            ->with('success', 'Purchase order created successfully! PO ID: ' . $po_id);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        \Log::error('Purchase order creation failed:', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'request_data' => $request->all(),
+        ]);
+
+        return redirect()->back()
+            ->with('error', 'Purchase order creation failed: ' . $e->getMessage())
+            ->withInput();
+    }
+}
+
 
         public function confirmPurchaseOrder(Request $request, $po_id)
         {

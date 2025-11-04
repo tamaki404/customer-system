@@ -169,7 +169,7 @@
                                         </thead>
                                         <tbody>                                
                                             @foreach ($transactionHistory as $transaction)
-                                                <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $transaction->order_id]) }}'">
+                                                <tr onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $transaction->order_id]) }}'">
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ \Carbon\Carbon::parse($transaction->action_at)->format('M d, Y') }}</td>
                                                     <td>{{ $transaction->order_id }}</td>
