@@ -204,7 +204,7 @@ class UserController extends Controller
             // ID generation
             $date = date('Ymd');
             $user_id = 'USR-' . $date . '-' . $this->randomBase36String(5);
-            $customer_id = 'SUP-' . $date . '-' . $this->randomBase36String(5);
+            $customer_id = 'CUST-' . $date . '-' . $this->randomBase36String(5);
             $status_id = 'STAT-' . $date . '-' . $this->randomBase36String(5);
 
             // Define document types for later use

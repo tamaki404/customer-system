@@ -1,9 +1,26 @@
 /**
- * Purchase Order Creation - Product Selection and Calculation
+ * Purchase Order Creation - Product Selection and Calculation with Credit Limit Validation
  * Handles product selection, quantity input, and total calculations with sale quantity limits
+ * Displays real-time credit limit warnings
  */
 
 let selectedProducts = new Map();
+
+// Credit limit variables - these should be passed from your Blade template
+let creditLimit = 0;
+let usedCredit = 0;
+let maxAllowed = 0;
+
+/**
+ * Initialize credit limit data from the page
+ * Call this function in your Blade template with the actual values
+ */
+function initializeCreditData(limit, used, max) {
+    creditLimit = limit;
+    usedCredit = used;
+    maxAllowed = max;
+    updateSummary(); // Update display immediately after initialization
+}
 
 /**
  * Toggle product row selection and enable/disable inputs
@@ -21,7 +38,6 @@ function toggleProductRow(checkbox, setId) {
 
         // Enable inputs based on measurement type
         if (measurementType === 'Heads&Kilos') {
-            // Enable BOTH inputs for Heads&Kilos
             headsInput.disabled = false;
             headsInput.value = 1;
             headsInput.required = true;
@@ -29,12 +45,10 @@ function toggleProductRow(checkbox, setId) {
             kilosInput.value = 1;
             kilosInput.required = true;
             
-            // Set max for kilos if on sale
             if (onSale && !isNaN(saleQuantity) && saleQuantity > 0) {
                 kilosInput.setAttribute('max', saleQuantity);
             }
         } else if (measurementType === 'Kilos') {
-            // Only kilos for Kilos products
             kilosInput.disabled = false;
             kilosInput.value = 1;
             kilosInput.required = true;
@@ -42,12 +56,10 @@ function toggleProductRow(checkbox, setId) {
             headsInput.value = 0;
             headsInput.required = false;
             
-            // Set max for kilos if on sale
             if (onSale && !isNaN(saleQuantity) && saleQuantity > 0) {
                 kilosInput.setAttribute('max', saleQuantity);
             }
         } else if (measurementType === 'Heads') {
-            // Only heads for Heads products
             headsInput.disabled = false;
             headsInput.value = 1;
             headsInput.required = true;
@@ -55,13 +67,11 @@ function toggleProductRow(checkbox, setId) {
             kilosInput.value = 0;
             kilosInput.required = false;
             
-            // Set max for heads if on sale
             if (onSale && !isNaN(saleQuantity) && saleQuantity > 0) {
                 headsInput.setAttribute('max', saleQuantity);
             }
         }
 
-        // Store product data
         selectedProducts.set(setId, {
             productId: row.dataset.productId,
             price: parseFloat(row.dataset.price),
@@ -83,7 +93,6 @@ function toggleProductRow(checkbox, setId) {
         headsInput.value = 0;
         kilosInput.value = 0;
         
-        // Remove max attributes
         headsInput.removeAttribute('max');
         kilosInput.removeAttribute('max');
 
@@ -132,7 +141,6 @@ function calculateRowTotal(setId) {
 
     let total = 0;
 
-    // For Heads&Kilos or Kilos: ALWAYS use kilos for calculation
     if (measurementType === 'Heads&Kilos' || measurementType === 'Kilos') {
         total = price * kilos;
     } else if (measurementType === 'Heads') {
@@ -141,7 +149,6 @@ function calculateRowTotal(setId) {
 
     totalSpan.textContent = `₱${total.toFixed(2)}`;
 
-    // Update stored product data
     if (selectedProducts.has(setId)) {
         selectedProducts.get(setId).heads = heads;
         selectedProducts.get(setId).kilos = kilos;
@@ -157,7 +164,6 @@ function showSaleQuantityWarning(row, maxQuantity, unit) {
     const productName = row.querySelector('td:nth-child(3)').textContent.trim();
     const unitText = unit === 'heads' ? 'pcs' : 'kg';
     
-    // Create temporary warning message
     const warningDiv = document.createElement('div');
     warningDiv.className = 'alert alert-warning';
     warningDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px; animation: slideIn 0.3s;';
@@ -168,7 +174,6 @@ function showSaleQuantityWarning(row, maxQuantity, unit) {
     
     document.body.appendChild(warningDiv);
     
-    // Remove after 3 seconds
     setTimeout(() => {
         warningDiv.style.animation = 'slideOut 0.3s';
         setTimeout(() => warningDiv.remove(), 300);
@@ -176,7 +181,7 @@ function showSaleQuantityWarning(row, maxQuantity, unit) {
 }
 
 /**
- * Update summary section (selected count and grand total)
+ * Update summary section with credit limit validation
  */
 function updateSummary() {
     let grandTotal = 0;
@@ -189,6 +194,7 @@ function updateSummary() {
         }
     });
 
+    // Update selected count and grand total
     document.getElementById('selectedCount').textContent = selectedProducts.size;
     document.getElementById('grandTotal').textContent = grandTotal.toLocaleString('en-PH', {
         style: 'currency',
@@ -196,23 +202,120 @@ function updateSummary() {
         minimumFractionDigits: 2
     });
 
-    const submitBtn = document.getElementById('submitBtn');
+    // Calculate credit usage - following the controller logic
+    const totalCreditUsage = usedCredit + grandTotal; // newUsage = usedCredit + totalAmount
+    const availableCredit = maxAllowed - usedCredit;
+    const remaining = maxAllowed - totalCreditUsage;
 
+    // Update credit display elements
+    updateCreditDisplay(grandTotal, totalCreditUsage, availableCredit, remaining);
+
+    // Update submit button state - following the controller logic
+    const submitBtn = document.getElementById('submitBtn');
     if (!submitBtn) return;
 
-    if (grandTotal > maxAllowed) {
+    // Following: if ($newUsage > $maxAllowed) { throw exception }
+    if (totalCreditUsage > maxAllowed) {
         submitBtn.disabled = true;
         submitBtn.innerText = "Exceeds Credit Limit";
+        submitBtn.classList.add('btn-danger');
+        submitBtn.classList.remove('btn-primary', 'btn-warning');
+    } else if (grandTotal > availableCredit) {
+        // Warning state - over available but within max allowed
+        submitBtn.disabled = false;
+        submitBtn.innerText = "⚠️ Create Order (Over Available Credit)";
         submitBtn.classList.add('btn-warning');
-        submitBtn.classList.remove('btn-primary');
+        submitBtn.classList.remove('btn-primary', 'btn-danger');
     } else {
         submitBtn.disabled = selectedProducts.size === 0;
         submitBtn.innerText = "Create Purchase Order";
-        submitBtn.classList.remove('btn-warning');
+        submitBtn.classList.remove('btn-warning', 'btn-danger');
         submitBtn.classList.add('btn-primary');
     }
 }
 
+/**
+ * Update credit limit display with color-coded warnings
+ */
+/**
+ * Update credit limit display with color-coded warnings
+ */
+function updateCreditDisplay(orderTotal, totalUsage, available, remaining) {
+    const creditInfoDiv = document.getElementById('creditInfo');
+    if (!creditInfoDiv) return;
+
+    const percentUsed = (totalUsage / maxAllowed) * 100;
+    let statusClass = 'text-success';
+    let statusIcon = '✓';
+    let statusText = 'Within Limit';
+
+    // Following the controller validation logic
+    if (totalUsage > maxAllowed) {
+        statusClass = 'text-danger';
+        statusIcon = '✗';
+        statusText = 'EXCEEDS LIMIT';
+    } else if (percentUsed > 90) {
+        statusClass = 'text-warning';
+        statusIcon = '⚠';
+        statusText = 'Near Limit';
+    }
+
+    creditInfoDiv.innerHTML = `
+        <div style="padding: 15px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid ${statusClass === 'text-danger' ? '#dc3545' : statusClass === 'text-warning' ? '#ffc107' : '#28a745'};">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <strong>Credit Status</strong>
+                <span class="${statusClass}" style="font-weight: bold;">${statusIcon} ${statusText}</span>
+            </div>
+            <div style="font-size: 13px; color: #666;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>Credit Limit:</span>
+                    <span style="font-weight: 500;">₱${creditLimit.toLocaleString('en-PH', {minimumFractionDigits: 2})}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>Max Allowed (+20%):</span>
+                    <span style="font-weight: 500;">₱${maxAllowed.toLocaleString('en-PH', {minimumFractionDigits: 2})}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>Current Outstanding:</span>
+                    <span style="font-weight: 500;">₱${usedCredit.toLocaleString('en-PH', {minimumFractionDigits: 2})}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>Available Credit:</span>
+                    <span style="font-weight: 500; color: ${available < 0 ? '#dc3545' : '#28a745'};">₱${Math.max(0, available).toLocaleString('en-PH', {minimumFractionDigits: 2})}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>This Order:</span>
+                    <span style="font-weight: 500; color: #007bff;">₱${orderTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}</span>
+                </div>
+                <hr style="margin: 10px 0; border-color: #ddd;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="font-weight: bold;">Total After Order:</span>
+                    <span style="font-weight: bold;" class="${statusClass}">₱${totalUsage.toLocaleString('en-PH', {minimumFractionDigits: 2})}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="font-weight: bold;">Remaining Credit:</span>
+                    <span style="font-weight: bold;" class="${remaining < 0 ? 'text-danger' : 'text-success'}">
+                        ₱${Math.max(0, remaining).toLocaleString('en-PH', {minimumFractionDigits: 2})}
+                    </span>
+                </div>
+            </div>
+            
+            ${orderTotal > available && totalUsage <= maxAllowed ? `
+                <p style="margin-top: 10px; margin-bottom: 0; padding: 10px; background: #fff3cd; border-radius: 4px; border: 1px solid #ffc107; font-size: 13px;">
+                    <strong style="color: #856404;">⚠️ Notice:</strong>
+                    <span style="color: #856404;">This order (₱${orderTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}) exceeds your available credit (₱${available.toLocaleString('en-PH', {minimumFractionDigits: 2})}) by <strong>₱${(orderTotal - available).toLocaleString('en-PH', {minimumFractionDigits: 2})}</strong>, but is still within your maximum allowed limit.</span>
+                </p>
+            ` : ''}
+            
+            ${totalUsage > maxAllowed ? `
+                <p style="margin-top: 10px; margin-bottom: 0; padding: 10px; background: #f8d7da; border-radius: 4px; border: 1px solid #dc3545; font-size: 13px;">
+                    <strong style="color: #721c24;">⛔ Error:</strong>
+                    <span style="color: #721c24;">This order exceeds your maximum allowed credit by <strong>₱${(totalUsage - maxAllowed).toLocaleString('en-PH', {minimumFractionDigits: 2})}</strong>. Please reduce your order amount.</span>
+                </p>
+            ` : ''}
+        </div>
+    `;
+}
 
 /**
  * Validate form before submission
@@ -241,8 +344,13 @@ function validateForm() {
             }
         }
 
-        // For Heads&Kilos or Kilos: only kilos is required
-        if (data.measurementType === 'Heads&Kilos' || data.measurementType === 'Kilos') {
+        // Validate quantities based on measurement type
+        if (data.measurementType === 'Heads&Kilos') {
+            if (data.kilos <= 0 || data.heads <= 0) {
+                errors.push(`${productName} requires both heads and kilos to be greater than 0.`);
+                hasErrors = true;
+            }
+        } else if (data.measurementType === 'Kilos') {
             if (data.kilos <= 0) {
                 errors.push(`${productName} requires kilos to be greater than 0.`);
                 hasErrors = true;
@@ -254,6 +362,22 @@ function validateForm() {
             }
         }
     });
+
+    // Validate credit limit - matching controller logic
+    let grandTotal = 0;
+    selectedProducts.forEach((data) => {
+        if (data.measurementType === 'Heads&Kilos' || data.measurementType === 'Kilos') {
+            grandTotal += data.price * data.kilos;
+        } else if (data.measurementType === 'Heads') {
+            grandTotal += data.price * data.heads;
+        }
+    });
+
+    const newUsage = usedCredit + grandTotal;
+    if (newUsage > maxAllowed) {
+        errors.push(`This purchase will exceed your available credit capacity. Maximum allowed: ₱${maxAllowed.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
+        hasErrors = true;
+    }
 
     if (hasErrors) {
         alert('Please fix the following errors:\n\n' + errors.join('\n'));
@@ -267,7 +391,7 @@ function validateForm() {
  * Initialize event listeners when DOM is ready
  */
 document.addEventListener('DOMContentLoaded', function () {
-    // Add CSS for warning animations
+    // Add CSS for animations
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideIn {

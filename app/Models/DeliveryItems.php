@@ -13,6 +13,7 @@ class DeliveryItems extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'customer_id',
         'delivery_item_id',
         'delivery_id',
         'order_item_id',

@@ -81,15 +81,13 @@
                 </td>
             @elseif($delivery->status === "Scheduled")
                 @if (Auth()->user()->role === "Customer" && $delivery->status === "Scheduled")
-                            <button 
-                                type="button"
-                                class="btn btn-primary file-action-btn"
-                                data-bs-toggle="modal"
-                                data-bs-target="#fileanaction">
-                                Receive this order
-                            </button>
-                        
-                
+                    <button 
+                        type="button"
+                        class="btn btn-primary file-action-btn"
+                        data-bs-toggle="modal"
+                        data-bs-target="#fileanaction">
+                        Receive this order
+                    </button>
                 @endif
            @endif
 

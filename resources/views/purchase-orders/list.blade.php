@@ -45,12 +45,22 @@
                             <span class="material-symbols-outlined"> info </span>
                             <span>Select products from your available inventory and specify quantities.</span>
                         </p>
-                        <p style="color:#555;">
-                            Credit Limit: ₱{{ number_format($creditLimit, 2) }}<br>
-                            Allowed +20%: ₱{{ number_format($maxAllowedCredit, 2) }}<br>
-                            Outstanding: ₱{{ number_format($usedCredit, 2) }}<br>
-                            Available to spend: ₱{{ number_format($maxAllowedCredit - $usedCredit, 2) }}
-                        </p>
+                        <div id="creditInfo" style="margin-bottom: 20px;">
+                        </div>
+
+                        <script>
+                            // Initialize credit data when page loads
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const creditLimit = {{ $creditLimit }};
+                                const usedCredit = {{ $usedCredit }};
+                                const maxAllowed = {{ $maxAllowedCredit }};
+                                
+                                // Initialize the credit display
+                                if (typeof initializeCreditData === 'function') {
+                                    initializeCreditData(creditLimit, usedCredit, maxAllowed);
+                                }
+                            });
+                        </script>
 
 
                         <div class="form-group" style="margin-bottom: 20px; flex-direction: column; display: flex;">

@@ -11,11 +11,11 @@ return new class extends Migration
         Schema::create('delivery_items', function (Blueprint $table) {
             $table->id();
             $table->string('delivery_item_id')->unique(); 
+            $table->string('customer_id');               
             $table->string('delivery_id');               
             $table->string('order_item_id');             
             $table->string('product_id');                 
             $table->string('set_id')->nullable();
-
             $table->decimal('planned_kilos', 10, 2)->nullable();
             $table->decimal('received_kilos', 10, 2)->nullable();
             $table->integer('planned_heads')->nullable();

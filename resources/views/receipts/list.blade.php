@@ -13,7 +13,7 @@
                     <div class="contents-display">
                         <form action="{{ route('purchaseorders.list') }}" id="text-search" class="search-text-con" method="GET">
                             <input type="text" name="search" class="search-bar"
-                                placeholder="Search by SUP ID. , Customer, Representative and status"
+                                placeholder="Search by CUST ID. , Customer, Representative and status"
                                 value="{{ request('search') }}"
                                 style="outline:none;"
                             >

@@ -116,6 +116,7 @@ class DeliveryController extends Controller
                             'received_heads'   => 0,
                             'received_kilos'   => 0,
                             'status'           => 'Pending',
+                            'customer_id'      => $order->customer_id,
                         ]);
                     }
                 }

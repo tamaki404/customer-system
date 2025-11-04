@@ -150,7 +150,7 @@
             <div class="contents-display">
                 <form action="{{ route('customers.list') }}" id="text-search" class="search-text-con" method="GET">
                     <input type="text" name="search" class="search-bar"
-                        placeholder="Search by SUP ID. , Customer, Representative and status"
+                        placeholder="Search by CUST ID. , Customer, Representative and status"
                         value="{{ request('search') }}"
                         style="outline:none;"
                     >
@@ -203,7 +203,7 @@
                 <thead style="background-color: #fff;">
                     <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                         <th>#</th>
-                        <th>SUP ID.</th>
+                        <th>CUST ID.</th>
                         <th>Customer</th>
                         <th>Email</th>
                         <th>Type</th>

@@ -33,172 +33,80 @@ class PurchaseOrderController extends Controller
             }
             return $str;
         }
-        public function purchaseOrderlist(Request $request)
-        {
-            $user = Auth::user();
-            $customer = null;
-            $pos = collect();
-            $setProds = collect(); 
+public function purchaseOrderlist(Request $request)
+{
+    $user = Auth::user();
+    $customer = null;
+    $pos = collect();
+    $setProds = collect(); 
+    $creditLimit = 0;
+    $usedCredit = 0;
+    $maxAllowedCredit = 0;
+    $availableCredit = 0;
 
-            if ($user->role === "Customer") {
-                $customer = Customers::where('user_id', $user->user_id)->first();
-                if ($customer) {
-                    $query = PurchaseOrders::where('customer_id', $customer->customer_id)
-                        ->with(['items', 'customer']);
+    if ($user->role === "Customer") {
+        $customer = Customers::where('user_id', $user->user_id)->first();
+        if ($customer) {
+            $query = PurchaseOrders::where('customer_id', $customer->customer_id)
+                ->with(['items', 'customer']);
 
-                    // Apply search filter
-                    if ($request->filled('search')) {
-                        $search = $request->search;
-                        $query->where(function($q) use ($search) {
-                            $q->where('po_id', 'like', "%{$search}%")
-                            ->orWhere('status', 'like', "%{$search}%");
-                        });
-                    }
-
-                    // Apply date filter
-                    if ($request->filled('from_date')) {
-                        $query->whereDate('created_at', '>=', $request->from_date);
-                    }
-                    if ($request->filled('to_date')) {                                                   
-                        $query->whereDate('created_at', '<=', $request->to_date);
-                    }
-
-                    $pos = $query->orderBy('created_at', 'desc')->get();
-
-                    // Get products with sale prices
-                    // Get products with sale prices
-                    $setProds = ProductSetting::where('customer_id', $customer->customer_id)
-                        ->with('product')
-                        ->get() 
-                        ->unique('product_id')
-                        ->values()
-                        ->map(function($setProduct) {
-                            $activeSale = SaleDiscount::where('product_id', $setProduct->product_id)
-                                ->whereDate('start_date', '<=', now())
-                                ->whereDate('end_date', '>=', now())
-                                ->first();
-                            $setProduct->original_price = $setProduct->nego_price;
-                            $setProduct->on_sale = false;
-                            $setProduct->activeSale = NULL; // Initialize
-
-                            if ($activeSale && $activeSale->quantity > 0) {
-                                // Only apply sale if quantity is available
-                                if ($activeSale->value_type === "Fixed") {
-                                    $setProduct->nego_price = $activeSale->value;
-                                    $setProduct->on_sale = true;
-                                } elseif ($activeSale->value_type === "Percentage") {
-                                    $discountAmount = ($setProduct->original_price * $activeSale->value) / 100;
-                                    $setProduct->nego_price = $setProduct->original_price - $discountAmount;
-                                    $setProduct->on_sale = true;
-                                }
-                                $setProduct->activeSale = $activeSale; // Attach the sale object
-                            } elseif ($activeSale && $activeSale->quantity <= 0) {
-                                // Sale exists but quantity depleted - use original price
-                                $setProduct->nego_price = $setProduct->original_price;
-                                $setProduct->on_sale = false;
-                                $setProduct->activeSale = $activeSale; // Still attach for reference
-                            }
-
-                            return $setProduct;
-                        });
-                }
-                $credit = Credits::where('user_id', $user->user_id)->first();
-                $usedCredit = Orders::where('customer_id', $customer->customer_id)
-                    ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
-                    ->selectRaw('
-                        SUM(
-                            orders.total_amount - COALESCE(
-                                (SELECT SUM(r.total_amount) 
-                                FROM receipts r 
-                                WHERE r.order_id = orders.order_id 
-                                AND r.status = "Verified"), 0
-                            )
-                        ) as outstanding_balance
-                    ')
-                    ->value('outstanding_balance');
-
-                $availableCredit = $credit->credit_limit - $usedCredit;
-                $creditLimit      = $credit->credit_limit;
-                $exceedAllowance  = $creditLimit * 0.20;
-                $exceedLimit      = $creditLimit + $exceedAllowance;
-
-            } 
-            elseif ($user->role === "Staff" || $user->role === "Admin") {
-                $query = PurchaseOrders::with(['items', 'customer', 'staff']);
-
-                if ($request->filled('search')) {
-                    $search = $request->search;
-                    $query->where(function($q) use ($search) {
-                        $q->where('po_id', 'like', "%{$search}%")
-                        ->orWhere('status', 'like', "%{$search}%")
-                        ->orWhereHas('customer', function($customerQuery) use ($search) {
-                            $customerQuery->where('company_name', 'like', "%{$search}%");
-                        });
-                    });
-                }
-
-                if ($request->filled('from_date')) {
-                    $query->whereDate('created_at', '>=', $request->from_date);
-                }
-                if ($request->filled('to_date')) {
-                    $query->whereDate('created_at', '<=', $request->to_date);
-                }
-
-                $pos = $query->orderBy('created_at', 'desc')->get();
+            // Apply search filter
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('po_id', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%");
+                });
             }
 
-            return view('purchase-orders.list', [
-                'user' => $user,
-                'customer' => $customer,
-                'setProds' => $setProds, 
-                'pos' => $pos,
-                'availableCredit' => $availableCredit,
-                'exceedLimit' => $exceedLimit,
+            // Apply date filter
+            if ($request->filled('from_date')) {
+                $query->whereDate('created_at', '>=', $request->from_date);
+            }
+            if ($request->filled('to_date')) {                                                   
+                $query->whereDate('created_at', '<=', $request->to_date);
+            }
 
-            ]);
-        }
-        public function purchaseOrderView($po_id, Request $request)
-        {
-            $user = Auth::user();
-            $po = PurchaseOrders::where('po_id', $po_id)->with(['items.product', 'customer'])->first(); 
+            $pos = $query->orderBy('created_at', 'desc')->get();
+
+            // Get products with sale prices
+            $setProds = ProductSetting::where('customer_id', $customer->customer_id)
+                ->with('product')
+                ->get() 
+                ->unique('product_id')
+                ->values()
+                ->map(function($setProduct) {
+                    $activeSale = SaleDiscount::where('product_id', $setProduct->product_id)
+                        ->whereDate('start_date', '<=', now())
+                        ->whereDate('end_date', '>=', now())
+                        ->first();
+                    $setProduct->original_price = $setProduct->nego_price;
+                    $setProduct->on_sale = false;
+                    $setProduct->activeSale = NULL;
+
+                    if ($activeSale && $activeSale->quantity > 0) {
+                        if ($activeSale->value_type === "Fixed") {
+                            $setProduct->nego_price = $activeSale->value;
+                            $setProduct->on_sale = true;
+                        } elseif ($activeSale->value_type === "Percentage") {
+                            $discountAmount = ($setProduct->original_price * $activeSale->value) / 100;
+                            $setProduct->nego_price = $setProduct->original_price - $discountAmount;
+                            $setProduct->on_sale = true;
+                        }
+                        $setProduct->activeSale = $activeSale;
+                    } elseif ($activeSale && $activeSale->quantity <= 0) {
+                        $setProduct->nego_price = $setProduct->original_price;
+                        $setProduct->on_sale = false;
+                        $setProduct->activeSale = $activeSale;
+                    }
+
+                    return $setProduct;
+                });
             
-            if ($user->role === "Customer") {
-                $setProducts = ProductSetting::where('customer_id', $po->customer_id)
-                    ->with('product')
-                    ->get();
-            } else {
-                $setProducts = collect();
-            }
-
-            return view('purchase-orders.purchaseorder', [
-                'user' => $user,
-                'po' => $po,
-                'setProducts' => $setProducts,
-            ]);
-        }
-
-        public function createPurchaseOrder(Request $request)
-        {
-            $user = Auth::user();
-        
-            if ($user->role !== "Customer") {
-                return redirect()->back()->with('error', 'Only customers can create purchase orders.');
-            }
-        
-            $customer = Customers::where('user_id', $user->user_id)->first();
-        
-            if (!$customer) {
-                return redirect()->back()->with('error', 'Customer profile not found.');
-            }
-        
-            // Fetch user credit
+            // Get credit information
             $credit = Credits::where('user_id', $user->user_id)->first();
-        
-            if (!$credit) {
-                return redirect()->back()->with('error', 'Credit profile not found.');
-            }
-        
-            // Fetch outstanding unpaid balances
+            
+            // Calculate used credit (outstanding balance) - ensure it's never null
             $usedCredit = Orders::where('customer_id', $customer->customer_id)
                 ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
                 ->selectRaw('
@@ -213,38 +121,120 @@ class PurchaseOrderController extends Controller
                 ')
                 ->value('outstanding_balance') ?? 0;
 
-            $creditLimit     = $credit->credit_limit;
+            // Now calculate credit limits based on usedCredit
+            $creditLimit = $credit->credit_limit;
             $exceedAllowance = $creditLimit * 0.20;
-            $maxAllowed      = $creditLimit + $exceedAllowance;
-                
-            try {
-                $request->validate([
-                    'selected_products'   => 'required|array|min:1',
-                    'selected_products.*' => 'exists:product_settings,set_id',
-                    'placed_kilos'        => 'nullable|array',
-                    'placed_kilos.*'      => 'nullable|numeric|min:0',
-                    'placed_heads'        => 'nullable|array',
-                    'placed_heads.*'      => 'nullable|numeric|min:0',
-                    'notes'               => 'nullable|string|max:1000',
-                ]);
-            
-                DB::beginTransaction();
-            
-                $date  = date('Ymd');
-                $po_id = 'PO-' . $date . '-' . Str::upper(Str::random(5));
-            
-                $purchaseOrder = PurchaseOrders::create([
-                    'po_id'        => $po_id,
-                    'customer_id'  => $customer->customer_id,
-                    'status'       => 'Pending',
-                    'notes'        => $request->notes,
-                    'total_amount' => 0,
-                    'placed_at'    => now(),
-                ]);
-            
-                $totalAmount = 0;
-            
-                foreach ($request->selected_products as $setId) {
+            $maxAllowedCredit = $creditLimit + $exceedAllowance;
+            $availableCredit = $maxAllowedCredit - $usedCredit; // Calculate available based on max allowed
+        }
+
+    } 
+    elseif ($user->role === "Staff" || $user->role === "Admin") {
+        $query = PurchaseOrders::with(['items', 'customer', 'staff']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('po_id', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%")
+                ->orWhereHas('customer', function($customerQuery) use ($search) {
+                    $customerQuery->where('company_name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        if ($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
+
+        $pos = $query->orderBy('created_at', 'desc')->get();
+    }
+
+    return view('purchase-orders.list', [
+        'user' => $user,
+        'customer' => $customer,
+        'setProds' => $setProds, 
+        'pos' => $pos,
+        'creditLimit' => $creditLimit,
+        'usedCredit' => $usedCredit,
+        'maxAllowedCredit' => $maxAllowedCredit,
+        'availableCredit' => $availableCredit,
+        'exceedLimit' => $maxAllowedCredit, // Keep for backward compatibility if used elsewhere
+    ]);
+}
+
+public function createPurchaseOrder(Request $request)
+{
+    $user = Auth::user();
+
+    if ($user->role !== "Customer") {
+        return redirect()->back()->with('error', 'Only customers can create purchase orders.');
+    }
+
+    $customer = Customers::where('user_id', $user->user_id)->first();
+
+    if (!$customer) {
+        return redirect()->back()->with('error', 'Customer profile not found.');
+    }
+
+    // Fetch user credit
+    $credit = Credits::where('user_id', $user->user_id)->first();
+
+    if (!$credit) {
+        return redirect()->back()->with('error', 'Credit profile not found.');
+    }
+
+    // Fetch outstanding unpaid balances
+    $usedCredit = Orders::where('customer_id', $customer->customer_id)
+        ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
+        ->selectRaw('
+            SUM(
+                orders.total_amount - COALESCE(
+                    (SELECT SUM(r.total_amount) 
+                    FROM receipts r 
+                    WHERE r.order_id = orders.order_id 
+                    AND r.status = "Verified"), 0
+                )
+            ) as outstanding_balance
+        ')
+        ->value('outstanding_balance') ?? 0;
+
+    $creditLimit     = $credit->credit_limit;
+    $exceedAllowance = $creditLimit * 0.20;
+    $maxAllowed      = $creditLimit + $exceedAllowance;
+    $availableCredit = $maxAllowed - $usedCredit; 
+
+    try {
+        $request->validate([
+            'selected_products'   => 'required|array|min:1',
+            'selected_products.*' => 'exists:product_settings,set_id',
+            'placed_kilos'        => 'nullable|array',
+            'placed_kilos.*'      => 'nullable|numeric|min:0',
+            'placed_heads'        => 'nullable|array',
+            'placed_heads.*'      => 'nullable|numeric|min:0',
+            'notes'               => 'nullable|string|max:1000',
+        ]);
+    
+        DB::beginTransaction();
+    
+        $date  = date('Ymd');
+        $po_id = 'PO-' . $date . '-' . Str::upper(Str::random(5));
+    
+        $purchaseOrder = PurchaseOrders::create([
+            'po_id'        => $po_id,
+            'customer_id'  => $customer->customer_id,
+            'status'       => 'Pending',
+            'notes'        => $request->notes,
+            'total_amount' => 0,
+            'placed_at'    => now(),
+        ]);
+    
+        $totalAmount = 0;
+    
+        foreach ($request->selected_products as $setId) {
             $productSetting = ProductSetting::with('product')->where('set_id', $setId)->first();
 
             if (!$productSetting) {
@@ -326,13 +316,11 @@ class PurchaseOrderController extends Controller
             $totalAmount += $itemTotal;
         }
 
-        // ✅ CREDIT LIMIT VALIDATION HERE
-        $newUsage = $usedCredit + $totalAmount;
-
-        if ($newUsage > $maxAllowed) {
+        // STRICT CREDIT LIMIT VALIDATION - DO NOT ACCEPT ORDERS EXCEEDING AVAILABLE CREDIT
+        if (($usedCredit + $totalAmount) > $maxAllowed) {
             throw new \Exception(
-                "This purchase will exceed your available credit capacity. Maximum allowed: ₱"
-                . number_format($maxAllowed, 2)
+                "Order rejected: This purchase (₱" . number_format($totalAmount, 2) . 
+                ") exceeds your maximum allowed credit (₱" . number_format($maxAllowed, 2) . ")."
             );
         }
 
@@ -358,6 +346,26 @@ class PurchaseOrderController extends Controller
             ->withInput();
     }
 }
+        public function purchaseOrderView($po_id, Request $request)
+        {
+            $user = Auth::user();
+            $po = PurchaseOrders::where('po_id', $po_id)->with(['items.product', 'customer'])->first(); 
+            
+            if ($user->role === "Customer") {
+                $setProducts = ProductSetting::where('customer_id', $po->customer_id)
+                    ->with('product')
+                    ->get();
+            } else {
+                $setProducts = collect();
+            }
+
+            return view('purchase-orders.purchaseorder', [
+                'user' => $user,
+                'po' => $po,
+                'setProducts' => $setProducts,
+            ]);
+        }
+
 
 
         public function confirmPurchaseOrder(Request $request, $po_id)
