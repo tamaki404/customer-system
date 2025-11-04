@@ -258,15 +258,15 @@
             
             <div class="info-row">
                 <span class="info-label">Company:</span>
-                <span class="info-value"><strong>{{ $order->supplier->company_name }}</strong></span>
+                <span class="info-value"><strong>{{ $order->customer->company_name }}</strong></span>
             </div>
             
             <div class="info-row">
                 <span class="info-label">Contact:</span>
                 <span class="info-value">
-                    Mobile: {{ $order->supplier->mobile_no }} | 
-                    Tel: {{ $order->supplier->telephone_no }} | 
-                    Email: {{ $order->supplier->user->email_address }}
+                    Mobile: {{ $order->customer->mobile_no }} | 
+                    Tel: {{ $order->customer->telephone_no }} | 
+                    Email: {{ $order->customer->user->email_address }}
                 </span>
             </div>
             
@@ -274,10 +274,10 @@
                 <span class="info-label">Billing Address:</span>
                 <span class="info-value">
                     {{ implode(', ', array_filter([
-                        $order->supplier->office_street,
-                        $order->supplier->office_subdivision,
-                        $order->supplier->office_barangay,
-                        $order->supplier->office_city,
+                        $order->customer->office_street,
+                        $order->customer->office_subdivision,
+                        $order->customer->office_barangay,
+                        $order->customer->office_city,
                     ])) }}
                 </span>
             </div>
@@ -286,10 +286,10 @@
                 <span class="info-label">Delivery Address:</span>
                 <span class="info-value">
                     {{ implode(', ', array_filter([
-                        $order->supplier->home_street,
-                        $order->supplier->home_subdivision,
-                        $order->supplier->home_barangay,
-                        $order->supplier->home_city,
+                        $order->customer->home_street,
+                        $order->customer->home_subdivision,
+                        $order->customer->home_barangay,
+                        $order->customer->home_city,
                     ])) }}
                 </span>
             </div>

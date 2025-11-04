@@ -14,11 +14,11 @@
             <div class="title-row">
                 <p class="heading">
                     <span class="greet">Goodmorning, </span>
-                    @if (Auth()->user()->role !== "Supplier")
+                    @if (Auth()->user()->role !== "Customer")
                             <span class="company-name">{{ auth()->user()->staff->lastname }} 👋 !</span>
                 
                     @else
-                        <span class="company-name">{{ auth()->user()->supplier->company_name }} 👋 !</span>
+                        <span class="company-name">{{ auth()->user()->customer->company_name }} 👋 !</span>
 
                     @endif
                 </p>
@@ -39,7 +39,7 @@
                 </p> --}}
 
 
-                @if(auth()->user()->role === 'Supplier')
+                @if(auth()->user()->role === 'Customer')
                     <div class="card">
                         <p class="card-head">
                             <span>Oct 1 - 30</span>
@@ -75,7 +75,7 @@
 
             </div>
 
-        {{-- @if(auth()->user()->role !== 'Supplier')
+        {{-- @if(auth()->user()->role !== 'Customer')
                 <div class="content-body user-dash" style="padding: 10px; border: none; height: auto; display: flex; flex-direction: row; gap: 5px">
                     <div class="card">
                             <p class="card-head">

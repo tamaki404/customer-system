@@ -8,7 +8,7 @@ class PriceHistory extends Model
 {
     protected $fillable = [
         'phistory_id',
-        'supplier_id',
+        'customer_id',
         'set_id',
         'new_price',
         'past_price',

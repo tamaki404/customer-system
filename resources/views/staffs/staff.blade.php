@@ -176,7 +176,7 @@
                         ? ('data:' . $staff->user->image_mime_type . ';base64,' . base64_encode($staff->user->image))
                         : asset('assets/default-image.jpg');
                 @endphp
-                <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image"> 
+                <img class="customer-image" src="{{ $imgSrc }}" alt="Profile Image"> 
                 
                 <p>{{$staff->lastname}}</p>
             
@@ -186,25 +186,25 @@
             <div class="profile-mid">
 
                 <div class="authorized-staffs" style="margin-top: 10px">
-                    <p style="margin-bottom: 5px">Handled suppliers</p>
+                    <p style="margin-bottom: 5px">Handled customers</p>
                     <di class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
                         <div class="authorized-rep">
                             <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
                                 <thead style="background-color: #f9f9f9;">
                                     <tr style="background:#f7f7fa; text-align: center; height: 30px">
                                         <th>#</th>
-                                        <th>Supplier ID</th>
+                                        <th>Customer ID</th>
                                         <th>Company name</th>
                                         <th>Order</th>
                                         <th>Balance</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($suppliers as $supplier)
+                                    @foreach($customers as $customer)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{$supplier->supplier_id}}</td>
-                                            <td>{{$supplier->company_name}}</td>
+                                            <td>{{$customer->customer_id}}</td>
+                                            <td>{{$customer->company_name}}</td>
                                             <td>--</td>
                                             <td>--</td>
                                         </tr>

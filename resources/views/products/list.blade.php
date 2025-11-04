@@ -15,7 +15,7 @@
     @endif
 
 
-    @if (auth()->user()->role !== 'Supplier')
+    @if (auth()->user()->role !== 'Customer')
 
         {{-- add product modal --}}
         <div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
@@ -162,7 +162,7 @@
                             </select>
                         </div>
 
-                        <p id="supplier-count" class="mt-2 text-muted">0 suppliers selected within city</p>
+                        <p id="customer-count" class="mt-2 text-muted">0 customers selected within city</p>
 
                         <div class="form-group mt-3 p-2 rounded" style="box-shadow: #f8912a30 0px 0px 0px 3px;">
                             <label class="form-label">Effectivity</label>
@@ -196,7 +196,7 @@
                 <div class="contents-display">
                     <form action="{{ route('products.list') }}" id="text-search" class="search-text-con" method="GET">
                         <input type="text" name="search" class="search-bar"
-                            placeholder="Search by SUP ID. , Supplier, Representative and status"
+                            placeholder="Search by SUP ID. , Customer, Representative and status"
                             value="{{ request('search') }}"
                             style="outline:none;"
                         >
@@ -237,7 +237,7 @@
                 </div>
             </div>
 
-                @if (auth()->user()->role !== 'Supplier')
+                @if (auth()->user()->role !== 'Customer')
                 <div class="main-board">
                     <div class="ceiling-table" style="height: 80%; padding: 0;" >
                         <div class="table-section" style="height:100%; overflow: auto; padding: 0;">
@@ -354,7 +354,7 @@
                 </div>
 
 
-                @elseif (auth()->user()->role === 'Supplier')
+                @elseif (auth()->user()->role === 'Customer')
 
                     <div class="content-body" style="background: #fff">
                         <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
@@ -487,15 +487,15 @@
 <script>
 
 
-    // Supplier count update
-    const supplierCounts = @json($supplierCounts);
+    // Customer count update
+    const customerCounts = @json($customerCounts);
     const citySelect = document.getElementById("city_select");
-    const supplierText = document.getElementById("supplier-count");
+    const customerText = document.getElementById("customer-count");
 
     citySelect.addEventListener("change", function () {
         const city = citySelect.value.toLowerCase();
-        const count = supplierCounts[city] || 0;
-        supplierText.textContent = `${count} supplier(s) selected within city`;
+        const count = customerCounts[city] || 0;
+        customerText.textContent = `${count} customer(s) selected within city`;
     });
 
 </script>

@@ -23,13 +23,13 @@
         </div>
     @endif
 
-    <!-- Confirm supplier request modal -->
+    <!-- Confirm customer request modal -->
     <div class="modal fade" id="request-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true" >
         <div class="modal-dialog modal-dialog-centered" style="justify-content: start; display: flex; align-items: start;">
             <form class="modal-content" method="POST" action="{{ route('review.confirm') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title" style="font-size: 15px; color: #333;font-weight: bold;">Supplier Request Action</h5>
+                    <h5 class="modal-title" style="font-size: 15px; color: #333;font-weight: bold;">Customer Request Action</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 
@@ -70,7 +70,7 @@
                     </div>
                 </div>
                 
-                <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
+                <input type="hidden" name="customer_id" value="{{ $customer->customer_id }}">
                 <input type="hidden" name="reviewed_by" value="{{ Auth()->user()->user_id }}">
                 
                 <div class="modal-footer">
@@ -86,7 +86,7 @@
         <div class="content-header">
             <div class="contents-display">
                 <p>
-                    <a href="{{ route('customers.customer', ['supplier_id' => $supplier->supplier_id]) }}">< Supplier profile</a>
+                    <a href="{{ route('customers.customer', ['customer_id' => $customer->customer_id]) }}">< Customer profile</a>
                 </p>
             </div>
             <div class="title-actions">
@@ -164,9 +164,9 @@
                                 <div class="input-forms">
                                     <p>ID Image</p>
                                     @php
-                                        $mime = $supplier->id_image ? finfo_buffer(finfo_open(), $supplier->id_image, FILEINFO_MIME_TYPE) : null;
-                                        $imgSrc = $supplier->id_image
-                                            ? 'data:' . $mime . ';base64,' . base64_encode($supplier->id_image)
+                                        $mime = $customer->id_image ? finfo_buffer(finfo_open(), $customer->id_image, FILEINFO_MIME_TYPE) : null;
+                                        $imgSrc = $customer->id_image
+                                            ? 'data:' . $mime . ';base64,' . base64_encode($customer->id_image)
                                             : asset('assets/default-company-logo.png');
                                     @endphp
                                     <div class="image-preview" id="imagePreview">
@@ -177,17 +177,17 @@
                                     <p>
                                         <strong>Type of ID </strong>
                                         <span>.................................</span>
-                                        <span></span> {{ $supplier->id_type }}</span>
+                                        <span></span> {{ $customer->id_type }}</span>
                                     </p>
                                     <p>
                                         <strong>ID Number </strong>
                                         <span>.................................</span>
-                                        <span></span> {{ $supplier->id_number }}</span>
+                                        <span></span> {{ $customer->id_number }}</span>
                                     </p>
                                     <p>
                                         <strong>Birthdate </strong>
                                         <span>.................................</span>
-                                        <span></span> {{ $supplier->birthdate }}</span>
+                                        <span></span> {{ $customer->birthdate }}</span>
                                     </p>
                                 </div>
                  

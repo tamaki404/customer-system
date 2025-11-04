@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('suppliers', function (Blueprint $table) {
+        Schema::create('customers', function (Blueprint $table) {
             //account verification /ids
             $table->id();
             $table->string('user_id');
-            $table->string('supplier_id');
+            $table->string('customer_id');
             $table->timestamp('staff_id')->nullable();
             $table->string('category');
             $table->string('citizenship');
@@ -33,13 +33,13 @@ return new class extends Migration
 
             $table->timestamps();
         });
-        DB::statement('ALTER TABLE suppliers ADD id_image MEDIUMBLOB NULL');
+        DB::statement('ALTER TABLE customers ADD id_image MEDIUMBLOB NULL');
 
 
         // authorized_representatives table
         Schema::create('representatives', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier_id')->required(); 
+            $table->string('customer_id')->required(); 
 
             $table->string('user_id');
             $table->string('rep_id')->required();
@@ -56,7 +56,7 @@ return new class extends Migration
         // authorized_signatories table
         Schema::create('signatories', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier_id')->required(); 
+            $table->string('customer_id')->required(); 
 
             $table->string('user_id');
             $table->string('sign_lastname', 50);
@@ -74,7 +74,7 @@ return new class extends Migration
         // banks table
         Schema::create('banks', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier_id')->required(); 
+            $table->string('customer_id')->required(); 
 
             $table->string('user_id');
             $table->string('account_name')->nullable();
@@ -87,7 +87,7 @@ return new class extends Migration
         // business table
         Schema::create('businesses', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier_id')->required(); 
+            $table->string('customer_id')->required(); 
 
             $table->string('user_id');
             $table->string('years')->nullable();
@@ -106,6 +106,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('suppliers');
+        Schema::dropIfExists('customers');
     }
 };

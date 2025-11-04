@@ -39,7 +39,7 @@
 
         <div class="form-container" style="display: flex; flex-direction: row; gap: 10px; align-items: center; justify-content: center;">
             <button class="prev-btn btn-transition" type="button"><span class="material-symbols-outlined">arrow_back_ios</span></button>
-            <form method="POST" action="{{ route('registration.supplier.register') }}" class="log-form" id="registerForm" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('registration.customer.register') }}" class="log-form" id="registerForm" enctype="multipart/form-data">
                 @csrf
 
 
@@ -58,19 +58,19 @@
                                     <label for="company-name"><span class="req-asterisk">*</span> Category </label>
                                     <div style="display: flex; flex-direction: row; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px; border-radius: 10px; padding: 5px; height: 50px;">
                                         <div>
-                                            <input type="checkbox" id="option1" name="supplier_category" value="Wholesale"> 
+                                            <input type="checkbox" id="option1" name="customer_category" value="Wholesale"> 
                                             <p style="font-size: 13px; color: #333; margin: 0;">Wholesale</p>
                                         </div>
                                         <div>
-                                            <input type="checkbox" id="option1" name="supplier_category" value="Distributor"> 
+                                            <input type="checkbox" id="option1" name="customer_category" value="Distributor"> 
                                             <p style="font-size: 13px; color: #333; margin: 0;">Distributor</p>
                                         </div>
                                         <div>
-                                            <input type="checkbox" id="option1" name="supplier_category" value="HIR"> 
+                                            <input type="checkbox" id="option1" name="customer_category" value="HIR"> 
                                             <p style="font-size: 13px; color: #333; margin: 0;">HIR</p>
                                         </div>
                                         <div>
-                                            <input type="checkbox" id="option1" name="supplier_category" value="Dealer"> 
+                                            <input type="checkbox" id="option1" name="customer_category" value="Dealer"> 
                                             <p style="font-size: 13px; color: #333; margin: 0;">Dealer</p>
                                         </div>
                                     </div>

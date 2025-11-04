@@ -304,7 +304,7 @@
             
             <div class="info-row">
                 <span class="info-label">Company Name:</span>
-                <span class="info-value">{{ $delivery->order->supplier->company_name }}</span>
+                <span class="info-value">{{ $delivery->order->customer->company_name }}</span>
             </div>
             
             <div class="info-row">
@@ -329,21 +329,21 @@
                 </span>
             </div>
             
-            @if($delivery->order->supplier->delivery)
+            @if($delivery->order->customer->delivery)
                 <div class="info-row">
                     <span class="info-label">Delivery Frequency:</span>
-                    <span class="info-value">{{ $delivery->order->supplier->delivery->delivery_frequency ?? '—' }}</span>
+                    <span class="info-value">{{ $delivery->order->customer->delivery->delivery_frequency ?? '—' }}</span>
                 </div>
                 
                 <div class="info-row">
                     <span class="info-label">Delivery Address:</span>
                     <span class="info-value">
-                        {{ $delivery->order->supplier->delivery->delivery_address_1 ?? '' }}
-                        @if($delivery->order->supplier->delivery->delivery_address_2)
-                            <br>{{ $delivery->order->supplier->delivery->delivery_address_2 }}
+                        {{ $delivery->order->customer->delivery->delivery_address_1 ?? '' }}
+                        @if($delivery->order->customer->delivery->delivery_address_2)
+                            <br>{{ $delivery->order->customer->delivery->delivery_address_2 }}
                         @endif
-                        @if($delivery->order->supplier->delivery->delivery_address_3)
-                            <br>{{ $delivery->order->supplier->delivery->delivery_address_3 }}
+                        @if($delivery->order->customer->delivery->delivery_address_3)
+                            <br>{{ $delivery->order->customer->delivery->delivery_address_3 }}
                         @endif
                     </span>
                 </div>

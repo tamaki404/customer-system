@@ -129,7 +129,7 @@
     z-index: 5;
 }
 
-.order-box .supplier{
+.order-box .customer{
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -139,17 +139,17 @@
 
 
 }
-.supplier .profile{
+.customer .profile{
     display: flex;
     gap: 5px;
     align-items: center;
 
 }
-.supplier .status{
+.customer .status{
     margin: 0;
 }
 
-.supplier .profile p{
+.customer .profile p{
     margin: 0;
     font-size: 14px;
     color: #333;
@@ -175,7 +175,7 @@
     font-size: 13px;
 
 }
-.order-box .supplier img{
+.order-box .customer img{
     height: 40px;
     border-radius: 99999%;
 }

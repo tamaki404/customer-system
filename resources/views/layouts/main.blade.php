@@ -48,8 +48,8 @@
                         </div>
                         <div class="nameFrame">
    
-                                @if(auth()->user()->role === 'Supplier')
-                                    <p class="userName">{{  auth()->user()->supplier->company_name }}</p>
+                                @if(auth()->user()->role === 'Customer')
+                                    <p class="userName">{{  auth()->user()->customer->company_name }}</p>
                                      
 
                                     {{-- In Blade Views: --}}
@@ -68,16 +68,16 @@
 
 
 
-                                @elseif(auth()->user()->role !== 'Supplier')
+                                @elseif(auth()->user()->role !== 'Customer')
                                     <p class="userName">
                                         {{  auth()->user()->staff->firstname }}
                                         {{  auth()->user()->staff->lastname }}
                                     </p>
                                 @endif
 
-                            @if (Auth()->user()->role !== "Supplier")
+                            @if (Auth()->user()->role !== "Customer")
                                 <p class="userTitle">{{  auth()->user()->role_type }}</p>
-                            @elseif (Auth()->user()->role === "Supplier")
+                            @elseif (Auth()->user()->role === "Customer")
                                 <p class="userTitle">{{  auth()->user()->role }}</p>
                             @endif
 
@@ -94,7 +94,7 @@
                 </div>
 
                 <!-- Side Menu -->
-                @if (auth()->user()->role !== 'Supplier')
+                @if (auth()->user()->role !== 'Customer')
                     <div class="sideMenu" style="gap: 0; margin: 0;">
                         @php $currentRoute = Route::currentRouteName(); @endphp
 
@@ -195,7 +195,7 @@
 
 
                     </div>
-                @elseif (auth()->user()->role === 'Supplier')
+                @elseif (auth()->user()->role === 'Customer')
                     @php
                         $permissions = auth('representative')->user()->permissions ?? [];
                         $currentRoute = Route::currentRouteName();
@@ -237,7 +237,7 @@
                             <div class="nav-group-title">Orders & Deliveries</div>
 
 
-                            @if (Auth()->user()->role === 'Supplier' &&  !empty($user->acc_status->staff_id))
+                            @if (Auth()->user()->role === 'Customer' &&  !empty($user->acc_status->staff_id))
                                 {{-- Purchase Orders --}}
                                 @if(!empty($permissions['PO']) && $permissions['PO'])
                                     <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
@@ -285,7 +285,7 @@
                             <div class="nav-group-title">Credits & Receipts</div>
 
 
-                            @if (Auth()->user()->role === 'Supplier' &&  !empty($user->acc_status->staff_id))
+                            @if (Auth()->user()->role === 'Customer' &&  !empty($user->acc_status->staff_id))
                                 {{-- Credits --}}
                                 @if(!empty($permissions['Credits']) && $permissions['Credits'])
                                     <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
@@ -319,7 +319,7 @@
 
                 <!-- Sidebar Footer -->
                 <div class="sidebar-footer">
-                    @if (auth()->user()->role === 'Supplier')
+                    @if (auth()->user()->role === 'Customer')
                         <div class="deskFrame">
                             <p class="inquiry">INQUIRIES</p>
                             <p>For any inquiries, contact us at sunny&scramble@gmail.com or 09123456789</p>

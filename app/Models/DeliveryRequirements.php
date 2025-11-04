@@ -8,7 +8,7 @@ class DeliveryRequirements extends Model
 {
     protected $fillable = [
         'user_id',
-        'supplier_id',
+        'customer_id',
         'ppe_requirements',
         'delivery_frequency',
         'deliveries_per_week',

@@ -29,7 +29,7 @@
                 </div>
             @endif
     {{-- create order --}}
-    @if (auth()->user()->role === 'Supplier')
+    @if (auth()->user()->role === 'Customer')
         <div class="modal fade" id="create-order-modal" style="overflow: hidden;"  tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl " style="overflow: hidden; height: 90%; overflow: auto;">
                 <form class="modal-content" method="POST"  style="width: 800px;overflow: auto;" action="{{ route('purchaseorders.create') }}">
@@ -70,8 +70,8 @@
                                 </thead>
                                 <tbody>
                                     @php
-                                        $supplier = auth()->user()->supplier;
-                                        $setProducts = \App\Models\ProductSetting::where('supplier_id', $supplier->supplier_id)
+                                        $customer = auth()->user()->customer;
+                                        $setProducts = \App\Models\ProductSetting::where('customer_id', $customer->customer_id)
                                             ->with('product')
                                             ->get();
                                     @endphp
@@ -198,7 +198,7 @@
                     <div class="contents-display">
                         <form action="{{ route('purchaseorders.list') }}" id="text-search" class="search-text-con" method="GET">
                             <input type="text" name="search" class="search-bar"
-                                placeholder="Search by PO ID, Supplier, Status"
+                                placeholder="Search by PO ID, Customer, Status"
                                 value="{{ request('search') }}"
                                 style="outline:none;"
                             >
@@ -227,7 +227,7 @@
 
                     <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
                         <p class="heading">Purchase order list</p>
-                        @if ( auth()->user()->role === 'Supplier')
+                        @if ( auth()->user()->role === 'Customer')
                             <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
                                 <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
                                 Create order
@@ -239,7 +239,7 @@
                 </div>
 
 
-                @if (auth()->user()->role !== 'Supplier')
+                @if (auth()->user()->role !== 'Customer')
 
                     <div class="content-body" style="background: #fff">
 
@@ -249,7 +249,7 @@
                                     <th>#</th>
                                     <th>Date</th>
                                     <th>PO ID</th>
-                                    <th>Supplier</th>
+                                    <th>Customer</th>
                                     <th>Items</th>
                                     <th>Heads/Kilos</th>
                                     <th>Total Amount</th>
@@ -263,7 +263,7 @@
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $po->created_at->format('F j, Y') }}</td>
                                         <td>{{$po->po_id}}</td>
-                                        <td>{{ $po->supplier->company_name ?? 'N/A' }}</td>
+                                        <td>{{ $po->customer->company_name ?? 'N/A' }}</td>
                                         <td>{{ $po->items->count() }}</td>
                                                 @php
                                                     $totalHeads = 0;
@@ -314,7 +314,7 @@
                         </table>
                  
                     </div>
-                @elseif (auth()->user()->role === 'Supplier')
+                @elseif (auth()->user()->role === 'Customer')
 
                     <div class="content-body" style="background: #fff">
 

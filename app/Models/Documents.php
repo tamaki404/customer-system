@@ -11,7 +11,7 @@ class Documents extends Model
 
     protected $fillable = [
         'user_id',
-        'supplier_id',
+        'customer_id',
         'type',
         'file_name',
         'file_mime',
@@ -20,8 +20,8 @@ class Documents extends Model
     ];
 
 
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Suppliers::class);
+        return $this->belongsTo(Customers::class);
     }
 }

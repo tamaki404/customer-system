@@ -27,7 +27,7 @@ class OrderItem extends Model
         return $this->belongsTo(Orders::class, 'order_id', 'order_id');
     }
 
-    // Relation to ProductSetting through supplier_id
+    // Relation to ProductSetting through customer_id
     public function productSetting()
     {
         return $this->hasOne(ProductSetting::class, 'set_id', 'set_id');

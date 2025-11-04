@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('account_status', function (Blueprint $table) {
             $table->id();
-            $table->string('supplier_id')->required(); 
+            $table->string('customer_id')->required(); 
 
             $table->string('user_id')->nullable(); 
             $table->string('staff_id')->nullable(); 

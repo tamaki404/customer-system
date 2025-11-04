@@ -15,7 +15,7 @@ class Delivery extends Model
     protected $fillable = [
         'delivery_id',
         'order_id',
-        'supplier_id',
+        'customer_id',
         'delivery_date',
         'delivered_at',
         'feedback',
@@ -45,9 +45,9 @@ class Delivery extends Model
     {
         return $this->hasOne(DeliveryItems::class, 'delivery_id', 'delivery_id');
     }
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');
     }
     public function deliveryItems()
     {
@@ -61,7 +61,7 @@ class Delivery extends Model
     }
     public function requirements()
     {
-        return $this->belongsTo(DeliveryRequirements::class, 'supplier_id');
+        return $this->belongsTo(DeliveryRequirements::class, 'customer_id');
     }
     public function scopeScheduled($query)
     {

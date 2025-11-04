@@ -111,25 +111,25 @@
             <div class="content-body" style="padding: 10px; border: none; height: auto;">
                     <div class="profile-upper">
                         @php
-                            $imgSrc =  $supplier->user->image 
-                                ? ('data:' . $supplier->user->image_mime_type . ';base64,' . base64_encode($supplier->user->image))
+                            $imgSrc =  $customer->user->image 
+                                ? ('data:' . $customer->user->image_mime_type . ';base64,' . base64_encode($customer->user->image))
                                 : asset('images/default-avatar.png');
                         @endphp
-                        <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image">   
+                        <img class="customer-image" src="{{ $imgSrc }}" alt="Profile Image">   
                         
                         <div class="profile-details-div" style="margin-left: 10px">
                             <div>
                                 <div class="company-status" style="margin: 0; display: flex; align-items: center;">
-                                    <p class="company-name">{{  $supplier->company_name }} <span style="font-size: 14px; font-weight: normal;">({{$supplier->category}})</span></p>
+                                    <p class="company-name">{{  $customer->company_name }} <span style="font-size: 14px; font-weight: normal;">({{$customer->category}})</span></p>
                                     <p style="margin: 0; cursor: pointer;">
                                         <span class="material-icons" style="font-size: 14px; color:
-                                            @if($supplier->account_status->account_status === 'Pending') orange
-                                            @elseif($supplier->account_status->account_status === 'Accepted') green
-                                            @elseif($supplier->account_status->account_status === 'Suspended') red
+                                            @if($customer->account_status->account_status === 'Pending') orange
+                                            @elseif($customer->account_status->account_status === 'Accepted') green
+                                            @elseif($customer->account_status->account_status === 'Suspended') red
                                             @else gray
                                             @endif
                                         "
-                                        title="{{$supplier->account_status->account_status}}"
+                                        title="{{$customer->account_status->account_status}}"
                                         
                                         >circle</span>
                                     </p>
@@ -163,13 +163,13 @@
 
                                     <p>
                                         <span class="material-symbols-outlined icon" title="Mobile number">mobile</span>
-                                        <span class="div-text">{{$supplier->mobile}}</span>
+                                        <span class="div-text">{{$customer->mobile}}</span>
                                     </p>
                                     <span>|</span>
-                                    @if ($supplier->tele !== NULL)
+                                    @if ($customer->tele !== NULL)
                                         <p>
                                             <span class="material-symbols-outlined icon" title="Telephone number">call</span>
-                                            <span class="div-text">{{$supplier->tele}}</span>
+                                            <span class="div-text">{{$customer->tele}}</span>
 
                                         </p>
                                         <span>|</span>
@@ -178,19 +178,19 @@
 
                                     <p>
                                         <span class="material-symbols-outlined icon" title="Email address">mail</span>
-                                        <span class="div-text">{{$supplier->user->email_address}}</span>
+                                        <span class="div-text">{{$customer->user->email_address}}</span>
 
                                     </p>
 
                                     <span>|</span>
                                     <p>
                                         <span class="material-symbols-outlined icon" title="Payment method">paid</span>
-                                        <span class="div-text" style="color: green">{{$supplier->payment_method}}</span>
+                                        <span class="div-text" style="color: green">{{$customer->payment_method}}</span>
 
                                     </p>
                                     <span>|</span>
                                     <p>
-                                        <span class="div-text" style="color: #666">{{$supplier->user_id}}</span>
+                                        <span class="div-text" style="color: #666">{{$customer->user_id}}</span>
 
                                     </p>
                                 </div>
@@ -470,7 +470,7 @@
                                                                 $hours = \Carbon\Carbon::parse($salesHisto->start_date)
                                                                     ->diffInHours(\Carbon\Carbon::parse($salesHisto->end_date));
                                                                 $days = round($hours / 24, 1);
-                                                                // original negotiated supplier price
+                                                                // original negotiated customer price
                                                                 $original = $salesHisto->set->nego_price ?? 0;
                                                                 $value = $salesHisto->value;
 
@@ -831,7 +831,7 @@
                                             </p>
                                             <p>
                                                 <span style="color:#666">Verified by</span>
-                                                @if (@$account_status->user_id === $supplier->user_id > 0 && @$account_status->staff_id !== NULL)
+                                                @if (@$account_status->user_id === $customer->user_id > 0 && @$account_status->staff_id !== NULL)
                                                     <span>
                                                         {{ implode(', ', array_filter([
                                                             $account_status->staff->lastname,
@@ -882,10 +882,10 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>1</td>
-                                                        <td>{{ $supplier->bank->account_number}}</td>
-                                                        <td>{{ $supplier->bank->bank}}</td>
-                                                        <td>{{ $supplier->bank->branch}}</td>
-                                                        <td>{{ $supplier->bank->account_number}}</td>
+                                                        <td>{{ $customer->bank->account_number}}</td>
+                                                        <td>{{ $customer->bank->bank}}</td>
+                                                        <td>{{ $customer->bank->branch}}</td>
+                                                        <td>{{ $customer->bank->account_number}}</td>
 
                                                     </tr>
                                                 </tbody>
@@ -943,28 +943,28 @@
                                         <div class="questions-list" style="width: auto; gap: 2px">
                                             <div>
                                                 @php
-                                                    $idImg =  $supplier->id_image 
-                                                        ? ('data:' . $supplier->id_mime_type . ';base64,' . base64_encode($supplier->id_image))
+                                                    $idImg =  $customer->id_image 
+                                                        ? ('data:' . $customer->id_mime_type . ';base64,' . base64_encode($customer->id_image))
                                                         : asset('images/default-avatar.png');
                                                 @endphp
                                                 <img class="id-image" style="height: 200px" src="{{ $idImg }}" alt="ID Image"> 
                                             </div>
                                             <p>
                                                 <span style="color:#666">Type of ID </span>
-                                                <span>{{$supplier->id_type}}</span>
+                                                <span>{{$customer->id_type}}</span>
                                             </p>
 
                                             <p>
                                                 <span style="color:#666">Valid ID no.</span>
-                                                <span>{{$supplier->id_number}}</span>
+                                                <span>{{$customer->id_number}}</span>
                                             </p>
                                             <p>
                                                 <span style="color:#666">Civil status</span>
-                                                <span>{{$supplier->civil_status}}</span>
+                                                <span>{{$customer->civil_status}}</span>
                                             </p>
                                             <p>
                                                 <span style="color:#666">Citizenship</span>
-                                                <span>{{$supplier->citizenship}}</span>
+                                                <span>{{$customer->citizenship}}</span>
                                             </p>
                                     
                                         </div>

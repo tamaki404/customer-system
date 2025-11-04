@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('secondary_packaging');
             $table->string('labeling_requirement')->nullable();
             $table->string('rejection_parameter')->nullable();
-            $table->string('supplier_id')->required(); 
+            $table->string('customer_id')->required(); 
 
             $table->timestamps();
         });
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('user_id');
-            $table->string('supplier_id')->required(); 
+            $table->string('customer_id')->required(); 
 
             // Delivery setup
             $table->string('delivery_frequency')->nullable(); // weekly, monthly, etc.

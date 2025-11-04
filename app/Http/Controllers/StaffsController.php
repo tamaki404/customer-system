@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use App\Models\Documents;
 use App\Models\Staffs;
 use App\Models\User;
@@ -21,7 +21,7 @@ class StaffsController extends Controller
             $staffs = Staffs::with('user')->whereRelation('user', 'role', 'Staff')->get();
 
             foreach ($staffs as $staff) {
-                $staff->contactNo = Suppliers::where('staff_id', $staff->staff_id)->count();
+                $staff->contactNo = Customers::where('staff_id', $staff->staff_id)->count();
             }
             return view('staffs.list', [
                 'user' => $user,
@@ -35,7 +35,7 @@ class StaffsController extends Controller
             $user = Auth::user();
 
             $staff = Staffs::where('staff_id', $staff_id)->first(); 
-            $suppliers = Suppliers::where('staff_id', $staff->staff_id)->get(); 
+            $customers = Customers::where('staff_id', $staff->staff_id)->get(); 
 
 
 
@@ -55,7 +55,7 @@ class StaffsController extends Controller
             return view('staffs.staff', [
                 'user' => $user,
                 'staff' => $staff,
-                'suppliers' => $suppliers,
+                'customers' => $customers,
 
             ]);
         }

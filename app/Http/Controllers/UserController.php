@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use App\Models\Representatives;
 use App\Models\Signatories;
 use App\Models\Banks;
@@ -80,7 +80,7 @@ class UserController extends Controller
 
         return redirect()->route('dashboard.view')->with('success', 'Representative signed in successfully.');
     }
-    public function registerSupplier(Request $request)
+    public function registerCustomer(Request $request)
         {
             $request->validate([
                 // User
@@ -102,7 +102,7 @@ class UserController extends Controller
                 'office_barangay' => 'required|string|max:255',
                 'office_city'     => 'required|string|max:100',
 
-                // Suppliers
+                // Customers
                 'company_name'    => 'required|string|max:200',
                 'category'        => 'required|string|in:Wholesale,Distributor,HRI,Dealer',
                 'mobile'          => 'required|string|regex:/^09[0-9]{9}$/|size:11',
@@ -204,7 +204,7 @@ class UserController extends Controller
             // ID generation
             $date = date('Ymd');
             $user_id = 'USR-' . $date . '-' . $this->randomBase36String(5);
-            $supplier_id = 'SUP-' . $date . '-' . $this->randomBase36String(5);
+            $customer_id = 'SUP-' . $date . '-' . $this->randomBase36String(5);
             $status_id = 'STAT-' . $date . '-' . $this->randomBase36String(5);
 
             // Define document types for later use
@@ -264,7 +264,7 @@ class UserController extends Controller
                     'password' => Hash::make($request->password),
                     'gate_password' => Hash::make($request->gate_password),
 
-                    'role' => 'Supplier',
+                    'role' => 'Customer',
                     'role_type' => 'Customer',
                     'status' => 'Pending',
                     'email_verified_at' => null,
@@ -275,7 +275,7 @@ class UserController extends Controller
                 ]);
 
                 $account_status = AccountStatus::create([
-                    'supplier_id' => $supplier_id,
+                    'customer_id' => $customer_id,
                     'user_id' => $user_id,
                     'status_id' => $status_id,
                     'account_status' => 'Pending',
@@ -284,7 +284,7 @@ class UserController extends Controller
                 // Create Home Address
                 $homeAddress = Address::create([
                     'user_id' => $user_id,
-                    'supplier_id' => $supplier_id,
+                    'customer_id' => $customer_id,
 
                     'home_street' => $request->home_street,
                     'home_subdivision' => $request->home_subdivision,
@@ -296,10 +296,10 @@ class UserController extends Controller
                     'office_city' => $request->office_city,
                 ]);
 
-                // Create Supplier
-                $supplier = Suppliers::create([
+                // Create Customer
+                $customer = Customers::create([
                     'user_id' => $user_id,
-                    'supplier_id' => $supplier_id,
+                    'customer_id' => $customer_id,
                     'company_name' => $request->company_name,
                     'category' => $request->category,
                     'image' => $companyImageBinary,
@@ -357,7 +357,7 @@ class UserController extends Controller
 
                     Representatives::create([
                         'user_id'        => $user_id,
-                        'supplier_id'    => $supplier_id,
+                        'customer_id'    => $customer_id,
                         'rep_id'         => $rep_id,
                         'rep_lastname'   => $lastname,
                         'rep_firstname'  => $repFirstnames[$index] ?? '',
@@ -391,7 +391,7 @@ class UserController extends Controller
                     
                     Signatories::create([
                         'user_id' => $user_id,
-                        'supplier_id' => $supplier_id,
+                        'customer_id' => $customer_id,
                         'sign_lastname' => $lastname,
                         'sign_firstname' => $signFirstnames[$index] ?? '',
                         'sign_middlename' => $signMiddlenames[$index] ?? null,
@@ -407,7 +407,7 @@ class UserController extends Controller
                 if ($request->filled('account_name') || $request->filled('bank')) {
                     $bankDetails = Banks::create([
                         'user_id' => $user_id,
-                        'supplier_id' => $supplier_id,
+                        'customer_id' => $customer_id,
 
                         'account_name' => $request->account_name,
                         'bank' => $request->bank,
@@ -418,7 +418,7 @@ class UserController extends Controller
 
                 $business = Business::create([
                     'user_id' => $user_id,
-                    'supplier_id' => $supplier_id,
+                    'customer_id' => $customer_id,
                     'years' => $request->years,
                     'referred_by' => $request->referred_by,
                     'contacted_by' => $request->contacted_by,
@@ -430,7 +430,7 @@ class UserController extends Controller
                         $file = $request->file($key);
                         Documents::create([
                             'user_id' => $user_id,
-                            'supplier_id' => $supplier_id,
+                            'customer_id' => $customer_id,
 
                             'type' => $key,
                             'description' => $description,
@@ -450,7 +450,7 @@ class UserController extends Controller
                     
                     ProductRequirements::create([
                         'user_id' => $user_id,
-                        'supplier_id' => $supplier_id,
+                        'customer_id' => $customer_id,
 
                         'product_id' => $productId,
                         'condition' => $conditionString,
@@ -465,7 +465,7 @@ class UserController extends Controller
                 // Create Delivery Requirements
                 DeliveryRequirements::create([
                     'user_id' => $user_id,
-                    'supplier_id' => $supplier_id,
+                    'customer_id' => $customer_id,
 
                     'ppe_requirements' => $request->ppe_requirements,
                     'delivery_frequency' => $request->delivery_frequency,
@@ -513,16 +513,16 @@ class UserController extends Controller
                 }
 
                 // Log successful registration
-                Log::info('Supplier registration successful', [
+                Log::info('Customer registration successful', [
                     'user_id' => $user_id,
-                    'supplier_id' => $supplier_id,
+                    'customer_id' => $customer_id,
                     'email' => $request->email_add,
                     'company_name' => $request->company_name,
                     'registration_time' => now()
                 ]);
 
                 return redirect()->route('signin')->with('success', 
-                    'Registration successful! Your supplier account has been created and is pending approval. ' .
+                    'Registration successful! Your customer account has been created and is pending approval. ' .
                     'Please check your email for verification and wait for admin confirmation.'
                 );
 
@@ -530,9 +530,9 @@ class UserController extends Controller
                 DB::rollBack();
                 
 
-                Log::error('Supplier registration error: ' . $e->getMessage(), [
+                Log::error('Customer registration error: ' . $e->getMessage(), [
                     'user_id' => $user_id ?? 'N/A',
-                    'supplier_id' => $supplier_id ?? 'N/A',
+                    'customer_id' => $customer_id ?? 'N/A',
                     'email' => $request->email_add ?? 'N/A',
                     'company_name' => $request->company_name ?? 'N/A',
                     'error' => $e->getMessage(),
@@ -867,7 +867,7 @@ public function signin(Request $request)
 
     // Determine which password column to use
     $passwordColumn = match ($user->role) {
-        'Supplier', 'Admin', 'Staff' => 'password',
+        'Customer', 'Admin', 'Staff' => 'password',
         default => 'gate_password',
     };
 
@@ -890,7 +890,7 @@ public function signin(Request $request)
     }
 
     // Non-staff verification
-    if ($user->role === 'Supplier') {
+    if ($user->role === 'Customer') {
         $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
 
         if (!$accountStatus) {
@@ -938,7 +938,7 @@ public function signin(Request $request)
 
     // Redirect based on role
     return match ($user->role) {
-        'Supplier' => redirect()->route('choose.accounts'),
+        'Customer' => redirect()->route('choose.accounts'),
         default => redirect()->route('dashboard.view'),
     };
 }

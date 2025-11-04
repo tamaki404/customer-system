@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Orders;
 use App\Models\PurchaseOrders;
 use App\Models\PurchaseOrderItem;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Products;
 use App\Models\OrderItem;
@@ -35,16 +35,16 @@ class PurchaseOrderController extends Controller
         public function purchaseOrderlist(Request $request)
         {
             $user = Auth::user();
-            $supplier = null;
+            $customer = null;
             $pos = collect();
             $setProds = collect(); 
 
-            if ($user->role === "Supplier") {
-                $supplier = Suppliers::where('user_id', $user->user_id)->first();
+            if ($user->role === "Customer") {
+                $customer = Customers::where('user_id', $user->user_id)->first();
 
-                if ($supplier) {
-                    $query = PurchaseOrders::where('supplier_id', $supplier->supplier_id)
-                        ->with(['items', 'supplier']);
+                if ($customer) {
+                    $query = PurchaseOrders::where('customer_id', $customer->customer_id)
+                        ->with(['items', 'customer']);
 
                     // Apply search filter
                     if ($request->filled('search')) {
@@ -67,7 +67,7 @@ class PurchaseOrderController extends Controller
 
                     // Get products with sale prices
                     // Get products with sale prices
-                    $setProds = ProductSetting::where('supplier_id', $supplier->supplier_id)
+                    $setProds = ProductSetting::where('customer_id', $customer->customer_id)
                         ->with('product')
                         ->get() 
                         ->unique('product_id')
@@ -77,10 +77,9 @@ class PurchaseOrderController extends Controller
                                 ->whereDate('start_date', '<=', now())
                                 ->whereDate('end_date', '>=', now())
                                 ->first();
-
                             $setProduct->original_price = $setProduct->nego_price;
                             $setProduct->on_sale = false;
-                            $setProduct->activeSale = null; // Initialize
+                            $setProduct->activeSale = NULL; // Initialize
 
                             if ($activeSale && $activeSale->quantity > 0) {
                                 // Only apply sale if quantity is available
@@ -105,15 +104,15 @@ class PurchaseOrderController extends Controller
                 }
             } 
             elseif ($user->role === "Staff" || $user->role === "Admin") {
-                $query = PurchaseOrders::with(['items', 'supplier', 'staff']);
+                $query = PurchaseOrders::with(['items', 'customer', 'staff']);
 
                 if ($request->filled('search')) {
                     $search = $request->search;
                     $query->where(function($q) use ($search) {
                         $q->where('po_id', 'like', "%{$search}%")
                         ->orWhere('status', 'like', "%{$search}%")
-                        ->orWhereHas('supplier', function($supplierQuery) use ($search) {
-                            $supplierQuery->where('company_name', 'like', "%{$search}%");
+                        ->orWhereHas('customer', function($customerQuery) use ($search) {
+                            $customerQuery->where('company_name', 'like', "%{$search}%");
                         });
                     });
                 }
@@ -130,7 +129,7 @@ class PurchaseOrderController extends Controller
 
             return view('purchase-orders.list', [
                 'user' => $user,
-                'supplier' => $supplier,
+                'customer' => $customer,
                 'setProds' => $setProds, 
                 'pos' => $pos,
             ]);
@@ -138,10 +137,10 @@ class PurchaseOrderController extends Controller
         public function purchaseOrderView($po_id, Request $request)
         {
             $user = Auth::user();
-            $po = PurchaseOrders::where('po_id', $po_id)->with(['items.product', 'supplier'])->first(); 
+            $po = PurchaseOrders::where('po_id', $po_id)->with(['items.product', 'customer'])->first(); 
             
-            if ($user->role === "Supplier") {
-                $setProducts = ProductSetting::where('supplier_id', $po->supplier_id)
+            if ($user->role === "Customer") {
+                $setProducts = ProductSetting::where('customer_id', $po->customer_id)
                     ->with('product')
                     ->get();
             } else {
@@ -158,14 +157,14 @@ class PurchaseOrderController extends Controller
         public function createPurchaseOrder(Request $request) {
             $user = Auth::user();
             
-            if ($user->role !== "Supplier") {
-                return redirect()->back()->with('error', 'Only suppliers can create purchase orders.');
+            if ($user->role !== "Customer") {
+                return redirect()->back()->with('error', 'Only customers can create purchase orders.');
             }
 
-            $supplier = Suppliers::where('user_id', $user->user_id)->first();
+            $customer = Customers::where('user_id', $user->user_id)->first();
             
-            if (!$supplier) {
-                return redirect()->back()->with('error', 'Supplier profile not found.');
+            if (!$customer) {
+                return redirect()->back()->with('error', 'Customer profile not found.');
             }
 
             try {
@@ -187,7 +186,7 @@ class PurchaseOrderController extends Controller
                 // Create purchase order
                 $purchaseOrder = PurchaseOrders::create([
                     'po_id'        => $po_id,
-                    'supplier_id'  => $supplier->supplier_id,
+                    'customer_id'  => $customer->customer_id,
                     'status'       => 'Pending',
                     'notes'        => $request->notes,
                     'total_amount' => 0,
@@ -439,7 +438,7 @@ class PurchaseOrderController extends Controller
                 $order = Orders::create([
                     'order_id' => $order_id,
                     'po_id' => $purchaseOrder->po_id,
-                    'supplier_id' => $purchaseOrder->supplier_id,
+                    'customer_id' => $purchaseOrder->customer_id,
                     'order_date' => now(),
                     'status' => 'Accepted', 
                     'total_amount' => $totalAmount, 
@@ -573,7 +572,7 @@ class PurchaseOrderController extends Controller
         public function purchaseOrderPdf($po_id)
         {
             $purchaseOrder = PurchaseOrders::where('po_id', $po_id)
-                ->with(['items.product', 'supplier', 'staff'])
+                ->with(['items.product', 'customer', 'staff'])
                 ->firstOrFail();
 
             $pdf = Pdf::loadView('pdf.purchase-orders.purchase_order', compact('purchaseOrder'));

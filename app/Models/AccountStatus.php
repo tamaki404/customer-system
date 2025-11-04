@@ -15,18 +15,18 @@ class AccountStatus extends Model
         'account_status', 
         'reason_to_decline',
         'staff_id',
-        'supplier_id',
+        'customer_id',
         'approved_at',
         'approved_by',
     ];
 
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Suppliers::class);
+        return $this->belongsTo(Customers::class);
     }
     public function supp()
     {
-        return $this->belongsTo(Suppliers::class, 'user_id', 'user_id');
+        return $this->belongsTo(Customers::class, 'user_id', 'user_id');
     }
     public function staff()
     {

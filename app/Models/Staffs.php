@@ -9,7 +9,7 @@ class Staffs extends Model
     protected $fillable = [
         'staff_id',
         'status',
-        'supplier_id',
+        'customer_id',
         'user_id',
         'email_verified_at',
         'action_at',
@@ -25,9 +25,9 @@ class Staffs extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');
     }
     public function price()
     {

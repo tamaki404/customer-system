@@ -13,7 +13,7 @@
                     <div class="contents-display">
                         <form action="{{ route('purchaseorders.list') }}" id="text-search" class="search-text-con" method="GET">
                             <input type="text" name="search" class="search-bar"
-                                placeholder="Search by SUP ID. , Supplier, Representative and status"
+                                placeholder="Search by SUP ID. , Customer, Representative and status"
                                 value="{{ request('search') }}"
                                 style="outline:none;"
                             >
@@ -52,7 +52,7 @@
                 </div>
 
 
-                @if (auth()->user()->role !== 'Supplier')
+                @if (auth()->user()->role !== 'Customer')
 
     
                     <div class="content-body" style="background: #fff">
@@ -82,7 +82,7 @@
                         </table>
                 
                     </div>
-                @elseif (auth()->user()->role === 'Supplier')
+                @elseif (auth()->user()->role === 'Customer')
 
                     <div class="content-body" style="background: #fff">
 

@@ -10,7 +10,7 @@
     gap: 5px;
     background-color: #fff;
 }
-.profile-upper .supplier-image{
+.profile-upper .customer-image{
     border-radius: 15px;
     width: 150px;
     height: 150px;
@@ -658,6 +658,10 @@
     align-items: center;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }
+.collection-btn:hover{
+    background-color: #e98826;
+
+}
 .collection-btn span{
     color: #ffff;
 }
@@ -731,7 +735,7 @@
     border-radius: 5px;
     margin-top: 15px;
 }
-.content-header .details-box .first .supplier{
+.content-header .details-box .first .customer{
     display: flex;
     flex-direction: row;
     gap: 10px;
@@ -752,20 +756,20 @@
     border-radius: 999%;
     border: 4px solid #f57c00;
 }
-.supplier .name-redirect div{
+.customer .name-redirect div{
     display: flex;
     flex-direction: row;
     gap: 10px;
     align-items: center;
     justify-content: center;
 }
-.supplier .name-redirect div p{
+.customer .name-redirect div p{
     font-size: 20px;
     margin: 0;
     font-weight: bold;
     color: #333;
 }
-.supplier .name-redirect div button{
+.customer .name-redirect div button{
     text-decoration: none;
     align-items: center;
     display: flex;
@@ -775,12 +779,12 @@
     background-color: #e6e6e68f;
     color: #888;
 }
-.supplier .name-redirect div button:hover{
+.customer .name-redirect div button:hover{
 
     background-color: #e6e6e6;
     color: #f57c00;
 }
-.supplier .name-redirect div button span{
+.customer .name-redirect div button span{
     font-size: 15px;
 }
 .name-redirect .category{

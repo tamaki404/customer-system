@@ -8,7 +8,7 @@ class PurchaseOrders extends Model
 {
     protected $fillable = [
         'po_id',
-        'supplier_id',
+        'customer_id',
         'status',
         'notes',
         'total_amount',
@@ -21,9 +21,9 @@ class PurchaseOrders extends Model
 ];
 
 
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');
     }
 
     public function staff()

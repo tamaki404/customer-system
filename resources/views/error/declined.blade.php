@@ -97,9 +97,9 @@
                                     </p>
 
                                     @php
-                                        $mime = $supplier->id_image ? finfo_buffer(finfo_open(), $supplier->id_image, FILEINFO_MIME_TYPE) : null;
-                                        $imgSrc = $supplier->id_image
-                                            ? 'data:' . $mime . ';base64,' . base64_encode($supplier->id_image)
+                                        $mime = $customer->id_image ? finfo_buffer(finfo_open(), $customer->id_image, FILEINFO_MIME_TYPE) : null;
+                                        $imgSrc = $customer->id_image
+                                            ? 'data:' . $mime . ';base64,' . base64_encode($customer->id_image)
                                             : asset('assets/default-company-logo.png');
                                     @endphp
 
@@ -115,7 +115,7 @@
                                 <div class="input-forms">
                                     <label for="id-type"><span class="req-asterisk">*</span> Type of ID</label>
                                     <select name="id_type" id="id-type" required>
-                                        <option value="{{ $supplier->id_type ?? '' }}" selected>{{ $supplier->id_type ?? 'Select ID Type' }}</option>
+                                        <option value="{{ $customer->id_type ?? '' }}" selected>{{ $customer->id_type ?? 'Select ID Type' }}</option>
                                         <option value="Passport">Passport</option>
                                         <option value="Driver's License">Driver's License</option>
                                         <option value="National ID">National ID</option>
@@ -131,12 +131,12 @@
 
                                 <div class="input-forms">
                                     <label for="id_number"><span class="req-asterisk">*</span> ID number</label>
-                                    <input type="text" name="id_number" id="id_number" maxlength="100" required value="{{ $supplier->id_number ?? '' }}">
+                                    <input type="text" name="id_number" id="id_number" maxlength="100" required value="{{ $customer->id_number ?? '' }}">
                                 </div>
 
                                 <div class="input-forms">
                                     <label for="birthdate"><span class="req-asterisk">*</span> Birthdate</label>
-                                    <input type="date" name="birthdate" id="birthdate" required value="{{ $supplier->birthdate ?? '' }}">
+                                    <input type="date" name="birthdate" id="birthdate" required value="{{ $customer->birthdate ?? '' }}">
                                 </div>
                             </div>
                         </section>

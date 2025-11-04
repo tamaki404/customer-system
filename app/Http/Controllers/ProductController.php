@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\GlobalCeiling;
 use App\Models\PurchaseOrders;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Products;
@@ -25,18 +25,18 @@ class ProductController extends Controller
             $now = Carbon::now();
 
             $user = Auth::user();
-            $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
+            $customer = Customers::where('user_id', $user->user_id)->first(); 
 
             $products = Products::where('status', 'Listed')->get(); 
-            $setProducts = $supplier 
-                ? ProductSetting::where('supplier_id', $supplier->supplier_id)->get() 
+            $setProducts = $customer 
+                ? ProductSetting::where('customer_id', $customer->customer_id)->get() 
                 : collect(); 
             $cities = Address::selectRaw('LOWER(office_city) as city')
                 ->distinct()
                 ->pluck('city');
 
-            // Supplier counts per city
-            $supplierCounts = Address::selectRaw('LOWER(office_city) as city, COUNT(DISTINCT supplier_id) as count')
+            // Customer counts per city
+            $customerCounts = Address::selectRaw('LOWER(office_city) as city, COUNT(DISTINCT customer_id) as count')
                 ->groupBy('city')
                 ->pluck('count', 'city');
             
@@ -63,7 +63,7 @@ class ProductController extends Controller
                 'setProducts' => $setProducts,
                 'cities' => $cities,
                 'ceilings' => $ceilings,
-                'supplierCounts' => $supplierCounts,
+                'customerCounts' => $customerCounts,
                 'activePromos' => $activePromos,
                 'activePromosCount' => $activePromosCount,
             ]);

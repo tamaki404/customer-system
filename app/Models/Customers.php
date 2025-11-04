@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Suppliers extends Model
+class Customers extends Model
 {
 
     protected $fillable = [
         'user_id',
-        'supplier_id',
+        'customer_id',
         'staff_id',
         'company_name',
         'category',
@@ -31,7 +31,7 @@ class Suppliers extends Model
 
     public function set()
     {
-        return $this->belongsTo( ProductSetting::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo( ProductSetting::class, 'customer_id', 'customer_id');
     }
     public function user()
     {
@@ -44,28 +44,28 @@ class Suppliers extends Model
 
     public function signatory()
     {
-        return $this->belongsTo( Signatories::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo( Signatories::class, 'customer_id', 'customer_id');
     }
 
     public function representative()
     {
-        return $this->belongsTo( Representatives::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo( Representatives::class, 'customer_id', 'customer_id');
     }
     public function account_status()
     {
-        return $this->belongsTo( AccountStatus::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo( AccountStatus::class, 'customer_id', 'customer_id');
     }
     public function bank()
     {
-        return $this->belongsTo( Banks::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo( Banks::class, 'customer_id', 'customer_id');
     }
     public function delivery()
     {
-        return $this->belongsTo(DeliveryRequirements::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(DeliveryRequirements::class, 'customer_id', 'customer_id');
     }
     public function requirement()
     {
-        return $this->belongsTo(DeliveryRequirements::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(DeliveryRequirements::class, 'customer_id', 'customer_id');
     }
     public function req($productId)
     {

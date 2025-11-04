@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('order_id')->unique(); 
             $table->string('po_id');
-            $table->string('supplier_id');
+            $table->string('customer_id');
             $table->string('status')->default('Pending');
             $table->decimal('total_amount', 12, 2)->default(0);
             $table->timestamp('order_date')->nullable();

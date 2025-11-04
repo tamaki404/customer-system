@@ -38,17 +38,17 @@ class DeliveryController extends Controller
             try {
                 DB::beginTransaction();
 
-                $order = Orders::with(['supplier.delivery', 'items'])
+                $order = Orders::with(['customer.delivery', 'items'])
                     ->where('order_id', $request->order_id)
                     ->firstOrFail();
 
-                $supplierDelivery = $order->supplier->delivery;
+                $customerDelivery = $order->customer->delivery;
 
-                if (!$supplierDelivery) {
-                    throw new \Exception('Supplier delivery requirements are missing.');
+                if (!$customerDelivery) {
+                    throw new \Exception('Customer delivery requirements are missing.');
                 }
 
-                $rawDays = $supplierDelivery->delivery_days ?? '';
+                $rawDays = $customerDelivery->delivery_days ?? '';
                 
                 if (is_array($rawDays)) {
                     $deliveryDays = $rawDays;
@@ -63,7 +63,7 @@ class DeliveryController extends Controller
                 }
 
                 if (empty($deliveryDays)) {
-                    throw new \Exception('No delivery days defined for this supplier.');
+                    throw new \Exception('No delivery days defined for this customer.');
                 }
 
                 $dateNow = now()->format('Ymd');
@@ -77,7 +77,7 @@ class DeliveryController extends Controller
                     Delivery::create([
                         'delivery_id'   => $deliveryId,
                         'order_id'      => $order->order_id,
-                        'supplier_id'   => $order->supplier_id, 
+                        'customer_id'   => $order->customer_id, 
                         'delivery_date' => $deliveryDate,
                         'status'        => 'Scheduled',
                     ]);

@@ -11,15 +11,15 @@ class Banks extends Model
 
     protected $fillable = [
         'user_id',
-        'supplier_id',
+        'customer_id',
         'account_name', 
         'bank', 
         'branch', 
         'account_number',
     ];
 
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Suppliers::class);
+        return $this->belongsTo(Customers::class);
     }
 }

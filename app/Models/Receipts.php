@@ -8,7 +8,7 @@ class Receipts extends Model
 {
     protected $fillable = [
         'receipt_id',
-        'supplier_id',
+        'customer_id',
         'order_id',
         'status',
         'total_amount',
@@ -24,9 +24,9 @@ class Receipts extends Model
     {
         return $this->belongsTo(Orders::class, 'order_id', 'order_id');
     }
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');
     }
     public function staff()
     {

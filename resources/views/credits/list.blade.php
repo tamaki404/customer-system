@@ -68,7 +68,7 @@
                                     <div id="file-error" style="color:#dc3545; font-size:13px; margin-top:5px;"></div>
                             </div>
                             <input type="hidden" name="status" value="Pending">
-                            <input type="hidden" name="supplier_id" value="{{ auth()->user()->supplier->supplier_id }}">
+                            <input type="hidden" name="customer_id" value="{{ auth()->user()->customer->customer_id }}">
 
                         </div>
         

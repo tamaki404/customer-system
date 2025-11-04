@@ -26,29 +26,29 @@
                 </style>
                 <div class="details-box" style="display: flex; flex-direction: column;">
                     <p>PO ID: {{ $purchaseOrder->po_id }}</p>
-                    <p>Supplier: {{ $purchaseOrder->supplier->company_name }}</p>
+                    <p>Customer: {{ $purchaseOrder->customer->company_name }}</p>
                     <p>
-                        <span>Mobile# {{ $purchaseOrder->supplier->mobile_no }}</span>
-                        <span>Telephone# {{ $purchaseOrder->supplier->telephone_no }}</span>
-                        <span>Email {{ $purchaseOrder->supplier->user->email_address }}</span>
+                        <span>Mobile# {{ $purchaseOrder->customer->mobile_no }}</span>
+                        <span>Telephone# {{ $purchaseOrder->customer->telephone_no }}</span>
+                        <span>Email {{ $purchaseOrder->customer->user->email_address }}</span>
                     </p>
                     <p>
                         <span>Home address:
                               {{ implode(', ', array_filter([
-                                    $purchaseOrder->supplier->home_street,
-                                    $purchaseOrder->supplier->home_subdivision,
-                                    $purchaseOrder->supplier->home_barangay,
-                                    $purchaseOrder->supplier->home_city,
+                                    $purchaseOrder->customer->home_street,
+                                    $purchaseOrder->customer->home_subdivision,
+                                    $purchaseOrder->customer->home_barangay,
+                                    $purchaseOrder->customer->home_city,
                                 ])) }}
                         </span>
                     </p>
                     <p>
                         <span>Office address:
                               {{ implode(', ', array_filter([
-                                    $purchaseOrder->supplier->office_street,
-                                    $purchaseOrder->supplier->office_subdivision,
-                                    $purchaseOrder->supplier->office_barangay,
-                                    $purchaseOrder->supplier->office_city,
+                                    $purchaseOrder->customer->office_street,
+                                    $purchaseOrder->customer->office_subdivision,
+                                    $purchaseOrder->customer->office_barangay,
+                                    $purchaseOrder->customer->office_city,
                                 ])) }}
                         </span>
                     </p>
@@ -79,7 +79,7 @@
                                     <th style="vertical-align: middle;">Category</th>
                                     <th style="vertical-align: middle;">Unit</th>
                                     <th style="vertical-align: middle;">Unit Price</th>
-                                    <th style="vertical-align: middle;">Supplier Qty</th>
+                                    <th style="vertical-align: middle;">Customer Qty</th>
                                     <th style="vertical-align: middle;">Staff Qty</th>
                                     <th style="vertical-align: middle;">Status</th>
                                     <th style="vertical-align: middle;">Total Amount</th>                                                
@@ -94,7 +94,7 @@
                                         <td style="vertical-align: middle;">{{ $item->product->category }}</td>
                                         <td style="vertical-align: middle;">{{ $item->product->unit }}</td>
                                         <td style="vertical-align: middle;">₱{{ number_format($item->unit_price, 2) }}</td>
-                                        <td style="vertical-align: middle;">{{ $item->supplier_quantity }}</td>
+                                        <td style="vertical-align: middle;">{{ $item->customer_quantity }}</td>
                                         <td style="vertical-align: middle;">{{ $item->staff_quantity }}</td>
                                         <td style="vertical-align: middle;">{{ $item->status }}</td>
                                         <td style="vertical-align: middle;">₱{{ number_format($item->total_price, 2) }}</td>

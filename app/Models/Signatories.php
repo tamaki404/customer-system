@@ -11,7 +11,7 @@ class Signatories extends Model
 
     protected $fillable = [
         'user_id',
-        'supplier_id',
+        'customer_id',
         'sign_lastname', 
         'sign_firstname', 
         'sign_middlename', 
@@ -22,8 +22,8 @@ class Signatories extends Model
         'e_filename',
     ];
 
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Suppliers::class);
+        return $this->belongsTo(Customers::class);
     }
 }

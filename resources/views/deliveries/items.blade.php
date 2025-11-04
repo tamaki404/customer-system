@@ -54,7 +54,7 @@
                 <p>Delivery date: <span>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format(format: 'F j, Y') }}</span></p>
                 {{-- ACTION BUTTONS --}}
                 <td>
-                    @if (Auth()->user()->role !== "Supplier")
+                    @if (Auth()->user()->role !== "Customer")
                             @if($delivery->status === "Scheduled")
                                 <button type="button" 
                                     data-bs-toggle="modal" 
@@ -80,7 +80,7 @@
                     @endif
                 </td>
             @elseif($delivery->status === "Scheduled")
-                @if (Auth()->user()->role === "Supplier" && $delivery->status === "Scheduled")
+                @if (Auth()->user()->role === "Customer" && $delivery->status === "Scheduled")
                             <button 
                                 type="button"
                                 class="btn btn-primary file-action-btn"
@@ -383,7 +383,7 @@
 
                                     {{-- ACTION BUTTONS --}}
                                     {{-- <td>
-                                        @if (Auth()->user()->role !== "Supplier")
+                                        @if (Auth()->user()->role !== "Customer")
                                             @if($delivery->status === "Scheduled")
                                                 <button type="button" 
                                                     data-bs-toggle="modal" 

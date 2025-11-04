@@ -9,7 +9,7 @@ class Orders extends Model
     protected $fillable = [
         'order_id',
         'po_id',
-        'supplier_id',
+        'customer_id',
         'status',
         'total_amount',
         'order_date',
@@ -32,9 +32,9 @@ class Orders extends Model
     {
         return $this->items->sum('total_price');
     }
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');
     }
     public function receipts()
 {
@@ -42,11 +42,11 @@ class Orders extends Model
 }
     public function user()
 {
-    return $this->belongsTo(User::class, 'supplier_id', 'supplier_id');
+    return $this->belongsTo(User::class, 'customer_id', 'customer_id');
 }
     public function signatory()
 {
-    return $this->belongsTo(Signatories::class, 'supplier_id', 'supplier_id');
+    return $this->belongsTo(Signatories::class, 'customer_id', 'customer_id');
 }
 public function deliveries()
 {
@@ -62,7 +62,7 @@ public function del()
 }
     public function requirements()
     {
-        return $this->belongsTo(DeliveryRequirements::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(DeliveryRequirements::class, 'customer_id', 'customer_id');
     }
 
 }

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\AccountStatus;
 use App\Models\DeliveryRequirements;
 use App\Models\User;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use App\Models\Documents;
 use App\Models\Banks;
 use App\Models\Reviews;
@@ -19,7 +19,7 @@ class ErrorController extends Controller
 public function declined(Request $request)
 {
     $user_id = session('user_id'); 
-    $supplier = Suppliers::where('user_id', $user_id)->first();
+    $customer = Customers::where('user_id', $user_id)->first();
     $accStats = AccountStatus::where('user_id', $user_id)->first();
     $review = Reviews::where('user_id', $user_id)->first();
     // Initialize ALL variables to avoid "undefined variable" errors
@@ -45,7 +45,7 @@ public function declined(Request $request)
 
             case 'Necessary documents':
                 // Get all 8 documents (application/pdf) mediumBlob of each (SEC, BP, BIR, MP, BS, PB, NCC, AIB) 
-                $documents  = Documents::where('supplier_id', $supplier->supplier_id)->get();
+                $documents  = Documents::where('customer_id', $customer->customer_id)->get();
 
                 break;
 
@@ -56,7 +56,7 @@ public function declined(Request $request)
     }
 
     return view('error.declined', compact(
-        'supplier',
+        'customer',
         'documents',
         'bank',
         'accStats',
@@ -71,7 +71,7 @@ public function success(Request $request){
 
 public function review($user_id, Request $request){
     $user = User::where('user_id', $user_id)->first();
-    $supplier = Suppliers::where('user_id', $user_id)->first();
+    $customer = Customers::where('user_id', $user_id)->first();
     $accStats = AccountStatus::where('user_id', $user_id)->first();
     $reviews = Reviews::where('user_id', $user_id)->first();
     $review = Reviews::where('user_id', $user_id)->first();
@@ -97,7 +97,7 @@ public function review($user_id, Request $request){
                 break;
 
             case 'Necessary documents':
-                $documents  = Documents::where('supplier_id', $supplier->supplier_id)->get();
+                $documents  = Documents::where('customer_id', $customer->customer_id)->get();
 
                 break;
 
@@ -108,7 +108,7 @@ public function review($user_id, Request $request){
     }
 
     return view('error.review', compact(
-        'supplier',
+        'customer',
         'user',
         'documents',
         'bank',
@@ -124,22 +124,22 @@ public function reviewConfirm(Request $request)
 {
     // Validate form inputs
     $validated = $request->validate([
-        'supplier_id' => 'required|exists:suppliers,supplier_id',
+        'customer_id' => 'required|exists:customers,customer_id',
         'reviewed_by' => 'required|exists:users,user_id',
         'account_status' => 'required|string|in:Accepted,Declined',
         'review_feedback' => 'nullable|string|max:500',
     ]);
 
-    // Fetch the supplier
-    $supplier = Suppliers::where('supplier_id', $validated['supplier_id'])->first();
-    $review = Reviews::where('user_id', $supplier->user_id)->first();
-    $status = AccountStatus::where('user_id', $supplier->user_id)->first();
+    // Fetch the customer
+    $customer = Customers::where('customer_id', $validated['customer_id'])->first();
+    $review = Reviews::where('user_id', $customer->user_id)->first();
+    $status = AccountStatus::where('user_id', $customer->user_id)->first();
 
 
     // Check if records exist
     if (!$review || !$status) {
         return redirect()
-            ->route('customers.customer', ['supplier_id' => $supplier->supplier_id])
+            ->route('customers.customer', ['customer_id' => $customer->customer_id])
             ->with('error', 'Review or status record not found.');
     }
 
@@ -160,15 +160,15 @@ public function reviewConfirm(Request $request)
         $review->save();
 
         return redirect()
-            ->route('customers.customer', ['supplier_id' => $supplier->supplier_id])
-            ->with('success', 'Supplier confirmed successfully and is now pending approval.');
+            ->route('customers.customer', ['customer_id' => $customer->customer_id])
+            ->with('success', 'Customer confirmed successfully and is now pending approval.');
     } 
     
     elseif ($validated['account_status'] === "Declined") {
         // Validate feedback is provided when declining
         if (empty($validated['review_feedback'])) {
             return redirect()
-                ->route('customers.customer', ['supplier_id' => $supplier->supplier_id])
+                ->route('customers.customer', ['customer_id' => $customer->customer_id])
                 ->with('error', 'Please provide feedback when declining.');
         }
 
@@ -185,12 +185,12 @@ public function reviewConfirm(Request $request)
         $review->save();
 
         return redirect()
-            ->route('customers.customer', ['supplier_id' => $supplier->supplier_id])
-            ->with('warning', 'Supplier was declined again with feedback.');
+            ->route('customers.customer', ['customer_id' => $customer->customer_id])
+            ->with('warning', 'Customer was declined again with feedback.');
     }
 
     return redirect()
-        ->route('customers.customer', ['supplier_id' => $supplier->supplier_id])
+        ->route('customers.customer', ['customer_id' => $customer->customer_id])
         ->with('error', 'Invalid action selected.');
 }
 
@@ -211,7 +211,7 @@ public function reviewConfirm(Request $request)
 //         'valid_one' => 'nullable|file|mimes:pdf|max:5120',
 //         'valid_two' => 'nullable|file|mimes:pdf|max:5120',
 
-//         // banks to be saved to Banks model whcih it has same supplier_id == supplier_id with
+//         // banks to be saved to Banks model whcih it has same customer_id == customer_id with
 //         'account_name' => 'nullable|max:255',
 //         'account_number' => 'nullable|max:100',
 //         'bank' => 'nullable|max:100',
@@ -219,11 +219,11 @@ public function reviewConfirm(Request $request)
 //     ]);
 
 //     try {
-//         // Update Supplier model (ID details)
-//         $supplier = Suppliers::where('user_id', $user_id)->first();
+//         // Update Customer model (ID details)
+//         $customer = Customers::where('user_id', $user_id)->first();
 
-//         if (!$supplier) {
-//             return back()->with('error', 'Supplier record not found.');
+//         if (!$customer) {
+//             return back()->with('error', 'Customer record not found.');
 //         }
 
 
@@ -231,14 +231,14 @@ public function reviewConfirm(Request $request)
 //             // Only update if new image is uploaded
 //             if ($request->hasFile('id_image')) {
 //                 $imageFile = $request->file('id_image');
-//                 $supplier->id_image = file_get_contents($imageFile->getRealPath());
+//                 $customer->id_image = file_get_contents($imageFile->getRealPath());
 //             }
 
-//             $supplier->id_type = $request->id_type;
-//             $supplier->id_number = $request->id_number;
-//             $supplier->birthdate = $request->birthdate;
+//             $customer->id_type = $request->id_type;
+//             $customer->id_number = $request->id_number;
+//             $customer->birthdate = $request->birthdate;
             
-//             $supplier->save();
+//             $customer->save();
 
 //             // Update Documents (PDFs) - only if new files are uploaded
 //             $documentsUpdated = false;
@@ -290,7 +290,7 @@ public function reviewConfirm(Request $request)
 //             }
 //         }
 // elseif ($request->key === "banks") {
-//             $bank = Banks::where('supplier_id', $supplier->supplier_id)->first();
+//             $bank = Banks::where('customer_id', $customer->customer_id)->first();
 
 //     if (!$bank) {
 //         return back()->with('error', 'Bank record not found.');
@@ -362,9 +362,9 @@ public function updateDeclined(Request $request)
     $user_id = session('user_id');
 
     try {
-        $supplier = Suppliers::where('user_id', $user_id)->first();
-        if (!$supplier) {
-            return back()->with('error', 'Supplier record not found.');
+        $customer = Customers::where('user_id', $user_id)->first();
+        if (!$customer) {
+            return back()->with('error', 'Customer record not found.');
         }
 
         $key = $request->input('key');
@@ -382,15 +382,15 @@ public function updateDeclined(Request $request)
                 'valid_two' => 'nullable|file|mimes:pdf|max:5120',
             ]);
 
-            /** Update Supplier ID details **/
+            /** Update Customer ID details **/
             if ($request->hasFile('id_image')) {
-                $supplier->id_image = file_get_contents($request->file('id_image')->getRealPath());
+                $customer->id_image = file_get_contents($request->file('id_image')->getRealPath());
             }
 
-            $supplier->id_type = $request->id_type;
-            $supplier->id_number = $request->id_number;
-            $supplier->birthdate = $request->birthdate;
-            $supplier->save();
+            $customer->id_type = $request->id_type;
+            $customer->id_number = $request->id_number;
+            $customer->birthdate = $request->birthdate;
+            $customer->save();
 
             /** Handle valid ID documents **/
             foreach (['valid_one', 'valid_two'] as $type) {
@@ -422,7 +422,7 @@ public function updateDeclined(Request $request)
                 
             ]);
 
-            $bank = Banks::where('supplier_id', $supplier->supplier_id)->first();
+            $bank = Banks::where('customer_id', $customer->customer_id)->first();
 
             if (!$bank) {
                 return back()->with('error', 'Bank record not found.');
@@ -466,8 +466,8 @@ public function updateDeclined(Request $request)
                     $pdfFile = $request->file($inputName);
                     $pdfContent = file_get_contents($pdfFile->getRealPath());
 
-                    // Find existing document by supplier_id and type
-                    $document = Documents::where('supplier_id', $supplier->supplier_id)
+                    // Find existing document by customer_id and type
+                    $document = Documents::where('customer_id', $customer->customer_id)
                         ->where('type', $dbType)
                         ->first();
 
@@ -477,16 +477,16 @@ public function updateDeclined(Request $request)
                         $document->updated_at = now();
                         $document->save();
                         
-                        \Log::info("Updated document: {$dbType} for supplier_id: {$supplier->supplier_id}");
+                        \Log::info("Updated document: {$dbType} for customer_id: {$customer->customer_id}");
                     } else {
                         // Create new document if it doesn't exist
                         Documents::create([
-                            'supplier_id' => $supplier->supplier_id,
+                            'customer_id' => $customer->customer_id,
                             'type' => $dbType,
                             'file' => $pdfContent,
                         ]);
                         
-                        \Log::info("Created new document: {$dbType} for supplier_id: {$supplier->supplier_id}");
+                        \Log::info("Created new document: {$dbType} for customer_id: {$customer->customer_id}");
                     }
 
                     $docsUpdated = true;

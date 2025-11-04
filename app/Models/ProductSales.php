@@ -8,7 +8,7 @@ class ProductSales extends Model
 {
     protected $fillable = [
         'sale_id',
-        'supplier_id',
+        'customer_id',
         'set_id',
         'status',
         'sale_price',
@@ -26,9 +26,9 @@ class ProductSales extends Model
     {
         return $this->hasMany(Products::class, 'product_id', 'product_id');
     } 
-         public function supplier()
+         public function customer()
     {
-        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');
     }   
     public function scopeActive($query)
 {

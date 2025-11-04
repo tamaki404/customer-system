@@ -13,7 +13,7 @@
                     <div class="contents-display">
                         <form action="{{ route('products.list') }}" id="text-search" class="search-text-con" method="GET">
                             <input type="text" name="search" class="search-bar"
-                                placeholder="Search by SUP ID. , Supplier, Representative and status"
+                                placeholder="Search by SUP ID. , Customer, Representative and status"
                                 value="{{ request('search') }}"
                                 style="outline:none;"
                             >
@@ -48,7 +48,7 @@
                 </div>
 
 
-                @if (auth()->user()->role !== 'Supplier')
+                @if (auth()->user()->role !== 'Customer')
                     <div class="content-body order-list" style="border: none">
 {{-- 
                         <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
@@ -56,7 +56,7 @@
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
                                     <th>Date</th>
-                                    <th>Supplier</th>
+                                    <th>Customer</th>
                                     <th>Order ID</th>
                                     <th>Heads/Kilos</th>
                                     <th>Amount</th>
@@ -101,7 +101,7 @@
                                     <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $order->created_at->format('F j, Y') }}</td>
-                                        <td>{{$order->supplier->company_name}}</td>
+                                        <td>{{$order->customer->company_name}}</td>
                                         <td>{{$order->order_id}}</td>
                                         <td>
                                             @if ($order->all_scheduled || $order->deliveries->isEmpty())
@@ -153,9 +153,9 @@
                         @foreach ($orders as $order)
                             <a class="order-box" href="{{ route('orders.order', ['order_id' => $order->order_id]) }}">
                                 @php
-                                    // Supplier image setup
-                                    $imgSrc =  $order->supplier->user->image 
-                                        ? ('data:' . $order->supplier->user->image_mime_type . ';base64,' . base64_encode($order->supplier->user->image))
+                                    // Customer image setup
+                                    $imgSrc =  $order->customer->user->image 
+                                        ? ('data:' . $order->customer->user->image_mime_type . ';base64,' . base64_encode($order->customer->user->image))
                                         : asset('images/default-avatar.png');
 
                                     // Initialize counters
@@ -246,10 +246,10 @@
                                 </div>
 
 
-                                <div class="supplier">
+                                <div class="customer">
                                     <div class="profile">
-                                        <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image">
-                                        <p>{{ $order->supplier->company_name ?? 'N/A' }}</p>
+                                        <img class="customer-image" src="{{ $imgSrc }}" alt="Profile Image">
+                                        <p>{{ $order->customer->company_name ?? 'N/A' }}</p>
                                     </div>
 
                                     <p class="status">
@@ -408,7 +408,7 @@
                 
                     </div>
 
-                @elseif (auth()->user()->role === 'Supplier')
+                @elseif (auth()->user()->role === 'Customer')
 
                     <div class="content-body" style="background: #fff">
                         <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
@@ -416,7 +416,7 @@
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
                                     <th>Date</th>
-                                    <th>Supplier</th>
+                                    <th>Customer</th>
                                     <th>Order ID</th>
                                     <th>Heads/Kilos</th>
                         
@@ -459,7 +459,7 @@
                                     <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $order->created_at->format('F j, Y') }}</td>
-                                        <td>{{$order->supplier->company_name}}</td>
+                                        <td>{{$order->customer->company_name}}</td>
                                         <td>{{$order->order_id}}</td>
                                         <td>
                                             @if ($order->all_scheduled || $order->deliveries->isEmpty())

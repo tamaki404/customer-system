@@ -44,9 +44,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
-        public function supplier()
+        public function customer()
     {
-        return $this->belongsTo(Suppliers::class, 'user_id', 'user_id');
+        return $this->belongsTo(Customers::class, 'user_id', 'user_id');
     }
 
     public function rep()

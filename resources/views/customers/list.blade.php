@@ -14,7 +14,7 @@
     @endif
    <div class="content-bg">
 
-        @if (auth()->user()->role !== 'Supplier')
+        @if (auth()->user()->role !== 'Customer')
 
         {{-- Set Sale & Discounts Modal --}}
         <div class="modal fade" id="set-promo-modal" tabindex="-1" aria-labelledby="setPromoLabel" aria-hidden="true">
@@ -150,7 +150,7 @@
             <div class="contents-display">
                 <form action="{{ route('customers.list') }}" id="text-search" class="search-text-con" method="GET">
                     <input type="text" name="search" class="search-bar"
-                        placeholder="Search by SUP ID. , Supplier, Representative and status"
+                        placeholder="Search by SUP ID. , Customer, Representative and status"
                         value="{{ request('search') }}"
                         style="outline:none;"
                     >
@@ -192,7 +192,7 @@
                     @endif
             </div>
             @elseif (auth()->user()->role_type === "sales_representative")
-                <p class="heading">Assigned suppliers</p>
+                <p class="heading">Assigned customers</p>
             @else
                 <p class="heading">Customers list</p>
             @endif
@@ -204,7 +204,7 @@
                     <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                         <th>#</th>
                         <th>SUP ID.</th>
-                        <th>Supplier</th>
+                        <th>Customer</th>
                         <th>Email</th>
                         <th>Type</th>
                         <th>Sales Agent</th>
@@ -212,23 +212,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($suppliers as $supplier)
-                        <tr onclick="window.location.href='{{ route('customers.customer', ['supplier_id' => $supplier->supplier_id]) }}'">
+                    @foreach ($customers as $customer)
+                        <tr onclick="window.location.href='{{ route('customers.customer', ['customer_id' => $customer->customer_id]) }}'">
                             <th>{{ $loop->iteration }}</th>
-                            <td>{{ $supplier->supplier_id }}</td>
-                            <td>{{ $supplier->company_name }}</td>
-                            <td>{{ $supplier->user->email_address }}</td>
-                            <td>{{ $supplier->category }}</td>
+                            <td>{{ $customer->customer_id }}</td>
+                            <td>{{ $customer->company_name }}</td>
+                            <td>{{ $customer->user->email_address }}</td>
+                            <td>{{ $customer->category }}</td>
                             <td>
-                                @if ($supplier->account_status->staff_id !== NULL)
-                                    {{ $supplier->staff_name }}
+                                @if ($customer->account_status->staff_id !== NULL)
+                                    {{ $customer->staff_name }}
                                 @else 
                                     --
 
                                 @endif
                             </td>
 
-                            <td>{{ $supplier->account_status->account_status }}</td>
+                            <td>{{ $customer->account_status->account_status }}</td>
                         </tr>
 
                     @endforeach

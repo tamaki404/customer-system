@@ -25,7 +25,7 @@
         </div>
         <div class="right">
             <img src="{{ asset('assets/sunnyLogo1.png') }}" alt="Owner Image">
-            <h1 title="{{ $user->user_id }}">{{$user->supplier->company_name}}</h1>
+            <h1 title="{{ $user->user_id }}">{{$user->customer->company_name}}</h1>
             <p class="kindly-mess">Kindly choose your account to login to</p>
             @if ($errors->any())
                 <div class="alert alert-danger">

@@ -15,7 +15,7 @@
 
 
     {{-- purchase order placing --}}
-    @if(Auth()->user()->role !== "Supplier" && $receipt->status === 'Pending')
+    @if(Auth()->user()->role !== "Customer" && $receipt->status === 'Pending')
         <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true" >
             <div class="modal-dialog" style="width: auto">
                 <form class="modal-content" method="POST" enctype="multipart/form-data"
@@ -170,7 +170,7 @@
 
             <div class="title-actions">
                 <p class="heading">Receipt</p>
-                @if(Auth()->user()->role !== "Supplier" && $receipt->status === 'Pending')
+                @if(Auth()->user()->role !== "Customer" && $receipt->status === 'Pending')
                     <div>
                         <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">File an action</button>
                     </div>
@@ -184,11 +184,11 @@
             {{--  Basic Receipt Info --}}
             <div class="row mb-3">
                 
-                <p><strong>Supplier:</strong> {{ $receipt->supplier->company_name }}</p>
+                <p><strong>Customer:</strong> {{ $receipt->customer->company_name }}</p>
                 <p><strong>Receipt ID:</strong> {{ $receipt->receipt_id }}</p>
                 <p><strong>Order ID:</strong> {{ $receipt->order_id }}</p>
 
-                @if(Auth()->user()->role !== "Supplier" && $receipt->status !== 'Pending')
+                @if(Auth()->user()->role !== "Customer" && $receipt->status !== 'Pending')
                     <p><strong>Action by:</strong> {{ $receipt->action_by }}</p>
                     <p><strong>Action at:</strong> {{ $receipt->action_at }}</p>
                 @endif

@@ -28,7 +28,7 @@ public function modifyProduct(Request $request)
 
     // Case 1: Removal
     if ($request->has('remove') && $request->remove == 1) {
-        $description = "Removed product requirement (Set ID: {$productRequirement->set_id}, Product: {$productRequirement->product->name} from supplier {$productRequirement->supplier_id})";
+        $description = "Removed product requirement (Set ID: {$productRequirement->set_id}, Product: {$productRequirement->product->name} from customer {$productRequirement->customer_id})";
         $productRequirement->delete();
 
         Logs::create([
@@ -46,7 +46,7 @@ public function modifyProduct(Request $request)
     $oldPrice = $productRequirement->nego_price;
     $newPrice = $request->price;
 
-    $city = $productRequirement->supplier->address->office_city ?? null;
+    $city = $productRequirement->customer->address->office_city ?? null;
     $now = \Carbon\Carbon::now();
 
     $activeCeiling = GlobalCeiling::whereRaw('LOWER(city_selected) = ?', [strtolower($city)])
@@ -83,7 +83,7 @@ public function modifyProduct(Request $request)
     $phistory_id = 'PRICE-' . $date . '-' . strtoupper(Str::random(5));
     PriceHistory::create([
         'phistory_id' => $phistory_id,
-        'supplier_id' => $request->supplier_id,
+        'customer_id' => $request->customer_id,
         'action'      => 'Change price',
         'set_id'      => $request->set_id,
         'new_price'   => $newPrice,

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
             $table->string('po_id')->unique(); 
-            $table->string('supplier_id');
+            $table->string('customer_id');
             $table->string('staff_id')->nullable(); 
             $table->timestamp('confirmed_at')->nullable();
             $table->string('status')->default('Pending');

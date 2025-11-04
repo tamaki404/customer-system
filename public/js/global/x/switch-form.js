@@ -33,31 +33,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Extract data from button attributes
         const setId = button.getAttribute("data-set-id");
-        const supplierId = button.getAttribute("data-supplier-id");
+        const customerId = button.getAttribute("data-customer-id");
         const price = button.getAttribute("data-price");
         const name = button.getAttribute("data-name");
 
-        console.log("Data retrieved:", { setId, supplierId, price, name });
+        console.log("Data retrieved:", { setId, customerId, price, name });
 
         // Populate Form 1 (Modify Product)
         const modifySetIdInput = document.getElementById("edit-modal-set-id");
-        const modifySupplierIdInput = document.getElementById("edit-modal-supplier-id");
+        const modifyCustomerIdInput = document.getElementById("edit-modal-customer-id");
         const modifyProductNameInput = document.getElementById("modify-product-name");
         const modifyPriceInput = document.getElementById("modify-price");
 
         if (modifySetIdInput) modifySetIdInput.value = setId;
-        if (modifySupplierIdInput) modifySupplierIdInput.value = supplierId;
+        if (modifyCustomerIdInput) modifyCustomerIdInput.value = customerId;
         if (modifyProductNameInput) modifyProductNameInput.value = name;
         if (modifyPriceInput) modifyPriceInput.value = price;
 
         // Populate Form 2 (Sale Price)
         const saleSetIdInput = document.getElementById("sale-form-set-id");
-        const saleSupplierIdInput = document.getElementById("sale-form-supplier-id");
+        const saleCustomerIdInput = document.getElementById("sale-form-customer-id");
         const saleProductNameInput = document.getElementById("sale-product-name");
         const saleBasePriceInput = document.getElementById("sale-base-price");
 
         if (saleSetIdInput) saleSetIdInput.value = setId;
-        if (saleSupplierIdInput) saleSupplierIdInput.value = supplierId;
+        if (saleCustomerIdInput) saleCustomerIdInput.value = customerId;
         if (saleProductNameInput) saleProductNameInput.value = name;
         if (saleBasePriceInput) saleBasePriceInput.value = price;
 

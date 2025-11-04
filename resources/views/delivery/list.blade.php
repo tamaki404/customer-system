@@ -13,7 +13,7 @@
                     <div class="contents-display">
                         <form action="{{ route('products.list') }}" id="text-search" class="search-text-con" method="GET">
                             <input type="text" name="search" class="search-bar"
-                                placeholder="Search by SUP ID. , Supplier, Representative and status"
+                                placeholder="Search by SUP ID. , Customer, Representative and status"
                                 value="{{ request('search') }}"
                                 style="outline:none;"
                             >
@@ -49,7 +49,7 @@
                 </div>
 
 
-                @if (auth()->user()->role !== 'Supplier')
+                @if (auth()->user()->role !== 'Customer')
                     <div class="content-body" style="background: #fff">
 
                         <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
@@ -57,7 +57,7 @@
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
                                     <th>Delivery_ID</th>
-                                    <th>Supplier</th>
+                                    <th>Customer</th>
                                     <th>Scheduled</th>
                                     <th>Heads</th>
                                     <th>Kilos</th>
@@ -70,10 +70,10 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $del->delivery_id }}</td>
-                                        <td>{{ $del->supplier->company_name }}</td>
+                                        <td>{{ $del->customer->company_name }}</td>
                                         @php
                                             $date = \Carbon\Carbon::parse($del->delivery_date);
-                                            $receiving = \Carbon\Carbon::parse($del->supplier->requirement->receiving_time);
+                                            $receiving = \Carbon\Carbon::parse($del->customer->requirement->receiving_time);
 
                                         @endphp
 

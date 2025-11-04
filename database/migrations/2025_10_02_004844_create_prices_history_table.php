@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('price_histories', function (Blueprint $table) {
             $table->id();
             $table->string('phistory_id')->required(); 
-            $table->string('supplier_id')->required(); 
+            $table->string('customer_id')->required(); 
             $table->string('set_id')->required(); 
             $table->string('sale_id')->nullable(); 
             $table->string('action_by')->required(); 

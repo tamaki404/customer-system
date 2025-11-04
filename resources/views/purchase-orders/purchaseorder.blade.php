@@ -7,7 +7,7 @@
 @section('content')
 
     {{-- Staff confirmation modal --}}
-    @if (auth()->user()->role !== 'Supplier' && $po->status === 'Pending')
+    @if (auth()->user()->role !== 'Customer' && $po->status === 'Pending')
         <div class="modal fade" id="confirm-action" tabindex="-1" aria-labelledby="confirmActionLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <form class="modal-content" style="width: 800px" method="POST" action="{{ route('purchaseorders.confirm', $po->po_id) }}">
@@ -117,7 +117,7 @@
                                             </td>
                                         <td>
                                             <span id="staff_total_{{ $item->po_item_id }}" class="staff-row-total">
-                                                ₱{{ number_format($item->unit_price * $item->supplier_quantity, 2) }}
+                                                ₱{{ number_format($item->unit_price * $item->customer_quantity, 2) }}
                                             </span>
                                         </td>
                                     </tr>
@@ -181,11 +181,11 @@
             <div class="title-actions">
                 <p class="heading">Purchase Order - {{ $po->po_id }}</p>
                 <div style="display: flex; gap: 10px;">
-                    @if (auth()->user()->role !== 'Supplier' && $po->status === 'Pending')
+                    @if (auth()->user()->role !== 'Customer' && $po->status === 'Pending')
                         <button data-bs-toggle="modal" data-bs-target="#confirm-action" class="btn-transition">Confirm Order</button>
                     @endif
                     
-                    @if ($po->status !== 'Pending' && auth()->user()->role !== 'Supplier')
+                    @if ($po->status !== 'Pending' && auth()->user()->role !== 'Customer')
                         <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
                             <p style="margin: 0"><span>Print</span></p>
                     <div>
@@ -211,7 +211,7 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
                     <div>
                         <p><strong>PO ID:</strong> {{ $po->po_id }}</p>
-                        <p><strong>Supplier:</strong> {{ $po->supplier->company_name }}</p>
+                        <p><strong>Customer:</strong> {{ $po->customer->company_name }}</p>
                         <p><strong>Status:</strong> 
                             <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; 
                                 @if($po->status === 'Pending') background-color: #fff3cd; color: #856404;

@@ -11,7 +11,7 @@ class PurchaseOrderItem extends Model
         'po_id',
         'product_id',
         'set_id',
-        'supplier_quantity',
+        'customer_quantity',
         'staff_quantity',
         'unit_price',
         'total_price',

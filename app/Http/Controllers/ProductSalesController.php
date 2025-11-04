@@ -18,7 +18,7 @@ class ProductSalesController extends Controller
     {
         $user = Auth::user();
         $request->validate([
-            'supplier_id' => 'required|exists:suppliers,supplier_id',
+            'customer_id' => 'required|exists:customers,customer_id',
             'set_id' => 'required|exists:product_settings,set_id',        
             'sale_price' => 'required|numeric|min:0',
             'start_date' => 'required|date',
@@ -33,7 +33,7 @@ class ProductSalesController extends Controller
         //  1: product sales
         $sale = ProductSales::create([
             'sale_id'     => $sale_id,
-            'supplier_id'      => $request->supplier_id,
+            'customer_id'      => $request->customer_id,
             'set_id'      => $request->set_id,
             'sale_price' => $request->sale_price,
             'status'    => 'Active',
@@ -49,7 +49,7 @@ class ProductSalesController extends Controller
             'action'      => 'Created sale promo',
             'log_id'      => $log_id,
             'description' => " Staff ($user->user_id)
-                created promo for ($request->supplier_id)' ($request->set_id). sale price 
+                created promo for ($request->customer_id)' ($request->set_id). sale price 
                 ( $request->sale_price) from ($request->start_date) to ($request->end_date) ",
             'entity'      => 'ProductSales',
             'entity_id'   => $sale->id,

@@ -9,7 +9,7 @@ class ProductSetting extends Model
     protected $fillable = [
         'set_id',
         'product_id',
-        'supplier_id',
+        'customer_id',
         'nego_price',
         'added_by',
 
@@ -21,9 +21,9 @@ class ProductSetting extends Model
     {
         return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }
-        public function supplier()
+        public function customer()
     {
-        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');
     }
         public function sale()
     {
@@ -31,7 +31,7 @@ class ProductSetting extends Model
     }
         public function user()
     {
-        return $this->belongsTo(Suppliers::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');
     }
         public function activeSale()
     {

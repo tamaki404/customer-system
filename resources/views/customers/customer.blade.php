@@ -36,13 +36,13 @@
                 </div>
             @endif
             
-            {{-- confirm supplier request --}}
+            {{-- confirm customer request --}}
             <div class="modal fade" id="request-action"tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
                 <div class="modal-dialog" >
-                    <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
+                    <form class="modal-content" method="POST" action="{{ route('customer.confirm') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-header">
-                            <p class="modal-title">Supplier request action</p>
+                            <p class="modal-title">Customer request action</p>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         
@@ -54,10 +54,10 @@
 
                             <!-- Status selection -->
                             <div class="modal-option-groups">
-                                <p>Do you want to accept this supplier's request to join the system?</p>
+                                <p>Do you want to accept this customer's request to join the system?</p>
                                 <select name="account_status" id="account_status" required>
                                     <option value="">-- Select status --</option>
-                                    <option value="Accepted">Yes, confirm supplier's request</option>
+                                    <option value="Accepted">Yes, confirm customer's request</option>
                                     <option value="Declined">No, there's a problem with their request</option>
                                 </select>
                             </div>
@@ -213,7 +213,7 @@
                         </div>
 
 
-                        <input type="hidden" name="supplier_id" value="{{$supplier->supplier_id }}">
+                        <input type="hidden" name="customer_id" value="{{$customer->customer_id }}">
                         <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}">
 
                         <div class="modal-footer">
@@ -231,10 +231,10 @@
 
             <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
+                <form class="modal-content" method="POST" action="{{ route('customer.confirm') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
-                        <p class="modal-title">Supplier confirm action</p>
+                        <p class="modal-title">Customer confirm action</p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     
@@ -272,8 +272,8 @@
 
                     </div>
 
-                    <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
-                    <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
+                    <input type="hidden" name="customer_id" value="{{ $customer->customer_id }}">
+                    <input type="hidden" name="user_id" value="{{ $customer->user->user_id }}">
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -289,7 +289,7 @@
             {{-- add new product to user requirements --}}
             <div class="modal fade" id="add-product-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <form class="modal-content" method="POST" action="{{ route('supplier.confirm') }}" enctype="multipart/form-data">
+                <form class="modal-content" method="POST" action="{{ route('customer.confirm') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
                         <p class="modal-title">Add product to requirements</p>
@@ -297,12 +297,12 @@
                     </div>
 
                     <input type="hidden" name="set_id" id="modal-set-id">
-                    <input type="hidden" name="supplier_id" id="modal-supplier-id">
+                    <input type="hidden" name="customer_id" id="modal-customer-id">
 
                     <div class="modal-body">
                         <p class="note-notify">
                             <span class="material-symbols-outlined"> warning </span>
-                            <span>Any action comitted would notify the supplier</span>
+                            <span>Any action comitted would notify the customer</span>
                         </p>
 
                         <!-- Status selection -->
@@ -310,8 +310,8 @@
 
                     </div>
 
-                    <input type="hidden" name="supplier_id" value="{{ $supplier->supplier_id }}">
-                    <input type="hidden" name="user_id" value="{{ $supplier->user->user_id }}">
+                    <input type="hidden" name="customer_id" value="{{ $customer->customer_id }}">
+                    <input type="hidden" name="user_id" value="{{ $customer->user->user_id }}">
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -350,7 +350,7 @@
                         <form class="modify-product-form" id="modify-form" style="display:none;" method="POST" action="{{ route('productset.modify') }}">
                             @csrf
                             <input type="hidden" id="edit-modal-set-id" name="set_id">
-                            <input type="hidden" id="edit-modal-supplier-id" name="supplier_id">
+                            <input type="hidden" id="edit-modal-customer-id" name="customer_id">
 
                             <div>
                                 @if ($ceilingPrice)
@@ -410,7 +410,7 @@
                     <form class="modify-product-form product-form" id="sale-form" style="display:none;" method="POST" action="{{ route('productset.sale') }}">
                         @csrf
                         <input type="hidden" id="sale-form-set-id" name="set_id">
-                        <input type="hidden" id="sale-form-supplier-id" name="supplier_id">
+                        <input type="hidden" id="sale-form-customer-id" name="customer_id">
 
                         <p class="note-notify">
                             <span class="material-symbols-outlined">info</span>
@@ -490,11 +490,11 @@
                     <div class="modal-body">
                         <p class="note-notify">
                         <span class="material-symbols-outlined"> warning </span>
-                        <span>Any action committed will notify the supplier</span>
+                        <span>Any action committed will notify the customer</span>
                         </p>
                     
                         <input type="hidden" id="edit-modal-set-id" name="set_id">
-                        <input type="hidden" name="supplier_id" id="edit-modal-supplier-id">
+                        <input type="hidden" name="customer_id" id="edit-modal-customer-id">
                         <div class="action-btn">
                             <button class="suspend" style="background-color: #e60b06 ">
                                 Suspend
@@ -570,12 +570,12 @@
                 <div class="content-header">
                     <div class="contents-display">
                         <p>
-                            <a href="{{ route('customers.list') }}">< Supplier list</a>
+                            <a href="{{ route('customers.list') }}">< Customer list</a>
                         </p>
                     </div>
 
                     <div class="title-actions">
-                        <p class="heading">Supplier's profile</p>
+                        <p class="heading">Customer's profile</p>
 
                         {{-- @if (Auth()->user()->role !== 'Staff')
                             <div>
@@ -586,7 +586,7 @@
                             </div>
                         @endif --}}
 
-                        {{-- @if (optional($supplier->account_status)->account_status == null && $accStatus->account_status === "Pending")
+                        {{-- @if (optional($customer->account_status)->account_status == null && $accStatus->account_status === "Pending")
                             <div>
                                 <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">File an action</button>
                             </div>
@@ -594,7 +594,7 @@
 
                     </div>
 
-                    {{-- Supplier status display --}}
+                    {{-- Customer status display --}}
                     @if ($accStatus->account_status === 'Pending')
                         <div class="status-box status-box--pending">
                             <div class="status-header">
@@ -603,7 +603,7 @@
                             </div>
                             <div class="status-content">
                                 <p class="status-text">
-                                    Supplier request is pending. You can take action to confirm or decline it.
+                                    Customer request is pending. You can take action to confirm or decline it.
                                 </p>
                                 <button data-bs-toggle="modal" data-bs-target="#request-action" class="btn-transition">
                                     <span class="material-symbols-outlined">approval_delegation</span> File an action
@@ -619,7 +619,7 @@
                             </div>
                             <div class="status-content">
                                 <p class="status-text">
-                                    Supplier request has been accepted successfully.
+                                    Customer request has been accepted successfully.
                                 </p>
                                 <button class="btn-transition" data-bs-toggle="modal" data-bs-target="#modify-action">
                                     File an action
@@ -668,7 +668,7 @@
                                         </p>
                                     @endif
 
-                                    <p class="footer">Waiting for supplier to modify their request.</p>
+                                    <p class="footer">Waiting for customer to modify their request.</p>
                                 </div>
                             </div>
                         </div>
@@ -680,7 +680,7 @@
                             </div>
                             <div class="status-content">
                                 <p class="status-text">
-                                    {{ $supplier->company_name }} has modified their request, kindly review it.
+                                    {{ $customer->company_name }} has modified their request, kindly review it.
                                 </p>
                                 <p class="footer">Waiting for your confirmation to take action.</p>
                                 <button onclick="window.location.href='{{ route('error.changes', ['user_id' => $accStatus->user_id]) }}'">
@@ -712,28 +712,28 @@
                 <div class="content-body" style="padding: 10px; border: none; height: auto;">
                     <div class="profile-upper">
                         @php
-                            $imgSrc =  $supplier->user->image 
-                                ? ('data:' . $supplier->user->image_mime_type . ';base64,' . base64_encode($supplier->user->image))
+                            $imgSrc =  $customer->user->image 
+                                ? ('data:' . $customer->user->image_mime_type . ';base64,' . base64_encode($customer->user->image))
                                 : asset('images/default-avatar.png');
                         @endphp
-                        <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image">   
+                        <img class="customer-image" src="{{ $imgSrc }}" alt="Profile Image">   
                         
                         <div class="profile-details-div" style="margin-left: 10px">
                             <div>
                                 <div class="company-status" style="margin: 0; display: flex; align-items: center;">
-                                    <p class="company-name">{{  $supplier->company_name }} <span style="font-size: 14px; font-weight: normal;">({{$supplier->category}})</span></p>
+                                    <p class="company-name">{{  $customer->company_name }} <span style="font-size: 14px; font-weight: normal;">({{$customer->category}})</span></p>
                                     <p style="margin: 0; cursor: pointer;">
                                         <span class="material-icons" style="font-size: 14px; color:
-                                            @if($supplier->account_status->account_status === 'Pending') orange
-                                            @elseif($supplier->account_status->account_status === 'Accepted') green
-                                            @elseif($supplier->account_status->account_status === 'Suspended') black
-                                            @elseif($supplier->account_status->account_status === 'Declined') red
-                                            @elseif($supplier->account_status->account_status === 'Under review') violet
+                                            @if($customer->account_status->account_status === 'Pending') orange
+                                            @elseif($customer->account_status->account_status === 'Accepted') green
+                                            @elseif($customer->account_status->account_status === 'Suspended') black
+                                            @elseif($customer->account_status->account_status === 'Declined') red
+                                            @elseif($customer->account_status->account_status === 'Under review') violet
 
                                             @else gray
                                             @endif
                                         "
-                                        title="{{$supplier->account_status->account_status}}"
+                                        title="{{$customer->account_status->account_status}}"
                                         
                                         >circle</span>
                                     </p>
@@ -767,13 +767,13 @@
 
                                     <p>
                                         <span class="material-symbols-outlined icon" title="Mobile number">mobile</span>
-                                        <span class="div-text">{{$supplier->mobile}}</span>
+                                        <span class="div-text">{{$customer->mobile}}</span>
                                     </p>
                                     <span>|</span>
-                                    @if ($supplier->tele !== NULL)
+                                    @if ($customer->tele !== NULL)
                                         <p>
                                             <span class="material-symbols-outlined icon" title="Telephone number">call</span>
-                                            <span class="div-text">{{$supplier->tele}}</span>
+                                            <span class="div-text">{{$customer->tele}}</span>
 
                                         </p>
                                         <span>|</span>
@@ -782,19 +782,19 @@
 
                                     <p>
                                         <span class="material-symbols-outlined icon" title="Email address">mail</span>
-                                        <span class="div-text">{{$supplier->user->email_address}}</span>
+                                        <span class="div-text">{{$customer->user->email_address}}</span>
 
                                     </p>
 
                                     <span>|</span>
                                     <p>
                                         <span class="material-symbols-outlined icon" title="Payment method">paid</span>
-                                        <span class="div-text" style="color: green">{{$supplier->payment_method}}</span>
+                                        <span class="div-text" style="color: green">{{$customer->payment_method}}</span>
 
                                     </p>
                                     <span>|</span>
                                     <p>
-                                        <span class="div-text" style="color: #666">{{$supplier->user_id}}</span>
+                                        <span class="div-text" style="color: #666">{{$customer->user_id}}</span>
 
                                     </p>
                                 </div>
@@ -814,7 +814,7 @@
                                             : asset('assets/default-company-logo.png');
                                     @endphp
                                     @if ($staffAgent !== NULL)
-                                        <img class="supplier-image" src="{{ $imgSrc }}" alt="Staff Profile Image" >
+                                        <img class="customer-image" src="{{ $imgSrc }}" alt="Staff Profile Image" >
                                         <p class="name-title">
                                             <span style="font-size: 13px;  color: #333;">
                                                 {{$staffAgent->lastname}},
@@ -884,7 +884,7 @@
                                                             $hours = \Carbon\Carbon::parse($salesHisto->start_date)
                                                                 ->diffInHours(\Carbon\Carbon::parse($salesHisto->end_date));
                                                             $days = round($hours / 24, 1);
-                                                            // original negotiated supplier price
+                                                            // original negotiated customer price
                                                             $original = $salesHisto->set->nego_price ?? 0;
                                                             $value = $salesHisto->value;
                                                             $afterPromo = $original;
@@ -1134,7 +1134,7 @@
                                                                 data-set-id="{{ ($productRequirement->settings->set_id) ?? "" }}"
                                                                 data-price="{{ ($productRequirement->settings->nego_price) ?? "" }}"
                                                                 data-name="{{ $productRequirement->product->name }}"
-                                                                data-supplier-id="{{ $productRequirement->supplier_id }}"
+                                                                data-customer-id="{{ $productRequirement->customer_id }}"
                                                             >
                                                                 <span class="material-symbols-outlined">edit</span>
                                                             </button>
@@ -1433,7 +1433,7 @@
                                             </p>
                                             <p>
                                                 <span style="color:#666">Verified by</span>
-                                                @if (@$account_status->user_id === $supplier->user_id > 0 && @$account_status->staff_id !== NULL)
+                                                @if (@$account_status->user_id === $customer->user_id > 0 && @$account_status->staff_id !== NULL)
                                                     <span>
                                                         {{ implode(', ', array_filter([
                                                             $account_status->staff->lastname,
@@ -1484,10 +1484,10 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>1</td>
-                                                        <td>{{ $supplier->bank->account_number}}</td>
-                                                        <td>{{ $supplier->bank->bank}}</td>
-                                                        <td>{{ $supplier->bank->branch}}</td>
-                                                        <td>{{ $supplier->bank->account_number}}</td>
+                                                        <td>{{ $customer->bank->account_number}}</td>
+                                                        <td>{{ $customer->bank->bank}}</td>
+                                                        <td>{{ $customer->bank->branch}}</td>
+                                                        <td>{{ $customer->bank->account_number}}</td>
 
                                                     </tr>
                                                 </tbody>
@@ -1530,28 +1530,28 @@
                                         <div class="questions-list" style="width: auto; gap: 2px">
                                             <div>
                                                 @php
-                                                    $idImg =  $supplier->id_image 
-                                                        ? ('data:' . $supplier->id_mime_type . ';base64,' . base64_encode($supplier->id_image))
+                                                    $idImg =  $customer->id_image 
+                                                        ? ('data:' . $customer->id_mime_type . ';base64,' . base64_encode($customer->id_image))
                                                         : asset('images/default-avatar.png');
                                                 @endphp
                                                 <img class="id-image" style="height: 200px" src="{{ $idImg }}" alt="ID Image"> 
                                             </div>
                                             <p>
                                                 <span style="color:#666">Type of ID </span>
-                                                <span>{{$supplier->id_type}}</span>
+                                                <span>{{$customer->id_type}}</span>
                                             </p>
 
                                             <p>
                                                 <span style="color:#666">Valid ID no.</span>
-                                                <span>{{$supplier->id_number}}</span>
+                                                <span>{{$customer->id_number}}</span>
                                             </p>
                                             <p>
                                                 <span style="color:#666">Civil status</span>
-                                                <span>{{$supplier->civil_status}}</span>
+                                                <span>{{$customer->civil_status}}</span>
                                             </p>
                                             <p>
                                                 <span style="color:#666">Citizenship</span>
-                                                <span>{{$supplier->citizenship}}</span>
+                                                <span>{{$customer->citizenship}}</span>
                                             </p>
                                     
                                         </div>

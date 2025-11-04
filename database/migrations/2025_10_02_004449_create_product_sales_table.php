@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('product_sales', function (Blueprint $table) {
             $table->id();
             $table->string('sale_id')->required(); 
-            $table->string('supplier_id')->required(); 
+            $table->string('customer_id')->required(); 
             $table->string('set_id')->required(); 
             $table->string('status')->nullable(); 
             $table->decimal('sale_price', 10, 2);

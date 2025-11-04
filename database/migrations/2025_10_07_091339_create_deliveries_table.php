@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('delivery_id')->unique();  
             $table->string('order_id');              
-            $table->string('supplier_id');           
+            $table->string('customer_id');           
             $table->date('delivery_date');     
             $table->timestamp('delivered_at')->nullable();
 

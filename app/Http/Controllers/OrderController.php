@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Orders;
 use App\Models\PurchaseOrders;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use App\Models\OrderItem;
 use App\Models\Logs;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -34,15 +34,15 @@ class OrderController extends Controller
         public function orderList(Request $request)
         {
             $user = Auth::user();
-            $supplier = null;
+            $customer = null;
 
             $ordersQuery = Orders::with(['deliveries.deliveryItems'])
                 ->withSum('receipts', 'total_amount')
                 ->orderBy('created_at', 'desc');
 
-            if ($user->role === "Supplier") {
-                $supplierId = Suppliers::where('user_id', $user->user_id)->value('supplier_id');
-                $ordersQuery->where('supplier_id', $supplierId);
+            if ($user->role === "Customer") {
+                $customerId = Customers::where('user_id', $user->user_id)->value('customer_id');
+                $ordersQuery->where('customer_id', $customerId);
             }
 
             $orders = $ordersQuery->get()->map(function ($order) {
@@ -113,7 +113,7 @@ class OrderController extends Controller
                 return $order;
             });
 
-            return view('orders.list', compact('user', 'supplier', 'orders'));
+            return view('orders.list', compact('user', 'customer', 'orders'));
         }
 
 
@@ -123,7 +123,7 @@ class OrderController extends Controller
 
             try {
                 $request->validate([
-                    'supplier_id' => 'required|exists:suppliers,supplier_id',
+                    'customer_id' => 'required|exists:customers,customer_id',
                     'status'    => 'required|string',
                     'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
                 ]);
@@ -171,7 +171,7 @@ class OrderController extends Controller
 
                 $purchaseOrder = PurchaseOrders::create([
                     'po_id'       => $po_id,
-                    'supplier_id' => $request->supplier_id,
+                    'customer_id' => $request->customer_id,
                     'status' => $request->status,
                     'image'         => $imageBlob,
                     'image_mime_type' => $imageMimeType,
@@ -228,6 +228,7 @@ class OrderController extends Controller
             }
 
             $payments =Receipts::where('order_id', $order_id)
+            ->orderBy('created_at', 'desc')
             ->where('status', "Verified")->get();
             $receivedPaymentCount =Receipts::where('order_id', $order_id)
             ->where('status', "Verified")->count();
@@ -258,7 +259,7 @@ class OrderController extends Controller
                 // Validate the request
                 $request->validate([
                     'po_id' => 'required|exists:purchase_orders,po_id',
-                    'supplier_id' => 'required|exists:suppliers,supplier_id',
+                    'customer_id' => 'required|exists:customers,customer_id',
                     'selected_products' => 'required|array|min:1',
                     'selected_products.*' => 'required|exists:product_settings,set_id', 
                     'quantities' => 'required|array',
@@ -287,7 +288,7 @@ class OrderController extends Controller
                 $order = Orders::create([
                     'order_id' => $order_id,
                     'po_id' => $request->po_id,
-                    'supplier_id' => $request->supplier_id,
+                    'customer_id' => $request->customer_id,
                     'order_date' => now(),
                     'status' => 'Pending', 
                     'total_amount' => 0, 
@@ -471,7 +472,7 @@ class OrderController extends Controller
         public function salesInvoicePdf($order_id)
         {
             $order = Orders::with([
-                'supplier.user',
+                'customer.user',
                 'items.product'
             ])->where('order_id', $order_id)->firstOrFail();
             $items = $order->items;

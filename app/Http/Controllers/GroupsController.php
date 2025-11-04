@@ -7,7 +7,7 @@ use App\Models\Representatives;
 use App\Models\Signatories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use Illuminate\Support\Facades\DB;
 
 class GroupsController extends Controller
@@ -26,7 +26,7 @@ class GroupsController extends Controller
     public function GroupsView(Request $request)
     {
         $user = Auth::user();
-        $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
+        $customer = Customers::where('user_id', $user->user_id)->first(); 
         $reps = Representatives::where('user_id', $user->user_id)->get();
         $signs = Signatories::where('user_id', $user->user_id)->get();
 

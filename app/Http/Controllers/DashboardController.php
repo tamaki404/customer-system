@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use App\Models\Documents;
 use App\Models\Orders;
 use App\Models\Receipts;
@@ -19,25 +19,25 @@ class DashboardController extends Controller
 public function dashboardView(Request $request)
 {
     $user = Auth::user();
-    $supplier = $user ? Suppliers::where('user_id', $user->user_id)->first() : null;
+    $customer = $user ? Customers::where('user_id', $user->user_id)->first() : null;
 
     $purchasesCount = 0;
     $totalReceipts = 0;
     $totalOrders = 0;
     $remainingBalance = 0;
     $deliveryCount = 0;
-    $documentCount = $supplier ? Documents::where('supplier_id', $supplier->supplier_id)->count() : 0;
+    $documentCount = $customer ? Documents::where('customer_id', $customer->customer_id)->count() : 0;
 
-    if ($user->role === 'Supplier') {
-        $totalOrders = Orders::where('supplier_id', $supplier->supplier_id)->count();
+    if ($user->role === 'Customer') {
+        $totalOrders = Orders::where('customer_id', $customer->customer_id)->count();
 
-                $deliveryCount = Delivery::where('supplier_id', $supplier->supplier_id)
+                $deliveryCount = Delivery::where('customer_id', $customer->customer_id)
                     ->where('Status', "Scheduled")
                     ->count();
 
 
                 $credit = Credits::where('user_id', $user->user_id)->first();
-                $usedCredit = Orders::where('supplier_id', $supplier->supplier_id)
+                $usedCredit = Orders::where('customer_id', $customer->customer_id)
                     ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
                     ->selectRaw('
                         SUM(
@@ -55,8 +55,8 @@ public function dashboardView(Request $request)
                 $remainingBalance = $credit ? $credit->credit_limit - $usedCredit : 0;
 
 
-        $purchasesCount = Orders::where('supplier_id', $supplier->supplier_id)->count();
-        $totalReceipts = Receipts::where('supplier_id', $supplier->supplier_id)->count();
+        $purchasesCount = Orders::where('customer_id', $customer->customer_id)->count();
+        $totalReceipts = Receipts::where('customer_id', $customer->customer_id)->count();
 
     
 
@@ -93,7 +93,7 @@ public function dashboardView(Request $request)
 
     return view('dashboard', compact(
         'user',
-        'supplier',
+        'customer',
         'purchasesCount',
         'remainingBalance',
         'documentCount',
@@ -109,14 +109,14 @@ public function layoutView(Request $request)
     $user = Auth::user();
     $rep = auth('representative')->user();
 
-    $supplier = null;
+    $customer = null;
     $documentCount = 0;
     $activeRepresentative = null;
 
-    if ($user->role === 'Supplier') {
-        $supplier = Suppliers::where('user_id', $user->user_id)->first();
-        $documentCount = $supplier
-            ? Documents::where('supplier_id', $supplier->supplier_id)->count()
+    if ($user->role === 'Customer') {
+        $customer = Customers::where('user_id', $user->user_id)->first();
+        $documentCount = $customer
+            ? Documents::where('customer_id', $customer->customer_id)->count()
             : 0;
 
         // Get active representative if one is signed in
@@ -130,7 +130,7 @@ public function layoutView(Request $request)
         'user' => $user,
         'rep' => $rep,
 
-        'supplier' => $supplier,
+        'customer' => $customer,
         'documentCount' => $documentCount,
         'activeRepresentative' => $activeRepresentative,
     ]);

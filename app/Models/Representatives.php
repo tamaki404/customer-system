@@ -18,7 +18,7 @@ class Representatives extends Model implements Authenticatable
         'rep_middlename', 
         'auth_position', 
         'rep_contact',
-        'supplier_id',
+        'customer_id',
         'rep_id',
         'permissions',
         'cid'
@@ -29,9 +29,9 @@ protected $casts = [
 ];
 
 
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Suppliers::class);
+        return $this->belongsTo(Customers::class);
     }
     public function user()
     {

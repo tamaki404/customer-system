@@ -133,7 +133,7 @@
                         <div style="padding: 5px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px; border:#888 1px solid; border-radius: 5px;">
                             @foreach($items as $item)
                                 @php
-                                    $rawDays = $order->supplier->delivery->delivery_days ?? '';
+                                    $rawDays = $order->customer->delivery->delivery_days ?? '';
                                     
                                     // Check if it's already an array, otherwise try to explode by comma, then try JSON decode
                                     if (is_array($rawDays)) {
@@ -228,8 +228,8 @@
                                             <tbody>
                                                     @php
                                                         $deliveryDays = [];
-                                                        if ($order->supplier && $order->supplier->delivery && $order->supplier->delivery->delivery_days) {
-                                                            $rawDays = $order->supplier->delivery->delivery_days;
+                                                        if ($order->customer && $order->customer->delivery && $order->customer->delivery->delivery_days) {
+                                                            $rawDays = $order->customer->delivery->delivery_days;
                                                             
                                                             if (is_array($rawDays)) {
                                                                 $deliveryDays = $rawDays;
@@ -316,7 +316,7 @@
                     <div class="upper-con" style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
                         <div class="buttons">
                             <!-- Buttons -->
-                            @if ($order->status === 'Accepted' && Auth()->user()->role !== 'Supplier')
+                            @if ($order->status === 'Accepted' && Auth()->user()->role !== 'Customer')
                                 <button type="button" 
                                     data-bs-toggle="modal" data-bs-target="#processModal" 
                                     data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
@@ -327,7 +327,7 @@
                                     </span>
                                     Process order
                                 </button>
-                            @elseif ($order->status === 'Processed' && Auth()->user()->role !== 'Supplier')
+                            @elseif ($order->status === 'Processed' && Auth()->user()->role !== 'Customer')
                                 <button type="button" 
                                     data-bs-toggle="modal" data-bs-target="#exportModal" 
                                     data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
@@ -402,11 +402,11 @@
                 <p>{{ $order->status}}</p>
                 @endif --}}
                 {{-- 
-                @if (Auth()->user()->role !== 'Supplier' && $order->status === 'Pending')
+                @if (Auth()->user()->role !== 'Customer' && $order->status === 'Pending')
                     <div>
                                     <button data-bs-toggle="modal" data-bs-target="#modify-action" class="btn-transition">Modify account</button>
                     </div>
-                @elseif (Auth()->user()->role === 'Supplier')
+                @elseif (Auth()->user()->role === 'Customer')
                     <div>
                         <button data-bs-toggle="modal"  class="btn-transition">Purchase order</button>
                     </div>
@@ -434,23 +434,23 @@
                 </div>
                 <div class="details-box">
                     <div class="first" style="justify-content: space-between">
-                        <div class="supplier">
+                        <div class="customer">
                             @php
-                                $imgSrc =  $order->supplier->user->image 
-                                    ? ('data:' . $order->supplier->user->image_mime_type . ';base64,' . base64_encode($order->supplier->user->image))
+                                $imgSrc =  $order->customer->user->image 
+                                    ? ('data:' . $order->customer->user->image_mime_type . ';base64,' . base64_encode($order->customer->user->image))
                                     : asset('images/default-avatar.png');
                             @endphp
-                            <img class="supplier-image" src="{{ $imgSrc }}" alt="Profile Image">
+                            <img class="customer-image" src="{{ $imgSrc }}" alt="Profile Image">
                             <div class="name-redirect">
                                 <div>
-                                    <p>{{ $order->supplier->company_name ?? 'N/A' }}</p>
+                                    <p>{{ $order->customer->company_name ?? 'N/A' }}</p>
                                     <button href="">
                                         <span class="material-symbols-outlined">
                                             arrow_outward
                                         </span>
                                     </button>
                                 </div>
-                                <p class="category">{{ $order->supplier->category }}</p>
+                                <p class="category">{{ $order->customer->category }}</p>
                             </div>                        
                         </div>
                         <div class="un-named">
@@ -504,7 +504,7 @@
                     </div>
                 </div>
                 {{-- <p style="display: flex; flex-direction: column;">
-                        <span><strong>Supplier:</strong> {{ $order->supplier->company_name }}</span>
+                        <span><strong>Customer:</strong> {{ $order->customer->company_name }}</span>
                         <span><strong>Order ID:</strong> {{ $order->order_id }}</span>
                         <span><strong>Total amount: </strong> ₱{{ number_format($order->total_amount, 2) }}</span>
                         <span><strong>Payment status: </strong> {{ $order->payment_status }}</span>
@@ -525,7 +525,7 @@
             </div>
 
             {{-- <div>
-            <p>Delivery frequency: <span>{{$order->supplier->delivery->delivery_frequency}}</span></p>
+            <p>Delivery frequency: <span>{{$order->customer->delivery->delivery_frequency}}</span></p>
             </div> --}}
 
             <div class="content-body" style="padding: 10px; border: none; height: auto; overflow-x: auto; height: 450px;  border-radius: 0;">
@@ -748,28 +748,25 @@
                         </p>
                     </div>
                     <div style="padding: 10px; ">
-                            @foreach ( $payments as  $payment)
-                                <button class="cons-receipt" style="margin: 0; padding: 10px;" onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $payment->receipt_id]) }}'">
-                                    <p style="display: flex; gap: 0; margin: 0; padding: 0; background-color: transparent;">
-                                        <span class="loop" style="font-size: 12px; color: #666;">#{{ $loop->iteration }}</span>
-                                        <span style="margin-left: 7px">{{ $payment->created_at->format('j F, Y') }}</span>
-                                        <span style="color: #f8912a; margin-left: auto;">+ ₱{{ number_format($payment->total_amount, 2) }}</span>
-                                    </p>
-                                    <p class="receipt-label" style="margin: 0; height: auto; padding: 0; ; background-color: transparent;">
-                                        <span>Bank transfer</span>
-                                    </p>
-                                </button>
-                                    <hr style="margin: 10px;   
-                                        border-top: 1px dashed #666;
-                                        border-bottom: none;
-                                        border-left: none;
-                                        border-right: none;">
-                            @endforeach
-                       
-
+                        @foreach ( $payments as  $payment)
+                            <button class="cons-receipt" style="margin: 0; padding: 10px;" onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $payment->receipt_id]) }}'">
+                                <p style="display: flex; gap: 0; margin: 0; padding: 0; background-color: transparent;">
+                                    <span class="loop" style="font-size: 12px; color: #666;">#{{ $loop->iteration }}</span>
+                                    <span style="margin-left: 7px">{{ $payment->created_at->format('j F, Y') }}</span>
+                                    <span style="color: #f8912a; margin-left: auto;">+ ₱{{ number_format($payment->total_amount, 2) }}</span>
+                                </p>
+                                <p class="receipt-label" style="margin: 0; height: auto; padding: 0; ; background-color: transparent;">
+                                    <span>Bank transfer</span>
+                                </p>
+                            </button>
+                                <hr style="margin: 10px;   
+                                    border-top: 1px dashed #666;
+                                    border-bottom: none;
+                                    border-left: none;
+                                    border-right: none;">
+                        @endforeach
                     </div>
                 </div>
-
                 <hr>
                 <div class="summary">
                     <p style="padding: 0; margin: 0;">
@@ -785,6 +782,12 @@
                     </p>
 
                 </div>
+                <button class="collection-btn" style="width: 50%; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;" onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $order->order_id]) }}'">
+                    <span class="material-symbols-outlined" >
+                    grain
+                    </span>
+                    Receipt collection
+                </button>             
             </div>
         </div>
 

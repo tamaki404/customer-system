@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const requiredFieldNames = [
                 // User
                 'email_address', 'password', 'password_confirmation',
-                // Supplier core
+                // Customer core
                 'company_name','home_street','home_subdivision','home_barangay','home_city',
                 'office_street','office_subdivision','office_barangay','office_city',
                 'mobile_no','telephone_no','civil_status','citizenship','payment_method',

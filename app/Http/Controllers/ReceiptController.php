@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Receipts;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use App\Models\Logs;
 use App\Models\OrderHistory;
 use App\Models\Orders;
@@ -33,7 +33,7 @@ class ReceiptController extends Controller
             try {
                 $request->validate([
                     'order_id' => 'required|exists:orders,order_id',
-                    'supplier_id' => 'required|exists:suppliers,supplier_id',
+                    'customer_id' => 'required|exists:customers,customer_id',
                     'status' => 'required|in:Pending,Verified,Denied',
                     'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
                 ]);
@@ -75,7 +75,7 @@ class ReceiptController extends Controller
                 $receipt = Receipts::create([
                     'receipt_id' => $receipt_id,
                     'order_id' => $request->order_id,
-                    'supplier_id' => $request->supplier_id,
+                    'customer_id' => $request->customer_id,
                     'status' => $request->status, // use status from request
                     'image' => $imageBlob,
                     'image_mime_type' => $imageMimeType,
@@ -109,12 +109,12 @@ class ReceiptController extends Controller
         {
             $user = Auth::user();
 
-            if ($user->role !== "Supplier") {
+            if ($user->role !== "Customer") {
                 $receipts = Receipts::orderBy('created_at', 'desc')->get();
             } 
-            elseif ($user->role === "Supplier") {
-                $supplier = Suppliers::where('user_id', $user->user_id)->first();
-                $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->orderBy('created_at', 'desc')->get();
+            elseif ($user->role === "Customer") {
+                $customer = Customers::where('user_id', $user->user_id)->first();
+                $receipts = Receipts::where('customer_id', $customer->customer_id)->orderBy('created_at', 'desc')->get();
             }
             return view('receipts.list', [
                 'user' => $user,
@@ -127,7 +127,8 @@ class ReceiptController extends Controller
         {
 
             $receipts = Receipts::where('order_id', $order_id)
-            ->where('status', "Verified")
+            // ->where('status', "Verified")
+            ->orderBy('created_at', 'desc')
             ->get();
             $order = Orders::where('order_id', $order_id)
             ->first();

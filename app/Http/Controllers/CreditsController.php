@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Credits;
 use App\Models\Orders;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use App\Models\Receipts;
 use Illuminate\Support\Facades\DB;
 
@@ -17,17 +17,17 @@ class CreditsController extends Controller
         public function creditsList(Request $request)
         {
             $user = Auth::user();
-            $supplier = Suppliers::where('user_id', $user->user_id)->first();
+            $customer = Customers::where('user_id', $user->user_id)->first();
             $orders = collect(); 
 
-            if ($user->role !== "Supplier") {
+            if ($user->role !== "Customer") {
                 $orders = Credits::all();
                 $receipts = Receipts::orderBy('created_at', 'desc')->get();
 
             } 
-            elseif ($user->role === "Supplier") {
+            elseif ($user->role === "Customer") {
                 $credit = Credits::where('user_id', $user->user_id)->first();
-                $usedCredit = Orders::where('supplier_id', $supplier->supplier_id)
+                $usedCredit = Orders::where('customer_id', $customer->customer_id)
                     ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
                     ->selectRaw('
                         SUM(
@@ -42,7 +42,7 @@ class CreditsController extends Controller
                     ->value('outstanding_balance');
 
                 $availableCredit = $credit->credit_limit - $usedCredit;
-                $oustandingPayments = Orders::where('orders.supplier_id', $supplier->supplier_id)
+                $oustandingPayments = Orders::where('orders.customer_id', $customer->customer_id)
                     ->whereIn('orders.payment_status', ['Unpaid', 'Partially settled'])
                     ->select('orders.*')
                     ->selectSub(function ($query) {
@@ -65,19 +65,19 @@ class CreditsController extends Controller
                     });
 
 
-                $unpaidOrders = Orders::where('supplier_id', $supplier->supplier_id)
+                $unpaidOrders = Orders::where('customer_id', $customer->customer_id)
                     ->where('payment_status', '!=', 'Fully paid')
                     ->get();
 
-                $orderIds = Orders::where('supplier_id', $supplier->supplier_id)
+                $orderIds = Orders::where('customer_id', $customer->customer_id)
                     ->pluck('order_id');
 
                 $transactionHistory = OrderHistory::whereIn('order_id', $orderIds)
                     ->orderBy('created_at', 'desc')
                     ->get();
 
-                $supplier = Suppliers::where('user_id', $user->user_id)->first();
-                $receipts = Receipts::where('supplier_id', $supplier->supplier_id)->orderBy('created_at', 'desc')->get();
+                $customer = Customers::where('user_id', $user->user_id)->first();
+                $receipts = Receipts::where('customer_id', $customer->customer_id)->orderBy('created_at', 'desc')->get();
 
             }
             return view('credits.list', [
@@ -89,7 +89,7 @@ class CreditsController extends Controller
                 'transactionHistory' => $transactionHistory,
                 'unpaidOrders' => $unpaidOrders,
                 'receipts' => $receipts,
-                'supplier' => $supplier,
+                'customer' => $customer,
 
             ]);
         }

@@ -106,7 +106,7 @@
         <div class="form-container">
             <button class="prev-btn act-btn" type="button"><span class="material-symbols-outlined">arrow_back_ios</span></button>
 
-            <form method="POST" action="{{ route('registration.supplier.register') }}" class="log-form" id="registerForm" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('registration.customer.register') }}" class="log-form" id="registerForm" enctype="multipart/form-data">
                 @csrf
 
                 <div class="step-section" id="step1">

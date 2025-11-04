@@ -56,10 +56,10 @@ Route::get('/choose-account', [RegistrationController::class, 'chooseAccount'])
 Route::post('/account/signin-representative', [UserController::class, 'signinRepresentative'])
     ->name('account.signin-representative');
 
-Route::post('/account/supplier/registration', [UserController::class, 'registerSupplier'])
-    ->name('registration.supplier.register');
+Route::post('/account/customer/registration', [UserController::class, 'registerCustomer'])
+    ->name('registration.customer.register');
 
-Route::get('/account/supplier/registration', [UserController::class, 'showSignupForm'])
+Route::get('/account/customer/registration', [UserController::class, 'showSignupForm'])
     ->name('registration.signup');
 
 Route::post('/account.signin', [UserController::class, 'signin'])->name('account.signin');
@@ -76,7 +76,7 @@ Route::get('/email/verify', [UserController::class, 'verifyEmail'])->name('verif
 
 /*
 |--------------------------------------------------------------------------
-| Supplier & Shared Routes (Supplier, Admin, Staff)
+| Customer & Shared Routes (Customer, Admin, Staff)
 |--------------------------------------------------------------------------
 */
 
@@ -94,7 +94,7 @@ Route::get('/locked', function () {
     return view('lock.locked'); 
 })->name('locked.page');
 
-Route::middleware(['auth', 'role:Supplier', 'check.supplier'])->group(function () {
+Route::middleware(['auth', 'role:Customer', 'check.customer'])->group(function () {
     Route::get('/products/list', [ProductController::class, 'productList'])
         ->middleware('check.rep.permission:Products')
         ->name('products.list');
@@ -116,7 +116,7 @@ Route::middleware(['auth', 'role:Supplier', 'check.supplier'])->group(function (
 
     /*
     |-------------------------
-    | Supplier-only (Creating orders / POs)
+    | Customer-only (Creating orders / POs)
     |-------------------------
     */
     Route::post('/orders/order/create', [OrderController::class, 'createOrder'])->middleware('check.rep.permission:Order')->name('order.create');
@@ -137,7 +137,7 @@ Route::middleware(['auth', 'role:Supplier', 'check.supplier'])->group(function (
 
 });
 
-Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
+Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
     /*
     |--------------------------------------------------------------------------
     | Dashboard (with Representative Permission Check)
@@ -167,11 +167,11 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
 
 
     Route::get('/products/list', [ProductController::class, 'productList'])
-        ->middleware(['check.rep.permission:Products', 'check.supplier'])
+        ->middleware(['check.rep.permission:Products', 'check.customer'])
         ->name('products.list');
 
     Route::get('/products/product/view/{product_id}', [ProductController::class, 'productView'])
-        ->middleware(['check.rep.permission:Products', 'check.supplier'])
+        ->middleware(['check.rep.permission:Products', 'check.customer'])
         ->name('products.product');
     Route::get('/products/{product_id}/info', [ProductController::class, 'info'])->name('products.info');
 
@@ -186,19 +186,19 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
     |-------------------------
     */
     Route::get('/orders/list', [OrderController::class, 'orderList'])
-        ->middleware(['check.rep.permission:Orders', 'check.supplier'])
+        ->middleware(['check.rep.permission:Orders', 'check.customer'])
         ->name('orders.list');
 
     Route::get('/receipts/list', [ReceiptController::class, 'receiptList'])
-        ->middleware(['check.rep.permission:POP', 'check.supplier'])
+        ->middleware(['check.rep.permission:POP', 'check.customer'])
         ->name('receipts.list');
 
     Route::get('/credits/list', [CreditsController::class, 'creditsList'])
-        ->middleware(['check.rep.permission:Credits', 'check.supplier'])
+        ->middleware(['check.rep.permission:Credits', 'check.customer'])
         ->name('credits.list');
 
     Route::get('/receipts/list/receipt/{receipt_id}', [ReceiptController::class, 'receiptView'])
-        ->middleware(['check.rep.permission:POP', 'check.supplier'])
+        ->middleware(['check.rep.permission:POP', 'check.customer'])
         ->name('receipts.receipt');
 
     /*
@@ -239,12 +239,12 @@ Route::middleware(['auth', 'role:Supplier|Admin|Staff'])->group(function () {
 Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
     // Customers & Staffs
-    Route::get('/customers/list', [CustomersController::class, 'customersList'])->name('customers.list');
-    Route::get('/customers/list/customer/{supplier_id}', [CustomersController::class, 'customerView'])->name('customers.customer');
+    // Route::get('/customers/list', [CustomersController::class, 'customersList'])->name('customers.list');
+    // Route::get('/customers/list/customer/{customer_id}', [CustomersController::class, 'customerView'])->name('customers.customer');
 
-    Route::get('/staffs/list', [StaffsController::class, 'staffsList'])->name('staffs.list');
+    Route::get('/staffs/list', [StaffsController::class, 'staffsList'])->name(name: 'staffs.list');
     Route::get('/staffs/list/staff/{staff_id}', [StaffsController::class, 'staffView'])->name('staffs.staff');
-    Route::post('/supplier/confirm', [CustomersController::class, 'supplierConfirm'])->name('supplier.confirm');
+    // Route::post('/customer/confirm', [CustomersController::class, 'customerConfirm'])->name('customer.confirm');
     Route::post('/review/confirm', [ErrorController::class, 'reviewConfirm'])->name('review.confirm');
 
     Route::get('/logs/list', [LogsController::class, 'logsList'])->name('logs.list');

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('set_id'); 
             $table->string('product_id'); 
-            $table->string('supplier_id'); 
+            $table->string('customer_id'); 
             $table->decimal('nego_price', 10, 2);
             $table->string('added_by'); 
             $table->timestamps();

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SaleDiscount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Suppliers;
+use App\Models\Customers;
 use App\Models\Staffs;
 use App\Models\Documents;
 use App\Models\Address;
@@ -26,35 +26,35 @@ class ProfileController extends Controller
         public function profileView(Request $request)
         {
             $user = Auth::user();
-            $supplier = Suppliers::where('user_id', $user->user_id)->first(); 
-            $address  = Address::where('supplier_id', $supplier->supplier_id)->first();
-            $accStatus  = AccountStatus::where('supplier_id', $supplier->supplier_id)->first();
+            $customer = Customers::where('user_id', $user->user_id)->first(); 
+            $address  = Address::where('customer_id', $customer->customer_id)->first();
+            $accStatus  = AccountStatus::where('customer_id', $customer->customer_id)->first();
             $staffAgent = Staffs::where('staff_id', $accStatus->staff_id)->first();
-            $documents  = Documents::where('supplier_id', $supplier->supplier_id)->get();
+            $documents  = Documents::where('customer_id', $customer->customer_id)->get();
             $products   = Products::where('status', 'Listed')->get();
-            $productRequirements   = ProductRequirements::where('supplier_id', $supplier->supplier_id)->get();
+            $productRequirements   = ProductRequirements::where('customer_id', $customer->customer_id)->get();
   
-            $prices   = PriceHistory::where('supplier_id', $supplier->supplier_id)
+            $prices   = PriceHistory::where('customer_id', $customer->customer_id)
             ->orderBy('created_at', 'desc')
             ->get();
-            $activeSale   = ProductSales::where('supplier_id', $supplier->supplier_id)->first();
-            $delivery = DeliveryRequirements::where('supplier_id', $supplier->supplier_id)->first();
-            $prodSpecs   = ProductRequirements::where('supplier_id', $supplier->supplier_id)->get();
-            $representatives   = Representatives::where('supplier_id', $supplier->supplier_id)->get();
-            $signatories   = Signatories::where('supplier_id', $supplier->supplier_id)->get();
-            $account_status = AccountStatus::where('supplier_id', $supplier->supplier_id)->first();
-            $business   = Business::where('supplier_id', $supplier->supplier_id)->first();
+            $activeSale   = ProductSales::where('customer_id', $customer->customer_id)->first();
+            $delivery = DeliveryRequirements::where('customer_id', $customer->customer_id)->first();
+            $prodSpecs   = ProductRequirements::where('customer_id', $customer->customer_id)->get();
+            $representatives   = Representatives::where('customer_id', $customer->customer_id)->get();
+            $signatories   = Signatories::where('customer_id', $customer->customer_id)->get();
+            $account_status = AccountStatus::where('customer_id', $customer->customer_id)->first();
+            $business   = Business::where('customer_id', $customer->customer_id)->first();
 
-            $isTherePriceHistory = PriceHistory::where('supplier_id', $supplier->supplier_id)->exists();
+            $isTherePriceHistory = PriceHistory::where('customer_id', $customer->customer_id)->exists();
 
-            $prodSpecs   = ProductRequirements::where('supplier_id', $supplier->supplier_id)->get();
-            $sales = SaleDiscount::where('category', $supplier->category)->get();
-            // Get all product_ids for this supplier
-            $productIds = ProductRequirements::where('supplier_id', $supplier->supplier_id)
+            $prodSpecs   = ProductRequirements::where('customer_id', $customer->customer_id)->get();
+            $sales = SaleDiscount::where('category', $customer->category)->get();
+            // Get all product_ids for this customer
+            $productIds = ProductRequirements::where('customer_id', $customer->customer_id)
                 ->pluck('product_id');
 
             // Query all sale discounts that match category AND product_id
-            $salesHistos = SaleDiscount::where('category', $supplier->category)
+            $salesHistos = SaleDiscount::where('category', $customer->category)
                 ->whereIn('product_id', $productIds)
                 ->orderBy('created_at', 'desc')
             ->get();
@@ -64,7 +64,7 @@ class ProfileController extends Controller
 
             return view('profile.profile', [
                 'user' => $user,
-                'supplier' => $supplier,
+                'customer' => $customer,
                 'isTherePriceHistory' => $isTherePriceHistory,
                 'isThereSalesHistory' => $isThereSalesHistory,
                 'address' => $address,

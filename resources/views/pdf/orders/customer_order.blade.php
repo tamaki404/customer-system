@@ -96,7 +96,7 @@
             font-style: italic;
         }
         
-        .supplier-details {
+        .customer-details {
             margin-top: 10px;
             padding-top: 10px;
             border-top: 1px solid #ccc;
@@ -222,15 +222,15 @@
                 </div>
             </div>
         </div>
-        <div class="supplier-details">
+        <div class="customer-details">
             <div class="info-row">
-                <span class="info-label">Supplier:</span>
-                <span class="info-value"><strong>{{ $order->supplier->company_name }}</strong></span>
+                <span class="info-label">Customer:</span>
+                <span class="info-value"><strong>{{ $order->customer->company_name }}</strong></span>
             </div>
             <div class="contact-info">
-                Mobile: {{ $order->supplier->mobile }} | 
-                Tel: {{ $order->supplier->tele }} | 
-                Email: {{ $order->supplier->user->email_address }}
+                Mobile: {{ $order->customer->mobile }} | 
+                Tel: {{ $order->customer->tele }} | 
+                Email: {{ $order->customer->user->email_address }}
             </div>
         </div>
     </div>
