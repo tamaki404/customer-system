@@ -73,7 +73,6 @@ class CreditsController extends Controller
                     ->pluck('order_id');
 
                 $transactionHistory = OrderHistory::whereIn('order_id', $orderIds)
-                    ->whereIn('status', ['Verified', 'Accepted'])
                     ->orderBy('created_at', 'desc')
                     ->get();
 

@@ -268,16 +268,26 @@ class ReceiptController extends Controller
                     'entity'      => 'Receipts',
                     'entity_id'   => $receipt->id,
                 ]);
-
-                OrderHistory::create([
-                    'action_by' => Auth::user()->user_id,
-                    'order_id' => $request->order_id,
-                    'action_at' => now(),
-                    'history_id' => $history_id,
-                    'label' => 'Receipt',
-                    'amount' => $request->amount,
-                    'status' => $request->status,
-                ]);
+                if($request->status === 'Verified')
+                    OrderHistory::create([
+                        'action_by' => Auth::user()->user_id,
+                        'order_id' => $request->order_id,
+                        'action_at' => now(),
+                        'history_id' => $history_id,
+                        'label' => 'Receipt',
+                        'amount' => $request->amount,
+                        'status' => $request->status,
+                    ]);
+                elseif($request->status === 'Rejected')
+                    OrderHistory::create([
+                        'action_by' => Auth::user()->user_id,
+                        'order_id' => $request->order_id,
+                        'action_at' => now(),
+                        'history_id' => $history_id,
+                        'label' => 'Receipt',
+                        'amount' => 0,
+                        'status' => $request->status,
+                    ]);
 
                 DB::commit();
 

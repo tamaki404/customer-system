@@ -163,23 +163,23 @@
                                                 <th>#</th>
                                                 <th>Date</th>
                                                 <th>Order ID</th>
-                                                <th>Label</th>
                                                 <th>Status</th>
                                                 <th>Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody>                                
                                             @foreach ($transactionHistory as $transaction)
-                                                <tr>
+                                                <tr onclick="window.location.href='{{ route('orders.order', ['order_id' => $transaction->order_id]) }}'">
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ \Carbon\Carbon::parse($transaction->action_at)->format('M d, Y') }}</td>
                                                     <td>{{ $transaction->order_id }}</td>
-                                                    <td>{{ $transaction->label }}</td>
                                                     <td>{{ $transaction->status }}</td>
-                                                    @if ($transaction->label === 'Receipt')
+                                                    @if ($transaction->label === 'Receipt' && $transaction->status === 'Verified' )
                                                        <td style="color: green">₱ +{{ number_format($transaction->amount, 2) }}</td>
                                                     @elseif ($transaction->label === 'Order')
                                                        <td style="color: #dc3545">₱ -{{ number_format($transaction->amount, 2) }}</td>
+                                                    @elseif ($transaction->label === 'Receipt' || $transaction->status === 'Rejected' )
+                                                       <td style="color: #666">Rejected</td>
                                                     @endif
                                                   
                                          
@@ -264,8 +264,6 @@
                         
                             </div>
                         </div>
-                        
-
 
                     </div>
 
