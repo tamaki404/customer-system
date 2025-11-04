@@ -60,4 +60,11 @@ class DeliveryItems extends Model
     {
         return $this->status === 'Delivered';
     }
+
+    public function productSetting()
+    {
+        return $this->belongsTo(ProductSetting::class, 'product_id', 'product_id')
+            ->whereColumn('customer_id', 'customer_id'); // match by customer
+    }
+
 }

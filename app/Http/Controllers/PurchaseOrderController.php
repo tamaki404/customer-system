@@ -162,7 +162,7 @@ public function purchaseOrderlist(Request $request)
         'usedCredit' => $usedCredit,
         'maxAllowedCredit' => $maxAllowedCredit,
         'availableCredit' => $availableCredit,
-        'exceedLimit' => $maxAllowedCredit, // Keep for backward compatibility if used elsewhere
+        'exceedLimit' => $maxAllowedCredit, 
     ]);
 }
 

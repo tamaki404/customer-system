@@ -12,9 +12,6 @@ class ProductSetting extends Model
         'customer_id',
         'nego_price',
         'added_by',
-
-        
-
     ];
 
     public function product()

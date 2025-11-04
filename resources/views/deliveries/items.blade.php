@@ -50,6 +50,7 @@
            <p>Status: <span>{{$delivery->status}}</span></p>
            <p>Delivery ID: <span>{{$delivery->delivery_id}}</span></p>
            <p>Delivered at: <span>{{$delivery->delivered_at}}</span></p>
+           
            @if($delivery->status === "Delivered")
                 <p>Delivery date: <span>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format(format: 'F j, Y') }}</span></p>
                 {{-- ACTION BUTTONS --}}
@@ -71,14 +72,18 @@
                                             class="btn-transition">
                                             View POD
                                     </button>
+
                             @else
                                     <span class="text-muted">No POD</span>
                             @endif
+
                         
                     @else
           
                     @endif
                 </td>
+                <p>Total order: <strong>₱{{ number_format($receivedTotal, 2) }}</strong></p>
+
             @elseif($delivery->status === "Scheduled")
                 @if (Auth()->user()->role === "Customer" && $delivery->status === "Scheduled")
                     <button 
@@ -284,7 +289,9 @@
                                 <th>Received Qty</th>
                                 <th>Variance</th>
                                 <th>Status</th>
+                                <th>Nego price</th>
 
+                                <th>Total Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -360,53 +367,13 @@
                                     </td>
 
                                     <td>{{ ucfirst($item->status ?? 'Pending') }}</td>
-
-                                    {{-- RETURN SLIP BUTTON / DISPLAY --}}
-                                    {{-- <td>
-                                        @if ($hasVariance)
-                                            <button type="button"
-                                                    class="btn btn-sm btn-danger"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#returnSlipModal"
-                                                    data-item-id="{{ $item->delivery_item_id }}">
-                                                Return Slip
-                                            </button>
-                                        @else
-                                            <span style="color: #6c757d;">—</span>
-                                        @endif
-                                    </td> --}}
-
-
-
-
-                                    {{-- ACTION BUTTONS --}}
-                                    {{-- <td>
-                                        @if (Auth()->user()->role !== "Customer")
-                                            @if($delivery->status === "Scheduled")
-                                                <button type="button" 
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#pdfModal" 
-                                                    data-url="{{ route('orders.delivery.pdf', $delivery->delivery_id) }}"
-                                                    class="btn-transition">
-                                                        Print DR
-                                                </button>  
-                                            @elseif($delivery->status === "Delivered")
-                                                @if($delivery->pod_file)
-                                                    <button type="button" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#viewPOD{{ $delivery->delivery_id }}" 
-                                                            class="btn-transition">
-                                                            View POD
-                                                    </button>
-                                                @else
-                                                    <span class="text-muted">No POD</span>
-                                                @endif
-                                            @endif
-                                        @else
-
-                                        @endif
+                                    <td>
+                                        ₱{{ number_format($item->productSetting->nego_price, 2) }}
                                     </td>
-                                </tr> --}}
+                                    <td>
+                                        ₱{{ number_format($item->received_kilos * $item->productSetting->nego_price, 2) }}
+                                    </td>
+
                                     @if($delivery->pod_file)
                                         @php
                                             $podData = 'data:' . ($delivery->pod_mime ?? 'application/pdf') . ';base64,' . base64_encode($delivery->pod_file);

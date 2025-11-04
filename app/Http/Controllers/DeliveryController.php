@@ -12,7 +12,7 @@ use App\Models\Delivery;
 use App\Models\DeliveryItems;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Auth;
-use App\Models\OrderHistory;
+use App\Models\ProductSetting;
 
 class DeliveryController extends Controller
 {
@@ -200,24 +200,43 @@ class DeliveryController extends Controller
             return back()->with('success', 'Delivery successfully confirmed with variance recorded.');
         }
 
-        public function deliveryView($delivery_id, Request $request)
-        {
-            $user = Auth::user();
-            $delivery = Delivery::where('delivery_id', $delivery_id)->first();
-            $item = DeliveryItems::where('delivery_id', $delivery_id)->first();
-            $items = DeliveryItems::where('delivery_id', $delivery_id) 
-                ->orderBy('created_at', 'asc')
-                ->get();
+public function deliveryView($delivery_id, Request $request)
+{
+    $user = Auth::user();
+    $delivery = Delivery::where('delivery_id', $delivery_id)->first();
 
-            return view('deliveries.items', [
-                'user' => $user,
-                'items' => $items,
-                'item' => $item,
+    // Get all DELIVERED items for this delivery
+    $items = DeliveryItems::where('delivery_id', $delivery_id)
+        ->where('status', 'Delivered')
+        ->with('productSetting') // eager load (optional but faster)
+        ->orderBy('created_at', 'asc')
+        ->get();
 
-                'delivery' => $delivery,
+    $receivedTotal = 0;
 
-            ]);
+    foreach ($items as $item) {
+
+        // Fetch negotiated price by CUSTOMER + PRODUCT
+        $productSetting = ProductSetting::where('product_id', $item->product_id)
+            ->where('customer_id', $item->customer_id)
+            ->first();
+
+        if ($productSetting) {
+            // Received value = received kilos × negotiated unit price
+            $lineTotal = $item->received_kilos * $productSetting->nego_price;
+            $receivedTotal += $lineTotal;
         }
+    }
+
+    return view('deliveries.items', [
+        'user' => $user,
+        'items' => $items,
+        'delivery' => $delivery,
+        'receivedTotal' => $receivedTotal
+    ]);
+}
+
+
 
         public function deliveryList(Request $request)
         {
