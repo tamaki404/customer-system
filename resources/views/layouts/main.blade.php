@@ -237,6 +237,12 @@
 
 
                             @if (Auth()->user()->role === 'Customer' &&  !empty($user->acc_status->staff_id))
+                                {{-- purchase request --}}
+                                    <a class="nav-item{{ $currentRoute == 'pr.list' ? ' active' : '' }}" href="{{ route('pr.list') }}">
+                                        <span class="material-symbols-outlined">diamond_shine</span>
+                                        <p>Purchase request</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
                                 {{-- Purchase Orders --}}
                                 @if(!empty($permissions['PO']) && $permissions['PO'])
                                     <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">

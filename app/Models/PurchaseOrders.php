@@ -11,6 +11,7 @@ class PurchaseOrders extends Model
         'customer_id',
         'status',
         'notes',
+        'preffered_days',
         'total_amount',
         'staff_id',
         'placed_at',

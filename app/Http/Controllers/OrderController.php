@@ -419,15 +419,15 @@ class OrderController extends Controller
                     'description' => "Staff '{$user_id}' {$request->status} order '{$request->order_id}'",
                 ]);
 
-                OrderHistory::create([
-                    'action_by' => Auth::user()->user_id,
-                    'order_id' => $request->order_id,
-                    'action_at' => now(),
-                    'history_id' => $history_id,
-                    'label' => 'Order',
-                    'amount' => $order->total_amount,
-                    'status' => $request->status,
-                ]);
+                // OrderHistory::create([
+                //     'action_by' => Auth::user()->user_id,
+                //     'order_id' => $request->order_id,
+                //     'action_at' => now(),
+                //     'history_id' => $history_id,
+                //     'label' => 'Order',
+                //     'amount' => $order->total_amount,
+                //     'status' => $request->status,
+                // ]);
                 
                 DB::commit();
                 

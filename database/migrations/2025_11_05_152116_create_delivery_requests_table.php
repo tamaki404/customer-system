@@ -1,0 +1,47 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('delivery_requests', function (Blueprint $table) {
+            $table->id();
+            $table->string('po_id');  
+            $table->string('delivery_id');              
+            $table->string('customer_id');           
+            $table->date('delivery_date');     
+            $table->timestamp('delivered_date')->nullable();
+            $table->enum('status', ['Scheduled', 'Delivered', 'Cancelled'])->default('Scheduled');
+            $table->string('action_by', 255)->required();
+            $table->string('action_at', 255)->required();
+            $table->string('feedback')->nullable();
+            $table->timestamps();
+        });
+        DB::statement('ALTER TABLE delivery_requests ADD pod_file MEDIUMBLOB NULL');
+
+        Schema::create('delivery_item_requests', function (Blueprint $table) {
+            $table->id();
+            $table->string('delivery_id'); 
+            $table->string('delivery_item_id')->unique(); 
+            $table->string('customer_id');                         
+            $table->string('product_id');                 
+            $table->string('set_id')->nullable();
+            $table->decimal('planned_kilos', 10, 2)->nullable();
+            $table->decimal('received_kilos', 10, 2)->nullable();
+            $table->integer('planned_heads')->nullable();
+            $table->integer('received_heads')->nullable();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('purchase_requests');
+    }
+};

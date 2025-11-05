@@ -24,6 +24,9 @@ use App\Http\Controllers\{
     DeliveryController,
     SaleDiscountController,
     ErrorController,
+
+
+    PurchaseRequestController,
     
 
 };
@@ -139,6 +142,86 @@ Route::middleware(['auth', 'role:Customer', 'check.customer'])->group(function (
 });
 
 Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | !! - PR REQ
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/requests/list', [PurchaseRequestController::class, 'list'])
+        ->name('pr.list');
+
+    Route::post('/requests/create/purchase', [PurchaseRequestController::class, 'create'])
+        ->name('pr.create');
+
+Route::middleware(['auth'])->group(function () {
+    
+    // Purchase Request Routes
+    Route::prefix('purchase-requests')->name('pr.')->group(function () {
+        
+        // List all purchase requests
+        Route::get('/', [PurchaseRequestController::class, 'list'])
+            ->name('list');
+        
+        // Create new purchase request
+        Route::post('/create', [PurchaseRequestController::class, 'create'])
+            ->name('create')
+            ->middleware('role:Customer'); // Only customers can create
+        
+        // View single purchase request details
+        Route::get('/{poId}', [PurchaseRequestController::class, 'show'])
+            ->name('show');
+        
+        // Update purchase request status (for staff)
+        Route::patch('/{poId}/status', [PurchaseRequestController::class, 'updateStatus'])
+            ->name('update.status')
+            ->middleware('role:Staff');
+        
+        // Cancel purchase request (for customers)
+        Route::patch('/{poId}/cancel', [PurchaseRequestController::class, 'cancel'])
+            ->name('cancel')
+            ->middleware('role:Customer');
+    });
+    
+    // Delivery Request Routes
+    Route::prefix('delivery-requests')->name('delivery.')->group(function () {
+        
+        // List all delivery requests
+        Route::get('/', [PurchaseRequestController::class, 'list'])
+            ->name('list');
+        
+        // View single delivery request
+        Route::get('/{deliveryId}', [PurchaseRequestController::class, 'show'])
+            ->name('show');
+        
+        // Update delivery status
+        Route::patch('/{deliveryId}/status', [PurchaseRequestController::class, 'updateStatus'])
+            ->name('update.status')
+            ->middleware('role:Staff');
+        
+        // Mark as delivered
+        Route::post('/{deliveryId}/deliver', [PurchaseRequestController::class, 'markAsDelivered'])
+            ->name('deliver')
+            ->middleware('role:Staff');
+        
+        // Upload POD (Proof of Delivery)
+        Route::post('/{deliveryId}/pod', [PurchaseRequestController::class, 'uploadPod'])
+            ->name('upload.pod')
+            ->middleware('role:Staff');
+        
+        // Update received quantities
+        Route::patch('/{deliveryId}/items', [PurchaseRequestController::class, 'updateItems'])
+            ->name('update.items')
+            ->middleware('role:Staff');
+    });
+    
+});
+
+
+
+
+
     /*
     |--------------------------------------------------------------------------
     | Dashboard (with Representative Permission Check)
@@ -241,11 +324,11 @@ Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
     // Customers & Staffs
     Route::get('/customers/list', [CustomersController::class, 'customersList'])->name('customers.list');
-    Route::get('/customers/list/customer/{customer_id}', [UserController::class, 'customerView'])->name('customers.customer');
+    Route::get('/customers/list/customer/{customer_id}', [CustomersController::class, 'customerView'])->name('customers.customer');
 
     Route::get('/staffs/list', [StaffsController::class, 'staffsList'])->name(name: 'staffs.list');
     Route::get('/staffs/list/staff/{staff_id}', [StaffsController::class, 'staffView'])->name('staffs.staff');
-    // Route::post('/customer/confirm', [CustomersController::class, 'customerConfirm'])->name('customer.confirm');
+    Route::post('/customer/confirm', [CustomersController::class, 'customerConfirm'])->name('customer.confirm');
     Route::post('/review/confirm', [ErrorController::class, 'reviewConfirm'])->name('review.confirm');
 
     Route::get('/logs/list', [LogsController::class, 'logsList'])->name('logs.list');

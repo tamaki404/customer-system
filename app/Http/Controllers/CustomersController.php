@@ -314,7 +314,6 @@ class CustomersController extends Controller
                 'user' => $user,
                 'customer' => $customer,
                 'documentCount' => $documentCount,
-                'customer' => $customer,
                 'documents' => $documents,
                 'staffs' => $staffs,
                 'staffAgent' => $staffAgent,
