@@ -281,6 +281,7 @@
                                                                 </span>
                                                             </button>
                                                             <ul class="dropdown-menu">
+                                                                <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('orders.order', ['order_id' => $transaction->order_id]) }}"><span class="material-symbols-outlined">package_2</span>Go to Order</a></li>
                                                                 @if ($transaction->label === 'Order')
                                                                     @if($transaction->delivery)
                                                                         <li>

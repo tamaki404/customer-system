@@ -23,7 +23,8 @@ use App\Http\Controllers\{
     GlobalCeilingController,
     DeliveryController,
     SaleDiscountController,
-    ErrorController
+    ErrorController,
+    
 
 };
 
@@ -239,7 +240,7 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
 Route::middleware(['auth', 'role:Admin|Staff'])->group(function () {
 
     // Customers & Staffs
-    Route::get('/customers/list', [UserController::class, 'customersList'])->name('customers.list');
+    Route::get('/customers/list', [CustomersController::class, 'customersList'])->name('customers.list');
     Route::get('/customers/list/customer/{customer_id}', [UserController::class, 'customerView'])->name('customers.customer');
 
     Route::get('/staffs/list', [StaffsController::class, 'staffsList'])->name(name: 'staffs.list');

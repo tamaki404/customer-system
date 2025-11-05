@@ -14,58 +14,53 @@ use Illuminate\Support\Facades\DB;
 
 class CreditsController extends Controller
 {
-        public function creditsList(Request $request)
-        {
-            $user = Auth::user();
-            $customer = Customers::where('user_id', $user->user_id)->first();
-            $orders = collect(); 
-
-            if ($user->role !== "Customer") {
-                $orders = Credits::all();
-                $receipts = Receipts::orderBy('created_at', 'desc')->get();
-
-            } 
-            elseif ($user->role === "Customer") {
-                $credit = Credits::where('user_id', $user->user_id)->first();
-                $usedCredit = Orders::where('customer_id', $customer->customer_id)
-                    ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
-                    ->selectRaw('
-                        SUM(
-                            orders.total_amount - COALESCE(
-                                (SELECT SUM(r.total_amount) 
-                                FROM receipts r 
-                                WHERE r.order_id = orders.order_id 
-                                AND r.status = "Verified"), 0
-                            )
-                        ) as outstanding_balance
-                    ')
-                    ->value('outstanding_balance');
-
-                $availableCredit = $credit->credit_limit - $usedCredit;
-                $oustandingPayments = Orders::where('orders.customer_id', $customer->customer_id)
-                    ->whereIn('orders.payment_status', ['Unpaid', 'Partially settled'])
-                    ->select('orders.*')
-                    ->selectSub(function ($query) {
-                        $query->from('receipts')
-                            ->selectRaw('COALESCE(SUM(total_amount), 0)')
-                            ->whereColumn('receipts.order_id', 'orders.order_id')
-                            ->where('receipts.status', 'Verified');
-                    }, 'verified_receipts_total')
-                    ->whereRaw('orders.total_amount > (
-                        select COALESCE(SUM(total_amount), 0)
-                        from receipts
-                        where receipts.order_id = orders.order_id
-                        and receipts.status = "Verified"
-                    )') 
-                    ->orderBy('created_at', 'desc')
-                    ->get()
-                    ->map(function ($order) {
-                        $order->outstanding_balance = $order->total_amount - $order->verified_receipts_total;
-                        return $order;
-                    });
-
-
-                $unpaidOrders = Orders::where('customer_id', $customer->customer_id)
+    public function creditsList(Request $request)
+    {
+        $user = Auth::user();
+        $customer = Customers::where('user_id', $user->user_id)->first();
+        $orders = collect(); 
+        if ($user->role !== "Customer") {
+            $orders = Credits::all();
+            $receipts = Receipts::orderBy('created_at', 'desc')->get();
+        } 
+        elseif ($user->role === "Customer") {
+            $credit = Credits::where('user_id', $user->user_id)->first();
+            $usedCredit = Orders::where('customer_id', $customer->customer_id)
+                ->whereIn('payment_status', ['Unpaid', 'Partially Settled'])
+                ->selectRaw('
+                    SUM(
+                        orders.total_amount - COALESCE(
+                            (SELECT SUM(r.total_amount) 
+                            FROM receipts r 
+                            WHERE r.order_id = orders.order_id 
+                            AND r.status = "Verified"), 0
+                        )
+                    ) as outstanding_balance
+                ')
+                ->value('outstanding_balance');
+            $availableCredit = $credit->credit_limit - $usedCredit;
+            $oustandingPayments = Orders::where('orders.customer_id', $customer->customer_id)
+                ->whereIn('orders.payment_status', ['Unpaid', 'Partially settled', 'Fully paid'])
+                ->select('orders.*')
+                ->selectSub(function ($query) {
+                    $query->from('receipts')
+                        ->selectRaw('COALESCE(SUM(total_amount), 0)')
+                        ->whereColumn('receipts.order_id', 'orders.order_id')
+                        ->where('receipts.status', 'Verified');
+                }, 'verified_receipts_total')
+                ->whereRaw('orders.total_amount > (
+                    select COALESCE(SUM(total_amount), 0)
+                    from receipts
+                    where receipts.order_id = orders.order_id
+                    and receipts.status = "Verified"
+                )') 
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function ($order) {
+                    $order->outstanding_balance = $order->total_amount - $order->verified_receipts_total;
+                    return $order;
+                });
+            $unpaidOrders = Orders::where('customer_id', $customer->customer_id)
                     ->where('payment_status', '!=', 'Fully paid')
                     ->get();
 
@@ -92,21 +87,7 @@ class CreditsController extends Controller
                 'customer' => $customer,
 
             ]);
-        }
-
-        // public function creditsView($credit_id, Request $request)
-        // {
-        //     $user = Auth::user();
-        //     $credits = Credits::all(); 
-
-        //     return view('credits.credit', [
-        //         'user' => $user,
-        //         'credits' => $credits,
-
-        //     ]);
-        
-        // }
-    
+    }
 
 }
 

@@ -852,96 +852,96 @@ class UserController extends Controller
         }
     }
 
-public function signin(Request $request) 
-{
-    $credentials = $request->validate([
-        'email_address' => 'required|email',
-        'password' => 'required|string|min:8',
-    ]);
+    public function signin(Request $request) 
+    {
+        $credentials = $request->validate([
+            'email_address' => 'required|email',
+            'password' => 'required|string|min:8',
+        ]);
 
-    $user = User::where('email_address', $credentials['email_address'])->first();
+        $user = User::where('email_address', $credentials['email_address'])->first();
 
-    if (!$user) {
-        return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
+        if (!$user) {
+            return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
+        }
+
+        // Determine which password column to use
+        $passwordColumn = match ($user->role) {
+            'Customer', 'Admin', 'Staff' => 'password',
+            default => 'gate_password',
+        };
+
+        if (!Hash::check($credentials['password'], $user->$passwordColumn)) {
+            return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
+        }
+
+        // Staff verification
+        if ($user->role === 'Staff' || $user->role === 'Admin') {
+            $staff = Staffs::where('user_id', $user->user_id)->first();
+            if (!$staff) {
+                return back()->withErrors(['loginError' => 'Staff record not found.'])->withInput();
+            }
+            if (is_null($staff->email_verified_at)) {
+                return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
+            }
+            if (strtolower($staff->status) !== 'accepted') {
+                return back()->withErrors(['loginError' => 'Your staff account is not active yet.'])->withInput();
+            }
+        }
+
+        // Non-staff verification
+        if ($user->role === 'Customer') {
+            $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
+
+            if (!$accountStatus) {
+                return back()->withErrors(['loginError' => 'Account status not found.'])->withInput();
+            }
+
+            if (is_null($accountStatus->email_verified_at)) {
+                return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
+            }
+
+            if (strtolower($accountStatus->account_status) === 'under review') {
+                \Log::info('Declined login attempt', [
+                    'email' => $user->email_address,
+                    'user_id' => $user->user_id,
+                    'timestamp' => now()->toDateTimeString(),
+                ]);
+
+                return back()->withErrors(['loginError' => 'Your account is under review, kindly wait for an email for your status.'])->withInput();
+            }
+
+            //  Handle declined accounts (no login)
+            if (strtolower($accountStatus->account_status) === 'declined') {
+                \Log::info('Declined login attempt', [
+                    'email' => $user->email_address,
+                    'user_id' => $user->user_id,
+                    'timestamp' => now()->toDateTimeString(),
+                ]);
+
+                // Save to session before redirect
+                session()->put('user_id', $user->user_id);
+                session()->put('user_email', $user->email_address);
+
+                return redirect()->route('error.declined');
+            }
+
+            // Pending / other statuses
+            if (strtolower($accountStatus->account_status) !== 'accepted') {
+                return back()->withErrors(['loginError' => 'Your account is not active yet.'])->withInput();
+            }
+        }
+
+        //  Only log in after all checks pass
+        Auth::login($user, false);
+        $request->session()->regenerate();
+
+        // Redirect based on role
+        return match ($user->role) {
+            'Customer' => redirect()->route('choose.accounts'),
+            default => redirect()->route('dashboard.view'),
+        };
     }
-
-    // Determine which password column to use
-    $passwordColumn = match ($user->role) {
-        'Customer', 'Admin', 'Staff' => 'password',
-        default => 'gate_password',
-    };
-
-    if (!Hash::check($credentials['password'], $user->$passwordColumn)) {
-        return back()->withErrors(['loginError' => 'Invalid credentials.'])->withInput();
-    }
-
-    // Staff verification
-    if ($user->role === 'Staff' || $user->role === 'Admin') {
-        $staff = Staffs::where('user_id', $user->user_id)->first();
-        if (!$staff) {
-            return back()->withErrors(['loginError' => 'Staff record not found.'])->withInput();
-        }
-        if (is_null($staff->email_verified_at)) {
-            return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
-        }
-        if (strtolower($staff->status) !== 'accepted') {
-            return back()->withErrors(['loginError' => 'Your staff account is not active yet.'])->withInput();
-        }
-    }
-
-    // Non-staff verification
-    if ($user->role === 'Customer') {
-        $accountStatus = AccountStatus::where('user_id', $user->user_id)->first();
-
-        if (!$accountStatus) {
-            return back()->withErrors(['loginError' => 'Account status not found.'])->withInput();
-        }
-
-        if (is_null($accountStatus->email_verified_at)) {
-            return back()->withErrors(['loginError' => 'Please verify your email before signing in.'])->withInput();
-        }
-
-        if (strtolower($accountStatus->account_status) === 'under review') {
-            \Log::info('Declined login attempt', [
-                'email' => $user->email_address,
-                'user_id' => $user->user_id,
-                'timestamp' => now()->toDateTimeString(),
-            ]);
-
-            return back()->withErrors(['loginError' => 'Your account is under review, kindly wait for an email for your status.'])->withInput();
-        }
-
-        //  Handle declined accounts (no login)
-        if (strtolower($accountStatus->account_status) === 'declined') {
-            \Log::info('Declined login attempt', [
-                'email' => $user->email_address,
-                'user_id' => $user->user_id,
-                'timestamp' => now()->toDateTimeString(),
-            ]);
-
-            // Save to session before redirect
-            session()->put('user_id', $user->user_id);
-            session()->put('user_email', $user->email_address);
-
-            return redirect()->route('error.declined');
-        }
-
-        // Pending / other statuses
-        if (strtolower($accountStatus->account_status) !== 'accepted') {
-            return back()->withErrors(['loginError' => 'Your account is not active yet.'])->withInput();
-        }
-    }
-
-    //  Only log in after all checks pass
-    Auth::login($user, false);
-    $request->session()->regenerate();
-
-    // Redirect based on role
-    return match ($user->role) {
-        'Customer' => redirect()->route('choose.accounts'),
-        default => redirect()->route('dashboard.view'),
-    };
-}
 
 
 }

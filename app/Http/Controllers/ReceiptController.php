@@ -119,8 +119,6 @@ class ReceiptController extends Controller
             return view('receipts.list', [
                 'user' => $user,
                 'receipts' => $receipts,
-
-
             ]);
         }
         public function orderReceipts($order_id, Request $request)
@@ -206,11 +204,7 @@ class ReceiptController extends Controller
                 DB::beginTransaction();
 
                 $receipt = Receipts::where('receipt_id', $receipt_id)->firstOrFail();
-                $updated_at = [
-                    'updated_at' => now(),
-                ];
-                $receipt->update($updated_at);
-
+                $receipt->update(['updated_at' => now()]);
 
                 // Check if already processed
                 if (in_array($receipt->status, ['Verified', 'Rejected'])) {
@@ -238,8 +232,8 @@ class ReceiptController extends Controller
 
                 $updateData = [
                     'status'     => $request->status,
-                    'action_by'  => Auth::user()->user_id,   // who processed it
-                    'action_at'  => now(),                   // when it was processed
+                    'action_by'  => Auth::user()->user_id,
+                    'action_at'  => now(),
                 ];
 
                 if ($request->status === 'Verified') {
@@ -249,6 +243,28 @@ class ReceiptController extends Controller
                 }
 
                 $receipt->update($updateData);
+
+                // ──────────────────────────────────────────────
+                // ✅ UPDATE ORDER PAYMENT STATUS BASED ON RECEIPTS
+                // ──────────────────────────────────────────────
+                $order = Orders::where('order_id', $request->order_id)->first();
+
+                $totalPaid = Receipts::where('order_id', $request->order_id)
+                    ->where('status', 'Verified')
+                    ->sum('total_amount');
+
+                if ($totalPaid <= 0) {
+                    $order->payment_status = 'Unpaid';
+                } elseif ($totalPaid < $order->total_amount) {
+                    $order->payment_status = 'Partially settled';
+                } elseif ($totalPaid == $order->total_amount) {
+                    $order->payment_status = 'Fully Paid';
+                } elseif ($totalPaid > $order->total_amount) {
+                    $order->payment_status = 'Overpaid';
+                }
+
+                $order->save();
+                // ──────────────────────────────────────────────
 
                 // Logging
                 $date = now()->format('Ymd');
@@ -269,6 +285,7 @@ class ReceiptController extends Controller
                     'entity'      => 'Receipts',
                     'entity_id'   => $receipt->id,
                 ]);
+
                 if($request->status === 'Verified')
                     OrderHistory::create([
                         'action_by' => Auth::user()->user_id,
@@ -315,5 +332,6 @@ class ReceiptController extends Controller
                     ->withInput();
             }
         }
+
 
 };

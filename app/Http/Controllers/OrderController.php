@@ -224,7 +224,7 @@ class OrderController extends Controller
             if ($verifiedPaidAmount >= $order->total_amount) {
                 $paymentStatus = 'Paid';
             } elseif ($verifiedPaidAmount > 0 && $verifiedPaidAmount < $order->total_amount) {
-                $paymentStatus = 'Partially Paid';
+                $paymentStatus = 'Partially settled';
             }
 
             $payments =Receipts::where('order_id', $order_id)
