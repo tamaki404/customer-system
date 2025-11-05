@@ -175,24 +175,39 @@
                                                 {{-- uvire receipt modal --}}
                                                 <div class="modal fade" id="view-receipt-modal-{{ $transaction->receipt_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
                                                     <div class="modal-dialog">
-                                                        <div class="modal-content">
+                                                        <div class="modal-content" >
                                                             @csrf
                                                             <div class="modal-header">
                                                                 <p class="modal-title" id="requestActionLabel">Receipt #{{  $transaction->receipt_id  }}</p>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
-                                                            <div class="modal-body">
+                                                            <div class="modal-body" style="height: 600px; overflow: auto; display: flex; flex-direction: column;">
                                                                 <p class="note-notify">
                                                                     <span class="material-symbols-outlined"> info </span>
                                                                     <span> Make sure image selected is 2MB or less, scanned image is recommended.</span>
                                                                 </p>
                                                                 <div class="modal-option-groups">
-                                                                    @php
-                                                                        $imgSrc = $transaction->receipt && $transaction->receipt->image
-                                                                            ? 'data:' . $transaction->receipt->image_mime_type . ';base64,' . base64_encode($transaction->receipt->image)
-                                                                            : asset('assets/default-company-logo.png');
-                                                                    @endphp
-                                                                    <img src="{{ $imgSrc }}" alt="Receipt image">
+                                                                    @if ($transaction->receipt)
+                                                                        <p style="display:flex; flex-direction: row; justify-content: space-between;">
+                                                                            <span style="font-size: 13px">{{ $transaction->receipt->status }}</span>     
+                                                                            <span style="font-size: 13px; color: #666;">Updated at {{ \Carbon\Carbon::parse($transaction->receipt->action_at)->format('F j, Y') }}</span>
+                                                                        </p>
+                                                                        <button class="collection-btn" onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $transaction->order_id]) }}'" style="border-radius: 5px; min-width: 150px; max-width: 180px;">
+                                                                            <span class="material-symbols-outlined" style="width:auto">
+                                                                            grain
+                                                                            </span>
+                                                                            Receipt collection
+                                                                        </button> 
+
+                                                                        @php
+                                                                            $imgSrc = $transaction->receipt && $transaction->receipt->image
+                                                                                ? 'data:' . $transaction->receipt->image_mime_type . ';base64,' . base64_encode($transaction->receipt->image)
+                                                                                : asset('assets/default-company-logo.png');
+                                                                        @endphp
+
+                                                                        <img src="{{ $imgSrc }}" alt="Receipt image" style="height: 70%; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; border-radius: 5px">
+                                                                    @endif
+
 
                                                                     {{-- <div class="document-card text-center" style="width: 220px;">
                                                                         <div class="card shadow-sm border-0 rounded-3 overflow-hidden" style="cursor: pointer; height: 300px;"
@@ -238,6 +253,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="modal-footer">
+                                                                <button type="button" class="btn btn-warning" data-bs-dismiss="modal" style="display: flex; flex-direction: row; gap: 5px; align-items: center; font-size: 13px;"><span class="material-symbols-outlined" style="font-size: 13px">picture_as_pdf</span>Pdf viewer</button>
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                             </div>
                                                         </div>
