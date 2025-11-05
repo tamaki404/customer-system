@@ -287,10 +287,6 @@ class DeliveryController extends Controller
             ]);
         }
 
-
-
-
-
         public function deliveryList(Request $request)
         {
             $today = Carbon::today();

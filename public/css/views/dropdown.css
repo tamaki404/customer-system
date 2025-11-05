@@ -1,0 +1,35 @@
+.dropdown button{
+    padding: 5px;
+    border-radius: 99999px;
+    border: none;
+    color: #333;
+    align-items: center;
+    display: flex;
+    gap: 5px;
+    background-color: #f2f2f2;
+}
+.dropdown button:hover{
+    background-color: #dfdede;
+    
+
+}
+.dropdown button:focus,
+.dropdown button:active{
+    background-color: #dfdede;
+    
+
+}
+.dropdown button span{
+    font-size: 15px;
+    color: #333;
+}
+.dropdown-menu li a span{
+    font-size: 13px;
+}
+.dropdown-menu li a{
+    font-size: 13px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}

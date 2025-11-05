@@ -3,9 +3,8 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/views/customer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/views/dropdown.css') }}">
 @endpush
-
-
 
 @section('content')
 
@@ -32,6 +31,8 @@
         </div>
     @endif
 
+
+        {{-- upload receipt modal --}}
         <div class="modal fade" id="add-receipt-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <form class="modal-content"  method="POST" action="{{ route('receipt.create') }}"  enctype="multipart/form-data">
@@ -85,6 +86,7 @@
                 </form>
             </div>
         </div>
+
 
         <div class="content-bg" >
                 <div class="content-header">
@@ -165,11 +167,57 @@
                                                 <th>Order ID</th>
                                                 <th>Status</th>
                                                 <th>Amount</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>                                
                                             @foreach ($transactionHistory as $transaction)
-                                                <tr onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $transaction->order_id]) }}'">
+                                                {{-- uvire receipt modal --}}
+                                                    {{-- <div class="modal fade" id="view-receipt-modal-{{ $transaction->receipt->receipt_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                @csrf
+                                                            
+                                                                <div class="modal-header">
+                                                                    <p class="modal-title" id="requestActionLabel">Receipt</p>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                
+                                                                <div class="modal-body">
+                                                                    <p class="note-notify">
+                                                                        <span class="material-symbols-outlined"> info </span>
+                                                                        <span> Make sure image selected is 2MB or less, scanned image is recommended.</span>
+
+                                                                    </p>
+
+                                                                    <div class="modal-option-groups">
+                                                                        <div class="form-group">
+                                                                            <p><span class="req-asterisk">*</span>Unpaid orders</p>
+                                                                        
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                                <p><span class="req-asterisk">*</span>Upload receipt image</p>
+                                                                                <input type="file" name="image" id="image" required accept="image/*">
+                                                                                <div id="file-preview" style="margin-top:10px;"></div>
+                                                                                <div id="file-error" style="color:#dc3545; font-size:13px; margin-top:5px;"></div>
+                                                                        </div>
+                                                                        <input type="hidden" name="status" value="Pending">
+
+                                                                    </div>
+                                                    
+
+                                                                </div>
+                                                                
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="submit" class="btn btn-primary" id="add-staff-submit">Submit receipt</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div> --}}
+                                               
+                                                {{-- <tr onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $transaction->order_id]) }}'"> --}}
+                                                <tr>
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ \Carbon\Carbon::parse($transaction->action_at)->format('M d, Y') }}</td>
                                                     <td>{{ $transaction->order_id }}</td>
@@ -181,8 +229,32 @@
                                                     @elseif ($transaction->label === 'Receipt' || $transaction->status === 'Rejected' )
                                                        <td style="color: #666">Rejected</td>
                                                     @endif
-                                                  
-                                         
+                                                    <td>
+                                                        <div class="dropdown" style="">
+                                                            <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px; ">
+                                                                <span class="material-symbols-outlined">
+                                                                expand_circle_down
+                                                                </span>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                @if ($transaction->label === 'Order')
+                                                                    @if($transaction->delivery)
+                                                                        <li>
+                                                                            <a class="dropdown-item"
+                                                                            href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}">
+                                                                                <span class="material-symbols-outlined">orders</span>
+                                                                                Go to Delivery
+                                                                            </a>
+                                                                        </li>
+                                                                    @endif
+
+                                                                @elseif ($transaction->label === 'Receipt')
+                                                                    {{-- <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#add-receipt-modal" href="{{ route('receipts.receipt', $transaction->receipt->receipt_id) }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li> --}}
+                                                                    {{-- <li><a class="dropdown-item"   data-bs-toggle="modal" data-bs-target="#view-receipt-modal-{{ $transaction->receipt->receipt_id }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li> --}}
+                                                                @endif
+                                                            </ul>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             @endforeach
 

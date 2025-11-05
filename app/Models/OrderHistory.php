@@ -13,13 +13,20 @@ class OrderHistory extends Model
         'status',
         'order_id',
         'label',
-        'amount'
+        'amount',
+
+        'delivery_id',
+        'receipt_id',
     ];
 
     public function order()
     {
         return $this->belongsTo(Orders::class, 'order_id', 'order_id');
     }
+     public function delivery()
+    {
+        return $this->belongsTo(Delivery::class, 'order_id', 'order_id');
+    }   
     public function receipt()
     {
         return $this->belongsTo(Receipts::class, 'order_id', 'order_id');
