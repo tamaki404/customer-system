@@ -273,6 +273,7 @@ class ReceiptController extends Controller
                     OrderHistory::create([
                         'action_by' => Auth::user()->user_id,
                         'order_id' => $request->order_id,
+                        'receipt_id' => $receipt->receipt_id,
                         'action_at' => now(),
                         'history_id' => $history_id,
                         'label' => 'Receipt',
@@ -283,6 +284,7 @@ class ReceiptController extends Controller
                     OrderHistory::create([
                         'action_by' => Auth::user()->user_id,
                         'order_id' => $request->order_id,
+                        'receipt_id' => $receipt->receipt_id,
                         'action_at' => now(),
                         'history_id' => $history_id,
                         'label' => 'Receipt',

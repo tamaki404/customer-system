@@ -222,6 +222,7 @@ class DeliveryController extends Controller
             OrderHistory::create([
                 'action_by' => Auth::user()->user_id,
                 'order_id' => $delivery->order_id,
+                'delivery_id' => $delivery->delivery_id,
                 'action_at' => now(),
                 'history_id' => $history_id,
                 'label' => 'Order',

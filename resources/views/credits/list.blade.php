@@ -173,48 +173,76 @@
                                         <tbody>                                
                                             @foreach ($transactionHistory as $transaction)
                                                 {{-- uvire receipt modal --}}
-                                                    {{-- <div class="modal fade" id="view-receipt-modal-{{ $transaction->receipt->receipt_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                @csrf
-                                                            
-                                                                <div class="modal-header">
-                                                                    <p class="modal-title" id="requestActionLabel">Receipt</p>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                
-                                                                <div class="modal-body">
-                                                                    <p class="note-notify">
-                                                                        <span class="material-symbols-outlined"> info </span>
-                                                                        <span> Make sure image selected is 2MB or less, scanned image is recommended.</span>
+                                                <div class="modal fade" id="view-receipt-modal-{{ $transaction->receipt_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            @csrf
+                                                            <div class="modal-header">
+                                                                <p class="modal-title" id="requestActionLabel">Receipt #{{  $transaction->receipt_id  }}</p>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p class="note-notify">
+                                                                    <span class="material-symbols-outlined"> info </span>
+                                                                    <span> Make sure image selected is 2MB or less, scanned image is recommended.</span>
+                                                                </p>
+                                                                <div class="modal-option-groups">
+                                                                    @php
+                                                                        $imgSrc = $transaction->receipt && $transaction->receipt->image
+                                                                            ? 'data:' . $transaction->receipt->image_mime_type . ';base64,' . base64_encode($transaction->receipt->image)
+                                                                            : asset('assets/default-company-logo.png');
+                                                                    @endphp
+                                                                    <img src="{{ $imgSrc }}" alt="Receipt image">
 
-                                                                    </p>
-
-                                                                    <div class="modal-option-groups">
-                                                                        <div class="form-group">
-                                                                            <p><span class="req-asterisk">*</span>Unpaid orders</p>
-                                                                        
+                                                                    {{-- <div class="document-card text-center" style="width: 220px;">
+                                                                        <div class="card shadow-sm border-0 rounded-3 overflow-hidden" style="cursor: pointer; height: 300px;"
+                                                                            data-bs-toggle="modal" data-bs-target="#{{ $modalId }}">
+                                                                            
+                                                                            <div class="ratio ratio-4x3 bg-light" style="height: 80%">
+                                                                                @if ($pdfData)
+                                                                                    <iframe
+                                                                                        src="{{ $pdfData }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
+                                                                                        style="width: 100%; height: 100%; pointer-events: none; border: none;"
+                                                                                        title="PDF Preview"
+                                                                                    ></iframe>
+                                                                                @else
+                                                                                    <p class="text-danger">No document</p>
+                                                                                @endif
+                                                                            </div>
                                                                         </div>
-                                                                        <div class="form-group">
-                                                                                <p><span class="req-asterisk">*</span>Upload receipt image</p>
-                                                                                <input type="file" name="image" id="image" required accept="image/*">
-                                                                                <div id="file-preview" style="margin-top:10px;"></div>
-                                                                                <div id="file-error" style="color:#dc3545; font-size:13px; margin-top:5px;"></div>
+                                                                    </div> --}}
+
+                                                                    {{-- <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
+                                                                        <div class="modal-dialog modal-xl modal-dialog-centered">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title">{{ $document->type }}</h5>
+                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                                </div>
+                                                                                <div class="modal-body text-center" style="height: 80vh;">
+                                                                                    @if ($pdfData)
+                                                                                        <iframe
+                                                                                            src="{{ $pdfData }}"
+                                                                                            width="100%"
+                                                                                            height="100%"
+                                                                                            style="border: none;"
+                                                                                            title="{{ $document->type }} Full View"
+                                                                                        ></iframe>
+                                                                                    @else
+                                                                                        <p class="text-danger">Unable to load PDF.</p>
+                                                                                    @endif
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
-                                                                        <input type="hidden" name="status" value="Pending">
-
-                                                                    </div>
-                                                    
-
-                                                                </div>
-                                                                
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                    <button type="submit" class="btn btn-primary" id="add-staff-submit">Submit receipt</button>
+                                                                    </div> --}}
                                                                 </div>
                                                             </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
                                                         </div>
-                                                    </div> --}}
+                                                    </div>
+                                                </div>
                                                
                                                 {{-- <tr onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $transaction->order_id]) }}'"> --}}
                                                 <tr>
@@ -247,10 +275,9 @@
                                                                             </a>
                                                                         </li>
                                                                     @endif
-
                                                                 @elseif ($transaction->label === 'Receipt')
                                                                     {{-- <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#add-receipt-modal" href="{{ route('receipts.receipt', $transaction->receipt->receipt_id) }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li> --}}
-                                                                    {{-- <li><a class="dropdown-item"   data-bs-toggle="modal" data-bs-target="#view-receipt-modal-{{ $transaction->receipt->receipt_id }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li> --}}
+                                                                    <li><a class="dropdown-item"   data-bs-toggle="modal" data-bs-target="#view-receipt-modal-{{ $transaction->receipt_id }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li>
                                                                 @endif
                                                             </ul>
                                                         </div>

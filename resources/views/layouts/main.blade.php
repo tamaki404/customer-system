@@ -33,7 +33,6 @@
         <div class="mainFrame">
 
             <div class="sideAccess" id="sideAccess">
-                
                 <!-- Sidebar Header -->
                 <div class="sidebar-header">
                     <div class="userProfile">

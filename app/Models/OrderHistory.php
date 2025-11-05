@@ -14,7 +14,6 @@ class OrderHistory extends Model
         'order_id',
         'label',
         'amount',
-
         'delivery_id',
         'receipt_id',
     ];

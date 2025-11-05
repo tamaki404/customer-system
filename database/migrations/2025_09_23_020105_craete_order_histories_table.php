@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('order_histories', function (Blueprint $table) {
             $table->id();
             $table->string('order_id');   
+            $table->string('delivery_id')->nullable();   
+            $table->string('receipt_id')->nullable();  
             $table->string('action_by'); 
             $table->string('history_id')->unique();  
             $table->string('status');
