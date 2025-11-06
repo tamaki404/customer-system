@@ -8,6 +8,7 @@ class Receipts extends Model
 {
     protected $fillable = [
         'receipt_id',
+        'po_id',
         'customer_id',
         'order_id',
         'status',

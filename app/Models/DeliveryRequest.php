@@ -41,7 +41,14 @@ class DeliveryRequest extends Model
     {
         return $this->hasMany(DeliveryItemRequest::class, 'delivery_id', 'delivery_id');
     }
-
+    public function productSetting()
+    {
+        return $this->hasOne(ProductSetting::class, 'set_id', 'set_id');
+    }
+    public function items()
+    {
+        return $this->hasMany(DeliveryItemRequest::class, 'po_id', 'po_id');
+    }
     /**
      * Get the customer for this delivery
      */

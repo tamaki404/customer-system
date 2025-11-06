@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
             $table->string('receipt_id')->unique(); 
+            $table->string('po_id');
             $table->string('customer_id');
             $table->string('order_id');
             $table->enum('status', ['Pending', 'Verified', 'Rejected'])

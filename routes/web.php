@@ -155,7 +155,6 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
     Route::post('/requests/create/purchase', [PurchaseRequestController::class, 'create'])
         ->name('pr.create');
 
-Route::middleware(['auth'])->group(function () {
     
     // Purchase Request Routes
     Route::prefix('purchase-requests')->name('pr.')->group(function () {
@@ -163,15 +162,19 @@ Route::middleware(['auth'])->group(function () {
         // List all purchase requests
         Route::get('/', [PurchaseRequestController::class, 'list'])
             ->name('list');
+        Route::get('/{po_id}', [PurchaseRequestController::class, 'receipts'])
+            ->name('receipts');
         
+
+
         // Create new purchase request
         Route::post('/create', [PurchaseRequestController::class, 'create'])
             ->name('create')
             ->middleware('role:Customer'); // Only customers can create
         
         // View single purchase request details
-        Route::get('/{poId}', [PurchaseRequestController::class, 'show'])
-            ->name('show');
+        Route::get('/requests/list/request/{po_id}', [PurchaseRequestController::class, 'request'])
+            ->name('request');
         
         // Update purchase request status (for staff)
         Route::patch('/{poId}/status', [PurchaseRequestController::class, 'updateStatus'])
@@ -216,7 +219,6 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('role:Staff');
     });
     
-});
 
 
 

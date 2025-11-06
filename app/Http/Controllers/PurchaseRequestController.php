@@ -7,6 +7,8 @@ use App\Models\DeliveryRequest;
 use App\Models\DeliveryItemRequest;
 use App\Models\ProductSetting;
 use App\Models\Customers;
+use App\Models\Receipts;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -70,7 +72,69 @@ class PurchaseRequestController extends Controller
                 ->with('error', 'Failed to load purchase requests. Please try again.');
         }
     }
-    
+    public function request($po_id, Request $request)
+    {
+        $user = Auth::user();
+        $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
+        $request = PurchaseRequest::where('po_id', $po_id)->first();
+        $del = DeliveryRequest::where('po_id', $po_id)->first();
+        $itemCount = DeliveryItemRequest::where('po_id', $po_id)->count();
+        $delCount = DeliveryRequest::where('po_id', $po_id)->count();
+        $orderDeets = PurchaseRequest::where('po_id', $po_id)->first();
+
+        $items = DeliveryItemRequest::where('delivery_id', $del->delivery_id)
+            ->where('po_id', $po_id)
+            ->with(['product', 'productSetting'])
+            ->get()
+            ->groupBy('product_id')
+            ->map(function($group) {
+                $first = $group->first();
+                // Sum up quantities for the same product
+                $first->total_planned_kilos = $group->sum('planned_kilos');
+                $first->total_planned_heads = $group->sum('planned_heads');
+
+                return $first;
+            });
+
+        // Get delivery data
+        $deliveries = DeliveryRequest::when($po_id, function ($query) use ($po_id) {
+            $query->where('po_id', $po_id);
+        })->orderBy('delivery_date', 'asc')->get();
+        $verifiedPaidAmount = Receipts::where('po_id', $po_id)
+            ->where('status', 'Verified')
+            ->sum('total_amount');
+            //  Determine payment status
+            $paymentStatus = 'Not Paid';
+            if ($verifiedPaidAmount >= $request->total_amount) {
+                $paymentStatus = 'Paid';
+            } elseif ($verifiedPaidAmount > 0 && $verifiedPaidAmount < $request->total_amount) {
+                $paymentStatus = 'Partially settled';
+            }
+        
+        $payments =Receipts::where('po_id', $po_id)
+        ->orderBy('created_at', 'desc')
+        ->where('status', "Verified")->get();
+        $receivedPaymentCount =Receipts::where('po_id', $po_id)
+        ->where('status', "Verified")->count();
+
+        return view('franken.pr.request', [
+                'user' => $user,
+                'request' => $request,
+                'items' => $items,
+                'deliveries' => $deliveries,
+                'activeDelivery' => $deliveries->count(),
+                'itemCount' => $itemCount,
+                'delCount' => $delCount,
+                'orderDeets' => $orderDeets,
+                'verifiedPaidAmount' => $verifiedPaidAmount,
+                'paymentStatus' => $paymentStatus,
+                'payments' => $payments,
+                'receivedPaymentCount' => $receivedPaymentCount,
+        ]);
+
+
+        
+    }
     public function create(Request $request)
     {
         $user = Auth::user();
@@ -234,6 +298,7 @@ class PurchaseRequestController extends Controller
                             
                             DeliveryItemRequest::create([
                                 'delivery_id' => $deliveryId,
+                                'po_id' => $poId,
                                 'delivery_item_id' => $deliveryItemId,
                                 'customer_id' => $customer->customer_id,
                                 'product_id' => $productId,
@@ -298,7 +363,19 @@ class PurchaseRequestController extends Controller
                 ->with('error', 'Failed to create purchase request: ' . $e->getMessage());
         }
     }
-    
+    public function receipts($po_id, Request $request)
+    {
+        $user = Auth::user();
+        $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
+        $receipts = Receipts::where('po_id', $po_id)->get();
+        $po = PurchaseRequest::where('po_id', $po_id)->firstOrFail();
+        return view('franken.pr.receipts', compact(
+            'customer',
+            'receipts',
+            'po'
+        ));
+    }
+
     /**
      * Generate unique PO ID
      */

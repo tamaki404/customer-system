@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('delivery_items', function (Blueprint $table) {
             $table->id();
             $table->string('delivery_item_id')->unique(); 
-            $table->string('customer_id');               
+            $table->string('customer_id');      
+            $table->string('po_id');               
             $table->string('delivery_id');               
             $table->string('order_item_id');             
             $table->string('product_id');                 

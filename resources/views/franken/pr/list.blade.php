@@ -458,7 +458,7 @@
                             <thead style="background-color: #fff;">
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                     <th>#</th>
-                                    <th>Timestamp</th>
+                                    <th>Order date</th>
                                     <th>PO ID</th>
                                     <th>Customer</th>
                                     <th>Status</th>
@@ -466,12 +466,11 @@
                             </thead>
                             <tbody>                                
                                 @foreach ($requests as $request)
-                                    {{-- <tr onclick="window.location.href='{{ route('purchaseorders.purchaseorder', ['po_id' => $po->po_id]) }}'" style="cursor: pointer;"> --}}
-                                    <tr>
+                                    <tr onclick="window.location.href='{{ route('pr.request', ['po_id' => $request->po_id]) }}'" style="cursor: pointer;">
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{ $request->created_at->format('F j, Y') }}</td>
                                         <td>{{$request->po_id}}</td>
-                                        <td>{{ $request->customer->company}}</td>
+                                        <td>{{ $request->customer->company_name}}</td>
                                         <td>{{ $request->status }}</td>
                                     </tr>
                                 @endforeach

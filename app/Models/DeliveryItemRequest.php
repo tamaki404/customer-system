@@ -13,6 +13,7 @@ class DeliveryItemRequest extends Model
     protected $fillable = [
         'delivery_id',
         'delivery_item_id',
+        'po_id',
         'customer_id',
         'product_id',
         'set_id',
@@ -36,14 +37,18 @@ class DeliveryItemRequest extends Model
     {
         return $this->belongsTo(DeliveryRequest::class, 'delivery_id', 'delivery_id');
     }
+    public function product()
+    {
+        return $this->belongsTo(Products::class, 'product_id', 'product_id');
+    }
 
+    public function productSetting()
+    {
+        return $this->hasOne(ProductSetting::class, 'set_id', 'set_id');
+    }
     /**
      * Get the product for this item
      */
-    public function product()
-    {
-        return $this->belongsTo(Product::class, 'product_id', 'product_id');
-    }
 
     /**
      * Get the customer for this item
@@ -56,10 +61,7 @@ class DeliveryItemRequest extends Model
     /**
      * Get the product setting for this item
      */
-    public function productSetting()
-    {
-        return $this->belongsTo(ProductSetting::class, 'set_id', 'set_id');
-    }
+
 
     /**
      * Check if item has been fully received

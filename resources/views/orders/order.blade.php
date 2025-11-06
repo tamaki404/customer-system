@@ -35,23 +35,17 @@
     <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content" method="POST"  enctype="multipart/form-data" action="{{ route('order.action') }}">
-
                 @csrf
-
-                
                 <div class="modal-header">
                     <p class="modal-title" id="requestActionLabel">File an action for this order</p>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
                 <input type="hidden" name="order_id" value="{{$order->order_id}}" required>
-                
                 <div class="modal-body">
                     <p class="note-notify">
                         <span class="material-symbols-outlined"> info </span>
                         <span>Committing any changes may be irreversible.</span>
                     </p>
-                    
                     <div class="modal-option-groups">
                         <p>
                             <span class="req-asterisk">*</span>

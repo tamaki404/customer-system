@@ -63,4 +63,8 @@ class PurchaseRequest extends Model
     {
         return $query->where('user_id', $userId);
     }
+    public function requirements()
+    {
+        return $this->belongsTo(DeliveryRequirements::class, 'user_id', 'user_id');
+    }
 }
