@@ -126,6 +126,7 @@ class DeliveryRequestController extends Controller
 
             PurchaseHistory::create([
                 'po_id' => $delivery->po_id,
+                'customer_id' => $delivery->customer_id,
                 'purchase_id' => $history_id,
                 'delivery_id' => $delivery->delivery_id,
                 'label' => "Delivery",

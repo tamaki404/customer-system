@@ -4,15 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PurchaseHistory extends Model
+class Payments extends Model
 {
     protected $fillable = [
+        'payment_id',
         'po_id',
         'customer_id',
-        'purchase_id',
         'delivery_id',
-        'label',
-        'amount',
         'status',
+        'total_amount',
+        'reason',
+        'image',
+        'action_by',
+        'action_at',
     ];
 }

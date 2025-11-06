@@ -3,6 +3,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/views/customer.css') }}">
+    
 @endpush
 
 
@@ -210,55 +211,34 @@
                 </div>  
                 <div class="details-box">
                     <div class="first" style="justify-content: space-between">
-                        <div class="un-named">
+                        <div class="un-named" style="display: flex; flex-direction: row;  width: 100%; align-items: center; gap: 15px;">
                             <div>
+                                <span class="material-symbols-outlined" style="color: #666; font-size: 35px;">
+                                delivery_truck_speed
+                                </span>                                    
                                 <p class="time">
                                     <span class="label">Scheduled day</span>
                                     <span>{{$delivery->delivery_date->format('F j, y')}}</span>
                                 </p>
-                                @if ($delivery->status === "Delivered")
+                            </div>
+                            @if ($delivery->status === "Delivered")
+                                <div style="display: flex; flex-direction: row; align-items: center;">
+                                    ---
+                                    <span class="material-symbols-outlined" style="color: #666; font-size: 35px;">
+                                    orders
+                                    </span>                                    
                                     <p class="time">
                                         <span class="label">Received at</span>
                                         <span>{{$delivery->delivered_date->format('F j, y')}}</span>
                                     </p>
-                                @endif
-                          
-                            </div>
+                                </div>
+                            @endif
                         </div>
+                        <button class="collection-btn" style="min-width: 130px; background-color: #dc3545; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
+                            <span class="material-symbols-outlined" >assignment_returned</span> Return slip
+                        </button>   
                     </div>
-{{-- 
-                    <div class="address">
-                        <div class="location">
-                            <span class="material-symbols-outlined icon">
-                            location_on
-                            </span>
-                            <p>
-                                <span class="label">Address line 1</span>
-                                <span>{{ ($request->requirements->delivery_address_1 ) ?? NULL}}</span>
-                            </p>
-                        </div>
-                        <div class="location">
-                            <span class="material-symbols-outlined icon">
-                            location_on
-                            </span>
-                            <p>
-                                <span class="label">Address line 2</span>
-                                <span>{{ ($request->requirements->delivery_address_2 ) ?? NULL}}</span>
-                            </p>
-                        </div>
-                        @if ($request->requirements->delivery_address_3)
-                            <div class="location">
-                                <span class="material-symbols-outlined icon">
-                                location_on
-                                </span>
-                                <p>
-                                    <span class="label">Address line 3</span>
-                                    <span>{{ ($request->requirements->delivery_address_3 ) ?? NULL}}</span>
-                                </p>
-                            </div>   
-                        @endif
-                 
-                    </div> --}}
+
                 </div>
                 
             </div>
@@ -342,7 +322,9 @@
                 <span>Proof of delivery</span>
             </p>
             <div class="right-bg" >
-
+                <button class="collection-btn" style="width: 180px; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
+                    <span class="material-symbols-outlined" >order_play</span> View delivery receipt
+                </button>  
                 <div class="payment-con" style="overflow:hidden; box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset; border-radius: 5px; background-color: #f2f2f26f;" >
                     @php
                         $pdfData = $delivery->pod_file
@@ -389,8 +371,8 @@
                         @endif
 
                     </div>
+                  
                 </div>
-
 
             </div>
         </div>

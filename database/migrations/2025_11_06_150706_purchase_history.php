@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('purchase_histories', function (Blueprint $table) {
             $table->id();
-            $table->string('po_id');
+            $table->string('customer_id')->required();
+            $table->string('po_id')->required();
             $table->string('purchase_id')->unique();
             $table->string('delivery_id');
             $table->string('label')->nullable();

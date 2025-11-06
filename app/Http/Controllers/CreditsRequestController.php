@@ -16,19 +16,20 @@ class CreditsRequestController extends Controller
         $user = Auth::user();
         $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
         $credit = Credits::where('user_id', $user->user_id)->firstOrFail();
+        
 
-        // $usedCredit = PurchaseRequest::where('customer_id', $customer->customer_id)
-        //     ->selectRaw('
-        //         SUM(
-        //             orders.total_amount - COALESCE(
-        //                 (SELECT SUM(r.total_amount) 
-        //                 FROM receipts r 
-        //                 WHERE r.order_id = orders.order_id 
-        //                 AND r.status = "Verified"), 0
-        //             )
-        //         ) as outstanding_balance
-        //     ')
-        //     ->value('outstanding_balance');
+        $usedCredit = PurchaseRequest::where('customer_id', $customer->customer_id)
+            ->selectRaw('
+                SUM(
+                    orders.total_amount - COALESCE(
+                        (SELECT SUM(r.total_amount) 
+                        FROM receipts r 
+                        WHERE r.order_id = orders.order_id 
+                        AND r.status = "Verified"), 0
+                    )
+                ) as outstanding_balance
+            ')
+            ->value('outstanding_balance');
 
 
 

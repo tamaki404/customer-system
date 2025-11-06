@@ -251,37 +251,39 @@
 
                                         {{-- VARIANCE --}}
                                         @php
-                                            $varianceHeads = $delivery->deliveryItems->sum('variance_heads');
-                                            $varianceKilos = $delivery->deliveryItems->sum('variance_kilos');
+                                            $varianceHeads = $delivery->deliveryItems->sum(function ($item) {
+                                                return ($item->received_heads ?? 0) - ($item->planned_heads ?? 0);
+                                            });
+
+                                            $varianceKilos = $delivery->deliveryItems->sum(function ($item) {
+                                                return ($item->received_kilos ?? 0) - ($item->planned_kilos ?? 0);
+                                            });
+
                                             $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
                                         @endphp
+
                                         <td>
-                                            @if ($hasReceived && $hasVariance)
-                                                @if ($varianceHeads != 0 && $varianceKilos != 0)
-                                                    <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
-                                                        {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
-                                                    </span>
-                                                    <br>
-                                                    <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
-                                                        {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
-                                                    </span>
-                                                @elseif ($varianceHeads != 0)
-                                                    <span style="color: {{ $varianceHeads == 0 ? 'green' : 'red' }};">
-                                                        {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
-                                                    </span>
-                                                @elseif ($varianceKilos != 0)
-                                                    <span style="color: {{ $varianceKilos == 0 ? 'green' : 'red' }};">
-                                                        {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
-                                                    </span>
+                                            @if ($hasReceived)
+                                                @if ($hasVariance)
+                                                    @if ($varianceHeads != 0)
+                                                        <span style="color: {{ $varianceHeads > 0 ? 'red' : 'orange' }};">
+                                                            {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
+                                                        </span><br>
+                                                    @endif
+
+                                                    @if ($varianceKilos != 0)
+                                                        <span style="color: {{ $varianceKilos > 0 ? 'red' : 'orange' }};">
+                                                            {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
+                                                        </span>
+                                                    @endif
                                                 @else
                                                     <span style="color: green;">Exact</span>
                                                 @endif
-                                            @elseif($hasReceived && !$hasVariance)
-                                                <span style="color: green;">Exact</span>
                                             @else
                                                 —
                                             @endif
                                         </td>
+
                                         {{-- STATUS --}}
                                         <td>
                                             @php
@@ -431,12 +433,7 @@
 
                 </div>
                 {{-- <button class="collection-btn" style="width: 50%; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;" onclick="window.location.href='{{ route('pr.collection', ['po_id' => $request->po_id]) }}'"> --}}
-                <button class="collection-btn" style="width: 50%; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;" onclick="window.location.href='{{ route('pr.collection', ['po_id' => $request->po_id]) }}'">
-                <span class="material-symbols-outlined" >
-                    grain
-                    </span>
-                    Receipt collection
-                </button>   
+
 
             </div>
         </div>
