@@ -216,12 +216,10 @@
                                     <span class="label">Scheduled day</span>
                                     <span>{{$delivery->delivery_date->format('F j, y')}}</span>
                                 </p>
-                                @if ($delivery->sttaus === "Delivered")
-                                    <p>
-                                        <span>Delivered at</span>
-                                        <span>
-                                            {{$delivery->delivered_at}}
-                                        </span>
+                                @if ($delivery->status === "Delivered")
+                                    <p class="time">
+                                        <span class="label">Received at</span>
+                                        <span>{{$delivery->delivered_date->format('F j, y')}}</span>
                                     </p>
                                 @endif
                           
@@ -318,6 +316,66 @@
                 </table>
             </div>
 
+        </div>
+        <div class="right" style="width: 25%; height: 100%; background-color: #fff">
+            <p style="box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
+                <span class="material-symbols-outlined">
+                picture_as_pdf
+                </span>
+                <span>Proof of delivery</span>
+            </p>
+            <div class="right-bg" >
+
+                <div class="payment-con" style="overflow:hidden; box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset; border-radius: 5px; background-color: #f2f2f26f;" >
+                    @php
+                        $pdfData = $delivery->pod_file
+                            ? 'data:application/pdf;base64,' . base64_encode($delivery->pod_file)
+                            : null;
+                    @endphp
+                    <div style="height: 100%; width: 100%; cursor: pointer; " data-bs-toggle="modal" data-bs-target="#podModal">
+                        @if ($delivery->status === "Delivered")                       
+                            {{-- Preview Card --}}
+                            @if($pdfData)
+                                <iframe
+                                    src="{!! $pdfData !!}#toolbar=0&navpanes=0&scrollbar=0&page=1"
+                                    style="width: 100%; height: 100%; pointer-events: none; border: none;">
+                                </iframe>
+                            @else
+                                <p class="text-danger">No document</p>
+                            @endif
+                            {{-- Modal --}}
+                                <div class="modal fade" id="podModal" tabindex="-1"  aria-hidden="true" >
+                                    <div class="modal-dialog">
+                                    <div  class="modal-content" style="width: 600px; height: 80%">
+                                        <div class="modal-header">
+                                            <p class="modal-title" style=" background-color:transparent; display: flex; flex-direction: row; justify-content: flex-start;">
+                                                <span style="font-size: 13px; font-weight:bold;" class="material-symbols-outlined" >picture_as_pdf</span>  
+                                                <span style="font-size: 14px; font-weight:bold;">Proof of delivery</span>
+                                            </p>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="width: 30px"></button>
+                                        </div>
+                                        <div class="modal-body text-center" style="height: 80vh;">
+                                            @if ($pdfData)
+                                                <iframe src="{!! $pdfData !!}" width="100%" height="100%" style="border: none;"></iframe>
+                                            @else
+                                                <p class="text-danger">Unable to load PDF.</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                   
+                        @else
+                            <p style="font-size:12px; color:#888; font-weight:normal; text-align:center;">
+                                Delivery hasn't been received yet.
+                            </p>
+                        @endif
+
+                    </div>
+                </div>
+
+
+            </div>
         </div>
     </div>
 

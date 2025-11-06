@@ -407,7 +407,7 @@
                             @endforeach
                         @else
                             <p style="font-size:12px; color:#888; font-weight:normal; text-align:center;">
-                            Please ensure your payments are settled before the deadline to avoid fines.
+                                Please ensure your payments are settled before the deadline to avoid fines.
                             </p>
 
 

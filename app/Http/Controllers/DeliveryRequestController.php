@@ -63,7 +63,7 @@ class DeliveryRequestController extends Controller
             $delivery->update([
                 'status' => "Delivered",
                 'feedback' => $request->feedback,
-                'delivered_at' => now(),
+                'delivered_date' => now(),
                 'pod_file' => $pdfContent,
                 'pod_mime' => 'application/pdf',
             ]);

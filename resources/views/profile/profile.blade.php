@@ -810,10 +810,8 @@
                                             </div>
                                         @endforeach
                                     </div>
-
                                 </div>
                             </div>
-
                         </div>
 
                         {{-- banks and other details --}}
