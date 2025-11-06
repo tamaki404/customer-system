@@ -35,6 +35,7 @@ return new class extends Migration
             $table->integer('planned_heads')->nullable();
             $table->integer('received_heads')->nullable();
             $table->decimal('balance', 15, 2);
+            $table->timestamps();
 
         });
     }

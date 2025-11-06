@@ -54,7 +54,7 @@ class DeliveryRequestController extends Controller
             $user = Auth::user();
 
             $delivery = DeliveryRequest::where('delivery_id', $request->delivery_id)->firstOrFail();
-            $request = PurchaseRequest::where('po_id', $delivery->po_id)->firstOrFail();
+            $purchaseRequest = PurchaseRequest::where('po_id', $delivery->po_id)->firstOrFail();
 
             // Store PDF as binary
             $pdfContent = file_get_contents($request->file('pod_file')->getRealPath());
@@ -99,10 +99,10 @@ class DeliveryRequestController extends Controller
                                     ->count();
 
             if ($totalDeliveries > 0 && $totalDeliveries === $deliveredCount) {
-                $request->update(['status' => 'Completed']);
+                $purchaseRequest->update(['status' => 'Completed']);
             }
             elseif ($totalDeliveries < 0 && $totalDeliveries === $deliveredCount) {
-                $request->update(['status' => 'Progressing']);
+                $purchaseRequest->update(['status' => 'Progressing']);
             }
             // after updating delivery items above
 
@@ -125,7 +125,7 @@ class DeliveryRequestController extends Controller
             $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
 
             PurchaseHistory::create([
-                'po_id' => $delivery->order_id,
+                'po_id' => $delivery->po_id,
                 'purchase_id' => $history_id,
                 'delivery_id' => $delivery->delivery_id,
                 'label' => "Delivery",

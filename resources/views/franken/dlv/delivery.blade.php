@@ -33,7 +33,7 @@
 
     <div class="modal fade" id="mark-as-delivered" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true" >
         <div class="modal-dialog">
-            <form action="" class="modal-content" style="width: 700px;  height: 80%" style="width: 700px;" method="POST" enctype="multipart/form-data" action="{{ route('dlv.receive') }}">
+            <form action="{{ route('dlv.receive') }}" class="modal-content" style="width: 700px; height: 80%" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="delivery_id" value="{{ $delivery->delivery_id }}">
                 <div class="modal-header">
