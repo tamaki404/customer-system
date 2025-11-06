@@ -27,7 +27,8 @@ use App\Http\Controllers\{
 
 
     PurchaseRequestController,
-    
+    CreditsRequestController,
+    DeliveryRequestController
 
 };
 
@@ -159,69 +160,74 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
     // Purchase Request Routes
     Route::prefix('purchase-requests')->name('pr.')->group(function () {
         
-        // List all purchase requests
-        Route::get('/', [PurchaseRequestController::class, 'list'])
-            ->name('list');
-        Route::get('/{po_id}', [PurchaseRequestController::class, 'receipts'])
-            ->name('receipts');
-        
-
+        Route::get('/collection/{po_id}', [PurchaseRequestController::class, 'collection'])
+            ->name('collection');
 
         // Create new purchase request
         Route::post('/create', [PurchaseRequestController::class, 'create'])
             ->name('create')
             ->middleware('role:Customer'); // Only customers can create
         
-        // View single purchase request details
+        // View single purchase request detailsd
         Route::get('/requests/list/request/{po_id}', [PurchaseRequestController::class, 'request'])
             ->name('request');
         
-        // Update purchase request status (for staff)
-        Route::patch('/{poId}/status', [PurchaseRequestController::class, 'updateStatus'])
-            ->name('update.status')
-            ->middleware('role:Staff');
+        // // Update purchase request status (for staff)
+        // Route::patch('/{poId}/status', [PurchaseRequestController::class, 'updateStatus'])
+        //     ->name('update.status')
+        //     ->middleware('role:Staff');
         
-        // Cancel purchase request (for customers)
-        Route::patch('/{poId}/cancel', [PurchaseRequestController::class, 'cancel'])
-            ->name('cancel')
-            ->middleware('role:Customer');
+        // // Cancel purchase request (for customers)
+        // Route::patch('/{poId}/cancel', [PurchaseRequestController::class, 'cancel'])
+        //     ->name('cancel')
+        //     ->middleware('role:Customer');
     });
     
-    // Delivery Request Routes
-    Route::prefix('delivery-requests')->name('delivery.')->group(function () {
+    // // Delivery Request Routes
+    // Route::prefix('delivery-requests')->name('delivery.')->group(function () {
         
-        // List all delivery requests
-        Route::get('/', [PurchaseRequestController::class, 'list'])
+    //     // List all delivery requests
+    //     Route::get('/', [PurchaseRequestController::class, 'list'])
+    //         ->name('list');
+        
+    //     // View single delivery request
+    //     Route::get('/{deliveryId}', [PurchaseRequestController::class, 'show'])
+    //         ->name('show');
+        
+    //     // Update delivery status
+    //     Route::patch('/{deliveryId}/status', [PurchaseRequestController::class, 'updateStatus'])
+    //         ->name('update.status')
+    //         ->middleware('role:Staff');
+        
+    //     // Mark as delivered
+    //     Route::post('/{deliveryId}/deliver', [PurchaseRequestController::class, 'markAsDelivered'])
+    //         ->name('deliver')
+    //         ->middleware('role:Staff');
+        
+    //     // Upload POD (Proof of Delivery)
+    //     Route::post('/{deliveryId}/pod', [PurchaseRequestController::class, 'uploadPod'])
+    //         ->name('upload.pod')
+    //         ->middleware('role:Staff');
+        
+    //     // Update received quantities
+    //     Route::patch('/{deliveryId}/items', [PurchaseRequestController::class, 'updateItems'])
+    //         ->name('update.items')
+    //         ->middleware('role:Staff');
+    // });
+    
+    Route::prefix('crd')->name('crd.')->group(function () {
+        
+        Route::get('/list', [CreditsRequestController::class, 'list'])
             ->name('list');
-        
-        // View single delivery request
-        Route::get('/{deliveryId}', [PurchaseRequestController::class, 'show'])
-            ->name('show');
-        
-        // Update delivery status
-        Route::patch('/{deliveryId}/status', [PurchaseRequestController::class, 'updateStatus'])
-            ->name('update.status')
-            ->middleware('role:Staff');
-        
-        // Mark as delivered
-        Route::post('/{deliveryId}/deliver', [PurchaseRequestController::class, 'markAsDelivered'])
-            ->name('deliver')
-            ->middleware('role:Staff');
-        
-        // Upload POD (Proof of Delivery)
-        Route::post('/{deliveryId}/pod', [PurchaseRequestController::class, 'uploadPod'])
-            ->name('upload.pod')
-            ->middleware('role:Staff');
-        
-        // Update received quantities
-        Route::patch('/{deliveryId}/items', [PurchaseRequestController::class, 'updateItems'])
-            ->name('update.items')
-            ->middleware('role:Staff');
+
     });
-    
 
-
-
+    Route::prefix('dlv')->name('dlv.')->group(function () {
+        Route::get('/delivery/{delivery_id}', [DeliveryRequestController::class, 'delivery'])
+            ->name('delivery');
+        Route::post('/delivery/receive-order/', [DeliveryRequestController::class, 'receive'])
+            ->name('receive');
+    });
 
 
     /*

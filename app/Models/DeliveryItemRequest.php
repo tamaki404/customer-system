@@ -21,6 +21,7 @@ class DeliveryItemRequest extends Model
         'received_kilos',
         'planned_heads',
         'received_heads',
+        'balance',
     ];
 
     protected $casts = [

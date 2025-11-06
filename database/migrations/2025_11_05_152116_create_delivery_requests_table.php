@@ -34,6 +34,8 @@ return new class extends Migration
             $table->decimal('received_kilos', 10, 2)->nullable();
             $table->integer('planned_heads')->nullable();
             $table->integer('received_heads')->nullable();
+            $table->decimal('balance', 15, 2);
+
         });
     }
 

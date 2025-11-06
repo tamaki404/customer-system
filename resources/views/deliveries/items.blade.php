@@ -76,8 +76,6 @@
                             @else
                                     <span class="text-muted">No POD</span>
                             @endif
-
-                        
                     @else
           
                     @endif
@@ -106,7 +104,6 @@
         {{-- file an action --}}
         <div class="modal fade" id="fileanaction" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true" >
             <div class="modal-dialog">
-
                 <form class="modal-content" style="width: 700px;" method="POST" enctype="multipart/form-data" action="{{ route('delivery.confirm') }}">
                     @csrf
                     <input type="hidden" name="order_id" value="{{ $delivery->order_id }}">
@@ -268,8 +265,6 @@
                         <button type="submit" class="btn btn-primary">Submit order status</button>
                     </div>
                 </form>
-
-
             </div>
         </div>
 

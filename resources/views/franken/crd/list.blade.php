@@ -8,7 +8,6 @@
 
 @section('content')
 
-
     @if ($errors->any())
         <div class="alert alert-danger" style="margin: 10px;">
             <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
@@ -31,9 +30,8 @@
         </div>
     @endif
 
-
         {{-- upload receipt modal --}}
-        <div class="modal fade" id="add-receipt-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        {{-- <div class="modal fade" id="add-receipt-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <form class="modal-content"  method="POST" action="{{ route('receipt.create') }}"  enctype="multipart/form-data">
                     @csrf
@@ -85,27 +83,17 @@
                 
                 </form>
             </div>
-        </div>
-
+        </div> --}}
 
         <div class="content-bg" >
                 <div class="content-header">
-                    <div class="contents-display">
-                        {{-- <p>
-                            <a href="{{ route('staffs.list') }}">< Staffs list</a>
-                        </p> --}}
-                    </div>
-
                     <div class="title-actions">
                         <p class="heading">Credits</p>
-                        
                         <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#add-receipt-modal">
                             <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
                             Upload a receipt
                         </button>
                     </div>
-
-
                 </div>
 
                 <div class="content-body" style="padding: 10px; border: none; height: auto; gap: 10px">
@@ -125,7 +113,7 @@
                     </style>
 
                     <div class="credit-summary" style="padding: 10px; height: auto; border-radius: 5px; width: 400px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; background-color: #fff; border: none;">
-                        <div class="credit-row" style="display: flex; flex-direction: column;">
+                        {{-- <div class="credit-row" style="display: flex; flex-direction: column;">
                             <span class="credit-label">Available credit:</span>
                             <span class="credit-value available" style="font-size: 30px; color: #f8912a;">₱{{ number_format($availableCredit, 2) }}</span>
                         </div>
@@ -136,7 +124,7 @@
                         <div class="credit-row">
                             <span class="credit-label">Outstanding balance: </span>
                             <span class="credit-value"style="margin-left: 10px">₱{{ number_format($usedCredit, 2) }}</span>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <div class="tab-div" style="margin-top: 20px;">
@@ -155,7 +143,7 @@
                         </div>
 
                         {{-- Transaction history --}}
-                        <div id="transaction-content" class="tab-content active" role="tabpanel" aria-labelledby="transaction-tab">
+                        {{-- <div id="transaction-content" class="tab-content active" role="tabpanel" aria-labelledby="transaction-tab">
                             <div class="table-body">
                                 <p style="margin: 5px; font-weight: bold;">Transaction history</p>
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
@@ -172,7 +160,6 @@
                                         </thead>
                                         <tbody>                                
                                             @foreach ($transactionHistory as $transaction)
-                                                {{-- uvire receipt modal --}}
                                                 <div class="modal fade" id="view-receipt-modal-{{ $transaction->receipt_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content" >
@@ -209,47 +196,6 @@
                                                                     @endif
 
 
-                                                                    {{-- <div class="document-card text-center" style="width: 220px;">
-                                                                        <div class="card shadow-sm border-0 rounded-3 overflow-hidden" style="cursor: pointer; height: 300px;"
-                                                                            data-bs-toggle="modal" data-bs-target="#{{ $modalId }}">
-                                                                            
-                                                                            <div class="ratio ratio-4x3 bg-light" style="height: 80%">
-                                                                                @if ($pdfData)
-                                                                                    <iframe
-                                                                                        src="{{ $pdfData }}#toolbar=0&navpanes=0&scrollbar=0&page=1&"
-                                                                                        style="width: 100%; height: 100%; pointer-events: none; border: none;"
-                                                                                        title="PDF Preview"
-                                                                                    ></iframe>
-                                                                                @else
-                                                                                    <p class="text-danger">No document</p>
-                                                                                @endif
-                                                                            </div>
-                                                                        </div>
-                                                                    </div> --}}
-
-                                                                    {{-- <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
-                                                                        <div class="modal-dialog modal-xl modal-dialog-centered">
-                                                                            <div class="modal-content">
-                                                                                <div class="modal-header">
-                                                                                    <h5 class="modal-title">{{ $document->type }}</h5>
-                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                                                </div>
-                                                                                <div class="modal-body text-center" style="height: 80vh;">
-                                                                                    @if ($pdfData)
-                                                                                        <iframe
-                                                                                            src="{{ $pdfData }}"
-                                                                                            width="100%"
-                                                                                            height="100%"
-                                                                                            style="border: none;"
-                                                                                            title="{{ $document->type }} Full View"
-                                                                                        ></iframe>
-                                                                                    @else
-                                                                                        <p class="text-danger">Unable to load PDF.</p>
-                                                                                    @endif
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div> --}}
                                                                 </div>
                                                             </div>
                                                             <div class="modal-footer">
@@ -260,7 +206,6 @@
                                                     </div>
                                                 </div>
                                                
-                                                {{-- <tr onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $transaction->order_id]) }}'"> --}}
                                                 <tr>
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ \Carbon\Carbon::parse($transaction->action_at)->format('M d, Y') }}</td>
@@ -293,7 +238,6 @@
                                                                         </li>
                                                                     @endif
                                                                 @elseif ($transaction->label === 'Receipt')
-                                                                    {{-- <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#add-receipt-modal" href="{{ route('receipts.receipt', $transaction->receipt->receipt_id) }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li> --}}
                                                                     <li><a class="dropdown-item"   data-bs-toggle="modal" data-bs-target="#view-receipt-modal-{{ $transaction->receipt_id }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li>
                                                                 @endif
                                                             </ul>
@@ -308,9 +252,9 @@
 
                         
                             </div>
-                        </div>
+                        </div> --}}
                         {{-- Payables --}}
-                        <div id="payables-content" class="tab-content" role="tabpanel" aria-labelledby="payables-tab">
+                        {{-- <div id="payables-content" class="tab-content" role="tabpanel" aria-labelledby="payables-tab">
                             <div class="table-body" style="margin-top: 10px">
                                 <p style="margin: 5px; font-weight: bold;">Payables</p>
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
@@ -332,11 +276,7 @@
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ \Carbon\Carbon::parse($oustandingPayment->order_date)->format('M d, Y') }}</td>
                                                     <td>{{ $oustandingPayment->order_id }}</td>
-                                                    {{-- <td>
-                                                        @foreach ($oustandingPayment->items as $item)
-                                                            {{$item->quantity}} {{ $item->product->name }},
-                                                        @endforeach
-                                                    </td> --}}
+                                               
                                                     <td><strong>₱{{ number_format($oustandingPayment->outstanding_balance, 2) }}</strong></td>
                                                     <td>--</td>
                                                 </tr>
@@ -347,9 +287,9 @@
 
                         
                             </div>
-                        </div>
+                        </div> --}}
                         {{-- Payments --}}
-                        <div id="payment-content" class="tab-content" role="tabpanel" aria-labelledby="payment-tab">
+                        {{-- <div id="payment-content" class="tab-content" role="tabpanel" aria-labelledby="payment-tab">
                             <div class="table-body" style="margin-top: 10px">
                                 <p style="margin: 5px; font-weight: bold;">Payments</p>
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
@@ -379,7 +319,7 @@
 
                         
                             </div>
-                        </div>
+                        </div> --}}
 
                     </div>
 
@@ -393,6 +333,7 @@
 
 
         </div>
+
 @endsection
 
 

@@ -352,7 +352,7 @@
                                         <td>{{ $po->created_at->format('F j, Y') }}</td>
                                         <td>{{$po->po_id}}</td>
                                         <td>{{ $po->items->count() }}</td>
-                                        <td>₱{{ number_format($po->total_amount, 2) }}</td>
+                                        <td>₱{{ number_format($po->total_amount, decimals: 2) }}</td>
                                         <td>
                                             <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; 
                                                 @if($po->status === 'Pending') background-color: #fff3cd; color: #856404;

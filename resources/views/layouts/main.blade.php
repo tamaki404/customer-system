@@ -229,12 +229,8 @@
                                 </a>
                             @endif
                         </div>
-
-
-
                         <div class="nav-group">
                             <div class="nav-group-title">Orders & Deliveries</div>
-
 
                             @if (Auth()->user()->role === 'Customer' &&  !empty($user->acc_status->staff_id))
                                 {{-- purchase request --}}
@@ -289,9 +285,13 @@
                         <div class="nav-group">
                             <div class="nav-group-title">Credits & Receipts</div>
 
-
                             @if (Auth()->user()->role === 'Customer' &&  !empty($user->acc_status->staff_id))
                                 {{-- Credits --}}
+                                <a class="nav-item{{ $currentRoute == 'crd.list' ? ' active' : '' }}" href="{{ route('crd.list') }}">
+                                    <span class="material-symbols-outlined">diamond_shine</span>
+                                    <p>Credits</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
                                 @if(!empty($permissions['Credits']) && $permissions['Credits'])
                                     <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
                                         <span class="material-symbols-outlined">credit_card</span>

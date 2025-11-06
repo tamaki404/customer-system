@@ -363,13 +363,13 @@ class PurchaseRequestController extends Controller
                 ->with('error', 'Failed to create purchase request: ' . $e->getMessage());
         }
     }
-    public function receipts($po_id, Request $request)
+    public function collection($po_id, Request $request)
     {
         $user = Auth::user();
         $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
         $receipts = Receipts::where('po_id', $po_id)->get();
         $po = PurchaseRequest::where('po_id', $po_id)->firstOrFail();
-        return view('franken.pr.receipts', compact(
+        return view('franken.pr.collection', compact(
             'customer',
             'receipts',
             'po'

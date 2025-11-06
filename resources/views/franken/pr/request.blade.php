@@ -201,7 +201,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($deliveries as $delivery)
-                                    <tr onclick="window.location.href='{{ route('order.delivery_items', ['delivery_id' => $delivery->delivery_id]) }}'">
+                                    <tr onclick="window.location.href='{{ route('dlv.delivery', ['delivery_id' => $delivery->delivery_id]) }}'">
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $delivery->delivery_id }}</td>
                                         <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
@@ -431,7 +431,7 @@
 
                 </div>
                 {{-- <button class="collection-btn" style="width: 50%; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;" onclick="window.location.href='{{ route('pr.collection', ['po_id' => $request->po_id]) }}'"> --}}
-                <button class="collection-btn" style="width: 50%; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;" onclick="window.location.href='{{ route('pr.receipts', ['po_id' => $request->po_id]) }}'">
+                <button class="collection-btn" style="width: 50%; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;" onclick="window.location.href='{{ route('pr.collection', ['po_id' => $request->po_id]) }}'">
                 <span class="material-symbols-outlined" >
                     grain
                     </span>
