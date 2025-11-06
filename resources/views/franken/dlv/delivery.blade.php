@@ -271,7 +271,6 @@
                             <th>Quantity</th>
                             <th>Received</th>
                             <th>Variance</th>
-                            <th>Unit</th>
                             <th>Total</th>
                         </tr>
                     </thead>
@@ -306,10 +305,28 @@
 
                                 </td>
                                 <td>
-                                    --
+                                    @if ($delivery->status === "Delivered")
+                                        @php
+                                            $varianceHeads = $item->received_heads - $item->planned_heads;
+                                            $varianceKilos = $item->received_kilos - $item->planned_kilos;
+                                        @endphp
+
+                                        @if ($item->product->measurement_type === "Heads")
+                                            {{ $varianceHeads }} heads
+
+                                        @elseif ($item->product->measurement_type === "Kilos")
+                                            {{ number_format($varianceKilos, 2) }} kg
+
+                                        @elseif ($item->product->measurement_type === "Heads&Kilos")
+                                            {{ $varianceHeads }} heads /
+                                            {{ number_format($varianceKilos, 2) }} kg
+                                        @endif
+                                    @else
+                                        --
+                                    @endif
                                 </td>
-                                <td>₱--</td>
-                                <td>₱--</td>
+
+                                <td>₱{{number_format($item->balance, 2)}}</td>
                             </tr>
                         @endforeach
                     </tbody>
