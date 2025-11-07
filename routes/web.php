@@ -25,11 +25,10 @@ use App\Http\Controllers\{
     SaleDiscountController,
     ErrorController,
 
-
     PurchaseRequestController,
     CreditsRequestController,
-    DeliveryRequestController
-
+    DeliveryRequestController,
+    PaymentsController
 };
 
 /*
@@ -221,14 +220,16 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
             ->name('list');
 
     });
-
     Route::prefix('dlv')->name('dlv.')->group(function () {
         Route::get('/delivery/{delivery_id}', [DeliveryRequestController::class, 'delivery'])
             ->name('delivery');
         Route::post('/delivery/receive-order/', [DeliveryRequestController::class, 'receive'])
             ->name('receive');
     });
-
+    Route::prefix('pym')->name('pym.')->group(function () {
+        Route::post('/payment/create/', [PaymentsController::class, 'create'])
+            ->name('create');
+    });
 
     /*
     |--------------------------------------------------------------------------

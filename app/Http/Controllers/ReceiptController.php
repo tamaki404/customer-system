@@ -104,7 +104,6 @@ class ReceiptController extends Controller
                     ->withInput();
             }
         }
-
         public function receiptList(Request $request)
         {
             $user = Auth::user();
@@ -123,7 +122,6 @@ class ReceiptController extends Controller
         }
         public function orderReceipts($order_id, Request $request)
         {
-
             $receipts = Receipts::where('order_id', $order_id)
             // ->where('status', "Verified")
             ->orderBy('created_at', 'desc')
@@ -141,17 +139,13 @@ class ReceiptController extends Controller
         {
             $user = Auth::user();
             $receipt = Receipts::where('receipt_id', $receipt_id)->firstOrFail();
-
             // Calculate remaining amount for this order
             $order = $receipt->order;
-            
             // Sum all verified receipts for this order
             $totalPaid = Receipts::where('order_id', $receipt->order_id)
                 ->where('status', 'Verified')
                 ->sum('total_amount');
-            
             $remainingAmount = $order->total_amount - $totalPaid;
-
             return view('receipts.receipt', [
                 'user'            => $user,
                 'receipt'         => $receipt,
@@ -167,7 +161,6 @@ class ReceiptController extends Controller
                 'order_id' => 'required|exists:orders,order_id',
                 'status'   => 'required|in:Verified,Rejected',
             ];
-
             if ($request->status === 'Verified') {
                 $rules['amount'] = [
                     'required',
@@ -179,13 +172,10 @@ class ReceiptController extends Controller
                             $fail('Order not found.');
                             return;
                         }
-
                         $totalPaid = Receipts::where('order_id', $request->order_id)
                             ->where('status', 'Verified')
                             ->sum('total_amount');
-
                         $remainingAmount = $order->total_amount - $totalPaid;
-
                         if ($value > $remainingAmount) {
                             $fail('The amount cannot exceed the remaining balance of ₱' . number_format($remainingAmount, 2) .
                                 ' (Order total: ₱' . number_format($order->total_amount, 2) .

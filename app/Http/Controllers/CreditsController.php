@@ -10,7 +10,6 @@ use App\Models\Credits;
 use App\Models\Orders;
 use App\Models\Customers;
 use App\Models\Receipts;
-use Illuminate\Support\Facades\DB;
 
 class CreditsController extends Controller
 {

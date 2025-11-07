@@ -113,13 +113,30 @@ class DeliveryRequestController extends Controller
 
             $total_amount = 0;
 
-            foreach ($items as $item) {
-                if ($item->productSetting) {
-                    $balance = ($item->received_kilos ?? 0) * $item->productSetting->nego_price;
-                    $item->update(['balance' => $balance]);
-                    $total_amount += $balance;
-                }
-            }
+foreach ($items as $item) {
+    if ($item->productSetting && $item->product) {
+
+        // default value
+        $qty = 0;
+
+        // check measurement type
+        if (strtolower($item->product->measurement_type) === 'heads' 
+            || strtolower($item->product->measurement_type) === 'head') {
+
+            // use received_heads
+            $qty = $item->received_heads ?? 0;
+
+        } else {
+            // use kilos
+            $qty = $item->received_kilos ?? 0;
+        }
+
+        $balance = $qty * $item->productSetting->nego_price;
+        $item->update(['balance' => $balance]);
+        $total_amount += $balance;
+    }
+}
+
 
             $date  = date('Ymd');
             $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);

@@ -1484,10 +1484,10 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>1</td>
-                                                        <td>{{ $customer->bank->account_number}}</td>
-                                                        <td>{{ $customer->bank->bank}}</td>
-                                                        <td>{{ $customer->bank->branch}}</td>
-                                                        <td>{{ $customer->bank->account_number}}</td>
+                                                        <td>{{ $customer->bank->account_number ?? NULL}}</td>
+                                                        <td>{{ $customer->bank->bank ?? NULL}}</td>
+                                                        <td>{{ $customer->bank->branch ?? NULL}}</td>
+                                                        <td>{{ $customer->bank->account_number ?? NULL}}</td>
 
                                                     </tr>
                                                 </tbody>

@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('customer_id')->required();
             $table->string('po_id')->required();
+            $table->string('payment_id')->nullable();
             $table->string('purchase_id')->unique();
             $table->string('delivery_id');
             $table->string('label')->nullable();
             $table->decimal('amount', 12, 2)->default(0);
-            $table->string('status')->default('Pending');
+            $table->enum('status', ['Pending', 'Successful', 'Rejected', 'Cancelled'])
+                ->default('Pending');
             $table->timestamps();
         });
     }

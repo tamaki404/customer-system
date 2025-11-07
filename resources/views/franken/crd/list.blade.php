@@ -31,11 +31,10 @@
     @endif
 
         {{-- upload receipt modal --}}
-        {{-- <div class="modal fade" id="add-receipt-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        <div class="modal fade" id="add-receipt-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <form class="modal-content"  method="POST" action="{{ route('receipt.create') }}"  enctype="multipart/form-data">
+                <form class="modal-content"  method="POST" action="{{ route('pym.create') }}"  enctype="multipart/form-data">
                     @csrf
-                
                     <div class="modal-header">
                         <p class="modal-title" id="requestActionLabel">Payment receipt form</p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -47,43 +46,34 @@
                             <span> Make sure image selected is 2MB or less, scanned image is recommended.</span>
 
                         </p>
-
                         <div class="modal-option-groups">
                             <div class="form-group">
                                 <p><span class="req-asterisk">*</span>Unpaid orders</p>
-                                 <select name="order_id" id="">
+                                 <select name="po_id" id="">
                                     <option value="">-- Select order --</option> 
-                                    @foreach($unpaidOrders as $unpaidOrder)
-                                        <option value="{{ $unpaidOrder->order_id }}">
-                                            {{ $unpaidOrder->order_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->created_at)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->total_amount, 2) }}
+                                    @foreach($purchasesWithBalance as $unpaidOrder)
+                                        <option value="{{ $unpaidOrder->po_id }}">
+                                            {{ $unpaidOrder->po_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->created_at)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->total_balance, 2) }}
                                         </option>
+                                        
                                     @endforeach
                                 </select>
                             </div>
                             <div class="form-group">
-                                    <p><span class="req-asterisk">*</span>Upload receipt image</p>
-                                    <input type="file" name="image" id="image" required accept="image/*">
-                                    <div id="file-preview" style="margin-top:10px;"></div>
-                                    <div id="file-error" style="color:#dc3545; font-size:13px; margin-top:5px;"></div>
+                                <p><span class="req-asterisk">*</span>Upload receipt image</p>
+                                <input type="file" name="image" id="image" required accept="image/*">
+                                <div id="file-preview" style="margin-top:10px;"></div>
+                                <div id="file-error" style="color:#dc3545; font-size:13px; margin-top:5px;"></div>
                             </div>
-                            <input type="hidden" name="status" value="Pending">
-                            <input type="hidden" name="customer_id" value="{{ auth()->user()->customer->customer_id }}">
-
                         </div>
-        
-
                     </div>
-                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary" id="add-staff-submit">Submit receipt</button>
                     </div>
-
-
-                
                 </form>
             </div>
-        </div> --}}
+        </div>
 
         <div class="content-bg" >
                 <div class="content-header">
@@ -113,15 +103,26 @@
                     </style>
 
                     <div class="credit-summary" style="padding: 10px; height: auto; border-radius: 5px; width: 400px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; background-color: #fff; border: none;">
-                        {{-- <div class="credit-row" style="display: flex; flex-direction: column;">
-                            <span class="credit-label">Available credit:</span>
-                            <span class="credit-value available" style="font-size: 30px; color: #f8912a;">₱{{ number_format($availableCredit, 2) }}</span>
-                        </div>
+                       @php
+                            $available_credit = ($credit->credit_limit - $UsedCredit);
+                       @endphp
                         <div class="credit-row">
                             <span class="credit-label" >Credit limit: </span>
                             <span class="credit-value"style="margin-left: 10px">₱{{ number_format($credit->credit_limit, 2) }}</span>
                         </div>
-                        <div class="credit-row">
+                       <div class="credit-row">
+                            <span class="credit-label" >Balance: </span>
+                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($UsedCredit, 2) }}</span>
+                        </div>
+                       <div class="credit-row">
+                            <span class="credit-label" >Paid: </span>
+                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($PaidCredit, 2) }}</span>
+                        </div>
+                       <div class="credit-row">
+                            <span class="credit-label" >Available: </span>
+                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($available_credit, 2) }}</span>
+                        </div>
+                       {{--<div class="credit-row">
                             <span class="credit-label">Outstanding balance: </span>
                             <span class="credit-value"style="margin-left: 10px">₱{{ number_format($usedCredit, 2) }}</span>
                         </div> --}}
@@ -141,9 +142,8 @@
                             </button>
 
                         </div>
-
                         {{-- Transaction history --}}
-                        {{-- <div id="transaction-content" class="tab-content active" role="tabpanel" aria-labelledby="transaction-tab">
+                     <div id="transaction-content" class="tab-content active" role="tabpanel" aria-labelledby="transaction-tab">
                             <div class="table-body">
                                 <p style="margin: 5px; font-weight: bold;">Transaction history</p>
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
@@ -152,20 +152,21 @@
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
                                                 <th>Date</th>
-                                                <th>Order ID</th>
+                                                <th>PO ID</th>
                                                 <th>Status</th>
                                                 <th>Amount</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>                                
-                                            @foreach ($transactionHistory as $transaction)
-                                                <div class="modal fade" id="view-receipt-modal-{{ $transaction->receipt_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+                                            @foreach ($transactions as $transaction)
+                                            <div class="modal fade" id="view-receipt-modal-{{ $transaction->receipt_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> --}}
+                                                <div>
                                                     <div class="modal-dialog">
                                                         <div class="modal-content" >
                                                             @csrf
                                                             <div class="modal-header">
-                                                                <p class="modal-title" id="requestActionLabel">Receipt #{{  $transaction->receipt_id  }}</p>
+                                                                <p class="modal-title" id="requestActionLabel">Receipt #{{  $transaction->payment_id  }}</p>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body" style="height: 600px; overflow: auto; display: flex; flex-direction: column;">
@@ -209,14 +210,16 @@
                                                 <tr>
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ \Carbon\Carbon::parse($transaction->action_at)->format('M d, Y') }}</td>
-                                                    <td>{{ $transaction->order_id }}</td>
+                                                    <td>{{ $transaction->po_id }}</td>
                                                     <td>{{ $transaction->status }}</td>
-                                                    @if ($transaction->label === 'Receipt' && $transaction->status === 'Verified' )
+                                                    @if ($transaction->status ===  "Successful" && $transaction->label ===  "Payment")
                                                        <td style="color: green">₱ +{{ number_format($transaction->amount, 2) }}</td>
-                                                    @elseif ($transaction->label === 'Order')
+                                                    @elseif ($transaction->status ===  "Successful" && $transaction->label ===  "Delivery")
                                                        <td style="color: #dc3545">₱ -{{ number_format($transaction->amount, 2) }}</td>
-                                                    @elseif ($transaction->label === 'Receipt' || $transaction->status === 'Rejected' )
-                                                       <td style="color: #666">Rejected</td>
+                                                    @elseif ($transaction->status ===  "Pending" && $transaction->label ===  "Payment")
+                                                       <td style="color: #666">--</td>
+                                                    @elseif ($transaction->status ===  "Rejected" && $transaction->label ===  "Payment")
+                                                       <td style="color: red">--</td>
                                                     @endif
                                                     <td>
                                                         <div class="dropdown" style="">
@@ -225,9 +228,9 @@
                                                                 expand_circle_down
                                                                 </span>
                                                             </button>
-                                                            <ul class="dropdown-menu">
+                                                            {{-- <ul class="dropdown-menu">
                                                                 <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('orders.order', ['order_id' => $transaction->order_id]) }}"><span class="material-symbols-outlined">package_2</span>Go to Order</a></li>
-                                                                @if ($transaction->label === 'Order')
+                                                                @if ($transaction->label === 'Delivery')
                                                                     @if($transaction->delivery)
                                                                         <li>
                                                                             <a class="dropdown-item"
@@ -240,7 +243,7 @@
                                                                 @elseif ($transaction->label === 'Receipt')
                                                                     <li><a class="dropdown-item"   data-bs-toggle="modal" data-bs-target="#view-receipt-modal-{{ $transaction->receipt_id }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li>
                                                                 @endif
-                                                            </ul>
+                                                            </ul> --}}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -252,7 +255,7 @@
 
                         
                             </div>
-                        </div> --}}
+                        </div>
                         {{-- Payables --}}
                         {{-- <div id="payables-content" class="tab-content" role="tabpanel" aria-labelledby="payables-tab">
                             <div class="table-body" style="margin-top: 10px">

@@ -305,6 +305,7 @@ class PurchaseRequestController extends Controller
                                 'set_id' => $productSetting->set_id,
                                 'planned_kilos' => $dividedKilos > 0 ? $dividedKilos : null,
                                 'planned_heads' => $dividedHeads > 0 ? $dividedHeads : null,
+                                'balance' => "0.00" 
                             ]);
                             
                             $itemsCreated++;

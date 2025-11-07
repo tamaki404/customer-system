@@ -8,6 +8,7 @@ class PurchaseHistory extends Model
 {
     protected $fillable = [
         'po_id',
+        'payment_id',
         'customer_id',
         'purchase_id',
         'delivery_id',

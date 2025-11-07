@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Payments extends Model
@@ -15,6 +14,7 @@ class Payments extends Model
         'total_amount',
         'reason',
         'image',
+        'label',
         'action_by',
         'action_at',
     ];

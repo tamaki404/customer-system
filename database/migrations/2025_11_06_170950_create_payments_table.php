@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('po_id');
             $table->string('customer_id');
             $table->string('delivery_id');
+            $table->enum('label', ['Payment', 'Delivery']);
             $table->enum('status', ['Pending', 'Verified', 'Rejected'])
                 ->default('Pending');
             $table->decimal('total_amount', 12, 2)->default(0)->nullable();
