@@ -229,6 +229,12 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
     Route::prefix('pym')->name('pym.')->group(function () {
         Route::post('/payment/create/', [PaymentsController::class, 'create'])
             ->name('create');
+        Route::get('/payment/list/', [PaymentsController::class, 'list'])
+            ->name('list');
+        Route::get('/payment/list/payment/{payment_id}', [PaymentsController::class, 'payment'])
+            ->name('payment');
+        Route::post('/payment/list/action/', [PaymentsController::class, 'verify'])
+            ->name('verify');
     });
 
     /*

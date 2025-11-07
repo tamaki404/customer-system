@@ -27,7 +27,7 @@ class CreditsRequestController extends Controller
     public function list(Request $request)
     {
         $user = Auth::user();
-        $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
+        $customer = Customers::where('user_id',  $user->user_id)->firstOrFail();
         $credit = Credits::where('user_id', $user->user_id)->firstOrFail();
         $customerId = $customer->customer_id;
 

@@ -18,4 +18,9 @@ class Payments extends Model
         'action_by',
         'action_at',
     ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');
+    }
 }

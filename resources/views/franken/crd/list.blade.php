@@ -160,7 +160,7 @@
                                         </thead>
                                         <tbody>                                
                                             @foreach ($transactions as $transaction)
-                                            <div class="modal fade" id="view-receipt-modal-{{ $transaction->receipt_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> --}}
+                                            <div class="modal fade" id="view-receipt-modal-{{ $transaction->receipt_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> 
                                                 <div>
                                                     <div class="modal-dialog">
                                                         <div class="modal-content" >

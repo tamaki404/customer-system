@@ -8,7 +8,6 @@ use App\Models\Credits;
 use App\Models\Payments;
 use App\Models\PurchaseHistory;
 use Illuminate\Support\Facades\DB;
-
 use App\Models\PurchaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PaymentsController extends Controller
 {
-        public static function randomBase36String(int $length): string
+    public static function randomBase36String(int $length): string
     {
         $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $str = '';
@@ -51,7 +50,8 @@ class PaymentsController extends Controller
             $imageBlob = file_get_contents($request->file('image')->getRealPath());
 
             // Generate receipt id
-            $date = date('Ymd');
+                $date = date('Ymd');
+
             $payment_id = 'PAY-' . $date . '-' . $this->randomBase36String(5);
             $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
 
@@ -95,5 +95,83 @@ class PaymentsController extends Controller
                 ->withInput();
         }
     }
+
+    public function list(Request $request)
+    {
+        $user = Auth::user();
+        $customer = null;
+
+        if ($user->role === "Customer") {        
+            $customer = Customers::where('user_id',  $user->user_id)->firstOrFail();
+            $payments = Payments::where('customer_id', $customer->customer_id)->get();
+        } else {
+            $payments = Payments::all();
+        }
+
+        return view('franken.pym.list', compact(
+            'user',
+            'customer',
+            'payments',
+        ));
+    }
+    public function payment($payment_id, Request $request)
+    {
+        $user = Auth::user();
+        $customer = null;
+
+        if ($user->role === "Customer") {        
+            $payment = Payments::where('payment_id', $payment_id)->firstOrFail();
+        } else {
+            $payment = Payments::where('payment_id', $payment_id)->firstOrFail();
+        }
+
+        return view('franken.pym.payment', compact(
+            'user',
+            'payment',
+        ));
+    }
+
+public function verify(Request $request)
+{
+    $request->validate([
+        'payment_id' => 'required|exists:payments,payment_id',
+        'status'   => 'required|in:Verified,Rejected',
+        'total_amount'   => 'required|numeric',
+    ]);
+
+    try {
+        $payment = Payments::where('payment_id', $request->payment_id)->firstOrFail();
+
+        $payment->update([
+            'status'     => $request->status,
+            'action_by'  => Auth::user()->user_id,
+            'action_at'  => now(),
+            'total_amount' => $request->total_amount,
+        ]);
+
+        $date = date('Ymd');
+        $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
+
+        PurchaseHistory::create([
+            'po_id' => $payment->po_id,
+            'customer_id' => $payment->customer_id,
+            'purchase_id' => $history_id,
+            'payment_id' => $payment->payment_id,
+            'delivery_id' => "0",
+            'label' => "Payment",
+            'amount' => $request->total_amount,
+            'status' => "Successful"
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Receipt updated successfully!');
+
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->with('error', 'Failed to update receipt. Please try again.')
+            ->withInput();
+    }
+}
+
 
 }
