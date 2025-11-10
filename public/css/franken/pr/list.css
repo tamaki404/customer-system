@@ -1,0 +1,61 @@
+.day-checkbox-container {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 140px;
+}
+
+.day-checkbox-container:hover {
+    border-color: #0d6efd;
+    background-color: #f8f9fa;
+}
+
+.day-checkbox-container.selected {
+    border-color: #0d6efd;
+    background-color: #e7f1ff;
+}
+
+.day-checkbox-container input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.day-label {
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+}
+#productsTable input[type="number"] {
+    text-align: right;
+}
+
+.note-notify {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background-color: #e7f3ff;
+    border-left: 4px solid #0d6efd;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+.collection-btn {
+    background-color: #f8912a;
+    font-size: 13px;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    gap: 5px;
+    display: flex;
+    border-radius: 5px;
+    align-items: center;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.collection-btn:hover {
+    background-color: #df8124;
+}

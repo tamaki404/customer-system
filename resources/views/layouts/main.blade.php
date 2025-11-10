@@ -130,7 +130,14 @@
                                 <div class="nav-indicator"></div>
                             </a>
                         </div>
-
+                        <div class="nav-group">
+                            <div class="nav-group-title">Promo</div>
+                            <a class="nav-item{{ $currentRoute == 'prm.list' ? ' active' : '' }}" href="{{ route('prm.list') }}">
+                                <span class="material-symbols-outlined">diamond_shine</span>
+                                <p>Promo list</p>
+                                <div class="nav-indicator"></div>
+                            </a>                           
+                        </div>
                         <!-- Group 2: Orders & Inventory -->
                     <div class="nav-group">
                             <div class="nav-group-title">Orders & Inventory</div>
@@ -145,11 +152,11 @@
                                 <p>Purchase request</p>
                                 <div class="nav-indicator"></div>
                             </a>
-                            <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
+                            {{-- <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
                                 <span class="material-symbols-outlined">shopping_bag</span>
                                 <p>Purchase orders</p>
                                 <div class="nav-indicator"></div>
-                            </a>
+                            </a> --}}
 
                             <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
                                 <span class="material-symbols-outlined">receipt_long</span>

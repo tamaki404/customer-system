@@ -28,7 +28,8 @@ use App\Http\Controllers\{
     PurchaseRequestController,
     CreditsRequestController,
     DeliveryRequestController,
-    PaymentsController
+    PaymentsController,
+    SalesController
 };
 
 /*
@@ -214,20 +215,20 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
     //         ->middleware('role:Staff');
     // });
     
-    Route::prefix('crd')->name('crd.')->group(function () {
+    Route::prefix('credit')->name('crd.')->group(function () {
         
         Route::get('/list', [CreditsRequestController::class, 'list'])
             ->name('list');
         Route::get('/download-image/{payment_id}', [CreditsRequestController::class, 'download'])->name('download');
 
     });
-    Route::prefix('dlv')->name('dlv.')->group(function () {
+    Route::prefix('delivery')->name('dlv.')->group(function () {
         Route::get('/delivery/{delivery_id}', [DeliveryRequestController::class, 'delivery'])
             ->name('delivery');
         Route::post('/delivery/receive-order/', [DeliveryRequestController::class, 'receive'])
             ->name('receive');
     });
-    Route::prefix('pym')->name('pym.')->group(function () {
+    Route::prefix('payment')->name('pym.')->group(function () {
         Route::post('/payment/create/', [PaymentsController::class, 'create'])
             ->name('create');
         Route::get('/payment/list/', [PaymentsController::class, 'list'])
@@ -239,7 +240,10 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
         Route::post('/payment/list/action/', [PaymentsController::class, 'verify'])
             ->name('verify');
     });
-
+    Route::prefix('promo')->name('prm.')->group(function () {
+        Route::get('/list', [SalesController::class, 'list'])
+            ->name('list');
+    });
     /*
     |--------------------------------------------------------------------------
     | Dashboard (with Representative Permission Check)
