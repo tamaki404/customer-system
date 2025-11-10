@@ -234,6 +234,8 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
             ->name('list');
         Route::get('/payment/list/payment/{payment_id}', [PaymentsController::class, 'payment'])
             ->name('payment');
+        Route::get('/payment/collection/{po_id}', [PaymentsController::class, 'collection'])
+            ->name('collection');
         Route::post('/payment/list/action/', [PaymentsController::class, 'verify'])
             ->name('verify');
     });

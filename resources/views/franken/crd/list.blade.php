@@ -162,6 +162,7 @@
                                         </thead>
                                         <tbody>                                
                                             @foreach ($transactions as $transaction)
+                                                {{-- payment-view-modal --}}
                                                 <div class="modal fade" id="view-receipt-modal-{{ $transaction->payment_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> 
                                                     <div class="modal-dialog">
                                                         <div class="modal-content" >
@@ -198,7 +199,7 @@
                                                                     </span>
                                                                     Receipt collection
                                                                 </button> 
-                                                                <button class="collection-btn" style="border-radius: 5px; "
+                                                                <button class="collection-btn" style="border-radius: 5px; background-color: #888"
                                                                     onclick="window.location.href='{{ route('crd.download', ['payment_id' => $transaction->payment->payment_id]) }}'">
                                                                     <span class="material-symbols-outlined" style="width:auto">
                                                                     download
@@ -309,10 +310,10 @@
                                                             </span>
                                                         </button>
                                                         <ul class="dropdown-menu">
-                                                            <li><a class="dropdown-item"  style="color:#f8a01d" ><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
+                                                            <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('pr.request', ['po_id' => $transaction->po_id]) }}"> <span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
                                                             <li>
-                                                                <a class="dropdown-item">
-                                                                {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('pym.collection', ['po_id' => $transaction->po_id]) }}">
                                                                     <span class="material-symbols-outlined">arrow_outward</span>
                                                                     Receipt collection
                                                                 </a>

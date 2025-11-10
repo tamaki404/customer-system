@@ -131,47 +131,61 @@ class PaymentsController extends Controller
         ));
     }
 
-public function verify(Request $request)
-{
-    $request->validate([
-        'payment_id' => 'required|exists:payments,payment_id',
-        'status'   => 'required|in:Verified,Rejected',
-        'total_amount'   => 'required|numeric',
-    ]);
+    public function collection($po_id, Request $request)
+    {
+        $user = Auth::user();
+        $customer = null;
 
-    try {
-        $payment = Payments::where('payment_id', $request->payment_id)->firstOrFail();
+        $payments = Payments::where('po_id', $po_id)->orderBy('updated_at', 'desc')->get();
+        $purchase = PurchaseRequest::where('po_id', $po_id)->firstOrFail();
 
-        $payment->update([
-            'status'     => $request->status,
-            'action_by'  => Auth::user()->user_id,
-            'action_at'  => now(),
-            'total_amount' => $request->total_amount,
-        ]);
+        return view('franken.pym.collection', compact(
+            'payments',
+            'purchase',
 
-        $date = date('Ymd');
-        $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
-
-        PurchaseHistory::create([
-            'po_id' => $payment->po_id,
-            'customer_id' => $payment->customer_id,
-            'purchase_id' => $history_id,
-            'payment_id' => $payment->payment_id,
-            'delivery_id' => "0",
-            'label' => "Payment",
-            'amount' => $request->total_amount,
-            'status' => "Successful"
-        ]);
-
-        return redirect()->back()
-            ->with('success', 'Receipt updated successfully!');
-
-    } catch (\Exception $e) {
-        return redirect()->back()
-            ->with('error', 'Failed to update receipt. Please try again.')
-            ->withInput();
+        ));
     }
-}
+    public function verify(Request $request)
+    {
+        $request->validate([
+            'payment_id' => 'required|exists:payments,payment_id',
+            'status'   => 'required|in:Verified,Rejected',
+            'total_amount'   => 'required|numeric',
+        ]);
+
+        try {
+            $payment = Payments::where('payment_id', $request->payment_id)->firstOrFail();
+
+            $payment->update([
+                'status'     => $request->status,
+                'action_by'  => Auth::user()->user_id,
+                'action_at'  => now(),
+                'total_amount' => $request->total_amount,
+            ]);
+
+            $date = date('Ymd');
+            $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
+
+            PurchaseHistory::create([
+                'po_id' => $payment->po_id,
+                'customer_id' => $payment->customer_id,
+                'purchase_id' => $history_id,
+                'payment_id' => $payment->payment_id,
+                'delivery_id' => "0",
+                'label' => "Payment",
+                'amount' => $request->total_amount,
+                'status' => "Successful"
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Receipt updated successfully!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to update receipt. Please try again.')
+                ->withInput();
+        }
+    }
 
 
 }
