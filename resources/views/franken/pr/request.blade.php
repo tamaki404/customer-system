@@ -72,7 +72,7 @@
                                     <span class="material-symbols-outlined" >
                                     grain
                                     </span>
-                                    Receipt collection
+                                    Payments collection
                                 </button> 
                             @endif --}}
                         </div>
@@ -430,8 +430,10 @@
                     </p>
 
                 </div>
-                {{-- <button class="collection-btn" style="width: 50%; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;" onclick="window.location.href='{{ route('pr.collection', ['po_id' => $request->po_id]) }}'"> --}}
-
+                <button class="collection-btn" style="width: 50%; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;" onclick="window.location.href='{{ route('pym.collection', ['po_id' => $request->po_id]) }}'" >
+                    <span class="material-symbols-outlined" style="font-size: 14px">grain</span>
+                    Payment collection
+                </button>
 
             </div>
         </div>

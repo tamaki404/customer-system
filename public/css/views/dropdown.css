@@ -26,10 +26,16 @@
 .dropdown-menu li a span{
     font-size: 13px;
 }
-.dropdown-menu li a{
+.dropdown-menu li a,
+.dropdown-menu li button{
     font-size: 13px;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 5px;
+    background-color: transparent;
+}
+.dropdown-menu li button:hover{
+
+    border-radius: 0;
 }

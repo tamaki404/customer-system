@@ -1,0 +1,69 @@
+.credit-summary{
+    padding: 10px; height: auto; border-radius: 5px; width: 400px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; background-color: #fff; border: none;
+}
+.credit-summary .credit-box{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+.credit-summary .credit-box p{
+    margin: 0;
+}
+.credit-box p .balance{
+    font-size: 30px;
+    font-weight: bold;
+}
+.credit-box p .available{
+    font-size: 14px;
+}
+.credit-box hr{
+  border: none;
+  height: 2px;
+  background-color: #888;
+  width: 50px; 
+  margin: 10px; 
+
+}
+.credit-box .label{
+  color: #888;
+
+}
+.credit-summary .info{
+    margin: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+    color: #54beff;
+    background-color: #d7f0ff;
+    padding: 10px ;
+    border-radius: 5px;
+    border-left: 4px solid #7fbcdb;
+
+}
+.info .icon{
+    font-size: 15px;
+}
+
+.content-body .credit-summary{
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-width: 500px;
+}
+.credit-row{
+    display: flex;
+}
+
+hr.vertical {
+  width: 1px; 
+  height: auto; 
+  background-color: #ccc; 
+  border: none; 
+  margin: 0 auto; 
+  display: inline-block; 
+  vertical-align: middle; 
+}

@@ -4,6 +4,8 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/views/customer.css') }}">
     <link rel="stylesheet" href="{{ asset('css/views/dropdown.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/views/credits.css') }}">
+
 @endpush
 
 @section('content')
@@ -87,26 +89,12 @@
                 </div>
 
                 <div class="content-body" style="padding: 10px; border: none; height: auto; gap: 10px">
-                    <style>
-                        .credit-row span{
-                            margin: 0;
-                        }
-                        .credit-row .credit-label{
-                            font-size: 13px;
-                            color: #888;
-
-                        }
-                        .credit-row .credit-value{
-                            color: #333;
-                            font-weight: bold;
-                        }
-                    </style>
-
-                    <div class="credit-summary" style="padding: 10px; height: auto; border-radius: 5px; width: 400px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; background-color: #fff; border: none;">
+        
+                    <div class="credit-summary">
                        @php
                             $available_credit = ($credit->credit_limit - $currentBalance);
                        @endphp
-                        <div class="credit-row">
+                        {{-- <div class="credit-row">
                             <span class="credit-label" >Credit limit: </span>
                             <span class="credit-value"style="margin-left: 10px">₱{{ number_format($credit->credit_limit, 2) }}</span>
                         </div>
@@ -121,11 +109,38 @@
                        <div class="credit-row">
                             <span class="credit-label" >Available: </span>
                             <span class="credit-value"style="margin-left: 10px">₱{{ number_format($available_credit, 2) }}</span>
-                        </div>
-                       {{--<div class="credit-row">
-                            <span class="credit-label">Outstanding balance: </span>
-                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($usedCredit, 2) }}</span>
                         </div> --}}
+
+                        <p class="info">
+                            <span class="material-symbols-outlined icon">
+                            info
+                            </span>
+                            <span>Ordering will be disabled when balance hits 20% of your credit limit</span>
+                        </p>
+
+                        <div class="credit-box">
+                            <p>
+                                <span class="balance">₱{{ number_format($currentBalance, decimals: 2) }}</span>
+                            </p>
+                            <hr>
+                            <p class="label">Account balance</p>
+                        </div>
+                        <div style="display: flex; flex-direction: row; ">
+                        <div class="credit-box">
+                            <p>
+                                <span class="available">₱{{ number_format($available_credit, decimals: 2) }}</span>
+                            </p>
+                            <p class="label">Available</p>
+                        </div>
+                        <hr class="vertical">
+                        <div class="credit-box" >
+                            <p>
+                                <span class="available">₱{{ number_format($available_credit, decimals: 2) }}</span>
+                            </p>
+                            <p class="label">Due</p>
+                        </div>
+                        </div>
+
                     </div>
 
                     <div class="tab-div" style="margin-top: 20px;">
@@ -193,12 +208,7 @@
                                                             </div>
                                                    
                                                             <div class="modal-footer" style="display: flex; flex-direction: row;">
-                                                                <button class="collection-btn" style="border-radius: 5px; ">
-                                                                    <span class="material-symbols-outlined" style="width:auto">
-                                                                    grain
-                                                                    </span>
-                                                                    Receipt collection
-                                                                </button> 
+                                                             
                                                                 <button class="collection-btn" style="border-radius: 5px; background-color: #888"
                                                                     onclick="window.location.href='{{ route('crd.download', ['payment_id' => $transaction->payment->payment_id]) }}'">
                                                                     <span class="material-symbols-outlined" style="width:auto">
@@ -296,6 +306,7 @@
                                         </thead>
                                         <tbody>                             
                                             @foreach ($purchaseData as $payable)
+
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $payable['purchase_request']->updated_at->format("F j, Y, g:i a") }}</td>
@@ -315,7 +326,7 @@
                                                                 <a class="dropdown-item"
                                                                     href="{{ route('pym.collection', ['po_id' => $transaction->po_id]) }}">
                                                                     <span class="material-symbols-outlined">arrow_outward</span>
-                                                                    Receipt collection
+                                                                    Payments collection
                                                                 </a>
                                                             </li>
                                                         </ul>
@@ -353,7 +364,50 @@
                                         </thead>
                                         <tbody>                                
                                             @foreach ($payments as $receipt)
-                                                {{-- <tr onclick="window.location.href='{{ route('pym.payment', ['payment_id' => $receipt->payment_id]) }}'"> --}}
+                                                {{-- payment-view-modal --}}
+                                                <div class="modal fade" id="view-payment-modal-{{ $transaction->payment_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> 
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content" >
+                                                            @csrf
+                                                            <div class="modal-header">
+                                                                <p class="modal-title" id="requestActionLabel">Receipt #{{  $transaction->payment_id  }}</p>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body" style="height: 600px; overflow: auto; display: flex; flex-direction: column;">
+                                                                <p class="note-notify">
+                                                                    <span class="material-symbols-outlined"> info </span>
+                                                                    <span> Make sure image selected is 2MB or less, scanned image is recommended.</span>
+                                                                </p>
+                                                                <div class="modal-option-groups">
+                                                                    @if ($transaction->payment)
+                                                                        <p style="display:flex; flex-direction: row; justify-content: space-between;">
+                                                                            <span style="font-size: 13px">{{ $transaction->payment->status }}</span>     
+                                                                            <span style="font-size: 13px; color: #666;">Updated at {{ \Carbon\Carbon::parse($transaction->payment->action_at)->format('F j, Y') }}</span>
+                                                                        </p>
+                                                                        @php
+                                                                            $imgSrc = $transaction->payment && $transaction->payment->image
+                                                                                ? 'data:' . $transaction->payment->image_mime_type . ';base64,' . base64_encode($transaction->payment->image)
+                                                                                : asset('assets/default-company-logo.png');
+                                                                        @endphp
+                                                                        <img src="{{ $imgSrc }}" alt="Receipt image" style="height: 70%; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; border-radius: 5px">
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                   
+                                                            <div class="modal-footer" style="display: flex; flex-direction: row;">
+                                                             
+                                                                <button class="collection-btn" style="border-radius: 5px; background-color: #888"
+                                                                    onclick="window.location.href='{{ route('crd.download', ['payment_id' => $transaction->payment->payment_id]) }}'">
+                                                                    <span class="material-symbols-outlined" style="width:auto">
+                                                                    download
+                                                                    </span>
+                                                                    Download image
+                                                                </button> 
+                                                            
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>                                                
                                                 <tr>
                                                     <td>{{$loop->iteration}}</td>
                                                     <td>{{ \Carbon\Carbon::parse($receipt->updated_at)->format("F j, Y, g:i a") }}</td>
@@ -368,17 +422,16 @@
                                                                 </span>
                                                             </button>
                                                             <ul class="dropdown-menu">
-                                                                <li><a class="dropdown-item"  style="color:#f8a01d" ><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
+                                                                <li><a class="dropdown-item" href="{{ route('pr.request', ['po_id' => $transaction->po_id]) }}"  style="color:#f8a01d" ><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
                                                                 <li>
-                                                                    <a class="dropdown-item">
-                                                                    {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                    <a class="dropdown-item"
+                                                                        href="{{ route('pym.collection', ['po_id' => $transaction->po_id]) }}">
                                                                         <span class="material-symbols-outlined">arrow_outward</span>
-                                                                        Receipt collection
+                                                                        Payments collection
                                                                     </a>
                                                                 </li>
                                                                 <li>
-                                                                    <a class="dropdown-item">
-                                                                    {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                    <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#view-payment-modal-{{ $transaction->payment_id }}">
                                                                         <span class="material-symbols-outlined">capture</span>
                                                                         View receipt
                                                                     </a>

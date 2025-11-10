@@ -53,10 +53,32 @@
                     </div>
 
                     <div class="title-actions">
-                        <p class="heading" style="display: flex; flex-direction: row; justify-content: space-between; flex: 1;">
-                            <span>Payments collection </span> 
-                            <span style="font-size: 14px; font-weight: normal; color: #666;">Updated on <strong>{{ $purchase->created_at->format("F j, Y, g:i A")}}</strong></span>
-                        </p>
+                        <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; flex: 1; ">
+                            <span>Payments collection #{{ $purchase->po_id }}</span> 
+                            <button class="collection-btn" onclick="window.location.href='{{ route('pr.request', ['po_id' => $purchase->po_id]) }}'">
+                                <span class="material-symbols-outlined" style="font-size: 14px">call_made</span>
+                                <span style="font-size: 13px">Purchase order</span>
+                            </button>
+                            <style>
+                                .collection-btn {
+                                    background-color: #f8912a;w
+                                    font-size: 13px;
+                                    color: #fff;
+                                    border: none;
+                                    padding: 8px;
+                                    gap: 5px;
+                                    display: flex;
+                                    border-radius: 5px;
+                                    align-items: center;
+                                    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+                                }
+                                .collection-btn:hover {
+                                    background-color: #df8124;
+                                }
+
+                            </style>
+                        </div>
+
                     </div>
                 </div>
 
@@ -75,10 +97,10 @@
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a class="dropdown-item">
+                                            <button class="dropdown-item" onclick="window.location.href='{{ route('crd.download', ['payment_id' => $receipt->payment_id]) }}'">
                                                 <span class="material-symbols-outlined">download</span>
                                                 Download image
-                                            </a>
+                                            </button>
                                         </li>
                                     </ul>
                                 </div>   
@@ -101,11 +123,11 @@
                             <div class="more-info">
 
                                 <p class="status-date">
-                                    <span>Updated at</span>
+                                    <span>Updated on</span>
                                     <strong>{{ \Carbon\Carbon::parse($receipt->updated_at)->format('F j, Y, g:i A') }}</strong>
                                 </p>
                                 <p class="status-date">
-                                    <span>Created at</span>
+                                    <span>Created on</span>
                                     <strong>{{ \Carbon\Carbon::parse($receipt->created_at)->format('F j, Y, g:i A') }}</strong>
                                 </p>
                             </div>

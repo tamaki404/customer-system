@@ -53,7 +53,7 @@
 
                     <div class="title-actions">
                         <p class="heading" style="display: flex; flex-direction: row; justify-content: space-between; flex: 1;">
-                            <span>Receipt collection</span> 
+                            <span>Payments collection</span> 
                             <span style="font-size: 14px; font-weight: normal; color: #666;">{{ $po->po_id }}</span>
                         </p>
 
