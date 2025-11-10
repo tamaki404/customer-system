@@ -29,7 +29,7 @@ use App\Http\Controllers\{
     CreditsRequestController,
     DeliveryRequestController,
     PaymentsController,
-    SalesController
+    PromosController
 };
 
 /*
@@ -241,8 +241,10 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
             ->name('verify');
     });
     Route::prefix('promo')->name('prm.')->group(function () {
-        Route::get('/list', [SalesController::class, 'list'])
+        Route::get('/list', [PromosController::class, 'list'])
             ->name('list');
+        Route::post('/create', [PromosController::class, 'create'])
+            ->name('create');
     });
     /*
     |--------------------------------------------------------------------------

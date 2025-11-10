@@ -30,7 +30,103 @@
         </div>
     @endif
 
-
+        {{-- Create promo modal --}}
+        <div class="modal fade" id="set-promo-modal" tabindex="-1" aria-labelledby="setPromoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <form class="modal-content shadow-sm border-0" method="POST" action="{{ route('prm.create') }}">
+                    @csrf
+                    <div class="modal-header">
+                        <p class="modal-title" id="requestActionLabel"> 
+                            List a promo
+                        </p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    {{-- Body --}}
+                    <div class="modal-body">
+                        <p class="note-notify">
+                            <span class="material-symbols-outlined"> info </span>
+                            <span>Make sure promo details are correct before applying</span>
+                        </p>
+                        {{-- Name --}}
+                        <div class="form-group mt-3">
+                            <label for="name" class="form-label">
+                                <span class="req-asterisk">*</span> Name promo
+                            </label>
+                            <input type="text" id="name" name="name" class="form-control" maxlength="100" placeholder="e.g. Summer Sale, Dealer Discount" required>
+                        </div>
+                        {{-- Description --}}
+                        <div class="form-group mt-3">
+                            <label for="description" class="form-label">Add a short description (Recommended)</label>
+                            <textarea id="description" name="description" maxlength="255" class="form-control" rows="2" placeholder="Optional short description...">{{ old('description') }}</textarea>
+                        </div>
+                        {{-- Value --}}
+                        <div class="form-group mt-3">
+                            <label class="form-label">
+                                <span class="req-asterisk">*</span> Quantity to sell
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="number" name="quantity" class="form-control" placeholder="Enter quantity" required>
+                            </div>
+                        </div>
+                        {{-- Value --}}
+                        <div class="form-group mt-3">
+                            <label class="form-label">
+                                <span class="req-asterisk">*</span> Set value
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="number" name="value" class="form-control" min="0" step="0.01" placeholder="Enter value" required>
+                                <select name="value_type" id="value_type" class="form-select w-auto" required>
+                                    <option value="percentage" >%</option>
+                                    <option value="fixed">₱ (Fixed)</option>
+                                </select>
+                            </div>
+                        </div>
+                        {{-- Account Type --}}
+                        <div class="form-group mt-3">
+                            <label for="category" class="form-label">
+                                <span class="req-asterisk">*</span> Select account type to apply to
+                            </label>
+                            <select name="category" id="category" class="form-select" required>
+                                <option value="HRI" {{ old('category') == 'HRI' ? 'selected' : '' }}>HRI</option>
+                            </select>
+                        </div>
+                        {{-- Product --}}
+                        <div class="form-group mt-3">
+                            <label for="product" class="form-label">
+                                <span class="req-asterisk">*</span> Select product to apply to
+                            </label>
+                            <select name="product" id="product" class="form-select" required>
+                            <option value="" disabled {{ old('product') ? '' : 'selected' }}>-- Select product --</option>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->product_id }}">{{ ucfirst($product->name) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        {{-- Effectivity Dates --}}
+                        <div class="form-group mt-4 p-3 border rounded-3" style="background: #fafafa;">
+                                <label class="form-label  mb-2">Effectivity Period</label>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="start_date" class="form-label small">Start Date</label>
+                                        <input type="datetime-local" id="start_date" name="start_date" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="end_date" class="form-label small">End Date</label>
+                                        <input type="datetime-local" id="end_date" name="end_date" class="form-control" required>
+                                    </div>
+                                </div>
+                        </div>
+                        {{-- Hidden --}}
+                        <input type="hidden" name="user_id" value="{{ Auth()->user()->user_id }}" required>
+                    </div>
+                    {{-- Footer --}}
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Apply promo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <div class="content-bg">
                 <div class="content-header">
                     <div class="contents-display">
@@ -63,11 +159,13 @@
 
                     <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
                         <p class="heading">Promos</p>
-                        @if ( auth()->user()->role === 'Customer')
-                            <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
-                                <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
-                                Create purchase request
-                            </button>
+                        @if ( auth()->user()->role === 'Admin')
+                            <div style="display: flex; flex-direction: row; margin-left: auto; gap: 10px">
+                                <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#set-promo-modal" style="font-size: 14px">
+                                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">shoppingmode</span>
+                                    List a promo
+                                </button>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -87,15 +185,15 @@
                             </tr>
                         </thead>
                         <tbody>                                
-                            @foreach ($sales as $sale)
+                            @foreach ($promos as $promo)
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
-                                    <td>{{ $sale->created_at }}</td>
-                                    <td>{{ $sale->name }}</td>
-                                    <td>{{ $sale->category }}</td>
-                                    <td>{{ $sale->startdate }} - {{ $sale->enddate }}</td>
-                                    <td>{{ $sale->quantity }}</td>
-                                    <td>{{ $sale->product->name }}</td>
+                                    <td>{{ $promo->created_at }}</td>
+                                    <td>{{ $promo->name }}</td>
+                                    <td>{{ $promo->category }}</td>
+                                    <td>{{ $promo->start_date }} - {{ $promo->end_date }}</td>
+                                    <td>{{ $promo->quantity }}</td>
+                                    <td>{{ $promo->product->name }}</td>
                                     <th></th>
                                 </tr>
                             @endforeach
