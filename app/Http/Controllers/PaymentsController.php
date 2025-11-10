@@ -50,7 +50,7 @@ class PaymentsController extends Controller
             $imageBlob = file_get_contents($request->file('image')->getRealPath());
 
             // Generate receipt id
-                $date = date('Ymd');
+            $date = date('Ymd');
 
             $payment_id = 'PAY-' . $date . '-' . $this->randomBase36String(5);
             $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);

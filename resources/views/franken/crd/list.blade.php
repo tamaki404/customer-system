@@ -129,7 +129,6 @@
                     </div>
 
                     <div class="tab-div" style="margin-top: 20px;">
-
                         <div class="tabs" role="tablist">
                             <button class="tab-button active" data-tab="transaction" role="tab" aria-selected="false" aria-controls="transaction-content" id="transaction-tab">
                                 Transaction history
@@ -140,10 +139,10 @@
                             <button class="tab-button" data-tab="payment" role="tab" aria-selected="true" aria-controls="payment-content" id="payment-tab">
                                 Payments
                             </button>
-
                         </div>
+
                         {{-- Transaction history --}}
-                     <div id="transaction-content" class="tab-content active" role="tabpanel" aria-labelledby="transaction-tab">
+                        <div id="transaction-content" class="tab-content active" role="tabpanel" aria-labelledby="transaction-tab">
                             <div class="table-body">
                                 <p style="display: flex; margin: 5px; flex-direction: column; gap: 2px;">
                                     <span style="font-weight: bold;, font-size: 14px;">Transaction history</span>
@@ -163,8 +162,7 @@
                                         </thead>
                                         <tbody>                                
                                             @foreach ($transactions as $transaction)
-                                            <div class="modal fade" id="view-receipt-modal-{{ $transaction->receipt_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> 
-                                                <div>
+                                                <div class="modal fade" id="view-receipt-modal-{{ $transaction->payment_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> 
                                                     <div class="modal-dialog">
                                                         <div class="modal-content" >
                                                             @csrf
@@ -178,33 +176,36 @@
                                                                     <span> Make sure image selected is 2MB or less, scanned image is recommended.</span>
                                                                 </p>
                                                                 <div class="modal-option-groups">
-                                                                    @if ($transaction->receipt)
+                                                                    @if ($transaction->payment)
                                                                         <p style="display:flex; flex-direction: row; justify-content: space-between;">
-                                                                            <span style="font-size: 13px">{{ $transaction->receipt->status }}</span>     
-                                                                            <span style="font-size: 13px; color: #666;">Updated at {{ \Carbon\Carbon::parse($transaction->receipt->action_at)->format('F j, Y') }}</span>
+                                                                            <span style="font-size: 13px">{{ $transaction->payment->status }}</span>     
+                                                                            <span style="font-size: 13px; color: #666;">Updated at {{ \Carbon\Carbon::parse($transaction->payment->action_at)->format('F j, Y') }}</span>
                                                                         </p>
-                                                                        <button class="collection-btn" onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $transaction->order_id]) }}'" style="border-radius: 5px; min-width: 150px; max-width: 180px;">
-                                                                            <span class="material-symbols-outlined" style="width:auto">
-                                                                            grain
-                                                                            </span>
-                                                                            Receipt collection
-                                                                        </button> 
-
                                                                         @php
-                                                                            $imgSrc = $transaction->receipt && $transaction->receipt->image
-                                                                                ? 'data:' . $transaction->receipt->image_mime_type . ';base64,' . base64_encode($transaction->receipt->image)
+                                                                            $imgSrc = $transaction->payment && $transaction->payment->image
+                                                                                ? 'data:' . $transaction->payment->image_mime_type . ';base64,' . base64_encode($transaction->payment->image)
                                                                                 : asset('assets/default-company-logo.png');
                                                                         @endphp
-
                                                                         <img src="{{ $imgSrc }}" alt="Receipt image" style="height: 70%; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; border-radius: 5px">
                                                                     @endif
-
-
                                                                 </div>
                                                             </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-warning" data-bs-dismiss="modal" style="display: flex; flex-direction: row; gap: 5px; align-items: center; font-size: 13px;"><span class="material-symbols-outlined" style="font-size: 13px">picture_as_pdf</span>Pdf viewer</button>
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                   
+                                                            <div class="modal-footer" style="display: flex; flex-direction: row;">
+                                                                <button class="collection-btn" style="border-radius: 5px; ">
+                                                                    <span class="material-symbols-outlined" style="width:auto">
+                                                                    grain
+                                                                    </span>
+                                                                    Receipt collection
+                                                                </button> 
+                                                                <button class="collection-btn" style="border-radius: 5px; "
+                                                                    onclick="window.location.href='{{ route('crd.download', ['payment_id' => $transaction->payment->payment_id]) }}'">
+                                                                    <span class="material-symbols-outlined" style="width:auto">
+                                                                    download
+                                                                    </span>
+                                                                    Download image
+                                                                </button> 
+                                                            
                                                             </div>
                                                         </div>
                                                     </div>
@@ -232,11 +233,11 @@
                                                                 </span>
                                                             </button>
                                                             <ul class="dropdown-menu">
-                                                                <li><a class="dropdown-item"  style="color:#f8a01d" ><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
+                                                                <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('pr.request', ['po_id' => $transaction->po_id]) }}"><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
                                                                 @if($transaction->label === "Delivery")
                                                                     <li>
-                                                                        <a class="dropdown-item">
-                                                                        {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                        <a class="dropdown-item" href="{{ route('dlv.delivery', ['delivery_id' => $transaction->delivery_id]) }}"
+                                                                        >
                                                                             <span class="material-symbols-outlined">arrow_outward</span>
                                                                             Go to Delivery
                                                                         </a>
@@ -244,14 +245,15 @@
                                                                 @elseif($transaction->label === "Payment")
                                                                 
                                                                     <li>
-                                                                        <a class="dropdown-item">
-                                                                        {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                        <a class="dropdown-item"
+                                                                            href="{{ route('pym.payment', ['payment_id' => $transaction->payment_id ?? NULL]) }}">
                                                                             <span class="material-symbols-outlined">arrow_outward</span>
                                                                             Go to receipt
                                                                         </a>
                                                                     </li>
                                                                     <li>
-                                                                        <a class="dropdown-item">
+
+                                                                        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#view-receipt-modal-{{ $transaction->payment_id }}">
                                                                         {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
                                                                             <span class="material-symbols-outlined">capture</span>
                                                                             View receipt
@@ -392,18 +394,9 @@
                         
                             </div>
                         </div>
-
                     </div>
-
-                
-
-
-
-                
             
                 </div>
-
-
         </div>
 
 @endsection

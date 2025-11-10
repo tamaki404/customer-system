@@ -8,10 +8,11 @@ use App\Models\Credits;
 use App\Models\Payments;
 use App\Models\PurchaseHistory;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Storage;
 use App\Models\PurchaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use finfo;
 
 class CreditsRequestController extends Controller
 {
@@ -24,6 +25,25 @@ class CreditsRequestController extends Controller
         }
         return $str;
     }
+
+    public function download($payment_id)
+    {
+        $payment = Payments::where('payment_id', $payment_id)->firstOrFail();
+        $binary = $payment->image;
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime  = finfo_buffer($finfo, $binary);
+        finfo_close($finfo);
+
+        $ext = explode('/', $mime)[1];
+        $filename = "payment_{$payment_id}.$ext";
+
+        return response($binary, 200)
+            ->header('Content-Type', $mime)
+            ->header('Content-Disposition', "attachment; filename=\"$filename\"");
+    }
+
+
     public function list(Request $request)
     {
         $user = Auth::user();

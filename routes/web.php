@@ -218,6 +218,7 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
         
         Route::get('/list', [CreditsRequestController::class, 'list'])
             ->name('list');
+        Route::get('/download-image/{payment_id}', [CreditsRequestController::class, 'download'])->name('download');
 
     });
     Route::prefix('dlv')->name('dlv.')->group(function () {

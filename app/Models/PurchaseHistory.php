@@ -16,4 +16,9 @@ class PurchaseHistory extends Model
         'amount',
         'status',
     ];
+
+    public function payment()
+    {
+        return $this->belongsTo( Payments::class, 'payment_id', 'payment_id');
+    }
 }

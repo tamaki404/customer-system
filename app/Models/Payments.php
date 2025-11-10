@@ -14,6 +14,7 @@ class Payments extends Model
         'total_amount',
         'reason',
         'image',
+        'mime_type',
         'label',
         'action_by',
         'action_at',

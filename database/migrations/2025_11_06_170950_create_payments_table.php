@@ -22,6 +22,7 @@ return new class extends Migration
                 ->default('Pending');
             $table->decimal('total_amount', 12, 2)->default(0)->nullable();
             $table->string('reason')->nullable();
+            $table->string('mime_type')->nullable();
             $table->string('action_by')->nullable();
             $table->timestamp('action_at')->nullable();
             $table->timestamps();
