@@ -8,6 +8,7 @@ use App\Models\DeliveryItemRequest;
 use App\Models\ProductSetting;
 use App\Models\Customers;
 use App\Models\Receipts;
+use App\Models\Payments;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -44,8 +45,8 @@ class PurchaseRequestController extends Controller
                     'products_count' => $products->count()
                 ]);
                 
-            } elseif ($user->role === 'Staff') {
-                $requests = PurchaseRequest::orderBy('created_at', 'desc')->get();
+            } elseif ($user->role !== 'Customer') {
+                $requests = PurchaseRequest::all()->orderBy('created_at', 'desc')->get();
                 $products = collect();
                 
                 Log::info('Staff purchase requests loaded', [
@@ -95,6 +96,16 @@ class PurchaseRequestController extends Controller
 
                 return $first;
             });
+        $poBalance = DeliveryItemRequest::join('delivery_requests', 'delivery_item_requests.delivery_id', '=', 'delivery_requests.delivery_id')
+            ->where('delivery_item_requests.po_id', $po_id)
+            ->where('delivery_requests.status', 'Delivered')
+            ->sum('delivery_item_requests.balance');
+
+        $poPaid = Payments::where('po_id', $po_id)
+            ->where('status', 'Verified')
+            ->sum('total_amount');
+
+        $remainingBalance = $poBalance - $poPaid;
 
         // Get delivery data
         $deliveries = DeliveryRequest::when($po_id, function ($query) use ($po_id) {
@@ -130,6 +141,10 @@ class PurchaseRequestController extends Controller
                 'paymentStatus' => $paymentStatus,
                 'payments' => $payments,
                 'receivedPaymentCount' => $receivedPaymentCount,
+                'poBalance' => $poBalance,
+                'remainingBalance' => $remainingBalance,
+                'poPaid' => $poPaid,
+
         ]);
 
 
@@ -196,34 +211,25 @@ class PurchaseRequestController extends Controller
             Log::info('Generated PO ID', ['po_id' => $poId]);
             
             // Calculate total amount
-            $totalAmount = $this->calculateTotalAmount(
-                $validated['selected_products'],
-                $validated['planned_heads'] ?? [],
-                $validated['planned_kilos'] ?? []
-            );
+            // $totalAmount = $this->calculateTotalAmount(
+            //     $validated['selected_products'],
+            //     $validated['planned_heads'] ?? [],
+            //     $validated['planned_kilos'] ?? []
+            // );
             
-            Log::info('Calculated total amount', [
-                'total_amount' => $totalAmount,
-                'products_count' => count($validated['selected_products'])
-            ]);
-            
+
             // Create Purchase Request
             $purchaseRequest = PurchaseRequest::create([
                 'po_id' => $poId,
                 'status' => 'Pending',
                 'user_id' => $user->user_id,
-                'total_amount' => $totalAmount,
+                'total_amount' => "0.00",
                 'notes' => $validated['notes'],
                 'action_by' => $user->user_id,
                 'action_at' => now(),
             ]);
             
-            Log::info('Purchase Request created', [
-                'po_id' => $poId,
-                'id' => $purchaseRequest->id,
-                'total_amount' => $totalAmount
-            ]);
-            
+
             // Create Delivery Requests for each preferred day
             $preferredDays = $validated['preferred_days'];
             $numberOfDays = count($preferredDays);
@@ -337,12 +343,7 @@ class PurchaseRequestController extends Controller
             
             DB::commit();
             
-            Log::info('Purchase request transaction committed successfully', [
-                'po_id' => $poId,
-                'user_id' => $user->user_id,
-                'total_amount' => $totalAmount,
-                'delivery_requests' => $numberOfDays
-            ]);
+
             
             return redirect()->route('pr.list')
                 ->with('success', 'Purchase request created successfully! PO ID: ' . $poId);

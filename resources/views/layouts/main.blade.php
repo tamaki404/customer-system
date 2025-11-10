@@ -139,6 +139,12 @@
                                 <p>Receipts</p>
                                 <div class="nav-indicator"></div>
                             </a>--}}
+                            {{-- purchase request --}}
+                            <a class="nav-item{{ $currentRoute == 'pr.list' ? ' active' : '' }}" href="{{ route('pr.list') }}">
+                                <span class="material-symbols-outlined">diamond_shine</span>
+                                <p>Purchase request</p>
+                                <div class="nav-indicator"></div>
+                            </a>
                             <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
                                 <span class="material-symbols-outlined">shopping_bag</span>
                                 <p>Purchase orders</p>

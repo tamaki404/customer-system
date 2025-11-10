@@ -184,132 +184,132 @@
                         <p style="margin: 5px; font-weight: bold;">Scheduled deliveries</p>
                     </div>
                     <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: hidden; align-items: center;">
-                        @if ($activeDelivery > 0)
-                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                            <thead style="background-color: #f8f8f8;">
-                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                    <th>#</th>
-                                    <th>Delivery ID</th>
-                                    <th>Scheduled Date</th>
-                                    <th>Delivered Date</th>
-                                    <th>Items</th>
-                                    <th>Planned</th>
-                                    <th>Received</th>
-                                    <th>Variance</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($deliveries as $delivery)
-                                    <tr onclick="window.location.href='{{ route('dlv.delivery', ['delivery_id' => $delivery->delivery_id]) }}'">
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $delivery->delivery_id }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
-                                        <td>
-                                            @if($delivery->delivered_at)
-                                                {{ \Carbon\Carbon::parse($delivery->delivered_at)->format('F j, Y') }}
-                                            @else
-                                                —
-                                            @endif
-                                        </td>
-                                        <td>{{ $delivery->deliveryItems->count() }}</td>
-                                        {{-- PLANNED --}}
-                                        @php
-                                            $plannedHeads = $delivery->deliveryItems->sum('planned_heads');
-                                            $plannedKilos = $delivery->deliveryItems->sum('planned_kilos');
-                                        @endphp
-                                        <td>
-                                            @if ($plannedHeads > 0 && $plannedKilos > 0)
-                                                {{ $plannedHeads }} heads<br>{{ $plannedKilos }} kg
-                                            @elseif ($plannedHeads > 0)
-                                                {{ $plannedHeads }} heads
-                                            @elseif ($plannedKilos > 0)
-                                                {{ $plannedKilos }} kg
-                                            @else
-                                                —
-                                            @endif
-                                        </td>
-                                        {{-- RECEIVED --}}
-                                        @php
-                                            $receivedHeads = $delivery->deliveryItems->sum('received_heads');
-                                            $receivedKilos = $delivery->deliveryItems->sum('received_kilos');
-                                            $hasReceived = $receivedHeads > 0 || $receivedKilos > 0;
-                                        @endphp
-                                        <td>
-                                            @if ($hasReceived)
-                                                @if ($receivedHeads > 0 && $receivedKilos > 0)
-                                                    {{ $receivedHeads }} heads<br>{{ $receivedKilos }} kg
-                                                @elseif ($receivedHeads > 0)
-                                                    {{ $receivedHeads }} heads
-                                                @elseif ($receivedKilos > 0)
-                                                    {{ $receivedKilos }} kg
-                                                @endif
-                                            @else
-                                                —
-                                            @endif
-                                        </td>
-
-                                        {{-- VARIANCE --}}
-                                        @php
-                                            $varianceHeads = $delivery->deliveryItems->sum(function ($item) {
-                                                return ($item->received_heads ?? 0) - ($item->planned_heads ?? 0);
-                                            });
-
-                                            $varianceKilos = $delivery->deliveryItems->sum(function ($item) {
-                                                return ($item->received_kilos ?? 0) - ($item->planned_kilos ?? 0);
-                                            });
-
-                                            $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
-                                        @endphp
-
-                                        <td>
-                                            @if ($hasReceived)
-                                                @if ($hasVariance)
-                                                    @if ($varianceHeads != 0)
-                                                        <span style="color: {{ $varianceHeads > 0 ? 'red' : 'orange' }};">
-                                                            {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
-                                                        </span><br>
-                                                    @endif
-
-                                                    @if ($varianceKilos != 0)
-                                                        <span style="color: {{ $varianceKilos > 0 ? 'red' : 'orange' }};">
-                                                            {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
-                                                        </span>
-                                                    @endif
-                                                @else
-                                                    <span style="color: green;">Exact</span>
-                                                @endif
-                                            @else
-                                                —
-                                            @endif
-                                        </td>
-
-                                        {{-- STATUS --}}
-                                        <td>
-                                            @php
-                                                $isToday = \Carbon\Carbon::parse($delivery->delivery_date)->isToday();
-                                                $color = match($delivery->status) {
-                                                    'Completed', 'Delivered' => 'green',
-                                                    'Scheduled' => 'orange',
-                                                    'In Transit' => 'blue',
-                                                    'Cancelled' => 'gray',
-                                                    default => 'black',
-                                                };
-                                            @endphp
-                                            <span style="color: {{ $color }};">
-                                                @if($isToday && $delivery->status === 'Scheduled')
-                                                    <strong style="color: green;">Delivery Today</strong>
-                                                @else
-                                                    {{ $delivery->status }}
-                                                @endif
-                                            </span>
-                                        </td>
+                        @if ($request->status !== "Pending")
+                            <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                                <thead style="background-color: #f8f8f8;">
+                                    <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                        <th>#</th>
+                                        <th>Delivery ID</th>
+                                        <th>Scheduled Date</th>
+                                        <th>Delivered Date</th>
+                                        <th>Items</th>
+                                        <th>Planned</th>
+                                        <th>Received</th>
+                                        <th>Variance</th>
+                                        <th>Status</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($deliveries as $delivery)
+                                        <tr onclick="window.location.href='{{ route('dlv.delivery', ['delivery_id' => $delivery->delivery_id]) }}'">
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $delivery->delivery_id }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
+                                            <td>
+                                                @if($delivery->delivered_at)
+                                                    {{ \Carbon\Carbon::parse($delivery->delivered_at)->format('F j, Y') }}
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+                                            <td>{{ $delivery->deliveryItems->count() }}</td>
+                                            {{-- PLANNED --}}
+                                            @php
+                                                $plannedHeads = $delivery->deliveryItems->sum('planned_heads');
+                                                $plannedKilos = $delivery->deliveryItems->sum('planned_kilos');
+                                            @endphp
+                                            <td>
+                                                @if ($plannedHeads > 0 && $plannedKilos > 0)
+                                                    {{ $plannedHeads }} heads<br>{{ $plannedKilos }} kg
+                                                @elseif ($plannedHeads > 0)
+                                                    {{ $plannedHeads }} heads
+                                                @elseif ($plannedKilos > 0)
+                                                    {{ $plannedKilos }} kg
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+                                            {{-- RECEIVED --}}
+                                            @php
+                                                $receivedHeads = $delivery->deliveryItems->sum('received_heads');
+                                                $receivedKilos = $delivery->deliveryItems->sum('received_kilos');
+                                                $hasReceived = $receivedHeads > 0 || $receivedKilos > 0;
+                                            @endphp
+                                            <td>
+                                                @if ($hasReceived)
+                                                    @if ($receivedHeads > 0 && $receivedKilos > 0)
+                                                        {{ $receivedHeads }} heads<br>{{ $receivedKilos }} kg
+                                                    @elseif ($receivedHeads > 0)
+                                                        {{ $receivedHeads }} heads
+                                                    @elseif ($receivedKilos > 0)
+                                                        {{ $receivedKilos }} kg
+                                                    @endif
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+
+                                            {{-- VARIANCE --}}
+                                            @php
+                                                $varianceHeads = $delivery->deliveryItems->sum(function ($item) {
+                                                    return ($item->received_heads ?? 0) - ($item->planned_heads ?? 0);
+                                                });
+
+                                                $varianceKilos = $delivery->deliveryItems->sum(function ($item) {
+                                                    return ($item->received_kilos ?? 0) - ($item->planned_kilos ?? 0);
+                                                });
+
+                                                $hasVariance = $varianceHeads != 0 || $varianceKilos != 0;
+                                            @endphp
+
+                                            <td>
+                                                @if ($hasReceived)
+                                                    @if ($hasVariance)
+                                                        @if ($varianceHeads != 0)
+                                                            <span style="color: {{ $varianceHeads > 0 ? 'red' : 'orange' }};">
+                                                                {{ $varianceHeads > 0 ? '+' : '' }}{{ $varianceHeads }} heads
+                                                            </span><br>
+                                                        @endif
+
+                                                        @if ($varianceKilos != 0)
+                                                            <span style="color: {{ $varianceKilos > 0 ? 'red' : 'orange' }};">
+                                                                {{ $varianceKilos > 0 ? '+' : '' }}{{ number_format($varianceKilos, 2) }} kg
+                                                            </span>
+                                                        @endif
+                                                    @else
+                                                        <span style="color: green;">Exact</span>
+                                                    @endif
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+
+                                            {{-- STATUS --}}
+                                            <td>
+                                                @php
+                                                    $isToday = \Carbon\Carbon::parse($delivery->delivery_date)->isToday();
+                                                    $color = match($delivery->status) {
+                                                        'Completed', 'Delivered' => 'green',
+                                                        'Scheduled' => 'orange',
+                                                        'In Transit' => 'blue',
+                                                        'Cancelled' => 'gray',
+                                                        default => 'black',
+                                                    };
+                                                @endphp
+                                                <span style="color: {{ $color }};">
+                                                    @if($isToday && $delivery->status === 'Scheduled')
+                                                        <strong style="color: green;">Delivery Today</strong>
+                                                    @else
+                                                        {{ $delivery->status }}
+                                                    @endif
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         @else
-                            <p style="margin: 10px; color: #666;">This order has no confirmed delivery days yet.</p>
+                            <p style="margin: 10px; color: #666;">This order has to be confirmed first.</p>
                         @endif
                     </div>
                 </div>
@@ -373,7 +373,7 @@
                         <span>Bill</span>
                     </p>
                     <p style="justify-content: flex-end">
-                        <span style="color: #333; font-weight: bold;">₱{{ number_format($request->total_amount, 2) }}</span>
+                        <span style="color: #333; font-weight: bold;">₱{{ number_format($poBalance, 2) }}</span>
                     </p>
                 </div>
                 <div class="payment-con" style="box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset; border-radius: 5px; background-color: #f2f2f26f;" >
@@ -421,12 +421,10 @@
                 <div class="summary">
                     <p style="padding: 0; margin: 0;">
                         <span class="label">Paid</span>
-                        <span class="value">₱{{ number_format($verifiedPaidAmount, 2) }}</span>
+                        <span class="value">₱{{ number_format($poPaid, 2) }}</span>
                     </p>
                     <p style="padding: 0">
-                        @php
-                            $remainingBalance = ($request->total_amount) - ($verifiedPaidAmount);
-                        @endphp
+                      
                         <span class="label">Balance</span>
                         <span class="value" style="font-size: 15px; color: #f8912a;">₱{{ number_format($remainingBalance, 2) }}</span>
                     </p>

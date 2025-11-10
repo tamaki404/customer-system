@@ -55,7 +55,7 @@
                                         <option value="{{ $unpaidOrder->po_id }}">
                                             {{ $unpaidOrder->po_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->created_at)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->total_balance, 2) }}
                                         </option>
-                                        
+                                      
                                     @endforeach
                                 </select>
                             </div>
@@ -104,7 +104,7 @@
 
                     <div class="credit-summary" style="padding: 10px; height: auto; border-radius: 5px; width: 400px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; background-color: #fff; border: none;">
                        @php
-                            $available_credit = ($credit->credit_limit - $UsedCredit);
+                            $available_credit = ($credit->credit_limit - $currentBalance);
                        @endphp
                         <div class="credit-row">
                             <span class="credit-label" >Credit limit: </span>
@@ -112,11 +112,11 @@
                         </div>
                        <div class="credit-row">
                             <span class="credit-label" >Balance: </span>
-                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($UsedCredit, 2) }}</span>
+                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($currentBalance, decimals: 2) }}</span>
                         </div>
                        <div class="credit-row">
                             <span class="credit-label" >Paid: </span>
-                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($PaidCredit, 2) }}</span>
+                            <span class="credit-value"style="margin-left: 10px">₱{{ number_format($alreadyPaid, 2) }}</span>
                         </div>
                        <div class="credit-row">
                             <span class="credit-label" >Available: </span>
@@ -145,7 +145,10 @@
                         {{-- Transaction history --}}
                      <div id="transaction-content" class="tab-content active" role="tabpanel" aria-labelledby="transaction-tab">
                             <div class="table-body">
-                                <p style="margin: 5px; font-weight: bold;">Transaction history</p>
+                                <p style="display: flex; margin: 5px; flex-direction: column; gap: 2px;">
+                                    <span style="font-weight: bold;, font-size: 14px;">Transaction history</span>
+                                    <span style="font-size: 13px; color: #666;">Here shows your history on activities involving credits, such as accepting deliveries, uploading receipt and accepted receipt</span>
+                                </p>
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
                                     <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                                         <thead style="background-color: #fff; position:sticky; z-index: 1; top: 0;">
@@ -257,61 +260,93 @@
                             </div>
                         </div>
                         {{-- Payables --}}
-                        {{-- <div id="payables-content" class="tab-content" role="tabpanel" aria-labelledby="payables-tab">
+                        <div id="payables-content" class="tab-content" role="tabpanel" aria-labelledby="payables-tab">
                             <div class="table-body" style="margin-top: 10px">
-                                <p style="margin: 5px; font-weight: bold;">Payables</p>
+                                <p style="display: flex; margin: 5px; flex-direction: column; gap: 2px;">
+                                    <span style="font-weight: bold;, font-size: 14px;">Payables</span>
+                                    <span style="font-size: 13px; color: #666;">Here shows the active and closed payable purchase orders </span>
+                                </p>                                
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
                                     <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                                         <thead style="background-color: #fff; position:sticky; z-index: 1; top: 0;">
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
                                                 <th>Date</th>
-                                                <th>Order ID</th>
+                                                <th>PO ID</th>
                                                 <th>Balance</th>
                                                 <th>Status</th>
-
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>                             
-                                        
-                                            @foreach ($oustandingPayments as $oustandingPayment)
-                                                <tr onclick="window.location.href='{{ route('orders.receipt', ['order_id' => $oustandingPayment->order_id]) }}'">
-                                                    <td>{{$loop->iteration}}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($oustandingPayment->order_date)->format('M d, Y') }}</td>
-                                                    <td>{{ $oustandingPayment->order_id }}</td>
-                                               
-                                                    <td><strong>₱{{ number_format($oustandingPayment->outstanding_balance, 2) }}</strong></td>
-                                                    <td>--</td>
+                                            @foreach ($purchaseData as $payable)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $payable['purchase_request']->updated_at->format("F j, y") }}</td>
+                                                <td>{{ $payable['po_id'] }}</td>
+                                                <td>₱{{ number_format($payable['remaining_balance'],2) }}</td>
+                                                <td>Partially paid</td>
+                                                <td>
+                                                    <div class="dropdown" style="display:flex; align-items: center; justify-content: center;">
+                                                        <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px; ">
+                                                            <span class="material-symbols-outlined">
+                                                            expand_circle_down
+                                                            </span>
+                                                        </button>
+                                                        {{-- <ul class="dropdown-menu">
+                                                            <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('orders.order', ['order_id' => $transaction->order_id]) }}"><span class="material-symbols-outlined">package_2</span>Go to Order</a></li>
+                                                            @if ($transaction->label === 'Delivery')
+                                                                @if($transaction->delivery)
+                                                                    <li>
+                                                                        <a class="dropdown-item"
+                                                                        href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}">
+                                                                            <span class="material-symbols-outlined">orders</span>
+                                                                            Go to Delivery
+                                                                        </a>
+                                                                    </li>
+                                                                @endif
+                                                            @elseif ($transaction->label === 'Receipt')
+                                                                <li><a class="dropdown-item"   data-bs-toggle="modal" data-bs-target="#view-receipt-modal-{{ $transaction->receipt_id }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li>
+                                                            @endif
+                                                        </ul> --}}
+                                                    </div>
+                                                </td>                                            
                                                 </tr>
                                             @endforeach
+
+
                                         </tbody>
                                     </table>
                                 </div>
 
                         
                             </div>
-                        </div> --}}
+                        </div>
                         {{-- Payments --}}
-                        {{-- <div id="payment-content" class="tab-content" role="tabpanel" aria-labelledby="payment-tab">
+                        <div id="payment-content" class="tab-content" role="tabpanel" aria-labelledby="payment-tab">
                             <div class="table-body" style="margin-top: 10px">
-                                <p style="margin: 5px; font-weight: bold;">Payments</p>
+                                <p style="display: flex; margin: 5px; flex-direction: column; gap: 2px;">
+                                    <span style="font-weight: bold;, font-size: 14px;">Payments</span>
+                                    <span style="font-size: 13px; color: #666;">Here shows the accepted payments from sent uplaoded receipts</span>
+                                </p>    
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
                                     <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
                                         <thead style="background-color: #fff;">
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
                                                 <th>Date</th>
+                                                <th>PO ID</th>
                                                 <th>Receipt ID</th>
                                                 <th>Amount</th>
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>                                
-                                            @foreach ($receipts as $receipt)
-                                                <tr onclick="window.location.href='{{ route('receipts.receipt', ['receipt_id' => $receipt->receipt_id]) }}'">
+                                            @foreach ($payments as $receipt)
+                                                <tr onclick="window.location.href='{{ route('pym.payment', ['payment_id' => $receipt->payment_id]) }}'">
                                                     <td>{{$loop->iteration}}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($receipt->created_at)->format('F j, Y') }}</td>
-                                                    <td>{{$receipt->receipt_id}}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($receipt->updated_at)->format('F j, Y') }}</td>
+                                                    <td>{{$receipt->payment_id}}</td>
                                                     <td>₱{{$receipt->total_amount}}</td>
                                                     <td>{{$receipt->status}}</td>
                                                 </tr>
@@ -322,7 +357,7 @@
 
                         
                             </div>
-                        </div> --}}
+                        </div>
 
                     </div>
 

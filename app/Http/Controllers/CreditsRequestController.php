@@ -27,56 +27,83 @@ class CreditsRequestController extends Controller
     public function list(Request $request)
     {
         $user = Auth::user();
-        $customer = Customers::where('user_id',  $user->user_id)->firstOrFail();
+        $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
         $credit = Credits::where('user_id', $user->user_id)->firstOrFail();
         $customerId = $customer->customer_id;
 
-        //Credit calculations
-            // Deliveries of customer that are delivered
-            $deliveries = DeliveryRequest::where('customer_id', $customerId)
-                ->where('status', 'Delivered')
-                ->pluck('delivery_id');
 
-            // UsedCredit from DeliveryItemRequests
-            $deliveryUsedCredit = DeliveryItemRequest::whereIn('delivery_id', $deliveries)
-                ->sum('balance');
-            // UsedCredit from PurchaseHistories
-            $purchaseUsedCredit = PurchaseHistory::where('customer_id', $customerId)
-                ->sum('amount');
-            // UsedCredit from DeliveryItemRequests (remaining balance)
-            $UsedCredit = DeliveryItemRequest::whereIn('delivery_id', $deliveries)
-                ->sum('balance');            
-            // PaidCredit from Payments
-            $PaidCredit = Payments::where('customer_id', $customerId)
+        // Total balance from delivered deliveries
+        $balance = DeliveryItemRequest::join('delivery_requests', 'delivery_item_requests.delivery_id', '=', 'delivery_requests.delivery_id')
+            ->where('delivery_requests.customer_id', $customerId)
+            ->where('delivery_requests.status', 'Delivered')
+            ->sum('delivery_item_requests.balance');
+
+        // Already paid (verified payments)
+        $alreadyPaid = Payments::where('customer_id', $customerId)
+            ->where('status', 'Verified')
+            ->sum('total_amount');
+
+        // Current balance
+        $currentBalance = $balance - $alreadyPaid;
+
+        // --- TRANSACTION HISTORY ---
+        $transactions = PurchaseHistory::where('customer_id', $customerId)
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        // Purchases that still have remaining balance
+        $purchasesWithBalance = PurchaseRequest::select(
+                'purchase_requests.po_id',
+                DB::raw('SUM(delivery_item_requests.balance) AS total_balance')
+            )
+            ->join('delivery_item_requests', 'purchase_requests.po_id', '=', 'delivery_item_requests.po_id')
+            ->join('delivery_requests', 'delivery_item_requests.delivery_id', '=', 'delivery_requests.delivery_id')
+            ->where('purchase_requests.user_id', $user->user_id)
+            ->where('delivery_requests.status', 'Delivered')
+            ->groupBy('purchase_requests.po_id')
+            ->having('total_balance', '>', 0)
+            ->get();
+
+            $purchaseRequests = PurchaseRequest::where('user_id', $customer->user_id)->get();
+            $deliveries = DeliveryItemRequest::with('deliveryRequest')
+                ->whereIn('po_id', $purchaseRequests->pluck('po_id'))
+                ->get();
+            $payments = Payments::where('customer_id', $customer->customer_id)
                 ->where('status', 'Verified')
-                ->sum('total_amount'); 
-
-        //transaction history
-            $transactions = PurchaseHistory::where('customer_id', $customerId)
-                ->orderBy('updated_at', 'desc')
-                ->get();
-            $purchasesWithBalance = PurchaseRequest::select(
-                    'purchase_requests.po_id',
-                    DB::raw('SUM(delivery_item_requests.balance) AS total_balance')
-                )
-                ->join('delivery_item_requests', 'purchase_requests.po_id', '=', 'delivery_item_requests.po_id')
-                ->join('delivery_requests', 'delivery_item_requests.delivery_id', '=', 'delivery_requests.delivery_id')
-                ->where('purchase_requests.user_id', $user->user_id)
-                ->where('delivery_requests.status', 'Delivered')
-                ->groupBy('purchase_requests.po_id')
-                ->having('total_balance', '>', 0)
                 ->get();
 
-            return view('franken.crd.list', compact(
-                'user',
-                'customer',
-                'credit',
-                'UsedCredit',
-                'PaidCredit',
-                'transactions',
-                'purchasesWithBalance'
-            ));
+            $purchaseData = $purchaseRequests->map(function ($po) use ($deliveries, $payments) {
+                $deliveredBalance = $deliveries
+                    ->filter(fn ($d) => $d->po_id === $po->po_id && $d->deliveryRequest->status === "Delivered")
+                    ->sum('balance');
+
+                $paidAmount = $payments
+                    ->where('po_id', $po->po_id)
+                    ->sum('total_amount');
+
+                return [
+                    'purchase_request'   => $po,                     
+                    'po_id'              => $po->po_id,
+                    'delivered_balance'  => $deliveredBalance,
+                    'paid_amount'        => $paidAmount,
+                    'remaining_balance'  => $deliveredBalance - $paidAmount,
+                ];
+            });
+
+        return view('franken.crd.list', compact(
+            'user',
+            'customer',
+            'credit',
+            'balance',
+            'alreadyPaid',
+            'currentBalance',
+            'transactions',
+            'purchasesWithBalance',
+            'purchaseData'
+
+        ));
     }
+
 
 
 
