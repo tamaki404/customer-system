@@ -69,7 +69,7 @@ class CreditsRequestController extends Controller
                 ->whereIn('po_id', $purchaseRequests->pluck('po_id'))
                 ->get();
             $payments = Payments::where('customer_id', $customer->customer_id)
-                ->where('status', 'Verified')
+                ->orderBy('updated_at', 'desc')
                 ->get();
 
             $purchaseData = $purchaseRequests->map(function ($po) use ($deliveries, $payments) {
@@ -99,7 +99,8 @@ class CreditsRequestController extends Controller
             'currentBalance',
             'transactions',
             'purchasesWithBalance',
-            'purchaseData'
+            'purchaseData',
+            'payments',
 
         ));
     }

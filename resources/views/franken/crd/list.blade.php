@@ -154,11 +154,11 @@
                                         <thead style="background-color: #fff; position:sticky; z-index: 1; top: 0;">
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
-                                                <th>Date</th>
+                                                <th>Created at</th>
                                                 <th>PO ID</th>
                                                 <th>Status</th>
                                                 <th>Amount</th>
-                                                <th></th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>                                
@@ -225,28 +225,41 @@
                                                        <td style="color: red">--</td>
                                                     @endif
                                                     <td>
-                                                        <div class="dropdown" style="">
+                                                        <div class="dropdown" style="display:flex; align-items: center; justify-content: center;">
                                                             <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px; ">
                                                                 <span class="material-symbols-outlined">
                                                                 expand_circle_down
                                                                 </span>
                                                             </button>
-                                                            {{-- <ul class="dropdown-menu">
-                                                                <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('orders.order', ['order_id' => $transaction->order_id]) }}"><span class="material-symbols-outlined">package_2</span>Go to Order</a></li>
-                                                                @if ($transaction->label === 'Delivery')
-                                                                    @if($transaction->delivery)
-                                                                        <li>
-                                                                            <a class="dropdown-item"
-                                                                            href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}">
-                                                                                <span class="material-symbols-outlined">orders</span>
-                                                                                Go to Delivery
-                                                                            </a>
-                                                                        </li>
-                                                                    @endif
-                                                                @elseif ($transaction->label === 'Receipt')
-                                                                    <li><a class="dropdown-item"   data-bs-toggle="modal" data-bs-target="#view-receipt-modal-{{ $transaction->receipt_id }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li>
+                                                            <ul class="dropdown-menu">
+                                                                <li><a class="dropdown-item"  style="color:#f8a01d" ><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
+                                                                @if($transaction->label === "Delivery")
+                                                                    <li>
+                                                                        <a class="dropdown-item">
+                                                                        {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                            <span class="material-symbols-outlined">arrow_outward</span>
+                                                                            Go to Delivery
+                                                                        </a>
+                                                                    </li>
+                                                                @elseif($transaction->label === "Payment")
+                                                                
+                                                                    <li>
+                                                                        <a class="dropdown-item">
+                                                                        {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                            <span class="material-symbols-outlined">arrow_outward</span>
+                                                                            Go to receipt
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="dropdown-item">
+                                                                        {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                            <span class="material-symbols-outlined">capture</span>
+                                                                            View receipt
+                                                                        </a>
+                                                                    </li>
                                                                 @endif
-                                                            </ul> --}}
+                                                            
+                                                            </ul>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -271,7 +284,7 @@
                                         <thead style="background-color: #fff; position:sticky; z-index: 1; top: 0;">
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
-                                                <th>Date</th>
+                                                <th>Last update at</th>
                                                 <th>PO ID</th>
                                                 <th>Balance</th>
                                                 <th>Status</th>
@@ -282,7 +295,7 @@
                                             @foreach ($purchaseData as $payable)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $payable['purchase_request']->updated_at->format("F j, y") }}</td>
+                                                <td>{{ $payable['purchase_request']->updated_at->format("F j, Y, g:i a") }}</td>
                                                 <td>{{ $payable['po_id'] }}</td>
                                                 <td>₱{{ number_format($payable['remaining_balance'],2) }}</td>
                                                 <td>Partially paid</td>
@@ -293,25 +306,19 @@
                                                             expand_circle_down
                                                             </span>
                                                         </button>
-                                                        {{-- <ul class="dropdown-menu">
-                                                            <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('orders.order', ['order_id' => $transaction->order_id]) }}"><span class="material-symbols-outlined">package_2</span>Go to Order</a></li>
-                                                            @if ($transaction->label === 'Delivery')
-                                                                @if($transaction->delivery)
-                                                                    <li>
-                                                                        <a class="dropdown-item"
-                                                                        href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}">
-                                                                            <span class="material-symbols-outlined">orders</span>
-                                                                            Go to Delivery
-                                                                        </a>
-                                                                    </li>
-                                                                @endif
-                                                            @elseif ($transaction->label === 'Receipt')
-                                                                <li><a class="dropdown-item"   data-bs-toggle="modal" data-bs-target="#view-receipt-modal-{{ $transaction->receipt_id }}"><span class="material-symbols-outlined">receipt</span>View Receipt</a></li>
-                                                            @endif
-                                                        </ul> --}}
+                                                        <ul class="dropdown-menu">
+                                                            <li><a class="dropdown-item"  style="color:#f8a01d" ><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
+                                                            <li>
+                                                                <a class="dropdown-item">
+                                                                {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                    <span class="material-symbols-outlined">arrow_outward</span>
+                                                                    Receipt collection
+                                                                </a>
+                                                            </li>
+                                                        </ul>
                                                     </div>
-                                                </td>                                            
-                                                </tr>
+                                                </td>
+                                            </tr>
                                             @endforeach
 
 
@@ -334,22 +341,49 @@
                                         <thead style="background-color: #fff;">
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
-                                                <th>Date</th>
+                                                <th>Last update at</th>
                                                 <th>PO ID</th>
-                                                <th>Receipt ID</th>
                                                 <th>Amount</th>
                                                 <th>Status</th>
+                                                <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>                                
                                             @foreach ($payments as $receipt)
-                                                <tr onclick="window.location.href='{{ route('pym.payment', ['payment_id' => $receipt->payment_id]) }}'">
+                                                {{-- <tr onclick="window.location.href='{{ route('pym.payment', ['payment_id' => $receipt->payment_id]) }}'"> --}}
+                                                <tr>
                                                     <td>{{$loop->iteration}}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($receipt->updated_at)->format('F j, Y') }}</td>
-                                                    <td>{{$receipt->payment_id}}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($receipt->updated_at)->format("F j, Y, g:i a") }}</td>
+                                                    <td>{{$receipt->po_id}}</td>
                                                     <td>₱{{$receipt->total_amount}}</td>
                                                     <td>{{$receipt->status}}</td>
-                                                </tr>
+                                                    <td>
+                                                        <div class="dropdown" style="display:flex; align-items: center; justify-content: center;">
+                                                            <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px; ">
+                                                                <span class="material-symbols-outlined">
+                                                                expand_circle_down
+                                                                </span>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li><a class="dropdown-item"  style="color:#f8a01d" ><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
+                                                                <li>
+                                                                    <a class="dropdown-item">
+                                                                    {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                        <span class="material-symbols-outlined">arrow_outward</span>
+                                                                        Receipt collection
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a class="dropdown-item">
+                                                                    {{-- href="{{ route('order.delivery_items', ['delivery_id' => $transaction->delivery->delivery_id]) }}"> --}}
+                                                                        <span class="material-symbols-outlined">capture</span>
+                                                                        View receipt
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>                                                 
+                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
