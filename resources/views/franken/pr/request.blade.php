@@ -210,31 +210,39 @@
                     <div class="upper-con" style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
                         <div class="buttons">
                             <!-- Buttons -->
-
-                        <div style="display: flex; gap: 10px;">
-                            @if (auth()->user()->role !== 'Customer' && $request->status === 'Pending')
-                                <button data-bs-toggle="modal" data-bs-target="#confirm-action" class="btn-transition">
-                                    <span class="material-symbols-outlined">
-                                        approval_delegation
-                                    </span>
-                                    Confirm Order
-                                </button>
-                            @endif
-                        </div>
-                            {{-- @if ($request->status === 'Accepted' && Auth()->user()->role !== 'Customer')
+                        @if (auth()->user()->role !== 'Customer')
+                            @if ($request->status === 'Pending')
+                                <div style="display: flex; gap: 10px;">
+                                    <button data-bs-toggle="modal" data-bs-target="#confirm-action" class="yellow-btn" style="transform: none; transition: none;">
+                                        <span class="material-symbols-outlined">
+                                            approval_delegation
+                                        </span>
+                                        Confirm Order
+                                    </button>
+                                
+                                </div>
+                            @elseif ($request->status === 'Accepted')
                                 <button type="button" 
-                                    data-bs-toggle="modal" data-bs-target="#processModal" 
-                                    data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
-                                    class="process"
-                                    >
+                                    data-bs-toggle="modal"
+                                    {{-- data-url="{{ route('orders.customer.pdf', $order->order_id) }}" --}}
+                                    class="orange-btn" style="transform: none; transition: none;">
                                     <span class="material-symbols-outlined" >
-                                    component_exchange
+                                    receipt
                                     </span>
-                                    Process order
+                                    Order receipt
                                 </button>
-                            @endif
-                            @elseif ($request->status === 'Processed' && Auth()->user()->role !== 'Customer')
                                 <button type="button" 
+                                    data-bs-toggle="modal"
+                                    {{-- data-url="{{ route('orders.customer.pdf', $order->order_id) }}" --}}
+                                    class="orange-btn" style="transform: none; transition: none;">
+                                    <span class="material-symbols-outlined" >
+                                    receipt
+                                    </span>
+                                    Purchase order
+                                </button>
+                            @elseif ($request->status === 'Processed')
+                                <button>sdasd</button>
+                                {{-- <button type="button" 
                                     data-bs-toggle="modal" data-bs-target="#exportModal" 
                                     data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
                                     class="export"
@@ -247,8 +255,9 @@
                                     grain
                                     </span>
                                     Payments collection
-                                </button> 
-                            @endif   --}}
+                                </button>  --}}
+                            @endif  
+                        @endif
                         </div>
                     </div>
                 </div>
@@ -371,11 +380,12 @@
                                         <th>Received</th>
                                         <th>Variance</th>
                                         <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($deliveries as $delivery)
-                                        <tr onclick="window.location.href='{{ route('dlv.delivery', ['delivery_id' => $delivery->delivery_id]) }}'">
+                                        <tr >
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $delivery->delivery_id }}</td>
                                             <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
@@ -478,6 +488,13 @@
                                                     @endif
                                                 </span>
                                             </td>
+                                            <td>
+                                                <button title="Go to delivery" onclick="window.location.href='{{ route('dlv.delivery', ['delivery_id' => $delivery->delivery_id]) }}'"><span class="material-symbols-outlined">call_made</span></button>
+                                                @if (auth()->user()->role !== 'Customer')
+                                                    <button title="Open pdf viewer"><span class="material-symbols-outlined">file_open</span></button>
+                                                @endif
+                                            </td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>

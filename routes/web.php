@@ -29,7 +29,8 @@ use App\Http\Controllers\{
     CreditsRequestController,
     DeliveryRequestController,
     PaymentsController,
-    PromosController
+    PromosController,
+    CabraController,
 };
 
 /*
@@ -184,38 +185,6 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
         //     ->middleware('role:Customer');
     });
     
-    // // Delivery Request Routes
-    // Route::prefix('delivery-requests')->name('delivery.')->group(function () {
-        
-    //     // List all delivery requests
-    //     Route::get('/', [PurchaseRequestController::class, 'list'])
-    //         ->name('list');
-        
-    //     // View single delivery request
-    //     Route::get('/{deliveryId}', [PurchaseRequestController::class, 'show'])
-    //         ->name('show');
-        
-    //     // Update delivery status
-    //     Route::patch('/{deliveryId}/status', [PurchaseRequestController::class, 'updateStatus'])
-    //         ->name('update.status')
-    //         ->middleware('role:Staff');
-        
-    //     // Mark as delivered
-    //     Route::post('/{deliveryId}/deliver', [PurchaseRequestController::class, 'markAsDelivered'])
-    //         ->name('deliver')
-    //         ->middleware('role:Staff');
-        
-    //     // Upload POD (Proof of Delivery)
-    //     Route::post('/{deliveryId}/pod', [PurchaseRequestController::class, 'uploadPod'])
-    //         ->name('upload.pod')
-    //         ->middleware('role:Staff');
-        
-    //     // Update received quantities
-    //     Route::patch('/{deliveryId}/items', [PurchaseRequestController::class, 'updateItems'])
-    //         ->name('update.items')
-    //         ->middleware('role:Staff');
-    // });
-    
     Route::prefix('credit')->name('crd.')->group(function () {
         
         Route::get('/list', [CreditsRequestController::class, 'list'])
@@ -248,6 +217,10 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
             ->name('list');
         Route::post('/create', [PromosController::class, 'create'])
             ->name('create');
+    });
+    Route::prefix('prd')->name('prd.')->group(function () {
+        Route::get('/list', [CabraController::class, 'list'])
+            ->name('list');
     });
     /*
     |--------------------------------------------------------------------------

@@ -1,0 +1,36 @@
+.orange-btn {
+    background-color: #f8912a;
+    font-size: 13px;
+    color: #fff;
+    border: none;
+    padding: 8px;
+    gap: 5px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    text-transform: none;
+    transform: none; transition: none;
+}
+.orange-btn:hover {
+    background-color: #e28425;
+
+}
+.yellow-btn {
+    background-color: #ffde59;
+    font-size: 13px;
+    color: #333;
+    border: none;
+    padding: 8px;
+    gap: 5px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    font-weight: bold;
+    transform: none; transition: none;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.yellow-btn:hover {
+    background-color: #ebcb4e;
+
+}

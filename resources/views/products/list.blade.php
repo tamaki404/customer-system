@@ -238,121 +238,120 @@
             </div>
 
                 @if (auth()->user()->role !== 'Customer')
-                <div class="main-board">
-                    <div class="ceiling-table" style="height: 80%; padding: 0;" >
-                        <div class="table-section" style="height:100%; overflow: auto; padding: 0;">
-                            <table style="position: relative; border-collapse: collapse; padding: 0;">
-                                <thead style="background-color: #fff; padding: 10px; z-index: 1; position: sticky; top: 0; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
-                                    <tr style="text-align: left; height: 30px;">
-                                        <th style="width: 100%">
-                                            <span class="material-symbols-outlined" style="font-size: 16px">
-                                                price_change
-                                            </span>
-                                             Active Promos & Discounts
-                                        </th>
-                                        <th>{{ $activePromosCount }}</th>
-                                    </tr>
-                                </thead>
-                                    <tbody >
-                                        @foreach($activePromos as $promo)
-                                            @php
-                                                $now = \Carbon\Carbon::now();
-                                                if($promo->start_date <= $now && $promo->end_date >= $now) {
-                                                    $status = 'Active';
-                                                    $badge = 'success';
-                                                } elseif($promo->start_date > $now) {
-                                                    $status = 'Upcoming';
-                                                    $badge = 'warning';
-                                                } else {
-                                                    $status = 'Expired';
-                                                    $badge = 'secondary';
-                                                }
-                                                // Get remaining quantity
-                                                $remainingQty = $promo->quantity ?? 0;
-                                                $measurementUnit = $promo->product->measurement_type === 'Heads' ? 'pcs' : 'kg';
-                                            @endphp
-                                            <tr>
-                                                <td title="Click to view details" style="cursor: pointer;" onclick="window.location.href='{{ route('products.product', ['product_id' => $promo->product->product_id]) }}'">
-                                                    <strong>[{{ $promo->category }}] - {{ ucfirst($promo->name) }}</strong>
-                                                    <p style="margin: 0;">
-                                                        <span>{{ ucfirst($promo->product->name) }}</span>
-                                                        
-                                                    </p>
-                                                    @if($promo->value_type === 'Fixed')
-                                                        ₱{{ number_format($promo->value, 2) }}
-                                                        <span class="badge bg-{{ $badge }}">{{ $promo->type }}</span>
-                                                    @else
-                                                        {{ $promo->value }}%
-                                                        <span class="badge bg-{{ $badge }}">{{ $promo->type }}</span>
-                                                    @endif
-
-
-                                                    @if($remainingQty > 0)
-                                                        <span style="background: #e8f5e9; color: #2e7d32; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
-                                                            <i class="fas fa-box"></i> {{ $remainingQty }} {{ $measurementUnit }} left
-                                                        </span>
-                                                    @else
-                                                        <span style="background: #ffebee; color: #c62828; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
-                                                            <i class="fas fa-times-circle"></i> Sold Out
-                                                        </span>
-                                                    @endif 
-                                                        <br>
-                                                    <small class="text-muted">
-                                                        {{ \Carbon\Carbon::parse($promo->start_date)->format('M d, Y') }} → 
-                                                        {{ \Carbon\Carbon::parse($promo->end_date)->format('M d, Y') }}
-                                                    </small>
-                                                    &nbsp;&nbsp;
-                                                    {{-- <span class="badge bg-{{ $badge }}">{{ $status }}</span> --}}
-                                                </td>
-                                                <td style="color: #888; font-size: 12px;">#{{ $loop->iteration }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="table-div">
-                        <div class="content-body" style="background: #fff; height: 600px; overflow: hidden; padding: 0;">
-                            <div style="overflow: auto; height: 100%; padding: 0;">
-                                <table style=" width:100%; height: 100%; border-collapse:collapse; border: 1px solid #fff; padding: 0;">
-                                    <thead style="background-color: #fff; position: sticky; top: 0; z-index: 1; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
-                                        <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                            <th>#</th>
-                                            <th>Product ID</th>
-                                            <th>Name</th>
-                                            <th>Category</th>
-                                            <th>Base price</th>
-                                            <th>Measurement</th>
-                                            <th>Sold</th>
+                    <div class="main-board">
+                        <div class="ceiling-table" style="height: 80%; padding: 0;" >
+                            <div class="table-section" style="height:100%; overflow: auto; padding: 0;">
+                                <table style="position: relative; border-collapse: collapse; padding: 0;">
+                                    <thead style="background-color: #fff; padding: 10px; z-index: 1; position: sticky; top: 0; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
+                                        <tr style="text-align: left; height: 30px;">
+                                            <th style="width: 100%">
+                                                <span class="material-symbols-outlined" style="font-size: 16px">
+                                                    price_change
+                                                </span>
+                                                Active Promos & Discounts
+                                            </th>
+                                            <th>{{ $activePromosCount }}</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        @foreach ($products as $product)
-                                            <tr onclick="window.location.href='{{ route('products.product', ['product_id' => $product->product_id]) }}'">
-                                                <th>{{ $loop->iteration }}</th>
-                                                <td>{{ $product->product_id }}</td>
-                                                <td>{{ $product->name }}</td>
-                                                <td>{{ $product->category }}</td>
-                                                <td>₱{{ number_format($product->base_price, 2) }}</td>
-                                                <td>{{ $product->measurement_type }}</td>
-                                                <td>--</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
+                                        <tbody >
+                                            @foreach($activePromos as $promo)
+                                                @php
+                                                    $now = \Carbon\Carbon::now();
+                                                    if($promo->start_date <= $now && $promo->end_date >= $now) {
+                                                        $status = 'Active';
+                                                        $badge = 'success';
+                                                    } elseif($promo->start_date > $now) {
+                                                        $status = 'Upcoming';
+                                                        $badge = 'warning';
+                                                    } else {
+                                                        $status = 'Expired';
+                                                        $badge = 'secondary';
+                                                    }
+                                                    // Get remaining quantity
+                                                    $remainingQty = $promo->quantity ?? 0;
+                                                    $measurementUnit = $promo->product->measurement_type === 'Heads' ? 'pcs' : 'kg';
+                                                @endphp
+                                                <tr>
+                                                    <td title="Click to view details" style="cursor: pointer;" onclick="window.location.href='{{ route('products.product', ['product_id' => $promo->product->product_id]) }}'">
+                                                        <strong>[{{ $promo->category }}] - {{ ucfirst($promo->name) }}</strong>
+                                                        <p style="margin: 0;">
+                                                            <span>{{ ucfirst($promo->product->name) }}</span>
+                                                            
+                                                        </p>
+                                                        @if($promo->value_type === 'Fixed')
+                                                            ₱{{ number_format($promo->value, 2) }}
+                                                            <span class="badge bg-{{ $badge }}">{{ $promo->type }}</span>
+                                                        @else
+                                                            {{ $promo->value }}%
+                                                            <span class="badge bg-{{ $badge }}">{{ $promo->type }}</span>
+                                                        @endif
+
+
+                                                        @if($remainingQty > 0)
+                                                            <span style="background: #e8f5e9; color: #2e7d32; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                                                <i class="fas fa-box"></i> {{ $remainingQty }} {{ $measurementUnit }} left
+                                                            </span>
+                                                        @else
+                                                            <span style="background: #ffebee; color: #c62828; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                                                <i class="fas fa-times-circle"></i> Sold Out
+                                                            </span>
+                                                        @endif 
+                                                            <br>
+                                                        <small class="text-muted">
+                                                            {{ \Carbon\Carbon::parse($promo->start_date)->format('M d, Y') }} → 
+                                                            {{ \Carbon\Carbon::parse($promo->end_date)->format('M d, Y') }}
+                                                        </small>
+                                                        &nbsp;&nbsp;
+                                                        {{-- <span class="badge bg-{{ $badge }}">{{ $status }}</span> --}}
+                                                    </td>
+                                                    <td style="color: #888; font-size: 12px;">#{{ $loop->iteration }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
                                 </table>
                             </div>
                         </div>
+                        <div class="table-div">
+                            <div class="content-body" style="background: #fff; height: 600px; overflow: hidden; padding: 0;">
+                                <div style="overflow: auto; height: 100%; padding: 0;">
+                                    <table style=" width:100%; height: 100%; border-collapse:collapse; border: 1px solid #fff; padding: 0;">
+                                        <thead style="background-color: #fff; position: sticky; top: 0; z-index: 1; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
+                                            <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                                <th>#</th>
+                                                <th>Product ID</th>
+                                                <th>Name</th>
+                                                <th>Category</th>
+                                                <th>Base price</th>
+                                                <th>Measurement</th>
+                                                <th>Sold</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($products as $product)
+                                                <tr onclick="window.location.href='{{ route('products.product', ['product_id' => $product->product_id]) }}'">
+                                                    <th>{{ $loop->iteration }}</th>
+                                                    <td>{{ $product->product_id }}</td>
+                                                    <td>{{ $product->name }}</td>
+                                                    <td>{{ $product->category }}</td>
+                                                    <td>₱{{ number_format($product->base_price, 2) }}</td>
+                                                    <td>{{ $product->measurement_type }}</td>
+                                                    <td>--</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
-                        <div class="pagination-div">
-                            <p>50 out of 100 <span>2/3</span></p>
-                            <div>
-                                <button>Previous</button>
-                                <button>Next</button>
+                            <div class="pagination-div">
+                                <p>50 out of 100 <span>2/3</span></p>
+                                <div>
+                                    <button>Previous</button>
+                                    <button>Next</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
 
                 @elseif (auth()->user()->role === 'Customer')
 
@@ -364,11 +363,8 @@
                                     <th>Product ID</th>
                                     <th>Name</th>
                                     <th>Category</th>
-                                    <th>Price</th>
                                     <th>Measurement</th>
-
-                                    <th>Unit</th>
-                                    <th>Weight</th>
+                                    <th>Price</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -378,17 +374,12 @@
                                         <td>{{ $setProduct->product_id }}</td>
                                         <td>{{ $setProduct->product->name }}</td>
                                         <td>{{ $setProduct->product->category }}</td>
-                                        <td>₱{{ number_format($setProduct->nego_price, 2) }}</td>
                                         <td>{{ $setProduct->product->measurement_type }}</td>
-
-                                        <td>{{ $setProduct->product->unit }}</td>
-                                        <td>{{ $setProduct->product->weight }}</td>
+                                        <td>₱{{ number_format($setProduct->nego_price, 2) }}</td>
                                     </tr>
-
                                 @endforeach
                             </tbody>
                         </table>
-                
                     </div>
 
                 @endif

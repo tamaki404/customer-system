@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="{{ asset('css/layout/error-message.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/locked-tabs.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/flash-message.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/franken/button.css') }}">
 
      @stack('styles')
 
@@ -280,6 +281,11 @@
                                         <div class="nav-indicator"></div>
                                     </a>
                                 @endif
+                                <a class="nav-item{{ $currentRoute == 'prd.list' ? ' active' : '' }}" href="{{ route('prd.list') }}">
+                                    <span class="material-symbols-outlined">diamond_shine</span>
+                                    <p>Products</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
                                 {{-- Products --}}
                                 @if(!empty($permissions['Products']) && $permissions['Products'])
                                     <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">

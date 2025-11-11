@@ -25,15 +25,20 @@ class DeliveryRequestController extends Controller
     public function delivery($delivery_id, Request $request)
     {
         $user = Auth::user();
-        if($user->role === "Customer"){
 
-            $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
-            $credit = Credits::where('user_id', $user->user_id)->firstOrFail();
-            $delivery = DeliveryRequest::where('delivery_id', $delivery_id)->firstOrFail();
+        if ($user->role === "Customer") {
+            $user = Auth::user();
+            $customer = Customers::where('user_id', $user->user_id)->first();
+            $credit = Credits::where('user_id', $user->user_id)->first();
+            $delivery = DeliveryRequest::where('delivery_id', $delivery_id)->first();
             $items = DeliveryItemRequest::where('delivery_id', $delivery_id)->get();
-
-        }
-        elseif($user->role !== "Customer"){
+            if ($delivery->customer_id !==  $user->customer->customer_id) {
+                return redirect()->back()->with('error', 'Purchase order does not exist');
+            }
+            if ($delivery->status === "Pending") {
+                return redirect()->back()->with('error', 'Purchase order not confirmed yet');
+            }
+        }elseif ($user->role !== "Customer") {
             $delivery = DeliveryRequest::where('delivery_id', $delivery_id)->first();
             $customer = Customers::where('user_id', $delivery->user_id)->first();
             $credit = Credits::where('user_id', $user->user_id)->first();
@@ -42,16 +47,16 @@ class DeliveryRequestController extends Controller
         }
 
 
+
         return view('franken.dlv.delivery', compact(
             'user',
             'customer',
             'credit',
             'delivery',
             'items',
-
         ));
-    
     }
+
     public function receive(Request $request)
         {
             $request->validate([

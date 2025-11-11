@@ -26,6 +26,10 @@ class ProductSetting extends Model
     {
         return $this->belongsTo(ProductSales::class, 'set_id', 'set_id');
     }
+    public function promo()
+    {
+        return $this->belongsTo(Promos::class, 'product_id', 'product_id');
+    }
         public function user()
     {
         return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');

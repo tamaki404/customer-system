@@ -9,7 +9,6 @@
 
 
 @section('content')
-
     @if ($errors->any())
         <div class="alert alert-danger" style="margin: 10px;">
             <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
@@ -198,7 +197,8 @@
                             @if ($delivery->status === 'Scheduled' && Auth()->user()->role === 'Customer')
                                 <button type="button" 
                                     data-bs-toggle="modal" data-bs-target="#mark-as-delivered" 
-                                    class="process"
+                                    class="yellow-btn"
+                                    style="transform:none; transition:none"
                                     >
                                     <span class="material-symbols-outlined" >
                                     package_2
@@ -234,6 +234,7 @@
                                 </div>
                             @endif
                         </div>
+                  
                         <button class="collection-btn" style="min-width: 130px; background-color: #dc3545; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
                             <span class="material-symbols-outlined" >assignment_returned</span> Return slip
                         </button>   
