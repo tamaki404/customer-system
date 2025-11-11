@@ -150,13 +150,14 @@
                                         <td>
                                             @if ($item->promo && $item->promo->value_type === "Fixed")
                                                 <span style="color: #f8912a">₱{{$item->promo->value}} </span>
-                                            @elseif ($item->promo && $item->promo->value_type === "Percentage")
+                                          @elseif ($item->promo && $item->promo->value_type === "Percentage")
                                                 @php
-                                                    $decimal = $item->promo->value/100;
-                                                    $percentValue = $decimal * $item->productSetting->nego_price;
+                                                    $decimal = $item->promo->value / 100;
+                                                    $discount = $decimal * $item->productSetting->nego_price;
+                                                    $discountedPrice = $item->productSetting->nego_price - $discount;
                                                 @endphp
-                                                <span style="color: #f8912a">₱{{$percentValue}} </span>
-                                                <span style="text-decoration: line-through">₱{{ $item->productSetting->nego_price }}</span>
+                                                <span style="color: #f8912a">₱{{ number_format($discountedPrice, 2) }}</span>
+                                                <span style="text-decoration: line-through">₱{{ number_format($item->productSetting->nego_price, 2) }}</span>
                                             @else
                                                 ₱{{ $item->productSetting->nego_price }}
                                             @endif

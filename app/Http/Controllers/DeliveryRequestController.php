@@ -125,9 +125,10 @@ class DeliveryRequestController extends Controller
             if ($totalDeliveries > 0 && $totalDeliveries === $deliveredCount) {
                 $purchaseRequest->update(['status' => 'Completed']);
             }
-            elseif ($totalDeliveries < 0 && $totalDeliveries === $deliveredCount) {
+            elseif ($deliveredCount < $totalDeliveries) {
                 $purchaseRequest->update(['status' => 'Progressing']);
             }
+
             // after updating delivery items above
 
             $items = DeliveryItemRequest::where('delivery_id', $delivery->delivery_id)
@@ -137,29 +138,48 @@ class DeliveryRequestController extends Controller
 
             $total_amount = 0;
 
-foreach ($items as $item) {
-    if ($item->productSetting && $item->product) {
+            foreach ($items as $item) {
+                if ($item->productSetting && $item->product) {
 
-        // default value
-        $qty = 0;
+                    // Determine quantity based on measurement
+                    $qty = 0;
+                    if (strtolower($item->product->measurement_type) === 'heads' 
+                        || strtolower($item->product->measurement_type) === 'head') {
+                        $qty = $item->received_heads ?? 0;
+                    } else {
+                        $qty = $item->received_kilos ?? 0;
+                    }
 
-        // check measurement type
-        if (strtolower($item->product->measurement_type) === 'heads' 
-            || strtolower($item->product->measurement_type) === 'head') {
+                    // Base price
+                    $unitPrice = $item->productSetting->nego_price;
 
-            // use received_heads
-            $qty = $item->received_heads ?? 0;
+                    // Apply promo pricing:
+                    if ($item->promo && $item->promo->status === 'Active'
+                        && $item->promo->start_date <= now()
+                        && $item->promo->end_date >= now()
+                        && $item->promo->quantity > 0) {
 
-        } else {
-            // use kilos
-            $qty = $item->received_kilos ?? 0;
-        }
+                        if ($item->promo->value_type === "Fixed") {
+                            $unitPrice = max(0, $unitPrice - $item->promo->value);
 
-        $balance = $qty * $item->productSetting->nego_price;
-        $item->update(['balance' => $balance]);
-        $total_amount += $balance;
-    }
-}
+                        } elseif ($item->promo->value_type === "Percentage") {
+                            $decimal = $item->promo->value / 100;
+                            $discount = $decimal * $unitPrice;
+                            $unitPrice = max(0, $unitPrice - $discount);
+                        }
+
+                        // Optionally reduce promo quantity
+                        $item->promo->decrement('quantity', 1);
+                    }
+
+                    // Final balance
+                    $balance = $qty * $unitPrice;
+                    $item->update(['balance' => $balance]);
+
+                    $total_amount += $balance;
+                }
+            }
+
 
 
             $date  = date('Ymd');
