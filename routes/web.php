@@ -227,8 +227,10 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
             ->name('delivery');
         Route::post('/delivery/receive-order/', [DeliveryRequestController::class, 'receive'])
             ->name('receive');
+        Route::get('/list', [DeliveryRequestController::class, 'list'])
+            ->name('list');
     });
-    Route::prefix('payment')->name('pym.')->group(function () {
+    Route::prefix('payment')->name('pym.')->group(function (): void {
         Route::post('/payment/create/', [PaymentsController::class, 'create'])
             ->name('create');
         Route::get('/payment/list/', [PaymentsController::class, 'list'])

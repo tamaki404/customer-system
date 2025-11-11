@@ -188,13 +188,21 @@
                             @foreach ($promos as $promo)
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
-                                    <td>{{ $promo->created_at }}</td>
+                                    <td>{{ $promo->created_at->format('F j, Y') }}</td>
                                     <td>{{ $promo->name }}</td>
                                     <td>{{ $promo->category }}</td>
-                                    <td>{{ $promo->start_date }} - {{ $promo->end_date }}</td>
-                                    <td>{{ $promo->quantity }}</td>
+                                    <td>{{\Carbon\Carbon::parse($promo->start_date)->format('F j, Y') }} - {{\Carbon\Carbon::parse($promo->end_date)->format('F j, Y') }}</td>
+                                    <td>
+                                        {{ $promo->quantity }}
+                                    </td>
                                     <td>{{ $promo->product->name }}</td>
-                                    <th></th>
+                                    <th>
+                                        @if ($promo->value_type==="Percentage")
+                                            %{{ number_format($promo->value, 0) }}  OFF
+                                        @elseif ($promo->value_type==="Fixed")
+                                            ₱{{ $promo->value }} LESS
+                                        @endif
+                                    </th>
                                 </tr>
                             @endforeach
                         </tbody>

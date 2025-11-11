@@ -23,15 +23,9 @@ class PurchaseRequestController extends Controller
     {
         try {
             $user = Auth::user();
-            
-            Log::info('Purchase Request List accessed', [
-                'user_id' => $user->user_id,
-                'role' => $user->role
-            ]);
-
-            $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
 
             if ($user->role === 'Customer') {
+                $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
                 $requests = PurchaseRequest::where('user_id', $user->user_id)
                     ->orderBy('created_at', 'desc')
                     ->get();
@@ -46,7 +40,7 @@ class PurchaseRequestController extends Controller
                 ]);
                 
             } elseif ($user->role !== 'Customer') {
-                $requests = PurchaseRequest::all()->orderBy('created_at', 'desc')->get();
+                $requests = PurchaseRequest::orderBy('created_at', 'desc')->get();
                 $products = collect();
                 
                 Log::info('Staff purchase requests loaded', [

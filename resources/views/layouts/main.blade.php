@@ -246,6 +246,7 @@
                                 </a>
                             @endif
                         </div>
+
                         <div class="nav-group">
                             <div class="nav-group-title">Orders & Deliveries</div>
 
@@ -265,6 +266,12 @@
                                     </a>
                                 @endif
 
+                                {{-- Deliveries --}}
+                                <a class="nav-item{{ $currentRoute == 'dlv.list' ? ' active' : '' }}" href="{{ route(name: 'dlv.list') }}">
+                                    <span class="material-symbols-outlined">diamond_shine</span>
+                                    <p>Deliveries summary</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
                                 {{-- Orders --}}
                                 @if(!empty($permissions['Orders']) && $permissions['Orders'])
                                     <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
@@ -273,7 +280,6 @@
                                         <div class="nav-indicator"></div>
                                     </a>
                                 @endif
-
                                 {{-- Products --}}
                                 @if(!empty($permissions['Products']) && $permissions['Products'])
                                     <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
@@ -295,10 +301,8 @@
                                     </p>
                                 </div>
                             @endif
-
-
-
                         </div>
+
                         <div class="nav-group">
                             <div class="nav-group-title">Credits & Receipts</div>
 

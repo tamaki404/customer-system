@@ -154,6 +154,25 @@ foreach ($items as $item) {
             return back()->with('success', 'Delivery successfully confirmed with variance recorded.');
     }
 
+    public function list(Request $request)
+    {
+        $user = Auth::user();
+        if ($user->role === 'Customer') {
+            $deliveries = DeliveryRequest::where('customer_id', $user->ucustomer_idser_id)
+                ->orderBy('created_at', 'desc')
+                ->get();
 
+        } elseif ($user->role !== 'Customer') {
+            $deliveries = DeliveryRequest::all()->orderBy('created_at', 'desc')->get();
+            
+        }
+
+        return view('franken.dlv.list', compact(
+            'deliveries',
+
+
+        ));
+    
+    }
 
 }
