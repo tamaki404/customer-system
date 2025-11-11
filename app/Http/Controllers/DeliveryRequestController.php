@@ -10,6 +10,7 @@ use App\Models\PurchaseRequest;
 use App\Models\DeliveryRequest;
 use App\Models\Credits;
 use App\Models\PurchaseHistory;
+use App\Models\Promos;
 
 class DeliveryRequestController extends Controller
 {
@@ -46,7 +47,13 @@ class DeliveryRequestController extends Controller
 
         }
 
-
+            $activePromos = Promos::with('product')
+                ->where('status', "Active")
+                ->where('start_date', '<=', now())
+                ->where('end_date', '>=', now())
+                ->where('quantity', '>', 0) 
+                ->orderBy('quantity', 'asc') 
+                ->get();
 
         return view('franken.dlv.delivery', compact(
             'user',
@@ -54,6 +61,7 @@ class DeliveryRequestController extends Controller
             'credit',
             'delivery',
             'items',
+            'activePromos'
         ));
     }
 

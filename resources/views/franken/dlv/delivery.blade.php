@@ -74,11 +74,14 @@
                     <table style="width:100%; height: 100%; padding: 3px;   border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px; border-radius: 5px;" >
                         <thead style="background-color: #fff;">
                                 <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                    <th style="width: 120px;">Product ID</th>
-                                    <th style="width: 200px;">Product</th>
-                                    <th style="width: 160px;">Planned</th>
-                                    <th style="width: 200px;">Received</th>
-                                    <th style="width: 140px;">Variance</th>
+                                    <th>Product ID</th>
+                                    <th>Product</th>
+                                    <th>Planned</th>
+                                    <th>Received</th>
+                                    <th>
+                                        Promo
+                                    </th> 
+                                    <th>Variance</th>
                                 </tr>
                         </thead>
                         <tbody>
@@ -144,7 +147,20 @@
                                                 </div>
                                             @endif
                                         </td>
-
+                                        <td>
+                                            @if ($item->promo && $item->promo->value_type === "Fixed")
+                                                <span style="color: #f8912a">₱{{$item->promo->value}} </span>
+                                            @elseif ($item->promo && $item->promo->value_type === "Percentage")
+                                                @php
+                                                    $decimal = $item->promo->value/100;
+                                                    $percentValue = $decimal * $item->productSetting->nego_price;
+                                                @endphp
+                                                <span style="color: #f8912a">₱{{$percentValue}} </span>
+                                                <span style="text-decoration: line-through">₱{{ $item->productSetting->nego_price }}</span>
+                                            @else
+                                                ₱{{ $item->productSetting->nego_price }}
+                                            @endif
+                                        </td>
                                         {{-- VARIANCE --}}
                                         <td>
                                             @if ($measurement === 'Heads&Kilos')

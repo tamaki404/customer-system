@@ -42,7 +42,10 @@ class DeliveryItemRequest extends Model
     {
         return $this->belongsTo(Products::class, 'product_id', 'product_id');
     }
-
+    public function promo()
+    {
+        return $this->belongsTo(Promos::class, 'product_id', 'product_id');
+    }
     public function productSetting()
     {
         return $this->hasOne(ProductSetting::class, 'set_id', 'set_id');
