@@ -49,6 +49,10 @@ class DeliveryRequest extends Model
     {
         return $this->hasMany(DeliveryItemRequest::class, 'po_id', 'po_id');
     }
+    public function scheduled_items()
+    {
+        return $this->hasMany(DeliveryItemRequest::class, 'delivery_id', 'delivery_id');
+    }
     /**
      * Get the customer for this delivery
      */

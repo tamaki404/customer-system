@@ -70,13 +70,16 @@ class PurchaseRequestController extends Controller
     public function request($po_id, Request $request)
     {
         $user = Auth::user();
-        $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
+
         $request = PurchaseRequest::where('po_id', $po_id)->first();
         $del = DeliveryRequest::where('po_id', $po_id)->first();
         $itemCount = DeliveryItemRequest::where('po_id', $po_id)->count();
         $delCount = DeliveryRequest::where('po_id', $po_id)->count();
         $orderDeets = PurchaseRequest::where('po_id', $po_id)->first();
-
+        $orderPo = PurchaseRequest::where('po_id', $po_id)->with(['items.product', 'customer'])->first(); 
+        $setProducts = ProductSetting::where('customer_id', $orderPo->customer_id)
+            ->with('product')
+            ->get();
         $items = DeliveryItemRequest::where('delivery_id', $del->delivery_id)
             ->where('po_id', $po_id)
             ->with(['product', 'productSetting'])
@@ -122,6 +125,9 @@ class PurchaseRequestController extends Controller
         $receivedPaymentCount =Receipts::where('po_id', $po_id)
         ->where('status', "Verified")->count();
 
+
+        $delivery_scheduled = DeliveryRequest::where('po_id', $po_id)->with(['scheduled_items.product', 'customer'])->orderBy('delivery_date', 'desc')->get();
+
         return view('franken.pr.request', [
                 'user' => $user,
                 'request' => $request,
@@ -138,6 +144,9 @@ class PurchaseRequestController extends Controller
                 'poBalance' => $poBalance,
                 'remainingBalance' => $remainingBalance,
                 'poPaid' => $poPaid,
+                'orderPo' => $orderPo,
+                'setProducts' => $setProducts,
+                'delivery_scheduled' => $delivery_scheduled,
 
         ]);
 
@@ -370,6 +379,76 @@ class PurchaseRequestController extends Controller
             'receipts',
             'po'
         ));
+    }
+    public function confirm(Request $request, $po_id)
+    {
+        $user = Auth::user();
+        if (!in_array($user->role, ['Staff', 'Admin'])) {
+                return redirect()->back()->with('error', 'Only staff can confirm purchase orders.');
+        }
+
+        try {
+                $request->validate([
+                    'decision' => 'required|in:Accept,Reject',
+                    'notes' => 'nullable|string|max:255',
+                ]);
+
+                DB::beginTransaction();
+
+                $purchaseOrder = PurchaseRequest::where('po_id', $po_id)->firstOrFail();
+                
+                if ($purchaseOrder->status !== 'Pending') {
+                    return redirect()->back()->with('error', 'Purchase order is not in pending status.');
+                }
+
+                $orderId = null;
+
+                if ($request->decision === 'Accept') {
+                    // Update all items status to Accepted
+                    DeliveryRequest::where('po_id', $po_id)->update(['status' => 'Scheduled']);
+
+                    // Update purchase order
+                    $purchaseOrder->update([
+                        'status' => 'Accepted',
+                        'action_by' => $user->user_id,
+                        'updated_at' => now(),
+                        'notes' => $request->notes,
+                    ]);
+                    
+                } else {
+                    // Update all items status to Rejected
+                    DeliveryRequest::where('po_id', $po_id)->update(['status' => 'Rejected']);
+
+                    // Update purchase order
+                    $purchaseOrder->update([
+                        'status' => 'Rejected',
+                        'action_by' => $user->user_id,
+                        'updated_at' => now(),
+                        'notes' => $request->notes,
+                    ]);
+
+                    
+                }
+
+                DB::commit();
+
+                if ($request->action === 'Accept') {
+                    return redirect()->back()->with('success', "Purchase order has been accepted successfully! Order ID: {$orderId}");
+                } else {
+                    return redirect()->back()->with('error', "Purchase order has been rejected successfully!");
+                }
+
+        } catch (Exception $e) {
+                DB::rollBack();
+                \Log::error('Purchase order confirmation failed:', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'request_data' => $request->all(),
+                ]);
+
+                return redirect()->back()
+                    ->with('error', 'Purchase order confirmation failed: ' . $e->getMessage());
+        }
     }
 
     /**

@@ -169,9 +169,10 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
             ->middleware('role:Customer'); // Only customers can create
         
         // View single purchase request detailsd
-        Route::get('/requests/list/request/{po_id}', [PurchaseRequestController::class, 'request'])
+        Route::get('/list/request/{po_id}', [PurchaseRequestController::class, 'request'])
             ->name('request');
-        
+        Route::post('/{po_id}/confirm', [PurchaseRequestController::class, 'confirm'])->name('confirm');
+
         // // Update purchase request status (for staff)
         // Route::patch('/{poId}/status', [PurchaseRequestController::class, 'updateStatus'])
         //     ->name('update.status')

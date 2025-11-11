@@ -27,6 +27,10 @@ class PurchaseRequest extends Model
     /**
      * Get the delivery requests for this purchase request
      */
+    public function items()
+    {
+        return $this->hasMany(DeliveryItemRequest::class, 'po_id', 'po_id');
+    }
     public function deliveryRequests()
     {
         return $this->hasMany(DeliveryRequest::class, 'po_id', 'po_id');

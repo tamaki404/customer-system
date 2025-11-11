@@ -1,0 +1,115 @@
+.content_frank{
+    background-color: #ffffff;
+    border-top: 4px solid #ffde59;
+    overflow: auto;
+    height: 100%;
+}
+.header_frank{
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+        border-bottom: var(--bs-modal-footer-border-width) solid var(--bs-modal-footer-border-color);
+
+}
+.header_frank .detail-fank{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.detail-fank .icon{
+    font-size: 20px;
+    margin: 5px;
+}
+.detail-fank p .title{
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+}
+.detail-fank p{
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+.detail-fank p .desc{
+    font-size: 13px;
+    color: #666;
+    font-weight: normal
+}
+.body-frank{
+    padding: 10px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    height: 100%;
+    overflow: auto;
+
+}
+.body-frank .table-con-frank{
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+     border-top: 3px solid #ffde59;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    border-radius: 5px;
+}
+.table-con-frank p{
+    margin: 5px 5px;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+}
+.table-con-frank p .icon{
+    font-size: 14px;
+}
+
+.table-frank{
+
+     border-top: 3px solid #ffde59;
+}
+
+.table-frank thead tr td{
+    font-weight: bold;
+}
+.table-frank thead{
+    background-color: #fff;
+}
+#staff_notes{
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    border: none;
+}
+.footer-frank{
+    background-color: #ffde59;
+}
+.footer-frank button{
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    background-color: #f8912a;
+    color: #fff;
+}
+.footer-frank button:hover{
+    background-color: #dc8025;
+}
+.footer-frank button .icon{
+    font-size: 14px;
+}
+.table-con-frank select{
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;    outline: none;
+    border: none;
+}

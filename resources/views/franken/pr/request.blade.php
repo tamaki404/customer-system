@@ -3,6 +3,8 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/views/customer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/franken/modal.css') }}">
+
 @endpush
 
 
@@ -31,7 +33,167 @@
         </div>
     @endif
 
+    {{-- Staff confirmation modal --}}
+    @if (auth()->user()->role !== 'Customer' && $request->status === 'Pending')
+        <div class="modal fade" id="confirm-action" tabindex="-1" aria-labelledby="confirmActionLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" style="height: 500px">
+                <form class="modal-content content_frank" style="width: 800px; overflow: hidden; height: 600px;" method="POST" action="{{ route('pr.confirm', $request->po_id) }}">
+                    @csrf
 
+                        <div class="modal-header  header_frank">
+                            <div class="detail-fank">
+                                <span class="material-symbols-outlined icon">
+                                assignment
+                                </span>
+                                <p>
+                                    <span class="title">Purchase order approval</span>
+                                    <span class="desc">Confirming this PO will automaticallys et the scheduled deliveries</span>
+                                </p>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="body-frank">
+
+                            <div class="table-con-frank" style="width: 70%">
+                                <p>
+                                    <span class="material-symbols-outlined icon">
+                                        note_stack
+                                    </span>
+                                    <span>Note (Optional)</span>
+                                </p>
+                                <textarea name="notes"  maxlength="255" id="staff_notes" class="" rows="3" style=" border-radius: 5px; outline: none; padding: 5px;" placeholder="You can add notes regarding this purchase order for the customer..."></textarea>
+
+                            </div>
+                            <div class="table-con-frank">
+                                <p>
+                                    <span class="req-asterisk">*</span>
+                                    <span>Status</span>
+                                </p>
+                                <select name="decision" id="select" required>
+                                    <option value="" style="color: #888">--- Select status ---</option>
+                                    <option value="Accept">Accept request</option>
+                                    <option value="Reject">Reject request</option>
+                                </select>
+
+                            </div>
+                            <div class="table-con-frank">
+                                <p>
+                                    <span class="material-symbols-outlined icon">
+                                        shopping_basket
+                                    </span>
+                                    <span>Product list</span>
+                                </p>
+                                <table class="table-frank" style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                    <thead >
+                                        <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                            <td>#</td>
+                                            <td>Product ID</td>
+                                            <td>Name</td>
+                                            <td>Measurement</td>
+                                            <td>Quantity</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($orderPo->items as $item)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $item->product->product_id }}</td>
+                                                <td>{{ $item->product->name }}</td>
+                                                <td>{{ $item->product->measurement_type }}</td>
+                                            
+                                                <td>
+                                                    @if ($item->product->measurement_type === "Heads")
+                                                        {{ $item->planned_heads }}
+                                                    
+                                                    @elseif ($item->product->measurement_type === "Kilos")
+                                                        {{ $item->planned_kilos }}kg
+                                                    
+                                                    @elseif ($item->product->measurement_type === "Heads&Kilos")
+                                                        {{ $item->planned_heads }} - {{ $item->planned_kilos }}kg
+                                                    @else
+                                                        --
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                     
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div class="table-con-frank" style="margin-top: 5px">
+                                <p>
+                                    <span class="material-symbols-outlined icon">
+                                        local_shipping
+                                    </span>
+                                    <span>Delivery schedule</span>
+                                </p>
+                                <table class="table-frank" style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                    <thead>
+                                        <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                            <td>#</td>
+                                            <td>Delivery details</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($delivery_scheduled as $del)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>
+                                                    <div style="display: flex; flex-direction: column;">
+                                                        <p style="display: flex; font-size:12px; font-weight: normal; gap: 5px flex-direction: row; align-items:center;">
+                                                            <span class="material-symbols-outlined" style="font-size: 13px; font-weight: normal;">event</span>  
+                                                            <span>{{ $del->delivery_date->format('F j') }}</span>
+                                                        </p>
+                                                        <div style="display: flex; flex-direction: row; flex-wrap: wrap; padding: 10px; width: 100%; gap: 5px;">
+                                                            @foreach ($del->scheduled_items as $item)
+                                                                <div style="width: auto; min-width: auto; display: flex; align-items: center; flex-direction: row; background-color: #ffffff; padding: 5px; gap: 3px; border-radius: 5px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; border-top: 3px solid #ffde59;">
+
+                                                                    <div style=" width: auto; ">
+                                                                        
+                                                                        <p style="font-size: 13px; font-weight: bold;">
+                                                                            <span>{{ $item->product->name }}</span> 
+                                                                        </p>
+                                                                        <p style="font-size: 13px; font-weight: normal;">
+                                                                            @if ($item->product->measurement_type === "Heads")
+                                                                                {{ $item->planned_heads }} heads
+                                                                            @elseif ($item->product->measurement_type === "Kilos")
+                                                                                {{ $item->planned_kilos }}kg
+                                                                            @elseif ($item->product->measurement_type === "Heads&Kilos")
+                                                                                {{ $item->planned_heads }}heads and {{ $item->planned_kilos }}kg
+                                                                            @else
+                                                                                --
+                                                                            @endif
+                                                                        </p>
+
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                     
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    
+                    
+                    <div class="modal-footer footer-frank">
+                        <button type="submit" name="action"class="accept_order">
+                            <span class="material-symbols-outlined icon">approval</span>
+                            Confirm changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
    <div class="content-bg" style="display: flex; flex-direction: row; overflow: hidden;">
         <div class="left" style="width: 75%">
             <div class="content-header">
@@ -48,7 +210,18 @@
                     <div class="upper-con" style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
                         <div class="buttons">
                             <!-- Buttons -->
-                            {{-- @if ($order->status === 'Accepted' && Auth()->user()->role !== 'Customer')
+
+                        <div style="display: flex; gap: 10px;">
+                            @if (auth()->user()->role !== 'Customer' && $request->status === 'Pending')
+                                <button data-bs-toggle="modal" data-bs-target="#confirm-action" class="btn-transition">
+                                    <span class="material-symbols-outlined">
+                                        approval_delegation
+                                    </span>
+                                    Confirm Order
+                                </button>
+                            @endif
+                        </div>
+                            {{-- @if ($request->status === 'Accepted' && Auth()->user()->role !== 'Customer')
                                 <button type="button" 
                                     data-bs-toggle="modal" data-bs-target="#processModal" 
                                     data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
@@ -59,7 +232,8 @@
                                     </span>
                                     Process order
                                 </button>
-                            @elseif ($order->status === 'Processed' && Auth()->user()->role !== 'Customer')
+                            @endif
+                            @elseif ($request->status === 'Processed' && Auth()->user()->role !== 'Customer')
                                 <button type="button" 
                                     data-bs-toggle="modal" data-bs-target="#exportModal" 
                                     data-url="{{ route('orders.customer.pdf', $order->order_id) }}"
@@ -74,7 +248,7 @@
                                     </span>
                                     Payments collection
                                 </button> 
-                            @endif --}}
+                            @endif   --}}
                         </div>
                     </div>
                 </div>

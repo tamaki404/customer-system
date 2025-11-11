@@ -12,28 +12,6 @@
             <div class="modal-dialog modal-xl">
                 <form class="modal-content" style="width: 800px" method="POST" action="{{ route('purchaseorders.confirm', $po->po_id) }}">
                     @csrf
-                    
-                    @if ($errors->any())
-                        <div class="alert alert-danger" style="margin: 10px;">
-                            <h6 style="margin-bottom: 10px; font-weight: bold;">Validation Errors:</h6>
-                            <ul style="margin: 0; padding-left: 20px;">
-                                @foreach ($errors->all() as $error)
-                                    <li style="font-size: 14px;">{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                    
-                    @if (session('success'))
-                        <div class="alert alert-success" style="margin: 10px;">{{ session('success') }}</div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="alert alert-danger" style="margin: 10px;">
-                            <h6 style="margin-bottom: 10px; font-weight: bold;">Error:</h6>
-                            <p style="margin: 0; font-size: 14px;">{{ session('error') }}</p>
-                        </div>
-                    @endif
 
                         <div class="modal-header">
                             <p class="modal-title" id="confirmActionLabel">Confirm Purchase Order</p>
@@ -52,79 +30,79 @@
                             </div>
 
                             <div style="overflow-x: auto;">
-                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
-                                <thead style="background-color: #f9f9f9;">
-                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
-                                        <td>#</td>
-                                        <td>Product ID</td>
-                                        <td>Name</td>
-                                        <td>Measurement</td>
-                                        <td>Unit price</td>
-                                        <td>Quantity</td>
-                                        <td>Total</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                        @foreach($po->items as $item)
-                                        <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->product->product_id }}</td>
-                                            <td>{{ $item->product->name }}</td>
-                                            <td>{{ $item->product->measurement_type }}</td>
-                                            <td>₱{{ number_format($item->unit_price, 2) }}</td>
-                                            <td style="display: flex; justify-content: center;">
-                                                @if ($item->product->measurement_type === "Kilos")
-                                                    {{-- Kilos only --}}
-                                                    <input type="number" 
-                                                        name="alt_kilos[{{ $item->po_item_id }}]" 
-                                                        value="{{ $item->placed_kilos }}" 
-                                                        min="0"
-                                                        class="form-control staff-quantity-input"
-                                                        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
-                                                        style="width:100px">
-                                                @elseif ($item->product->measurement_type === "Heads")
-                                                    {{-- Heads only --}}
-                                                    <input type="number" 
-                                                        name="alt_heads[{{ $item->po_item_id }}]" 
-                                                        value="{{ $item->placed_heads }}" 
-                                                        min="0"
-                                                        class="form-control staff-quantity-input"
-                                                        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
-                                                        style="width:100px">
-                                                @elseif ($item->product->measurement_type === "Heads&Kilos")
-                                                    {{-- Heads --}}
-                                                    <input type="number" 
-                                                        name="alt_heads[{{ $item->po_item_id }}]" 
-                                                        value="{{ $item->placed_heads }}" 
-                                                        min="0"
-                                                        class="form-control staff-quantity-input mb-1"
-                                                        placeholder="Heads"
-                                                        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
-                                                        style="width:100px">
+                                <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                    <thead style="background-color: #f9f9f9;">
+                                        <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                            <td>#</td>
+                                            <td>Product ID</td>
+                                            <td>Name</td>
+                                            <td>Measurement</td>
+                                            <td>Unit price</td>
+                                            <td>Quantity</td>
+                                            <td>Total</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            @foreach($po->items as $item)
+                                            <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $item->product->product_id }}</td>
+                                                <td>{{ $item->product->name }}</td>
+                                                <td>{{ $item->product->measurement_type }}</td>
+                                                <td>₱{{ number_format($item->unit_price, 2) }}</td>
+                                                <td style="display: flex; justify-content: center;">
+                                                    @if ($item->product->measurement_type === "Kilos")
+                                                        {{-- Kilos only --}}
+                                                        <input type="number" 
+                                                            name="alt_kilos[{{ $item->po_item_id }}]" 
+                                                            value="{{ $item->placed_kilos }}" 
+                                                            min="0"
+                                                            class="form-control staff-quantity-input"
+                                                            onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
+                                                            style="width:100px">
+                                                    @elseif ($item->product->measurement_type === "Heads")
+                                                        {{-- Heads only --}}
+                                                        <input type="number" 
+                                                            name="alt_heads[{{ $item->po_item_id }}]" 
+                                                            value="{{ $item->placed_heads }}" 
+                                                            min="0"
+                                                            class="form-control staff-quantity-input"
+                                                            onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
+                                                            style="width:100px">
+                                                    @elseif ($item->product->measurement_type === "Heads&Kilos")
+                                                        {{-- Heads --}}
+                                                        <input type="number" 
+                                                            name="alt_heads[{{ $item->po_item_id }}]" 
+                                                            value="{{ $item->placed_heads }}" 
+                                                            min="0"
+                                                            class="form-control staff-quantity-input mb-1"
+                                                            placeholder="Heads"
+                                                            onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})"
+                                                            style="width:100px">
 
-                                                    {{-- Kilos --}}
-                                                    <input type="number" 
-                                                        name="alt_kilos[{{ $item->po_item_id }}]" 
-                                                        value="{{ $item->placed_kilos }}" 
-                                                        min="0"
-                                                        class="form-control staff-quantity-input"
-                                                        placeholder="Kilos"
-                                                        onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
-                                                        style="width:100px">
-                                                @endif
+                                                        {{-- Kilos --}}
+                                                        <input type="number" 
+                                                            name="alt_kilos[{{ $item->po_item_id }}]" 
+                                                            value="{{ $item->placed_kilos }}" 
+                                                            min="0"
+                                                            class="form-control staff-quantity-input"
+                                                            placeholder="Kilos"
+                                                            onchange="calculateStaffTotal('{{ $item->po_item_id }}', {{ $item->unit_price }})" 
+                                                            style="width:100px">
+                                                    @endif
 
 
+                                                </td>
+                                            <td>
+                                                <span id="staff_total_{{ $item->po_item_id }}" class="staff-row-total">
+                                                    ₱{{ number_format($item->unit_price * $item->customer_quantity, 2) }}
+                                                </span>
                                             </td>
-                                        <td>
-                                            <span id="staff_total_{{ $item->po_item_id }}" class="staff-row-total">
-                                                ₱{{ number_format($item->unit_price * $item->customer_quantity, 2) }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         
                             <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center;">

@@ -25,10 +25,21 @@ class DeliveryRequestController extends Controller
     public function delivery($delivery_id, Request $request)
     {
         $user = Auth::user();
-        $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
-        $credit = Credits::where('user_id', $user->user_id)->firstOrFail();
-        $delivery = DeliveryRequest::where('delivery_id', $delivery_id)->firstOrFail();
-        $items = DeliveryItemRequest::where('delivery_id', $delivery_id)->get();
+        if($user->role === "Customer"){
+
+            $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
+            $credit = Credits::where('user_id', $user->user_id)->firstOrFail();
+            $delivery = DeliveryRequest::where('delivery_id', $delivery_id)->firstOrFail();
+            $items = DeliveryItemRequest::where('delivery_id', $delivery_id)->get();
+
+        }
+        elseif($user->role !== "Customer"){
+            $delivery = DeliveryRequest::where('delivery_id', $delivery_id)->first();
+            $customer = Customers::where('user_id', $delivery->user_id)->first();
+            $credit = Credits::where('user_id', $user->user_id)->first();
+            $items = DeliveryItemRequest::where('delivery_id', $delivery_id)->get();
+
+        }
 
 
         return view('franken.dlv.delivery', compact(
