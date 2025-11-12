@@ -32,7 +32,7 @@ class PurchaseRequestController extends Controller
                 $products = ProductSetting::where('customer_id', $customer->customer_id)
                     ->with('product')
                     ->get();
-                
+
                 Log::info('Customer purchase requests loaded', [
                     'customer_id' => $customer->customer_id,
                     'requests_count' => $requests->count(),
@@ -42,16 +42,23 @@ class PurchaseRequestController extends Controller
             } elseif ($user->role !== 'Customer') {
                 $requests = PurchaseRequest::orderBy('created_at', 'desc')->get();
                 $products = collect();
-                
+                $counts = PurchaseRequest::
+                    selectRaw("status, COUNT(*) as total")
+                    ->groupBy('status')
+                    ->pluck('total', 'status');
                 Log::info('Staff purchase requests loaded', [
                     'requests_count' => $requests->count()
                 ]);
             }
+
+
+
             
             return view('franken.pr.list', compact(
                 'user',
                 'requests',
-                'products'
+                'products',
+                'counts'
             ));
             
         } catch (Exception $e) {

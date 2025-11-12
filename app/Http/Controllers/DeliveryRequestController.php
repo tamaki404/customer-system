@@ -233,13 +233,14 @@ class DeliveryRequestController extends Controller
             $delivery = DeliveryRequest::where('customer_id', $customer->customer_id)
                 ->orderBy('delivery_date', 'asc')
                 ->get();
-        }elseif($user->role === "Customer"){
+        }elseif($user->role !== "Customer"){
             $delivery = DeliveryRequest:: where('status', 'Scheduled')
                 ->orderBy('delivery_date', 'asc')
                 ->get();
         }        
         return view('franken.dlv.list', compact(
             'delivery',
+            'user'
  
         ));
             

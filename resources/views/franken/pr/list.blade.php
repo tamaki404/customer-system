@@ -3,6 +3,8 @@
 @push('styles')
     <link rel="stylesheet" href="{{asset('css/staffs/list.css')}}">
     <link rel="stylesheet" href="{{asset('css/franken/pr/list.css')}}">
+    <link rel="stylesheet" href="{{asset('css/franken/status-btn.css')}}">
+
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
 @endpush
 
@@ -272,7 +274,7 @@
             </div>
     </div>
     
-        <div class="content-bg">
+    <div class="content-bg" >
                 <div class="content-header">
                     <div class="contents-display">
                         <form action="{{ route('purchaseorders.list') }}" id="text-search" class="search-text-con" method="GET">
@@ -301,23 +303,52 @@
                             </div>
                         </form>
                     </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
+                            <p class="heading">Purchase requests</p>
+                            @if ( auth()->user()->role === 'Customer')
+                                <div style="display:flex; flex-direction:column; flex-wrap: wrap;">
+                                    {{-- <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
+                                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
+                                        Create PO
+                                    </button> --}}
+                                    <button class="add-staff-btn btn-transition w3-disabled" disabled title="Maximum credit limit reached, kindly settle payment first.">
+                                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">lock</span>
+                                        Create PO
+                                    </button>
 
-                    <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
-                        <p class="heading">Purchase requests</p>
-                        @if ( auth()->user()->role === 'Customer')
-                            <div style="display:flex; flex-direction:column; flex-wrap: wrap;">
-                                {{-- <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
-                                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
-                                    Create PO
-                                </button> --}}
-                                <button class="add-staff-btn btn-transition w3-disabled" disabled title="Maximum credit limit reached, kindly settle payment first.">
-                                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">lock</span>
-                                    Create PO
-                                </button>
+                                </div>
 
-                            </div>
+                            @endif
+                        </div>
 
-                        @endif
+                        <div class="status-btn">
+                            <button class="pending">
+                                <span>Pending</span>
+                                <span>({{ $counts['Pending'] ?? 0 }}) </span>
+                            </button>
+                            <button>
+                                <span>Accepted</span>
+                                <span>({{ $counts['Accepted'] ?? 0 }}) </span>
+                            </button>
+                            <button>
+                                <span>Progressing</span>
+                                <span>({{ $counts['Progressing'] ?? 0 }} )</span>
+                            </button>
+                            <button>
+                                <span>Completed</span>
+                                <span>({{ $counts['Completed'] ?? 0 }} )</span>
+                            </button>
+                            <button>
+                                <span>Cancelled</span>
+                                <span>({{ $counts['Cancelled'] ?? 0 }} )</span>
+                            </button>
+                            <button>
+                                <span>Rejected</span>
+                                <span>({{ $counts['counts'] ?? 0 }}) </span>
+                            </button>
+                        </div>
+
 
                     </div>
 
@@ -336,6 +367,7 @@
                                     <th>Customer</th>
                                     <th>PO ID</th>
                                     <th>Heads and kilos</th>
+                                    <th></th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -347,8 +379,18 @@
                                         <td>{{ $request->customer->company_name }}</td>
                                         <td>#{{ $request->po_id }}</td>
                                         <td>--</td>
+                                        @php
+                                            $delivered_count = $request->deliveryRequests->where('status', 'Delivered')->count();
+                                        @endphp
+                                        <td>
+                                            @if ( $request->status !== "Pending")
+                                                {{ $delivered_count }}/{{ $request->deliveryRequests->count() }}
+                                            @else
+                                                --
+                                            @endif
+                                        </td>
                                         <td>{{ $request->status }}</td>
-
+                        
                                     </tr>
 
                                 @endforeach
@@ -389,7 +431,7 @@
 
                 @endif
 
-        </div>
+    </div>
 
 
 @endsection

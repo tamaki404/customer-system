@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('credits', function (Blueprint $table) {
             $table->id();
             $table->string('credit_id')->unique(); 
+            $table->string('credit_term')->required(); 
             $table->string('user_id')->unique();
             $table->string('status')->nullable();
             $table->decimal('balance', 15, 2)->default(0);

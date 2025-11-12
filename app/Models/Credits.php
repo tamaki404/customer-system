@@ -11,6 +11,7 @@ class Credits extends Model
         'user_id',
         'status',
         'credit_limit',
+        'credit_term',
         'balance',
     ];
     protected $casts = [

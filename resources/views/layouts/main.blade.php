@@ -159,16 +159,22 @@
                                 <div class="nav-indicator"></div>
                             </a> --}}
 
-                            <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
+                            {{-- <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
                                 <span class="material-symbols-outlined">receipt_long</span>
                                 <p>Deliveries summary</p>
                                 <div class="nav-indicator"></div>
-                            </a>
-                            <a class="nav-item{{ $currentRoute == 'deliveries.list' ? ' active' : '' }}" href="{{ route('deliveries.list') }}">
+                            </a> --}}
+                            {{-- <a class="nav-item{{ $currentRoute == 'deliveries.list' ? ' active' : '' }}" href="{{ route('deliveries.list') }}">
                                 <span class="material-symbols-outlined">delivery_truck_speed</span>
                                 <p>Deliveries</p>
                                 <div class="nav-indicator"></div>
-                            </a>
+                            </a> --}}
+                                {{-- Deliveries --}}
+                                <a class="nav-item{{ $currentRoute == 'dlv.list' ? ' active' : '' }}" href="{{ route(name: 'dlv.list') }}">
+                                    <span class="material-symbols-outlined">diamond_shine</span>
+                                    <p>Deliveries summary</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
 
                             <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
                                 <span class="material-symbols-outlined">store</span>
