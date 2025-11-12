@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('po_id')->unique();
             $table->enum('status', ['Pending', 'Accepted', 'Progressing', 'Completed', 'Cancelled', 'Rejected'])->default('Pending')->required();
             $table->string('user_id', 30)->required(); 
+            $table->int('due_date')->nullable();
             $table->decimal('total_amount', 12, 2)->default(0)->nullable();
             $table->string('notes', 255)->nullable();
             $table->string('action_by', 50)->required();

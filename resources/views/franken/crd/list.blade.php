@@ -303,6 +303,7 @@
                                                 <th>Last update at</th>
                                                 <th>PO ID</th>
                                                 <th>Balance</th>
+                                                <th>Due date</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -315,6 +316,14 @@
                                                 <td>{{ $payable['purchase_request']->updated_at->format("F j, Y, g:i a") }}</td>
                                                 <td>{{ $payable['po_id'] }}</td>
                                                 <td>₱{{ number_format($payable['remaining_balance'],2) }}</td>
+                                                @php
+                                                    $term = $payable->credit->credit_term; 
+                                                    $deliveryDate = $payable->created_at; 
+                                                    $due = $deliveryDate->copy()->addDays($term);
+                                                @endphp
+
+                                                <td>{{ $due }}</td>
+
                                                 <td>Partially paid</td>
                                                 <td>
                                                     <div class="dropdown" style="display:flex; align-items: center; justify-content: center;">

@@ -58,6 +58,7 @@ class CreditsRequestController extends Controller
             ->where('delivery_requests.status', 'Delivered')
             ->sum('delivery_item_requests.balance');
 
+
         // Already paid (verified payments)
         $alreadyPaid = Payments::where('customer_id', $customerId)
             ->where('status', 'Verified')
