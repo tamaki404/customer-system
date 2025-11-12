@@ -177,6 +177,7 @@ class DeliveryRequestController extends Controller
                     $item->update(['balance' => $balance]);
 
                     $total_amount += $balance;
+
                 }
             }
 

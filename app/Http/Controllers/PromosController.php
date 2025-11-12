@@ -19,7 +19,12 @@ class PromosController extends Controller
             $promos = Promos::where('category', $customer->category);
         }
         elseif ($user->role !== 'Customer') {
-            $promos = Promos::orderBy('updated_at', 'desc')->get();
+            $promos = Promos::with('product')
+                ->where('start_date', '<=', now())
+                ->where('end_date', '>=', now())
+                ->where('quantity', '>', 0) 
+                ->orderBy('quantity', 'asc') 
+                ->get();            
             $products = Products::orderBy('name', 'desc')->get();
 
         }

@@ -178,12 +178,13 @@
                                         <tbody>                                
                                             @foreach ($transactions as $transaction)
                                                 {{-- payment-view-modal --}}
-                                                <div class="modal fade" id="view-receipt-modal-{{ $transaction->payment_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> 
+                                                @if ($transaction->payment_id !== NULL)
+                                                <div class="modal fade" id="view-receipt-modal-{{ $transaction->payment_id ?? NULL }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> 
                                                     <div class="modal-dialog">
                                                         <div class="modal-content" >
                                                             @csrf
                                                             <div class="modal-header">
-                                                                <p class="modal-title" id="requestActionLabel">Receipt #{{  $transaction->payment_id  }}</p>
+                                                                <p class="modal-title" id="requestActionLabel">Receipt #{{  $transaction->payment_id ?? NULL  }}</p>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body" style="height: 600px; overflow: auto; display: flex; flex-direction: column;">
@@ -210,7 +211,7 @@
                                                             <div class="modal-footer" style="display: flex; flex-direction: row;">
                                                              
                                                                 <button class="collection-btn" style="border-radius: 5px; background-color: #888"
-                                                                    onclick="window.location.href='{{ route('crd.download', ['payment_id' => $transaction->payment->payment_id]) }}'">
+                                                                    onclick="window.location.href='{{ route('crd.download', ['payment_id' => $transaction->payment->payment_id ?? NULL]) }}'">
                                                                     <span class="material-symbols-outlined" style="width:auto">
                                                                     download
                                                                     </span>
@@ -221,6 +222,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                @endif
+
                                                
                                                 <tr>
                                                     <td>{{$loop->iteration}}</td>

@@ -198,7 +198,7 @@
                                     <td>{{ $promo->product->name }}</td>
                                     <th>
                                         @if ($promo->value_type==="Percentage")
-                                            %{{ number_format($promo->value, 0) }}  OFF
+                                            {{ number_format($promo->value, 0) }}%  OFF
                                         @elseif ($promo->value_type==="Fixed")
                                             ₱{{ $promo->value }} LESS
                                         @endif
