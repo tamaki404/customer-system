@@ -168,8 +168,14 @@ class DeliveryRequestController extends Controller
                             $unitPrice = max(0, $unitPrice - $discount);
                         }
 
-                        // Optionally reduce promo quantity
-                        $item->promo->decrement('quantity', 1);
+                        
+                        $deductQty = $qty; // The actual received quantity
+
+                        if ($deductQty > 0) {
+                            $newPromoQty = max(0, $item->promo->quantity - $deductQty);
+                            $item->promo->update(['quantity' => $newPromoQty]);
+                        }
+
                     }
 
                     // Final balance

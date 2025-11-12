@@ -16,14 +16,20 @@ class PromosController extends Controller
         $user = Auth::user();
         if ($user->role === 'Customer') {
             $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
-            $promos = Promos::where('category', $customer->category);
-        }
-        elseif ($user->role !== 'Customer') {
             $promos = Promos::with('product')
+                ->where('category', $customer->category)
                 ->where('start_date', '<=', now())
                 ->where('end_date', '>=', now())
                 ->where('quantity', '>', 0) 
+
                 ->orderBy('quantity', 'asc') 
+                ->get();      
+        }
+        elseif ($user->role !== 'Customer') {
+            $promos = Promos::with('product')
+                ->orderBy('quantity', 'desc')
+                ->orderBy('start_date', 'asc')
+                ->orderBy('end_date', 'asc')
                 ->get();            
             $products = Products::orderBy('name', 'desc')->get();
 
