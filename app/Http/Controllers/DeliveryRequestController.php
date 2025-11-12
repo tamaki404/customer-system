@@ -168,6 +168,37 @@ class DeliveryRequestController extends Controller
                             $unitPrice = max(0, $unitPrice - $discount);
                         }
 
+                        // Optionally reduce promo quantity
+            foreach ($items as $item) {
+                if ($item->productSetting && $item->product) {
+
+                    // Determine quantity based on measurement
+                    $qty = 0;
+                    if (strtolower($item->product->measurement_type) === 'heads' 
+                        || strtolower($item->product->measurement_type) === 'head') {
+                        $qty = $item->received_heads ?? 0;
+                    } else {
+                        $qty = $item->received_kilos ?? 0;
+                    }
+
+                    // Base price
+                    $unitPrice = $item->productSetting->nego_price;
+
+                    // Apply promo pricing:
+                    if ($item->promo && $item->promo->status === 'Active'
+                        && $item->promo->start_date <= now()
+                        && $item->promo->end_date >= now()
+                        && $item->promo->quantity > 0) {
+
+                        if ($item->promo->value_type === "Fixed") {
+                            $unitPrice = max(0, $unitPrice - $item->promo->value);
+
+                        } elseif ($item->promo->value_type === "Percentage") {
+                            $decimal = $item->promo->value / 100;
+                            $discount = $decimal * $unitPrice;
+                            $unitPrice = max(0, $unitPrice - $discount);
+                        }
+
                         
                         $deductQty = $qty; // The actual received quantity
 
@@ -183,6 +214,16 @@ class DeliveryRequestController extends Controller
                     $item->update(['balance' => $balance]);
 
                     $total_amount += $balance;
+
+                }
+            }                    }
+
+                    // Final balance
+                    $balance = $qty * $unitPrice;
+                    $item->update(['balance' => $balance]);
+
+                    $total_amount += $balance;
+
 
                 }
             }

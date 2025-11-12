@@ -279,7 +279,7 @@
                                 <td>{{$item->product->name}}</td>
                                 <td>
                                     @if ($item->product->measurement_type === "Heads")
-                                        {{$item->planned_heads}}
+                                        {{$item->planned_heads}}pcs
                                     @elseif ($item->product->measurement_type === "Kilos")
                                         {{$item->planned_kilos}}kg
                                     @elseif ($item->product->measurement_type === "Heads&Kilos")
@@ -290,7 +290,7 @@
                                 <td>
                                     @if ($delivery->status === "Delivered")
                                         @if ($item->product->measurement_type === "Heads")
-                                            {{$item->received__heads}}
+                                            {{$item->received__heads}}pcs
                                         @elseif ($item->product->measurement_type === "Kilos")
                                             {{$item->received_kilos}}kg
                                         @elseif ($item->product->measurement_type === "Heads&Kilos")

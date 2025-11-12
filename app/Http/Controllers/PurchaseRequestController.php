@@ -9,7 +9,7 @@ use App\Models\ProductSetting;
 use App\Models\Customers;
 use App\Models\Receipts;
 use App\Models\Payments;
-
+use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -304,18 +304,21 @@ class PurchaseRequestController extends Controller
                         // Only create item if there's a quantity
                         if ($dividedHeads > 0 || $dividedKilos > 0) {
                             $deliveryItemId = $this->generateDeliveryItemId($deliveryId, $productId);
-                            
+                            $product = Products::where('product_id',$productId)->first();
                             DeliveryItemRequest::create([
                                 'delivery_id' => $deliveryId,
                                 'po_id' => $poId,
                                 'delivery_item_id' => $deliveryItemId,
                                 'customer_id' => $customer->customer_id,
-                                'product_id' => $productId,
+                                'product_id' => $product->product_id,
                                 'set_id' => $productSetting->set_id,
                                 'planned_kilos' => $dividedKilos > 0 ? $dividedKilos : null,
                                 'planned_heads' => $dividedHeads > 0 ? $dividedHeads : null,
+                                
                                 'balance' => "0.00" 
                             ]);
+
+                            
                             
                             $itemsCreated++;
                             

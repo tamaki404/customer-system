@@ -50,6 +50,41 @@ class DeliveryItemRequest extends Model
     {
         return $this->hasOne(ProductSetting::class, 'set_id', 'set_id');
     }
+
+    protected static function booted()
+        {
+            static::creating(function ($item) {
+                if (!$item->product) return; // in case product not loaded yet
+
+                switch ($item->product->measurement_type) {
+                    case 'Heads':
+                        // Only heads should be filled; clear kilos
+                        $item->planned_kilos = null;
+                        if (empty($item->planned_heads)) {
+                            $item->planned_heads = 0;
+                        }
+                        break;
+
+                    case 'Kilos':
+                        // Only kilos should be filled; clear heads
+                        $item->planned_heads = null;
+                        if (empty($item->planned_kilos)) {
+                            $item->planned_kilos = 0.0;
+                        }
+                        break;
+
+                    case 'Heads&Kilos':
+                        // Both can exist; ensure at least 0 defaults
+                        if (empty($item->planned_heads)) {
+                            $item->planned_heads = 0;
+                        }
+                        if (empty($item->planned_kilos)) {
+                            $item->planned_kilos = 0.0;
+                        }
+                        break;
+                }
+            });
+        }
     /**
      * Get the product for this item
      */
