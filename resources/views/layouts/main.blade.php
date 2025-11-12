@@ -259,13 +259,13 @@
                                         <div class="nav-indicator"></div>
                                     </a>
                                 {{-- Purchase Orders --}}
-                                @if(!empty($permissions['PO']) && $permissions['PO'])
+                                {{-- @if(!empty($permissions['PO']) && $permissions['PO'])
                                     <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
                                         <span class="material-symbols-outlined">shopping_bag</span>
                                         <p>Purchase orders</p>
                                         <div class="nav-indicator"></div>
                                     </a>
-                                @endif
+                                @endif --}}
 
                                 {{-- Deliveries --}}
                                 <a class="nav-item{{ $currentRoute == 'dlv.list' ? ' active' : '' }}" href="{{ route(name: 'dlv.list') }}">
@@ -274,20 +274,20 @@
                                     <div class="nav-indicator"></div>
                                 </a>
                                 {{-- Orders --}}
-                                @if(!empty($permissions['Orders']) && $permissions['Orders'])
+                                {{-- @if(!empty($permissions['Orders']) && $permissions['Orders'])
                                     <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
                                         <span class="material-symbols-outlined">receipt_long</span>
                                         <p>Deliveries summary</p>
                                         <div class="nav-indicator"></div>
                                     </a>
-                                @endif
+                                @endif --}}
                                 <a class="nav-item{{ $currentRoute == 'prd.list' ? ' active' : '' }}" href="{{ route('prd.list') }}">
                                     <span class="material-symbols-outlined">diamond_shine</span>
                                     <p>Products</p>
                                     <div class="nav-indicator"></div>
                                 </a>
                                 {{-- Products --}}
-                                @if(!empty($permissions['Products']) && $permissions['Products'])
+                                {{-- @if(!empty($permissions['Products']) && $permissions['Products'])
                                     <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
                                         <span class="material-symbols-outlined">store</span>
                                         <p>Products</p>
@@ -298,7 +298,7 @@
                                         <p>Variances</p>
                                         <div class="nav-indicator"></div>
                                     </a>
-                                @endif
+                                @endif --}}
                             @else
                                 <div class="locked">
                                     <p title="Please wait for a staff member to set it up.">
@@ -319,13 +319,13 @@
                                     <p>Credits</p>
                                     <div class="nav-indicator"></div>
                                 </a>
-                                @if(!empty($permissions['Credits']) && $permissions['Credits'])
+                                {{-- @if(!empty($permissions['Credits']) && $permissions['Credits'])
                                     <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
                                         <span class="material-symbols-outlined">credit_card</span>
                                         <p>Credits</p>
                                         <div class="nav-indicator"></div>
                                     </a>
-                                @endif
+                                @endif --}}
 
                                 {{-- Proof of Payments --}}
                                 {{-- @if(!empty($permissions['POP']) && $permissions['POP'])

@@ -11,6 +11,7 @@ use App\Models\DeliveryRequest;
 use App\Models\Credits;
 use App\Models\PurchaseHistory;
 use App\Models\Promos;
+use Carbon\Carbon;
 
 class DeliveryRequestController extends Controller
 {
@@ -150,83 +151,60 @@ class DeliveryRequestController extends Controller
                         $qty = $item->received_kilos ?? 0;
                     }
 
-                    // Base price
+                    // Default to negotiated price
                     $unitPrice = $item->productSetting->nego_price;
+                    $discountedQty = 0;
+                    $promoPrice = $unitPrice;
 
-                    // Apply promo pricing:
-                    if ($item->promo && $item->promo->status === 'Active'
-                        && $item->promo->start_date <= now()
-                        && $item->promo->end_date >= now()
-                        && $item->promo->quantity > 0) {
-
+                    // Check if promo can be applied
+                    if (
+                        $item->promo &&
+                        $item->promo->status === 'Active' &&
+                        $item->promo->quantity > 0 &&
+                        $item->promo->start_date <= now() &&
+                        $item->promo->end_date >= now()
+                    ) {
+                        // Apply promo discount to the portion it can cover
                         if ($item->promo->value_type === "Fixed") {
-                            $unitPrice = max(0, $unitPrice - $item->promo->value);
-
+                            $promoPrice = max(0, $unitPrice - $item->promo->value);
                         } elseif ($item->promo->value_type === "Percentage") {
-                            $decimal = $item->promo->value / 100;
-                            $discount = $decimal * $unitPrice;
-                            $unitPrice = max(0, $unitPrice - $discount);
+                            $discount = ($item->promo->value / 100) * $unitPrice;
+                            $promoPrice = max(0, $unitPrice - $discount);
                         }
 
-                        // Optionally reduce promo quantity
-            foreach ($items as $item) {
-                if ($item->productSetting && $item->product) {
+                        $availablePromoQty = $item->promo->quantity;
+                        $discountedQty = min($qty, $availablePromoQty); // only part covered by promo
 
-                    // Determine quantity based on measurement
-                    $qty = 0;
-                    if (strtolower($item->product->measurement_type) === 'heads' 
-                        || strtolower($item->product->measurement_type) === 'head') {
-                        $qty = $item->received_heads ?? 0;
+                        // Calculate promo and regular portions
+                        $promoTotal = $discountedQty * $promoPrice;
+                        $regularQty = max(0, $qty - $discountedQty);
+                        $regularTotal = $regularQty * $unitPrice;
+
+                        // Update promo quantity
+                        $newPromoQty = max(0, $availablePromoQty - $discountedQty);
+                        $item->promo->update(['quantity' => $newPromoQty]);
+
+                        // If promo is exhausted, mark as sold out
+                        if ($newPromoQty === 0) {
+                            $item->promo->update(['status' => 'Sold out']);
+                        }
+
+                        // Total balance for this item
+                        $balance = $promoTotal + $regularTotal;
                     } else {
-                        $qty = $item->received_kilos ?? 0;
+                        // No active promo — regular price
+                        $balance = $qty * $unitPrice;
                     }
 
-                    // Base price
-                    $unitPrice = $item->productSetting->nego_price;
-
-                    // Apply promo pricing:
-                    if ($item->promo && $item->promo->status === 'Active'
-                        && $item->promo->start_date <= now()
-                        && $item->promo->end_date >= now()
-                        && $item->promo->quantity > 0) {
-
-                        if ($item->promo->value_type === "Fixed") {
-                            $unitPrice = max(0, $unitPrice - $item->promo->value);
-
-                        } elseif ($item->promo->value_type === "Percentage") {
-                            $decimal = $item->promo->value / 100;
-                            $discount = $decimal * $unitPrice;
-                            $unitPrice = max(0, $unitPrice - $discount);
-                        }
-
-                        
-                        $deductQty = $qty; // The actual received quantity
-
-                        if ($deductQty > 0) {
-                            $newPromoQty = max(0, $item->promo->quantity - $deductQty);
-                            $item->promo->update(['quantity' => $newPromoQty]);
-                        }
-
-                    }
-
-                    // Final balance
-                    $balance = $qty * $unitPrice;
-                    $item->update(['balance' => $balance]);
+                    // Update item record
+                    $item->update([
+                        'balance' => $balance,
+                    ]);
 
                     $total_amount += $balance;
-
-                }
-            }                    }
-
-                    // Final balance
-                    $balance = $qty * $unitPrice;
-                    $item->update(['balance' => $balance]);
-
-                    $total_amount += $balance;
-
-
                 }
             }
+
 
 
 
@@ -249,22 +227,22 @@ class DeliveryRequestController extends Controller
     public function list(Request $request)
     {
         $user = Auth::user();
-        if ($user->role === 'Customer') {
-            $deliveries = DeliveryRequest::where('customer_id', $user->ucustomer_idser_id)
-                ->orderBy('created_at', 'desc')
+        $customer = Customers::where('user_id', $user->user_id)->first();
+        $now = Carbon::now();
+        if($user->role === "Customer"){
+            $delivery = DeliveryRequest::where('customer_id', $customer->customer_id)
+                ->orderBy('delivery_date', 'asc')
                 ->get();
-
-        } elseif ($user->role !== 'Customer') {
-            $deliveries = DeliveryRequest::all()->orderBy('created_at', 'desc')->get();
-            
-        }
-
+        }elseif($user->role === "Customer"){
+            $delivery = DeliveryRequest:: where('status', 'Scheduled')
+                ->orderBy('delivery_date', 'asc')
+                ->get();
+        }        
         return view('franken.dlv.list', compact(
-            'deliveries',
-
-
+            'delivery',
+ 
         ));
-    
+            
     }
 
 }

@@ -390,8 +390,8 @@
                                             <td>{{ $delivery->delivery_id }}</td>
                                             <td>{{ \Carbon\Carbon::parse($delivery->delivery_date)->format('F j, Y') }}</td>
                                             <td>
-                                                @if($delivery->delivered_at)
-                                                    {{ \Carbon\Carbon::parse($delivery->delivered_at)->format('F j, Y') }}
+                                                @if($delivery->status === "Delivered")
+                                                    {{ \Carbon\Carbon::parse($delivery->delivered_at)->format('F j, Y, g:i a') }}
                                                 @else
                                                     —
                                                 @endif
@@ -524,17 +524,25 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $item->product->name }}</td>
                                         <td>₱{{ number_format($item->productSetting?->nego_price ?? 0, 2) }}</td>
+                                  
                                         <td>
+
                                             @if ($item->product->measurement_type === "Kilos")
                                                 {{ $item->planned_kilos ?? $item->total_planned_kilos }}kg
                                             @elseif ($item->product->measurement_type === "Heads")
                                                 {{ $item->planned_heads ?? $item->total_planned_heads }}
                                             @elseif ($item->product->measurement_type === "Heads&Kilos")
+                                            @php
+                                            
+                                            @endphp
                                                 {{ $item->planned_heads ?? $item->total_planned_heads }} heads, 
                                                 {{ $item->planned_kilos ?? $item->total_planned_kilos }}kg
                                             @endif                                        
                                         </td>
-                                        <td></td>
+                                        <td>
+                                     
+                                     
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

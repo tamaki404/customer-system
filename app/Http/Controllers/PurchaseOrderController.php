@@ -643,31 +643,17 @@ public function createPurchaseOrder(Request $request)
                 foreach ($poItems as $poItem) {
                     $orderItemId = 'ORDR_ITEM-' . $date . '-' . $this->randomBase36String(5);
 
-                    $orderitem = OrderItem::create([
+                    OrderItem::create([
                         'order_item_id' => $orderItemId,
                         'order_id' => $order_id,
                         'product_id' => $poItem->product_id,
                         'set_id' => $poItem->set_id,
-                        'planned_heads' => "0",
-                        'planned_kilos' => "0",
+                        'placed_heads' => $poItem->placed_heads,
+                        'placed_kilos' => $poItem->placed_kilos,
                         'unit_price' => $poItem->unit_price,
                         'total_price' => $poItem->total_price,
                         'status' => 'Accepted',
                     ]);
-
-                    if($orderitem->product->measurement_type === "Heads"){
-                        $orderitem->planned_heads= "poItem->planned_heads";
-                        $orderitem->save();
-                    }
-                    elseif($orderitem->product->measurement_type === "Kilos"){
-                        $orderitem->planned_kilos= "poItem->planned_kilos";
-                        $orderitem->save();
-                    }
-                    elseif($orderitem->product->measurement_type === "Heads&Kilos"){
-                        $orderitem->planned_heads= "poItem->planned_heads";
-                        $orderitem->planned_kilos= "poItem->planned_kilos";
-                    }
-
                 }
                 // Create order history
                 $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);

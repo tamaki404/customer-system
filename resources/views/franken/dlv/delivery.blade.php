@@ -290,17 +290,16 @@
                                 <td>
                                     @if ($delivery->status === "Delivered")
                                         @if ($item->product->measurement_type === "Heads")
-                                            {{$item->received__heads}}pcs
+                                            {{$item->received_heads}}pcs
                                         @elseif ($item->product->measurement_type === "Kilos")
                                             {{$item->received_kilos}}kg
                                         @elseif ($item->product->measurement_type === "Heads&Kilos")
-                                            {{$item->received__heads}}
+                                            {{$item->received_heads}}
                                             {{$item->received_kilos}}kg
                                         @endif
                                     @else
                                         --
                                     @endif
-
                                 </td>
                                 <td>
                                     @if ($delivery->status === "Delivered")
@@ -308,17 +307,19 @@
                                             $varianceHeads = $item->received_heads - $item->planned_heads;
                                             $varianceKilos = $item->received_kilos - $item->planned_kilos;
                                         @endphp
-
-                                        @if ($item->product->measurement_type === "Heads")
-                                            {{ $varianceHeads }} heads
-
-                                        @elseif ($item->product->measurement_type === "Kilos")
-                                            {{ number_format($varianceKilos, 2) }} kg
-
-                                        @elseif ($item->product->measurement_type === "Heads&Kilos")
-                                            {{ $varianceHeads }} heads /
-                                            {{ number_format($varianceKilos, 2) }} kg
+                                        @if ($varianceHeads && $varianceKilos )
+                                            @if ($item->product->measurement_type === "Heads")
+                                                {{ $varianceHeads }} heads
+                                            @elseif ($item->product->measurement_type === "Kilos")
+                                                {{ number_format($varianceKilos, 2) }} kg
+                                            @elseif ($item->product->measurement_type === "Heads&Kilos")
+                                                {{ $varianceHeads }} heads /
+                                                {{ number_format($varianceKilos, 2) }} kg
+                                            @endif
+                                        @else
+                                            --
                                         @endif
+
                                     @else
                                         --
                                     @endif

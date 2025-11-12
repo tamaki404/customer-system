@@ -3,7 +3,7 @@
 @push('styles')
     <link rel="stylesheet" href="{{asset('css/staffs/list.css')}}">
     <link rel="stylesheet" href="{{asset('css/franken/pr/list.css')}}">
-
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
 @endpush
 
 @section('content')
@@ -305,10 +305,18 @@
                     <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
                         <p class="heading">Purchase requests</p>
                         @if ( auth()->user()->role === 'Customer')
-                            <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
-                                <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
-                                Create purchase request
-                            </button>
+                            <div style="display:flex; flex-direction:column; flex-wrap: wrap;">
+                                {{-- <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
+                                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
+                                    Create PO
+                                </button> --}}
+                                <button class="add-staff-btn btn-transition w3-disabled" disabled title="Maximum credit limit reached, kindly settle payment first.">
+                                    <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">lock</span>
+                                    Create PO
+                                </button>
+
+                            </div>
+
                         @endif
 
                     </div>

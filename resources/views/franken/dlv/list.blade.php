@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
-                    <p class="heading">Delivery summary</p>
+                    <p class="heading">Delivery summary ({{$delivery->count()}})</p>
                 </div>
 
                 <div class="content-body" style="background: #fff">
@@ -73,23 +73,35 @@
                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                 <th>#</th>
                                 <th>Updated on</th>
-                                <th>Customer</th>
+                                <th>Heads/Kilos</th>
                                 <th>PO ID</th>
                                 <th>Scheduled</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>                                
-                            @foreach ($deliveries as $del)
-                                <tr>
-                                    <td>{{$loop->iteration}}</td>
-                                    <td>{{ $del->updated_at }}</td>
-                                    <td>{{ $del->customer->company_name }}</td>
-                                    <td>{{ $del->po_id }}</td>
-                                    <td>{{$del->delivery_date}}</td>
-                                    <td>{{ $del->status}}</td>
-                                </tr>
-                            @endforeach
+                        <tbody>    
+                            @if ($delivery)
+                                @foreach ($delivery as $del)
+                                    <tr>
+                                        <td>{{$loop->iteration}}</td>
+                                        <td>{{ $del->updated_at->format('F j, y g:i a') }}</td>
+                                        <td>
+                                            @php
+                                                $sum_heads = $del->items->sum('planned_heads');
+                                                $sum_kilos = $del->items->sum('planned_kilos');
+                                            @endphp
+                         
+                                            {{ $sum_heads}} - {{ $sum_kilos}}
+                                        </td>
+                                        <td>#{{ $del->po_id }}</td>
+                                        <td>{{$del->delivery_date->format('F j, y')}}</td>
+                                        <td>{{ $del->status}}</td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                    <p>No data</p>
+                            @endif                            
+
                         </tbody>
                     </table>
                 </div>

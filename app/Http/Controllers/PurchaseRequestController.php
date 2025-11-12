@@ -435,7 +435,7 @@ class PurchaseRequestController extends Controller
 
                 DB::commit();
 
-                if ($request->action === 'Accept') {
+                if ($request->action === 'Accepted') {
                     return redirect()->back()->with('success', "Purchase order has been accepted successfully! Order ID: {$orderId}");
                 } else {
                     return redirect()->back()->with('error', "Purchase order has been rejected successfully!");

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->integer('quantity')->default(0)->required();
-            $table->enum('status', ['Active', 'Ended', 'Inactive', 'Cancelled'])->default('Active');
+            $table->enum('status', ['Active', 'Sold out', 'Ended', 'Inactive', 'Cancelled'])->default('Active');
             $table->string('user_id')->required();
             $table->timestamps();
         });
