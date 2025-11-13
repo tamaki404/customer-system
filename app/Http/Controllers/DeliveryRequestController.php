@@ -76,169 +76,172 @@ class DeliveryRequestController extends Controller
                 'received_heads' => 'array',
             ]);
 
-            $user = Auth::user();
+            try {
+                $user = Auth::user();
+
+                $delivery = DeliveryRequest::where('delivery_id', $request->delivery_id)->first();
+                $credit = Credits::where('user_id', operator: $user->user_id)->first();
+
+                $purchaseRequest = PurchaseRequest::where('po_id', $delivery->po_id)->first();
+
+                // Store PDF as binary
+                $pdfContent = file_get_contents($request->file('pod_file')->getRealPath());
+
+                //  Update this delivery
+                $due_date = now()->addDays($credit->credit_term);
+
+                $delivery->update([
+                    'status' => "Delivered",
+                    'feedback' => $request->feedback,
+                    'delivered_date' => now(),
+                    'updated_at' => now(),
+                    'pod_file' => $pdfContent,
+                    'pod_mime' => 'application/pdf',
+                    'due_date' => $due_date, 
+                ]);
 
 
+                //  Update all delivery items for this delivery
+                $receivedKilos = $request->input('received_kilos', []);
+                $receivedHeads = $request->input('received_heads', []);
+                $allItemIds = array_unique(array_merge(array_keys($receivedKilos), array_keys($receivedHeads)));
 
-            $delivery = DeliveryRequest::where('delivery_id', $request->delivery_id)->firstOrFail();
-            $credit = Credits::where('user_id', $user->user_id)->first();
-            $deliveryCount = DeliveryRequest::where('delivery_id', $request->delivery_id)
-            ->where('status', "Delivered")
-            ->count();
-            $purchaseRequest = PurchaseRequest::where('po_id', $delivery->po_id)->firstOrFail();
-            if($deliveryCount === 0){
-                $purchaseRequest->due_date->addDays($credit->credit_term)->save();
-            }
+                foreach ($allItemIds as $deliveryItemId) {
+                    $deliveryItem = DeliveryItemRequest::where('delivery_item_id', $deliveryItemId)->first();
 
-            // Store PDF as binary
-            $pdfContent = file_get_contents($request->file('pod_file')->getRealPath());
+                    if ($deliveryItem) {
 
-            //  Update this delivery
-            $delivery->update([
-                'status' => "Delivered",
-                'feedback' => $request->feedback,
-                'delivered_date' => now(),
-                'pod_file' => $pdfContent,
-                'pod_mime' => 'application/pdf',
-            ]);
-
-            //  Update all delivery items for this delivery
-            $receivedKilos = $request->input('received_kilos', []);
-            $receivedHeads = $request->input('received_heads', []);
-            $allItemIds = array_unique(array_merge(array_keys($receivedKilos), array_keys($receivedHeads)));
-
-            foreach ($allItemIds as $deliveryItemId) {
-                $deliveryItem = DeliveryItemRequest::where('delivery_item_id', $deliveryItemId)->first();
-
-                if ($deliveryItem) {
-
-                    if (isset($receivedKilos[$deliveryItemId])) {
-                        $plannedKilos = $deliveryItem->planned_kilos ?? $deliveryItem->placed_kilos ?? 0;
-                        $updateData['received_kilos'] = $receivedKilos[$deliveryItemId];
-                    }
-
-                    if (isset($receivedHeads[$deliveryItemId])) {
-                        $plannedHeads = $deliveryItem->planned_heads ?? $deliveryItem->placed_heads ?? 0;
-                        $updateData['received_heads'] = $receivedHeads[$deliveryItemId];
-                    }
-
-                    $deliveryItem->update($updateData);
-                }
-            }
-
-            //  Check if ALL deliveries for this order are now "Delivered"
-            $totalDeliveries = DeliveryRequest::where('po_id', $delivery->po_id)->count();
-            $deliveredCount = DeliveryRequest::where('po_id', $delivery->po_id)
-                                    ->where('status', 'Delivered')
-                                    ->count();
-
-            if ($totalDeliveries > 0 && $totalDeliveries === $deliveredCount) {
-                $purchaseRequest->update(['status' => 'Completed']);
-            }
-            elseif ($deliveredCount < $totalDeliveries) {
-                $purchaseRequest->update(['status' => 'Progressing']);
-            }
-
-            // after updating delivery items above
-
-            $items = DeliveryItemRequest::where('delivery_id', $delivery->delivery_id)
-                ->with('productSetting')
-                ->orderBy('created_at', 'asc')
-                ->get();
-
-            $total_amount = 0;
-
-            foreach ($items as $item) {
-                if ($item->productSetting && $item->product) {
-
-                    // Determine quantity based on measurement
-                    $qty = 0;
-                    if (strtolower($item->product->measurement_type) === 'heads' 
-                        || strtolower($item->product->measurement_type) === 'head') {
-                        $qty = $item->received_heads ?? 0;
-                    } else {
-                        $qty = $item->received_kilos ?? 0;
-                    }
-
-                    // Default to negotiated price
-                    $unitPrice = $item->productSetting->nego_price;
-                    $discountedQty = 0;
-                    $promoPrice = $unitPrice;
-
-                    // Check if promo can be applied
-                    if (
-                        $item->promo &&
-                        $item->promo->status === 'Active' &&
-                        $item->promo->quantity > 0 &&
-                        $item->promo->start_date <= now() &&
-                        $item->promo->end_date >= now()
-                    ) {
-                        // Apply promo discount to the portion it can cover
-                        if ($item->promo->value_type === "Fixed") {
-                            $promoPrice = max(0, $unitPrice - $item->promo->value);
-                        } elseif ($item->promo->value_type === "Percentage") {
-                            $discount = ($item->promo->value / 100) * $unitPrice;
-                            $promoPrice = max(0, $unitPrice - $discount);
+                        if (isset($receivedKilos[$deliveryItemId])) {
+                            $plannedKilos = $deliveryItem->planned_kilos ?? $deliveryItem->placed_kilos ?? 0;
+                            $updateData['received_kilos'] = $receivedKilos[$deliveryItemId];
                         }
 
-                        $availablePromoQty = $item->promo->quantity;
-                        $discountedQty = min($qty, $availablePromoQty); // only part covered by promo
-
-                        // Calculate promo and regular portions
-                        $promoTotal = $discountedQty * $promoPrice;
-                        $regularQty = max(0, $qty - $discountedQty);
-                        $regularTotal = $regularQty * $unitPrice;
-
-                        // Update promo quantity
-                        $newPromoQty = max(0, $availablePromoQty - $discountedQty);
-                        $item->promo->update(['quantity' => $newPromoQty]);
-
-                        // If promo is exhausted, mark as sold out
-                        if ($newPromoQty === 0) {
-                            $item->promo->update(['status' => 'Sold out']);
+                        if (isset($receivedHeads[$deliveryItemId])) {
+                            $plannedHeads = $deliveryItem->planned_heads ?? $deliveryItem->placed_heads ?? 0;
+                            $updateData['received_heads'] = $receivedHeads[$deliveryItemId];
                         }
 
-                        // Total balance for this item
-                        $balance = $promoTotal + $regularTotal;
-                    } else {
-                        // No active promo — regular price
-                        $balance = $qty * $unitPrice;
+                        $deliveryItem->update($updateData);
                     }
-
-                    // Update item record
-                    $item->update([
-                        'balance' => $balance,
-                    ]);
-
-                    $total_amount += $balance;
                 }
+
+                //  Check if ALL deliveries for this order are now "Delivered"
+                $totalDeliveries = DeliveryRequest::where('po_id', $delivery->po_id)->count();
+                $deliveredCount = DeliveryRequest::where('po_id', $delivery->po_id)
+                                        ->where('status', 'Delivered')
+                                        ->count();
+
+                if ($totalDeliveries > 0 && $totalDeliveries === $deliveredCount) {
+                    $purchaseRequest->update(['status' => 'Completed']);
+                }
+                elseif ($deliveredCount < $totalDeliveries) {
+                    $purchaseRequest->update(['status' => 'Progressing']);
+                }
+
+                // after updating delivery items above
+
+                $items = DeliveryItemRequest::where('delivery_id', $delivery->delivery_id)
+                    ->with('productSetting')
+                    ->orderBy('created_at', 'asc')
+                    ->get();
+
+                $total_amount = 0;
+
+                foreach ($items as $item) {
+                    if ($item->productSetting && $item->product) {
+
+                        // Determine quantity based on measurement
+                        $qty = 0;
+                        if (strtolower($item->product->measurement_type) === 'heads' 
+                            || strtolower($item->product->measurement_type) === 'head') {
+                            $qty = $item->received_heads ?? 0;
+                        } else {
+                            $qty = $item->received_kilos ?? 0;
+                        }
+
+                        // Default to negotiated price
+                        $unitPrice = $item->productSetting->nego_price;
+                        $discountedQty = 0;
+                        $promoPrice = $unitPrice;
+
+                        // Check if promo can be applied
+                        if (
+                            $item->promo &&
+                            $item->promo->status === 'Active' &&
+                            $item->promo->quantity > 0 &&
+                            $item->promo->start_date <= now() &&
+                            $item->promo->end_date >= now()
+                        ) {
+                            // Apply promo discount to the portion it can cover
+                            if ($item->promo->value_type === "Fixed") {
+                                $promoPrice = max(0, $unitPrice - $item->promo->value);
+                            } elseif ($item->promo->value_type === "Percentage") {
+                                $discount = ($item->promo->value / 100) * $unitPrice;
+                                $promoPrice = max(0, $unitPrice - $discount);
+                            }
+
+                            $availablePromoQty = $item->promo->quantity;
+                            $discountedQty = min($qty, $availablePromoQty); // only part covered by promo
+
+                            // Calculate promo and regular portions
+                            $promoTotal = $discountedQty * $promoPrice;
+                            $regularQty = max(0, $qty - $discountedQty);
+                            $regularTotal = $regularQty * $unitPrice;
+
+                            // Update promo quantity
+                            $newPromoQty = max(0, $availablePromoQty - $discountedQty);
+                            $item->promo->update(['quantity' => $newPromoQty]);
+
+                            // If promo is exhausted, mark as sold out
+                            if ($newPromoQty === 0) {
+                                $item->promo->update(['status' => 'Sold out']);
+                            }
+
+                            // Total balance for this item
+                            $balance = $promoTotal + $regularTotal;
+                        } else {
+                            // No active promo — regular price
+                            $balance = $qty * $unitPrice;
+                        }
+
+                        // Update item record
+                        $item->update([
+                            'balance' => $balance,
+                        ]);
+
+                        $total_amount += $balance;
+                    }
+                }
+
+
+
+
+                $date  = date('Ymd');
+                $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
+
+                PurchaseHistory::create([
+                    'po_id' => $delivery->po_id,
+                    'customer_id' => $delivery->customer_id,
+                    'purchase_id' => $history_id,
+                    'delivery_id' => $delivery->delivery_id,
+                    'label' => "Delivery",
+                    'amount' => $total_amount,
+                    'status' => "Successful"
+                ]);
+
+            return back()->with('success', 'Delivery successfully confirmed with variance recorded.');            } catch (\Throwable $e) {
+                dd($e->getMessage(), $e->getFile(), $e->getLine());
             }
 
 
 
-
-            $date  = date('Ymd');
-            $history_id = 'OH-' . $date . '-' . $this->randomBase36String(5);
-
-            PurchaseHistory::create([
-                'po_id' => $delivery->po_id,
-                'customer_id' => $delivery->customer_id,
-                'purchase_id' => $history_id,
-                'delivery_id' => $delivery->delivery_id,
-                'label' => "Delivery",
-                'amount' => $total_amount,
-                'status' => "Successful"
-            ]);
-
-            return back()->with('success', 'Delivery successfully confirmed with variance recorded.');
     }
 
     public function list(Request $request)
     {
         $user = Auth::user();
-        $customer = Customers::where('user_id', $user->user_id)->first();
-        $now = Carbon::now();
         if($user->role === "Customer"){
+            $customer = Customers::where('user_id', $user->user_id)->first();
             $delivery = DeliveryRequest::where('customer_id', $customer->customer_id)
                 ->orderBy('delivery_date', 'asc')
                 ->get();

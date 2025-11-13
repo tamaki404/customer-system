@@ -25,18 +25,15 @@ class PurchaseRequestController extends Controller
             $user = Auth::user();
 
             if ($user->role === 'Customer') {
-                $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
-                $requests = PurchaseRequest::where('user_id', $user->user_id)
-                    ->orderBy('created_at', 'desc')
-                    ->get();
-                $products = ProductSetting::where('customer_id', $customer->customer_id)
-                    ->with('product')
-                    ->get();
-
-                Log::info('Customer purchase requests loaded', [
-                    'customer_id' => $customer->customer_id,
-                    'requests_count' => $requests->count(),
-                    'products_count' => $products->count()
+                $customer = Customers::where('user_id', $user->user_id)->first();
+                $requests = PurchaseRequest::where('user_id', $user->user_id)->orderBy('created_at', 'desc')->get();
+                $products = ProductSetting::where('customer_id', $customer->customer_id)->get();
+                $counts = PurchaseRequest::
+                    selectRaw("status, COUNT(*) as total")
+                    ->groupBy('status')
+                    ->pluck('total', 'status');
+                Log::info('Staff purchase requests loaded', [
+                    'requests_count' => $requests->count()
                 ]);
                 
             } elseif ($user->role !== 'Customer') {

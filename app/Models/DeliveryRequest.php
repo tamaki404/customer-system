@@ -23,6 +23,8 @@ class DeliveryRequest extends Model
 
     protected $casts = [
         'delivery_date' => 'date',
+        'due_date' => 'date',
+
         'delivered_date' => 'datetime',
         'action_at' => 'datetime',
     ];

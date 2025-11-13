@@ -275,8 +275,8 @@
     </div>
     
     <div class="content-bg" >
-                <div class="content-header">
-                    <div class="contents-display">
+        <div class="content-header">
+            <div class="contents-display">
                         <form action="{{ route('purchaseorders.list') }}" id="text-search" class="search-text-con" method="GET">
                             <input type="text" name="search" class="search-bar"
                                 placeholder="Search by PO ID, Customer, Status"
@@ -302,20 +302,20 @@
                                 </div>
                             </div>
                         </form>
-                    </div>
-                    <div style="display: flex; flex-direction: column;">
+            </div>
+            <div style="display: flex; flex-direction: column;">
                         <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
                             <p class="heading">Purchase requests</p>
                             @if ( auth()->user()->role === 'Customer')
                                 <div style="display:flex; flex-direction:column; flex-wrap: wrap;">
-                                    {{-- <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
+                                    <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
                                         <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
                                         Create PO
-                                    </button> --}}
-                                    <button class="add-staff-btn btn-transition w3-disabled" disabled title="Maximum credit limit reached, kindly settle payment first.">
+                                    </button>
+                                    {{-- <button class="add-staff-btn btn-transition w3-disabled" disabled title="Maximum credit limit reached, kindly settle payment first.">
                                         <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">lock</span>
                                         Create PO
-                                    </button>
+                                    </button> --}}
 
                                 </div>
 
@@ -350,86 +350,78 @@
                         </div>
 
 
-                    </div>
+            </div>
+        </div>
 
-                </div>
 
-
-                @if (auth()->user()->role !== 'Customer')
-
-                    <div class="content-body" style="background: #fff">
-
-                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                            <thead style="background-color: #fff;">
-                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                    <th>#</th>
-                                    <th>Timestamp</th>
-                                    <th>Customer</th>
-                                    <th>PO ID</th>
-                                    <th>Heads and kilos</th>
-                                    <th></th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>                                
-                                @foreach ($requests as $request)
-                                    <tr onclick="window.location.href='{{ route('pr.request', ['po_id' => $request->po_id]) }}'" style="cursor: pointer;">
-                                        <td>{{$loop->iteration}}</td>
-                                        <td>{{ $request->created_at->format('F j, y') }}</td>
-                                        <td>{{ $request->customer->company_name }}</td>
-                                        <td>#{{ $request->po_id }}</td>
-                                        <td>--</td>
-                                        @php
-                                            $delivered_count = $request->deliveryRequests->where('status', 'Delivered')->count();
-                                        @endphp
-                                        <td>
-                                            @if ( $request->status !== "Pending")
-                                                {{ $delivered_count }}/{{ $request->deliveryRequests->count() }}
-                                            @else
-                                                --
-                                            @endif
-                                        </td>
-                                        <td>{{ $request->status }}</td>
-                        
-                                    </tr>
-
-                                @endforeach
-                            </tbody>
-                        </table>
-                 
-                    </div>
-                @elseif (auth()->user()->role === 'Customer')
-
-                    <div class="content-body" style="background: #fff">
-
-                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                            <thead style="background-color: #fff;">
-                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                    <th>#</th>
-                                    <th>Last update</th>
-                                    <th>PO ID</th>
-                                    <th>Heads and kilos</th>
-                                    <th>Deliveries</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>                                
-                                @foreach ($requests as $request)
-                                    <tr onclick="window.location.href='{{ route('pr.request', ['po_id' => $request->po_id]) }}'" style="cursor: pointer;">
-                                        <td>{{$loop->iteration}}</td>
-                                        <td>{{ $request->updated_at->format('F j, Y, g:i a') }}</td>
-                                        <td>{{$request->po_id}}</td>
-                                        <td>--</td>
-                                        <td>--</td>
-                                        <td>{{ $request->status }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+        @if (auth()->user()->role !== 'Customer')
+            <div class="content-body" style="background: #fff">
+                <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                    <thead style="background-color: #fff;">
+                        <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                            <th>#</th>
+                            <th>Timestamp</th>
+                            <th>Customer</th>
+                            <th>PO ID</th>
+                            <th>Heads and kilos</th>
+                            <th></th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>                                
+                        @foreach ($requests as $request)
+                            <tr onclick="window.location.href='{{ route('pr.request', ['po_id' => $request->po_id]) }}'" style="cursor: pointer;">
+                                <td>{{$loop->iteration}}</td>
+                                <td>{{ $request->created_at->format('F j, y') }}</td>
+                                <td>{{ $request->customer->company_name }}</td>
+                                <td>#{{ $request->po_id }}</td>
+                                <td>--</td>
+                                @php
+                                    $delivered_count = $request->deliveryRequests->where('status', 'Delivered')->count();
+                                @endphp
+                                <td>
+                                    @if ( $request->status !== "Pending")
+                                        {{ $delivered_count }}/{{ $request->deliveryRequests->count() }}
+                                    @else
+                                        --
+                                    @endif
+                                </td>
+                                <td>{{ $request->status }}</td>
                 
-                    </div>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @elseif (auth()->user()->role === 'Customer')
+            <div class="content-body" style="background: #fff">
+                <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                    <thead style="background-color: #fff;">
+                        <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                            <th>#</th>
+                            <th>Last update</th>
+                            <th>PO ID</th>
+                            <th>Heads and kilos</th>
+                            <th>Deliveries</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>                                
+                        @foreach ($requests as $request)
+                            <tr onclick="window.location.href='{{ route('pr.request', ['po_id' => $request->po_id]) }}'" style="cursor: pointer;">
+                                <td>{{$loop->iteration}}</td>
+                                <td>{{ $request->updated_at->format('F j, Y, g:i a') }}</td>
+                                <td>{{$request->po_id}}</td>
+                                <td>--</td>
+                                <td>--</td>
+                                <td>{{ $request->status }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
-                @endif
+            </div>
+        @endif
 
     </div>
 
