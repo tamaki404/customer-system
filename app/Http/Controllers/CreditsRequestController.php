@@ -85,8 +85,9 @@ class CreditsRequestController extends Controller
             ->having('total_balance', '>', 0)
             ->get();
 
-            $purchaseRequests = PurchaseRequest::where('user_id', $customer->user_id)->get();
-            $deliveries = DeliveryItemRequest::with('deliveryRequest')
+            $purchaseRequests = PurchaseRequest::where('user_id', $customer->user_id)
+                ->orderBy('updated_at', 'desc') 
+                ->get();            $deliveries = DeliveryItemRequest::with('deliveryRequest')
                 ->whereIn('po_id', $purchaseRequests->pluck('po_id'))
                 ->get();
             $payments = Payments::where('customer_id', $customer->customer_id)
@@ -94,20 +95,46 @@ class CreditsRequestController extends Controller
                 ->get();
 
             $purchaseData = $purchaseRequests->map(function ($po) use ($deliveries, $payments) {
+
+                // total delivered balance
                 $deliveredBalance = $deliveries
                     ->filter(fn ($d) => $d->po_id === $po->po_id && $d->deliveryRequest->status === "Delivered")
                     ->sum('balance');
 
+                // total paid amount
                 $paidAmount = $payments
                     ->where('po_id', $po->po_id)
                     ->sum('total_amount');
 
+                $remainingBalance = $deliveredBalance - $paidAmount;
+
+                // find nearest unpaid delivery due_date
+                $unpaidDeliveries = $deliveries
+                    ->filter(fn ($d) =>
+                        $d->po_id === $po->po_id &&
+                        $d->deliveryRequest &&
+                        $d->deliveryRequest->due_date &&
+                        $d->deliveryRequest->status === "Delivered"
+                    )
+                    ->map(fn ($d) => $d->deliveryRequest)
+                    ->unique('delivery_id');
+
+                // Select due_dates that are not past due
+                $upcomingDueDates = $unpaidDeliveries
+                    ->filter(fn ($delivery) => \Carbon\Carbon::parse($delivery->due_date)->isFuture())
+                    ->pluck('due_date')
+                    ->sort()
+                    ->values();
+
+                $nearestDueDate = $upcomingDueDates->first(); // the soonest unpaid one
+
                 return [
-                    'purchase_request'   => $po,                     
+                    'purchase_request'   => $po,
                     'po_id'              => $po->po_id,
                     'delivered_balance'  => $deliveredBalance,
                     'paid_amount'        => $paidAmount,
-                    'remaining_balance'  => $deliveredBalance - $paidAmount,
+                    'remaining_balance'  => $remainingBalance,
+                    'nearest_due_date'   => $nearestDueDate,
                 ];
             });
 

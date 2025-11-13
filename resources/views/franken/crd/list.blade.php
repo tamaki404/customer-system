@@ -316,6 +316,14 @@
                                                 <td>{{ $payable['purchase_request']->updated_at->format("F j, Y, g:i a") }}</td>
                                                 <td>{{ $payable['po_id'] }}</td>
                                                 <td>₱{{ number_format($payable['remaining_balance'],2) }}</td>
+                                                  @php
+                                                    $dueDate = $payable['nearest_due_date'] 
+                                                        ? \Carbon\Carbon::parse($payable['nearest_due_date'])->format('M d, Y') 
+                                                        : '--';
+                                                @endphp
+                                                <td>
+                                                    {{ $dueDate }}
+                                                </td>
                                                
 
                                                 <td>Partially paid</td>
