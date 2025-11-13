@@ -51,9 +51,6 @@ class PurchaseRequestController extends Controller
                 ]);
             }
 
-
-
-            
             return view('franken.pr.list', compact(
                 'user',
                 'requests',

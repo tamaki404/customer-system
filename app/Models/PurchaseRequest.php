@@ -15,7 +15,6 @@ class PurchaseRequest extends Model
         'user_id',
         'total_amount',
         'notes',
-        'due_date',
         'action_by',
         'action_at',
     ];

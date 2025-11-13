@@ -78,8 +78,17 @@ class DeliveryRequestController extends Controller
 
             $user = Auth::user();
 
+
+
             $delivery = DeliveryRequest::where('delivery_id', $request->delivery_id)->firstOrFail();
+            $credit = Credits::where('user_id', $user->user_id)->first();
+            $deliveryCount = DeliveryRequest::where('delivery_id', $request->delivery_id)
+            ->where('status', "Delivered")
+            ->count();
             $purchaseRequest = PurchaseRequest::where('po_id', $delivery->po_id)->firstOrFail();
+            if($deliveryCount === 0){
+                $purchaseRequest->due_date->addDays($credit->credit_term)->save();
+            }
 
             // Store PDF as binary
             $pdfContent = file_get_contents($request->file('pod_file')->getRealPath());

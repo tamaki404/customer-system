@@ -14,6 +14,7 @@ class DeliveryRequest extends Model
         'delivery_date',
         'delivered_date',
         'status',
+        'due_date',
         'action_by',
         'action_at',
         'feedback',
