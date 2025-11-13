@@ -110,17 +110,29 @@ class CreditsRequestController extends Controller
         //     ->having('total_balance', '>', 0)
         //     ->get();
 
-            $deliveryWithBalance = DeliveryRequest::select(
-                    'delivery_requests.delivery_id',
-                    DB::raw('SUM(delivery_item_requests.balance) AS total_balance')
-                )
-                ->join('delivery_item_requests', 'delivery_requests.delivery_id', '=', 'delivery_item_requests.delivery_id')
-                ->where('delivery_requests.customer_id', $customer->customer_id)
-                ->where('delivery_requests.status', 'Delivered')
-                ->where('payment_status', '!=', 'Fully paid')
-                ->groupBy('delivery_requests.delivery_id')
-                ->orderBy('due_date', 'desc')
-                ->get();
+$deliveryWithBalance = DeliveryRequest::select(
+        'delivery_requests.delivery_id',
+        DB::raw('SUM(delivery_item_requests.balance) AS total_balance')
+    )
+    ->join('delivery_item_requests', 'delivery_requests.delivery_id', '=', 'delivery_item_requests.delivery_id')
+    ->where('delivery_requests.customer_id', $customer->customer_id)
+    ->where('delivery_requests.status', 'Delivered')
+    ->where('payment_status', '!=', 'Fully paid')
+    ->groupBy('delivery_requests.delivery_id')
+    ->orderBy('due_date', 'desc')
+    ->get()
+    ->map(function($delivery) use ($customer) {
+        // Get total verified payments for this delivery
+        $totalPaid = Payments::where('delivery_id', $delivery->delivery_id)
+            ->where('status', 'Verified')
+            ->sum('total_amount');
+
+        // Subtract payments from delivery balance
+        $delivery->running_balance = $delivery->total_balance - $totalPaid;
+
+        return $delivery;
+    });
+
 
             $purchaseRequests = PurchaseRequest::where('user_id', $customer->user_id)
                 ->orderBy('updated_at', 'desc') 

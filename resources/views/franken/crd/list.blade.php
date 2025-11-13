@@ -53,11 +53,11 @@
                                 <p><span class="req-asterisk">*</span>Unpaid orders</p>
                                  <select name="delivery_id" id="">
                                     <option value="">-- Select order --</option> 
-                                    @foreach($deliveryWithBalance as $unpaidOrder)
-                                        <option value="{{ $unpaidOrder->delivery_id }}">
-                                            {{ $unpaidOrder->delivery_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->updated_at)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->total_balance, 2) }}
-                                        </option>
-                                    @endforeach
+                                        @foreach($deliveryWithBalance->filter(fn($delivery) => $delivery->running_balance > 0) as $unpaidOrder)
+                                            <option value="{{ $unpaidOrder->delivery_id }}">
+                                                {{ $unpaidOrder->delivery_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->due_date)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->running_balance, 2) }}
+                                            </option>
+                                        @endforeach
                                 </select>
                             </div>
                             <div class="form-group">

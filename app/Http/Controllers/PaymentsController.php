@@ -152,77 +152,79 @@ class PaymentsController extends Controller
 
         ));
     }
-public function verify(Request $request)
-{
-    $request->validate([
-        'payment_id'   => 'required|exists:payments,payment_id',
-        'status'       => 'required|in:Verified,Rejected',
-        'total_amount' => 'required|numeric',
-    ]);
-
-    try {
-        $payment = Payments::where('payment_id', $request->payment_id)->firstOrFail();
-        $delivery = DeliveryRequest::where('delivery_id', $payment->delivery_id)->firstOrFail();
-
-        //  Update the payment record
-        $payment->update([
-            'status'       => $request->status,
-            'action_by'    => Auth::user()->user_id,
-            'action_at'    => now(),
-            'total_amount' => $request->total_amount,
+    public function verify(Request $request)
+    {
+        $request->validate([
+            'payment_id'   => 'required|exists:payments,payment_id',
+            'status'       => 'required|in:Verified,Rejected',
+            'total_amount' => 'required|numeric',
         ]);
 
-        //  Recalculate total paid for this delivery (AFTER updating the payment)
-        $totalBalance = $delivery->items->sum('balance'); // total delivery cost
-        $totalPaid = Payments::where('delivery_id', $delivery->delivery_id)
-            ->where('status', 'Verified')
-            ->sum('total_amount');
+        try {
+            $payment = Payments::where('payment_id', $request->payment_id)->firstOrFail();
+            $delivery = DeliveryRequest::with('items')->where('delivery_id', $payment->delivery_id)->firstOrFail();
 
-        //  Determine correct payment status
-        if ($totalBalance > 0) {
-            if (bccomp($totalPaid, $totalBalance, 2) >= 0) {
+            // Update the payment record
+            $payment->update([
+                'status'       => $request->status,
+                'action_by'    => Auth::user()->user_id,
+                'action_at'    => now(),
+                'total_amount' => $request->total_amount,
+            ]);
+
+            // Recalculate remaining balance for the delivery
+            $totalBalance = $delivery->items->sum('balance'); // total cost of delivery items
+            
+            // Get total of all verified payments for this delivery (including the one just verified)
+            $totalPaid = Payments::where('delivery_id', $delivery->delivery_id)
+                ->where('status', 'Verified')
+                ->sum('total_amount');
+
+            // Calculate remaining balance
+            $remainingBalance = bcsub($totalBalance, $totalPaid, 2);
+
+            // Determine delivery payment status based on remaining balance
+            if (bccomp($remainingBalance, '0', 2) <= 0) {
                 $newStatus = 'Fully paid';
             } elseif (bccomp($totalPaid, '0', 2) > 0) {
                 $newStatus = 'Partially paid';
             } else {
                 $newStatus = 'Unpaid';
             }
-        } else {
-            $newStatus = 'Unpaid'; // or handle zero balance case as needed
+
+            // Update delivery payment status only if changed
+            if ($delivery->payment_status !== $newStatus) {
+                $delivery->update([
+                    'payment_status' => $newStatus,
+                    'updated_at'     => now(),
+                ]);
+            }
+
+            // Log to PurchaseHistory only if payment was verified
+            if ($request->status === 'Verified') {
+                $date = date('Ymd');
+                $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
+
+                PurchaseHistory::create([
+                    'po_id'        => $payment->po_id,
+                    'customer_id'  => $payment->customer_id,
+                    'purchase_id'  => $history_id,
+                    'payment_id'   => $payment->payment_id,
+                    'delivery_id'  => $payment->delivery_id,
+                    'label'        => 'Payment',
+                    'amount'       => $request->total_amount,
+                    'status'       => 'Successful',
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Receipt updated successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to update receipt. Please try again. ' . $e->getMessage())
+                ->withInput();
         }
-
-        //  Update delivery payment status only if changed
-        if ($delivery->payment_status !== $newStatus) {
-            $delivery->update([
-                'payment_status' => $newStatus,
-                'updated_at'     => now(),
-            ]);
-        }
-
-        //  Log to PurchaseHistory only if payment was verified
-        if ($request->status === 'Verified') {
-            $date = date('Ymd');
-            $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
-
-            PurchaseHistory::create([
-                'po_id'        => $payment->po_id,
-                'customer_id'  => $payment->customer_id,
-                'purchase_id'  => $history_id,
-                'payment_id'   => $payment->payment_id,
-                'delivery_id'  => $payment->delivery_id,
-                'label'        => 'Payment',
-                'amount'       => $request->total_amount,
-                'status'       => 'Successful',
-            ]);
-        }
-
-        return redirect()->back()->with('success', 'Receipt updated successfully!');
-    } catch (\Exception $e) {
-        return redirect()->back()
-            ->with('error', 'Failed to update receipt. Please try again.')
-            ->withInput();
     }
-}
+
 
 
 

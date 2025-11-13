@@ -251,9 +251,9 @@ class DeliveryRequestController extends Controller
             $customer = Customers::where('user_id', $user->user_id)->first();
             $delivery = DeliveryRequest::join('purchase_requests as pr', 'delivery_requests.po_id', '=', 'pr.po_id')
                 ->where('delivery_requests.customer_id', $customer->customer_id)
-                ->where('pr.status', 'Accepted')
+                ->whereNotIn('pr.status', ['Rejected', 'Cancelled', 'Pending'])
                 ->orderBy('delivery_requests.delivery_date', 'asc')
-                ->select('delivery_requests.*') // select only delivery fields
+                ->select('delivery_requests.*') 
                 ->get();
 
         }elseif($user->role !== "Customer"){
