@@ -18,11 +18,11 @@ class PromosController extends Controller
             $customer = Customers::where('user_id', $user->user_id)->firstOrFail();
             $promos = Promos::with('product')
                 ->where('category', $customer->category)
+                ->where('status', '==', 'Active', ) 
                 ->where('start_date', '<=', now())
                 ->where('end_date', '>=', now())
-                ->where('quantity', '>', 0) 
-
-                ->orderBy('quantity', 'asc') 
+                ->where('quantity', '>', value: 0) 
+                ->orderBy('quantity', 'asc')
                 ->get();      
         }
         elseif ($user->role !== 'Customer') {
@@ -30,12 +30,14 @@ class PromosController extends Controller
                 ->orderBy('quantity', 'desc')
                 ->orderBy('start_date', 'asc')
                 ->orderBy('end_date', 'asc')
+                ->where('status', 'Active', ) 
                 ->get();            
             $products = Products::orderBy('name', 'desc')->get();
 
         }
         return view('franken.prm.list', compact('promos', 'products'));
     }
+
     public function create(Request $request)
     {
         $request->validate([
@@ -64,7 +66,6 @@ class PromosController extends Controller
             'user_id' => $request->user_id,
             'quantity' => $request->quantity,
             'status' => "Active",
-
         ]);
 
         $product = $request->product;

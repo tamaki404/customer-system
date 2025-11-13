@@ -75,7 +75,6 @@ class DeliveryRequestController extends Controller
                 'received_kilos' => 'array',
                 'received_heads' => 'array',
             ]);
-
             try {
                 $user = Auth::user();
 
@@ -101,30 +100,38 @@ class DeliveryRequestController extends Controller
                     'due_date' => $due_date, 
                 ]);
 
-
                 //  Update all delivery items for this delivery
                 $receivedKilos = $request->input('received_kilos', []);
                 $receivedHeads = $request->input('received_heads', []);
                 $allItemIds = array_unique(array_merge(array_keys($receivedKilos), array_keys($receivedHeads)));
 
                 foreach ($allItemIds as $deliveryItemId) {
-                    $deliveryItem = DeliveryItemRequest::where('delivery_item_id', $deliveryItemId)->first();
+                    $deliveryItem = DeliveryItemRequest::where('delivery_item_id', $deliveryItemId)
+                                    ->with('product') // load product to check measurement type
+                                    ->first();
 
-                    if ($deliveryItem) {
+                    if ($deliveryItem && $deliveryItem->product) {
+                        $updateData = [];
 
-                        if (isset($receivedKilos[$deliveryItemId])) {
-                            $plannedKilos = $deliveryItem->planned_kilos ?? $deliveryItem->placed_kilos ?? 0;
-                            $updateData['received_kilos'] = $receivedKilos[$deliveryItemId];
-                        }
+                        $measurementType = strtolower($deliveryItem->product->measurement_type ?? '');
 
-                        if (isset($receivedHeads[$deliveryItemId])) {
-                            $plannedHeads = $deliveryItem->planned_heads ?? $deliveryItem->placed_heads ?? 0;
+                        if (($measurementType === 'heads' || $measurementType === 'head') 
+                            && isset($receivedHeads[$deliveryItemId])) {
                             $updateData['received_heads'] = $receivedHeads[$deliveryItemId];
                         }
 
-                        $deliveryItem->update($updateData);
+                        if (($measurementType === 'kilos' || $measurementType === 'kg') 
+                            && isset($receivedKilos[$deliveryItemId])) {
+                            $updateData['received_kilos'] = $receivedKilos[$deliveryItemId];
+                        }
+
+                        // Only update if there is data to save
+                        if (!empty($updateData)) {
+                            $deliveryItem->update($updateData);
+                        }
                     }
                 }
+
 
                 //  Check if ALL deliveries for this order are now "Delivered"
                 $totalDeliveries = DeliveryRequest::where('po_id', $delivery->po_id)->count();
@@ -248,7 +255,6 @@ class DeliveryRequestController extends Controller
                 ->orderBy('delivery_requests.delivery_date', 'asc')
                 ->select('delivery_requests.*') // select only delivery fields
                 ->get();
-
 
         }elseif($user->role !== "Customer"){
             $delivery = DeliveryRequest:: where('status', 'Scheduled')
