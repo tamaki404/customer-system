@@ -124,12 +124,12 @@
                                     <span class="material-symbols-outlined">diamond_shine</span>
                                     <p>Proof of payments</p>
                                     <div class="nav-indicator"></div>
-                                </a>                            <a class="nav-item{{ $currentRoute == 'pym.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
-                                <span class="material-symbols-outlined">receipt</span>
-
-                                <p>Proof of payments</p>
-                                <div class="nav-indicator"></div>
-                            </a>
+                                </a>                            
+                                <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
+                                    <span class="material-symbols-outlined">receipt</span>
+                                    <p>Proof of payments</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
                         </div>
                         <div class="nav-group">
                             <div class="nav-group-title">Promo</div>

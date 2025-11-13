@@ -106,7 +106,7 @@ class PaymentsController extends Controller
             $customer = Customers::where('user_id',  $user->user_id)->firstOrFail();
             $payments = Payments::where('customer_id', $customer->customer_id)->get();
         } else {
-            $payments = Payments::all();
+            $payments = Payments::orderBy('updated_at', 'desc')->get();
         }
 
         return view('franken.pym.list', compact(
@@ -146,47 +146,66 @@ class PaymentsController extends Controller
 
         ));
     }
-    public function verify(Request $request)
-    {
-        $request->validate([
-            'payment_id' => 'required|exists:payments,payment_id',
-            'status'   => 'required|in:Verified,Rejected',
-            'total_amount'   => 'required|numeric',
+public function verify(Request $request)
+{
+    $request->validate([
+        'payment_id'   => 'required|exists:payments,payment_id',
+        'status'       => 'required|in:Verified,Rejected',
+        'total_amount' => 'required|numeric',
+    ]);
+
+    try {
+        $payment = Payments::where('payment_id', $request->payment_id)->firstOrFail();
+        $delivery = DeliveryRequest::where('delivery_id', $payment->delivery_id)->firstOrFail();
+
+        // Update the payment
+        $payment->update([
+            'status'       => $request->status,
+            'action_by'    => Auth::user()->user_id,
+            'action_at'    => now(),
+            'total_amount' => $request->total_amount,
         ]);
 
-        try {
-            $payment = Payments::where('payment_id', $request->payment_id)->firstOrFail();
+        // Calculate total balance of delivery items
+        $totalBalance = $delivery->items->sum('balance');
 
-            $payment->update([
-                'status'     => $request->status,
-                'action_by'  => Auth::user()->user_id,
-                'action_at'  => now(),
-                'total_amount' => $request->total_amount,
+        // Update delivery payment status based on payment amount
+        if ($request->total_amount >= $totalBalance) {
+            $delivery->update([
+                'payment_status' => 'Fully paid',
+                'updated_at'     => now(),
             ]);
-
-            $date = date('Ymd');
-            $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
-
-            PurchaseHistory::create([
-                'po_id' => $payment->po_id,
-                'customer_id' => $payment->customer_id,
-                'purchase_id' => $history_id,
-                'payment_id' => $payment->payment_id,
-                'delivery_id' => "0",
-                'label' => "Payment",
-                'amount' => $request->total_amount,
-                'status' => "Successful"
+        } elseif ($request->total_amount > 0 && $request->total_amount < $totalBalance) {
+            $delivery->update([
+                'payment_status' => 'Partially paid',
+                'updated_at'     => now(),
             ]);
-
-            return redirect()->back()
-                ->with('success', 'Receipt updated successfully!');
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Failed to update receipt. Please try again.')
-                ->withInput();
         }
+
+        // Create purchase history
+        $date = date('Ymd');
+        $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
+
+        PurchaseHistory::create([
+            'po_id'        => $payment->po_id,
+            'customer_id'  => $payment->customer_id,
+            'purchase_id'  => $history_id,
+            'payment_id'   => $payment->payment_id,
+            'delivery_id'  => $payment->delivery_id,
+            'label'        => 'Payment',
+            'amount'       => $request->total_amount,
+            'status'       => 'Successful',
+        ]);
+
+        return redirect()->back()->with('success', 'Receipt updated successfully!');
+
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->with('error', 'Failed to update receipt. Please try again.')
+            ->withInput();
     }
+}
+
 
 
 }

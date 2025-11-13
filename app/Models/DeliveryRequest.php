@@ -25,11 +25,19 @@ class DeliveryRequest extends Model
 
     protected $casts = [
         'delivery_date' => 'date',
-        'due_date' => 'date',
 
         'delivered_date' => 'datetime',
         'action_at' => 'datetime',
     ];
+    public function deliveryItems()
+    {
+        return $this->hasMany(DeliveryItemRequest::class, 'delivery_id', 'delivery_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payments::class, 'delivery_id', 'delivery_id');
+    }
 
     /**
      * Get the purchase request for this delivery
@@ -45,10 +53,7 @@ class DeliveryRequest extends Model
     /**
      * Get the delivery items for this delivery request
      */
-    public function deliveryItems()
-    {
-        return $this->hasMany(DeliveryItemRequest::class, 'delivery_id', 'delivery_id');
-    }
+
     public function productSetting()
     {
         return $this->hasOne(ProductSetting::class, 'set_id', 'set_id');

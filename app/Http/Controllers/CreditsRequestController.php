@@ -70,6 +70,7 @@ class CreditsRequestController extends Controller
 
         // --- TRANSACTION HISTORY ---
         $transactions = PurchaseHistory::where('customer_id', $customerId)
+            ->where('status' , '!=', 'Pending')
             ->orderBy('updated_at', 'desc')
             ->get();
 
@@ -112,7 +113,7 @@ class CreditsRequestController extends Controller
                 ->join('delivery_item_requests', 'delivery_requests.delivery_id', '=', 'delivery_item_requests.delivery_id')
                 ->where('delivery_requests.customer_id', $customer->customer_id)
                 ->where('delivery_requests.status', 'Delivered')
-                ->where('payment_status', 'Pending')
+                ->where('payment_status', '!=', 'Fully paid')
                 ->groupBy('delivery_requests.delivery_id')
                 ->orderBy('due_date', 'desc')
                 ->get();
@@ -122,10 +123,33 @@ class CreditsRequestController extends Controller
                 ->get();            $deliveries = DeliveryItemRequest::with('deliveryRequest')
                 ->whereIn('po_id', $purchaseRequests->pluck('po_id'))
                 ->get();
-            $dels = DeliveryRequest::where('customer_id', $customer->customer_id)
-                ->where('status', "Delivered")
-                ->orderBy('due_date', 'desc') 
-                ->get();            
+            $dels = DeliveryRequest::with(['items', 'payments' => function($q) {
+                    $q->where('status', 'Verified');
+                }])
+                ->where('customer_id', $customer->customer_id)
+                ->where('status', 'Delivered')
+                ->orderBy('due_date', 'desc')
+                ->get();
+
+            // Prepare data with running balance
+            $deliveriesWithBalance = $dels->map(function ($delivery) {
+                $totalItemsBalance = $delivery->items->sum('balance'); // total balance of delivery items
+                $totalPaid = $delivery->payments->sum('total_amount'); // total verified payments
+
+                $runningBalance = $totalItemsBalance - $totalPaid;
+
+                return [
+                    'delivery_id'     => $delivery->delivery_id,
+                    'total_items'     => $totalItemsBalance,
+                    'total_paid'      => $totalPaid,
+                    'running_balance' => $runningBalance,
+                    'due_date'        => $delivery->due_date,
+                ];
+            });
+
+
+            //get sum(balance) of delivery->items->status===Partially paid of same delivery_id and subtarct
+                
             $payments = Payments::where('customer_id', $customer->customer_id)
                 ->orderBy('updated_at', 'desc')
                 ->get();
@@ -162,6 +186,7 @@ class CreditsRequestController extends Controller
                     ->sort()
                     ->values();
 
+
                 $nearestDueDate = $upcomingDueDates->first(); // the soonest unpaid one
 
                 return [
@@ -171,6 +196,7 @@ class CreditsRequestController extends Controller
                     'paid_amount'        => $paidAmount,
                     'remaining_balance'  => $remainingBalance,
                     'nearest_due_date'   => $nearestDueDate,
+
                 ];
             });
 

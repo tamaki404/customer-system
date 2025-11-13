@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('due_date')->nullable()->after('delivered_date');
             $table->decimal('sum_balance', 15, 2);
             $table->enum('status', ['Scheduled', 'Delivered', 'Cancelled', 'Pending', 'Rejected'])->default('Pending');
-            $table->enum('payment_status', ['Paid', 'Pending'])->default('Pending');
+            $table->enum('payment_status', ['Fully paid', 'Partially paid', 'Pending'])->default('Pending');
             $table->string('action_by', 255)->required();
             $table->string('action_at', 255)->required();
             $table->string('feedback')->nullable();

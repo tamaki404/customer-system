@@ -35,7 +35,7 @@
                     </form>
                 </div>
                 <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
-                    <p class="heading">Prood of payments</p>
+                    <p class="heading">Proof of payments</p>
                 </div>
             </div>
             @if (auth()->user()->role !== 'Customer')

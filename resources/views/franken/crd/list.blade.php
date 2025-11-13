@@ -323,11 +323,7 @@
                                                     $dueDate = $payable['nearest_due_date'] 
                                                         ? \Carbon\Carbon::parse($payable['nearest_due_date'])->format('M d, Y') 
                                                         : '--';
-                                                @endphp
-                                                {{-- <td>
-                                                    {{ $dueDate }}
-                                                </td> --}}
-                                               
+                                                @endphp          
 
                                                 <td>Partially paid</td>
                                                 <td>
@@ -364,7 +360,7 @@
                         <div id="payables-del-content" class="tab-content" role="tabpanel" aria-labelledby="payables-del-tab">
                             <div class="table-body" style="margin-top: 10px">
                                 <p style="display: flex; margin: 5px; flex-direction: column; gap: 2px;">
-                                    <span style="font-weight: bold;, font-size: 14px;">Payables by delievry</span>
+                                    <span style="font-weight: bold;, font-size: 14px;">Payables by delivery</span>
                                     <span style="font-size: 13px; color: #666;">Here shows the active and closed payable purchase orders </span>
                                 </p>                                
                                 <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
@@ -372,25 +368,38 @@
                                         <thead style="background-color: #fff; position:sticky; z-index: 1; top: 0;">
                                             <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
                                                 <th>#</th>
-                                                <th>Delivered at</th>
+                                                <th>Updated on</th>
                                                 <th>PO ID</th>
-                                                <th>Balance</th>
+                                                <th>Running balance</th>
                                                 <th>Due date</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>                             
-                                            @foreach ($dels as $del)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $del->delivered_date->format('F j, y g:i a') }}</td>
-                                                    <td>{{ $del->po_id }}</td>
-                                                    <td>₱{{ $del->deliveryItems->sum('balance') }}</td>
-                                                    <td>{{ $del->due_date}}</td>
-                                                </tr>
-                                            @endforeach
+                                        <tbody>
+                                        @foreach ($dels as $del)
+                                            @php
+                                                // Total balance of delivery items
+                                                $totalItems = $del->deliveryItems->sum('balance');
+                                                // Sum of verified payments
+                                                $totalPaid = $del->payments->where('status', 'Verified')->sum('total_amount');
+                                                // Running balance
+                                                $runningBalance = $totalItems - $totalPaid;
+                                            @endphp
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $del->updated_at->format('F j, y g:i a') }}</td>
+                                                <td>{{ $del->po_id }}</td>
+                                                <td>₱{{ number_format($runningBalance, 2) }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($del->due_date)->format('F j, Y') }}</td>
+                                                <td>{{ $del->payment_status }}</td>
+                                                <td>
+                                                    <!-- Your action buttons here -->
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                         </tbody>
+
                                     </table>
                                 </div>
 
