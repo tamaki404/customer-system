@@ -164,7 +164,7 @@ public function verify(Request $request)
         $payment = Payments::where('payment_id', $request->payment_id)->firstOrFail();
         $delivery = DeliveryRequest::where('delivery_id', $payment->delivery_id)->firstOrFail();
 
-        // ✅ Update the payment record
+        //  Update the payment record
         $payment->update([
             'status'       => $request->status,
             'action_by'    => Auth::user()->user_id,
@@ -172,13 +172,13 @@ public function verify(Request $request)
             'total_amount' => $request->total_amount,
         ]);
 
-        // ✅ Recalculate total paid for this delivery (AFTER updating the payment)
+        //  Recalculate total paid for this delivery (AFTER updating the payment)
         $totalBalance = $delivery->items->sum('balance'); // total delivery cost
         $totalPaid = Payments::where('delivery_id', $delivery->delivery_id)
             ->where('status', 'Verified')
             ->sum('total_amount');
 
-        // ✅ Determine correct payment status
+        //  Determine correct payment status
         if ($totalBalance > 0) {
             if (bccomp($totalPaid, $totalBalance, 2) >= 0) {
                 $newStatus = 'Fully paid';
@@ -191,7 +191,7 @@ public function verify(Request $request)
             $newStatus = 'Unpaid'; // or handle zero balance case as needed
         }
 
-        // ✅ Update delivery payment status only if changed
+        //  Update delivery payment status only if changed
         if ($delivery->payment_status !== $newStatus) {
             $delivery->update([
                 'payment_status' => $newStatus,
@@ -199,7 +199,7 @@ public function verify(Request $request)
             ]);
         }
 
-        // ✅ Log to PurchaseHistory only if payment was verified
+        //  Log to PurchaseHistory only if payment was verified
         if ($request->status === 'Verified') {
             $date = date('Ymd');
             $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);

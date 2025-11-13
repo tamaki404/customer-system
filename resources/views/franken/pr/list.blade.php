@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{{asset('css/franken/pr/list.css')}}">
     <link rel="stylesheet" href="{{asset('css/franken/status-btn.css')}}">
 
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+    {{-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css"> --}}
 @endpush
 
 @section('content')

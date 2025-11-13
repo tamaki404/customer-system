@@ -230,11 +230,10 @@ class DeliveryRequestController extends Controller
                     'status' => "Successful"
                 ]);
 
-            return back()->with('success', 'Delivery successfully confirmed with variance recorded.');            } catch (\Throwable $e) {
+            return back()->with('success', 'Delivery successfully confirmed with variance recorded.');            
+            } catch (\Throwable $e) {
                 dd($e->getMessage(), $e->getFile(), $e->getLine());
             }
-
-
 
     }
 
@@ -243,9 +242,14 @@ class DeliveryRequestController extends Controller
         $user = Auth::user();
         if($user->role === "Customer"){
             $customer = Customers::where('user_id', $user->user_id)->first();
-            $delivery = DeliveryRequest::where('customer_id', $customer->customer_id)
-                ->orderBy('delivery_date', 'asc')
+            $delivery = DeliveryRequest::join('purchase_requests as pr', 'delivery_requests.po_id', '=', 'pr.po_id')
+                ->where('delivery_requests.customer_id', $customer->customer_id)
+                ->where('pr.status', 'Accepted')
+                ->orderBy('delivery_requests.delivery_date', 'asc')
+                ->select('delivery_requests.*') // select only delivery fields
                 ->get();
+
+
         }elseif($user->role !== "Customer"){
             $delivery = DeliveryRequest:: where('status', 'Scheduled')
                 ->orderBy('delivery_date', 'asc')
@@ -256,4 +260,5 @@ class DeliveryRequestController extends Controller
             'user'
         ));
     }
+
 }
