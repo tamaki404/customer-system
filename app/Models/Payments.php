@@ -24,4 +24,8 @@ class Payments extends Model
     {
         return $this->belongsTo(Customers::class, 'customer_id', 'customer_id');
     }
+    // public function delivery()
+    // {
+    //     return $this->belongsTo(DeliveryRequest::class, 'delivery_id', 'delivery_id');
+    // }
 }

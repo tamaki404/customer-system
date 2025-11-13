@@ -53,9 +53,9 @@
                                 <p><span class="req-asterisk">*</span>Unpaid orders</p>
                                  <select name="po_id" id="">
                                     <option value="">-- Select order --</option> 
-                                    @foreach($purchasesWithBalance as $unpaidOrder)
+                                    @foreach($deliveryWithBalance as $unpaidOrder)
                                         <option value="{{ $unpaidOrder->po_id }}">
-                                            {{ $unpaidOrder->po_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->created_at)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->total_balance, 2) }}
+                                            {{ $unpaidOrder->po_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->due_date)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->total_balance, 2) }}
                                         </option>
                                       
                                     @endforeach
@@ -133,12 +133,13 @@
                             <p class="label">Available</p>
                         </div>
                         <hr class="vertical">
-                        <div class="credit-box" >
+                        <div class="credit-box">
                             <p>
-                                <span class="available">₱{{ number_format($available_credit, decimals: 2) }}</span>
+                                <span class="available">₱{{ number_format($totalDue, 2) }}</span>
                             </p>
-                            <p class="label">Due</p>
+                            <p class="label">Due (Next 15 Days)</p>
                         </div>
+
                         </div>
 
                     </div>
@@ -149,7 +150,10 @@
                                 Transaction history
                             </button>
                             <button class="tab-button " data-tab="payables" role="tab" aria-selected="true" aria-controls="payables-content" id="payables-tab">
-                                Payables
+                                Payables (by PO)
+                            </button>
+                            <button class="tab-button " data-tab="payables-del" role="tab" aria-selected="true" aria-controls="payables-del-content" id="payables-del-tab">
+                                Payables (by Delivery)
                             </button>
                             <button class="tab-button" data-tab="payment" role="tab" aria-selected="true" aria-controls="payment-content" id="payment-tab">
                                 Payments
@@ -302,8 +306,8 @@
                                                 <th>#</th>
                                                 <th>Last update at</th>
                                                 <th>PO ID</th>
-                                                <th>Balance</th>
-                                                <th>Due date</th>
+                                                <th>Total balance</th>
+                                                {{-- <th>Due date</th> --}}
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -321,9 +325,9 @@
                                                         ? \Carbon\Carbon::parse($payable['nearest_due_date'])->format('M d, Y') 
                                                         : '--';
                                                 @endphp
-                                                <td>
+                                                {{-- <td>
                                                     {{ $dueDate }}
-                                                </td>
+                                                </td> --}}
                                                
 
                                                 <td>Partially paid</td>
@@ -346,6 +350,47 @@
                                                         </ul>
                                                     </div>
                                                 </td>
+                                            </tr>
+                                            @endforeach
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                        
+                            </div>
+                        </div>
+                        {{-- Payables --}}
+                        <div id="payables-del-content" class="tab-content" role="tabpanel" aria-labelledby="payables-del-tab">
+                            <div class="table-body" style="margin-top: 10px">
+                                <p style="display: flex; margin: 5px; flex-direction: column; gap: 2px;">
+                                    <span style="font-weight: bold;, font-size: 14px;">Payables by delievry</span>
+                                    <span style="font-size: 13px; color: #666;">Here shows the active and closed payable purchase orders </span>
+                                </p>                                
+                                <div class="table-content"  style="background: #fff; border-radius: 10px; overflow: overflow-y:auto; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;">
+                                    <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                                        <thead style="background-color: #fff; position:sticky; z-index: 1; top: 0;">
+                                            <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                                <th>#</th>
+                                                <th>Delivered at</th>
+                                                <th>PO ID</th>
+                                                <th>Balance</th>
+                                                <th>Due date</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>                             
+                                            @foreach ($dels as $del)
+
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $del->delivered_date->format('F j, y g:i a') }}</td>
+                                                <td>{{ $del->po_id }}</td>
+                                                <td>{{ $del->balance }}</td>
+                                                <td>{{ $del->due_date}}</td>
+                                             
                                             </tr>
                                             @endforeach
 

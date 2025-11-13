@@ -13,6 +13,7 @@ use App\Models\PurchaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use finfo;
+use Carbon\Carbon;
 
 class CreditsRequestController extends Controller
 {
@@ -72,24 +73,56 @@ class CreditsRequestController extends Controller
             ->orderBy('updated_at', 'desc')
             ->get();
 
+        //due
+
+        $now = Carbon::now();
+        $endDate = $now->copy()->addDays(15);
+
+        // Get user's purchase request PO IDs
+        $poIds = PurchaseRequest::where('user_id', $customer->user_id)
+            ->pluck('po_id');
+
+        // Get delivery IDs due in next 15 days
+        $deliveriesDueSoonIds = DeliveryRequest::whereIn('po_id', $poIds)
+            ->whereBetween('due_date', [$now, $endDate])
+            ->pluck('delivery_id');
+
+        // Sum all balances from DeliveryItemRequest
+        $totalDue = DeliveryItemRequest::whereIn('delivery_id', $deliveriesDueSoonIds)
+            ->sum('balance');
+
+
         // Purchases that still have remaining balance
-        $purchasesWithBalance = PurchaseRequest::select(
-                'purchase_requests.po_id',
-                DB::raw('SUM(delivery_item_requests.balance) AS total_balance')
-            )
-            ->join('delivery_item_requests', 'purchase_requests.po_id', '=', 'delivery_item_requests.po_id')
-            ->join('delivery_requests', 'delivery_item_requests.delivery_id', '=', 'delivery_requests.delivery_id')
-            ->where('purchase_requests.user_id', $user->user_id)
-            ->where('delivery_requests.status', 'Delivered')
-            ->groupBy('purchase_requests.po_id')
-            ->having('total_balance', '>', 0)
-            ->get();
+        // $purchasesWithBalance = PurchaseRequest::select(
+        //         'purchase_requests.po_id',
+        //         DB::raw('SUM(delivery_item_requests.balance) AS total_balance')
+        //     )
+        //     ->join('delivery_item_requests', 'purchase_requests.po_id', '=', 'delivery_item_requests.po_id')
+        //     ->join('delivery_requests', 'delivery_item_requests.delivery_id', '=', 'delivery_requests.delivery_id')
+        //     ->where('purchase_requests.user_id', $user->user_id)
+        //     ->where('delivery_requests.status', 'Delivered')
+        //     ->groupBy('purchase_requests.po_id')
+        //     ->having('total_balance', '>', 0)
+        //     ->get();
+            $deliveryWithBalance = DeliveryRequest::select(
+                    'delivery_requests.delivery_id',
+                    DB::raw('SUM(delivery_item_requests.balance) AS total_balance')
+                )
+                ->join('delivery_item_requests', 'delivery_requests.delivery_id', '=', 'delivery_item_requests.delivery_id')
+                ->where('delivery_requests.customer_id', $customer->customer_id)
+                ->where('delivery_requests.status', 'Delivered')
+                ->groupBy('delivery_requests.delivery_id')
+                ->get();
 
             $purchaseRequests = PurchaseRequest::where('user_id', $customer->user_id)
                 ->orderBy('updated_at', 'desc') 
                 ->get();            $deliveries = DeliveryItemRequest::with('deliveryRequest')
                 ->whereIn('po_id', $purchaseRequests->pluck('po_id'))
                 ->get();
+            $dels = DeliveryRequest::where('customer_id', $customer->customer_id)
+                ->where('status', "Delivered")
+                ->orderBy('due_date', 'desc') 
+                ->get();            
             $payments = Payments::where('customer_id', $customer->customer_id)
                 ->orderBy('updated_at', 'desc')
                 ->get();
@@ -138,6 +171,8 @@ class CreditsRequestController extends Controller
                 ];
             });
 
+
+
         return view('franken.crd.list', compact(
             'user',
             'customer',
@@ -146,9 +181,11 @@ class CreditsRequestController extends Controller
             'alreadyPaid',
             'currentBalance',
             'transactions',
-            'purchasesWithBalance',
+            'deliveryWithBalance',
             'purchaseData',
             'payments',
+            'totalDue',
+            'dels'
 
         ));
     }

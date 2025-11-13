@@ -15,6 +15,7 @@ class DeliveryRequest extends Model
         'delivered_date',
         'status',
         'due_date',
+        'sum_balance',
         'action_by',
         'action_at',
         'feedback',
@@ -36,7 +37,10 @@ class DeliveryRequest extends Model
     {
         return $this->belongsTo(PurchaseRequest::class, 'po_id', 'po_id');
     }
-
+    // public function payment()
+    // {
+    //     return $this->belongsTo(Payments::class, 'delivery_id', 'delivery_id');
+    // }
     /**
      * Get the delivery items for this delivery request
      */
