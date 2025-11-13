@@ -84,56 +84,59 @@
 
                 <div class="content-body" style="padding: 10px; border: none; height: auto; flex-direction: row; display: flex; gap: 10px; flex: 1; overflow-x: auto; flex-wrap: wrap;" >
 
-                    @foreach ( $payments as $receipt )
-                        <div class="receipt-box" style="display: flex; flex-direction: column;    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; width: 300px; min-height: 500px">
-                         
-                            <div style="display: flex; flex-direction: row; justify-content: space-between;">
-                                <strong>#{{ $receipt->payment_id}}</strong>
-                                <div class="dropdown" style="display:flex; align-items: center; justify-content: center; margin-left: auto;">
-                                    <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px; ">
-                                        <span class="material-symbols-outlined">
-                                        expand_circle_down
-                                        </span>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <button class="dropdown-item" onclick="window.location.href='{{ route('crd.download', ['payment_id' => $receipt->payment_id]) }}'">
-                                                <span class="material-symbols-outlined">download</span>
-                                                Download image
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>   
-                            </div>
-                            <p style="margin: 0; display: flex; flex-direction: row; justify-content: space-between;">
-                                <span>{{ $receipt->status }}</span>
-                                <span class="paid">
-                                    ₱{{ number_format($receipt->total_amount, 2) }}
-                                </span>
-                            </p>
-                            
-                            @php
-                                $imgSrc = $receipt->image 
-                                    ? ('data:' . $receipt->image_mime_type . ';base64,' . base64_encode($receipt->image))
-                                    : asset('assets/default-company-logo.png');
-                            @endphp
-                            <img src="{{ $imgSrc }}" alt="Profile Image" height="70%">
-                            
-                            
-                            <div class="more-info">
+                    @foreach ($payments as $deliveryId => $receipts)
+                        <div class="delivery-group" style="margin-bottom: 20px;  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px; padding: 10px; border-radius: 5px; height: auto;">
+                            <h4 style="margin-bottom: 10px; font-size: 13px">Del #{{ $deliveryId }}</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                                @foreach ($receipts as $receipt)
+                                    <div class="receipt-box" style="display: flex; flex-direction: column; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; width: 300px; min-height: 500px;">
+                                        <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                            <strong>#{{ $receipt->payment_id }}</strong>
+                                            <div class="dropdown" style="display:flex; align-items: center; justify-content: center; margin-left: auto;">
+                                                <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px;">
+                                                    <span class="material-symbols-outlined">expand_circle_down</span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <button class="dropdown-item" onclick="window.location.href='{{ route('crd.download', ['payment_id' => $receipt->payment_id]) }}'">
+                                                            <span class="material-symbols-outlined">download</span>
+                                                            Download image
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
 
-                                <p class="status-date">
-                                    <span>Updated on</span>
-                                    <strong>{{ \Carbon\Carbon::parse($receipt->updated_at)->format('F j, Y, g:i A') }}</strong>
-                                </p>
-                                <p class="status-date">
-                                    <span>Created on</span>
-                                    <strong>{{ \Carbon\Carbon::parse($receipt->created_at)->format('F j, Y, g:i A') }}</strong>
-                                </p>
+                                        <p style="margin: 0; display: flex; flex-direction: row; justify-content: space-between;">
+                                            <span>{{ $receipt->status }}</span>
+                                            <span class="paid">
+                                                ₱{{ number_format($receipt->total_amount, 2) }}
+                                            </span>
+                                        </p>
+
+                                        @php
+                                            $imgSrc = $receipt->image
+                                                ? 'data:' . $receipt->image_mime_type . ';base64,' . base64_encode($receipt->image)
+                                                : asset('assets/default-company-logo.png');
+                                        @endphp
+                                        <img src="{{ $imgSrc }}" alt="Receipt Image" height="70%">
+
+                                        <div class="more-info">
+                                            <p class="status-date">
+                                                <span>Updated on</span>
+                                                <strong>{{ \Carbon\Carbon::parse($receipt->updated_at)->format('F j, Y, g:i A') }}</strong>
+                                            </p>
+                                            <p class="status-date">
+                                                <span>Created on</span>
+                                                <strong>{{ \Carbon\Carbon::parse($receipt->created_at)->format('F j, Y, g:i A') }}</strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
-
                     @endforeach
+
               
                 </div>
         </div>

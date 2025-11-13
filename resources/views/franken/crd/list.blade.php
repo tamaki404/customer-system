@@ -148,11 +148,11 @@
                             <button class="tab-button active" data-tab="transaction" role="tab" aria-selected="false" aria-controls="transaction-content" id="transaction-tab">
                                 Transaction history
                             </button>
-                            <button class="tab-button " data-tab="payables" role="tab" aria-selected="true" aria-controls="payables-content" id="payables-tab">
+                            {{-- <button class="tab-button " data-tab="payables" role="tab" aria-selected="true" aria-controls="payables-content" id="payables-tab">
                                 Payables (by PO)
-                            </button>
+                            </button> --}}
                             <button class="tab-button " data-tab="payables-del" role="tab" aria-selected="true" aria-controls="payables-del-content" id="payables-del-tab">
-                                Payables (by Delivery)
+                                Payables
                             </button>
                             <button class="tab-button" data-tab="payment" role="tab" aria-selected="true" aria-controls="payment-content" id="payment-tab">
                                 Payments
@@ -179,16 +179,15 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if ($transactions !== NULL)
+                                            @if (!empty($transactions))
                                                 @foreach ($transactions as $transaction)
                                                     {{-- payment-view-modal --}}
-                                                    @if ($transaction->payment_id !== NULL)
-                                                        <div class="modal fade" id="view-receipt-modal-{{ $transaction->payment_id ?? NULL }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> 
+                                                        {{-- <div class="modal fade" id="view-receipt-modal-{{ $transaction->payment_id}}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true"> 
                                                             <div class="modal-dialog">
                                                                 <div class="modal-content" >
                                                                     @csrf
                                                                     <div class="modal-header">
-                                                                        <p class="modal-title" id="requestActionLabel">Receipt #{{  $transaction->payment_id ?? NULL  }}</p>
+                                                                        <p class="modal-title" id="requestActionLabel">Receipt #{{ $transaction->payment_id}}</p>
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                     </div>
                                                                     <div class="modal-body" style="height: 600px; overflow: auto; display: flex; flex-direction: column;">
@@ -197,7 +196,6 @@
                                                                             <span> Make sure image selected is 2MB or less, scanned image is recommended.</span>
                                                                         </p>
                                                                         <div class="modal-option-groups">
-                                                                            @if ($transaction->payment)
                                                                                 <p style="display:flex; flex-direction: row; justify-content: space-between;">
                                                                                     <span style="font-size: 13px">{{ $transaction->payment->status }}</span>     
                                                                                     <span style="font-size: 13px; color: #666;">Updated at {{ \Carbon\Carbon::parse($transaction->payment->action_at)->format('F j, Y') }}</span>
@@ -208,25 +206,22 @@
                                                                                         : asset('assets/default-company-logo.png');
                                                                                 @endphp
                                                                                 <img src="{{ $imgSrc }}" alt="Receipt image" style="height: 70%; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; border-radius: 5px">
-                                                                            @endif
+                                                                            
                                                                         </div>
                                                                     </div>
                                                         
                                                                     <div class="modal-footer" style="display: flex; flex-direction: row;">
-                                                                        @if($transaction->payment->payment_id !== NULL)
                                                                             <button class="collection-btn" style="border-radius: 5px; background-color: #888"
-                                                                                onclick="window.location.href='{{ route('crd.download', ['payment_id' => $transaction->payment->payment_id ?? NULL]) }}'">
+                                                                                onclick="window.location.href='{{ route('crd.download', ['payment_id' => $transaction->payment->payment_id]) }}'">
                                                                                 <span class="material-symbols-outlined" style="width:auto">
                                                                                 download
                                                                                 </span>
                                                                                 Download image
                                                                             </button> 
-                                                                        @endif                                                           
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    @endif
+                                                        </div> --}}
                                                 
                                                     <tr>
                                                         <td>{{$loop->iteration}}</td>
@@ -292,7 +287,7 @@
                             </div>
                         </div>
                         {{-- Payables --}}
-                        <div id="payables-content" class="tab-content" role="tabpanel" aria-labelledby="payables-tab">
+                        {{-- <div id="payables-content" class="tab-content" role="tabpanel" aria-labelledby="payables-tab">
                             <div class="table-body" style="margin-top: 10px">
                                 <p style="display: flex; margin: 5px; flex-direction: column; gap: 2px;">
                                     <span style="font-weight: bold;, font-size: 14px;">Payables</span>
@@ -306,7 +301,6 @@
                                                 <th>Last update at</th>
                                                 <th>PO ID</th>
                                                 <th>Total balance</th>
-                                                {{-- <th>Due date</th> --}}
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -356,7 +350,7 @@
 
                         
                             </div>
-                        </div>
+                        </div> --}}
                         {{-- Payables --}}
                         <div id="payables-del-content" class="tab-content" role="tabpanel" aria-labelledby="payables-del-tab">
                             <div class="table-body" style="margin-top: 10px">
@@ -371,6 +365,7 @@
                                                 <th>#</th>
                                                 <th>Updated on</th>
                                                 <th>PO ID</th>
+                                                <th>Delivery ID</th>
                                                 <th>Running balance</th>
                                                 <th>Due date</th>
                                                 <th>Status</th>
@@ -393,11 +388,28 @@
                                                         <td>{{ $loop->iteration }}</td>
                                                         <td>{{ $del->updated_at->format('F j, y g:i a') }}</td>
                                                         <td>{{ $del->po_id }}</td>
+                                                        <td>{{ $del->delivery_id }}</td>
+
                                                         <td>₱{{ number_format($runningBalance, 2) }}</td>
                                                         <td>{{ \Carbon\Carbon::parse($del->due_date)->format('F j, Y') }}</td>
                                                         <td>{{ $del->payment_status }}</td>
                                                         <td>
-                                                            
+                                                            <div class="dropdown" style="display:flex; align-items: center; justify-content: center;">
+                                                                <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px; ">
+                                                                    <span class="material-symbols-outlined">
+                                                                    expand_circle_down
+                                                                    </span>
+                                                                </button>
+                                                                <ul class="dropdown-menu">
+                                                                    <li><a class="dropdown-item" style="color:#f8a01d" href="{{ route('pr.request', ['po_id' => $del->po_id]) }}"> <span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="{{ route('pym.collection', ['po_id' => $del->po_id]) }}">
+                                                                            <span class="material-symbols-outlined">arrow_outward</span>
+                                                                            Payments collection
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 @endforeach

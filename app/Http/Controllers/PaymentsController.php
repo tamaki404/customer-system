@@ -136,8 +136,14 @@ class PaymentsController extends Controller
     {
         $user = Auth::user();
         $customer = null;
+        $payments = Payments::where('po_id', $po_id)
+            ->where('status', 'Verified')
+            ->orderBy('delivery_id')
+            ->orderByDesc('updated_at')
+            ->get()
+            ->groupBy('delivery_id');
 
-        $payments = Payments::where('po_id', $po_id)->orderBy('updated_at', 'desc')->get();
+
         $purchase = PurchaseRequest::where('po_id', $po_id)->firstOrFail();
 
         return view('franken.pym.collection', compact(
@@ -158,7 +164,7 @@ public function verify(Request $request)
         $payment = Payments::where('payment_id', $request->payment_id)->firstOrFail();
         $delivery = DeliveryRequest::where('delivery_id', $payment->delivery_id)->firstOrFail();
 
-        // Update the payment
+        // ✅ Update the payment record
         $payment->update([
             'status'       => $request->status,
             'action_by'    => Auth::user()->user_id,
@@ -166,45 +172,59 @@ public function verify(Request $request)
             'total_amount' => $request->total_amount,
         ]);
 
-        // Calculate total balance of delivery items
-        $totalBalance = $delivery->items->sum('balance');
+        // ✅ Recalculate total paid for this delivery (AFTER updating the payment)
+        $totalBalance = $delivery->items->sum('balance'); // total delivery cost
+        $totalPaid = Payments::where('delivery_id', $delivery->delivery_id)
+            ->where('status', 'Verified')
+            ->sum('total_amount');
 
-        // Update delivery payment status based on payment amount
-        if ($request->total_amount >= $totalBalance) {
+        // ✅ Determine correct payment status
+        if ($totalBalance > 0) {
+            if (bccomp($totalPaid, $totalBalance, 2) >= 0) {
+                $newStatus = 'Fully paid';
+            } elseif (bccomp($totalPaid, '0', 2) > 0) {
+                $newStatus = 'Partially paid';
+            } else {
+                $newStatus = 'Unpaid';
+            }
+        } else {
+            $newStatus = 'Unpaid'; // or handle zero balance case as needed
+        }
+
+        // ✅ Update delivery payment status only if changed
+        if ($delivery->payment_status !== $newStatus) {
             $delivery->update([
-                'payment_status' => 'Fully paid',
-                'updated_at'     => now(),
-            ]);
-        } elseif ($request->total_amount > 0 && $request->total_amount < $totalBalance) {
-            $delivery->update([
-                'payment_status' => 'Partially paid',
+                'payment_status' => $newStatus,
                 'updated_at'     => now(),
             ]);
         }
 
-        // Create purchase history
-        $date = date('Ymd');
-        $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
+        // ✅ Log to PurchaseHistory only if payment was verified
+        if ($request->status === 'Verified') {
+            $date = date('Ymd');
+            $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
 
-        PurchaseHistory::create([
-            'po_id'        => $payment->po_id,
-            'customer_id'  => $payment->customer_id,
-            'purchase_id'  => $history_id,
-            'payment_id'   => $payment->payment_id,
-            'delivery_id'  => $payment->delivery_id,
-            'label'        => 'Payment',
-            'amount'       => $request->total_amount,
-            'status'       => 'Successful',
-        ]);
+            PurchaseHistory::create([
+                'po_id'        => $payment->po_id,
+                'customer_id'  => $payment->customer_id,
+                'purchase_id'  => $history_id,
+                'payment_id'   => $payment->payment_id,
+                'delivery_id'  => $payment->delivery_id,
+                'label'        => 'Payment',
+                'amount'       => $request->total_amount,
+                'status'       => 'Successful',
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Receipt updated successfully!');
-
     } catch (\Exception $e) {
         return redirect()->back()
             ->with('error', 'Failed to update receipt. Please try again.')
             ->withInput();
     }
 }
+
+
 
 
 

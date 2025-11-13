@@ -80,15 +80,16 @@ class DeliveryRequestController extends Controller
                 $user = Auth::user();
 
                 $delivery = DeliveryRequest::where('delivery_id', $request->delivery_id)->first();
-                $credit = Credits::where('user_id', operator: $user->user_id)->first();
+                $credit = Credits::where('user_id',  $user->user_id)->first();
 
                 $purchaseRequest = PurchaseRequest::where('po_id', $delivery->po_id)->first();
 
                 // Store PDF as binary
                 $pdfContent = file_get_contents($request->file('pod_file')->getRealPath());
 
-                //  Update this delivery
-                $due_date = now()->addDays($credit->credit_term);
+                //  add the due_date
+                $creditTermDays = (int) $credit->credit_term; 
+                $due_date = now()->addDays($creditTermDays);
 
                 $delivery->update([
                     'status' => "Delivered",
