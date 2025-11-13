@@ -51,13 +51,12 @@
                         <div class="modal-option-groups">
                             <div class="form-group">
                                 <p><span class="req-asterisk">*</span>Unpaid orders</p>
-                                 <select name="po_id" id="">
+                                 <select name="delivery_id" id="">
                                     <option value="">-- Select order --</option> 
                                     @foreach($deliveryWithBalance as $unpaidOrder)
-                                        <option value="{{ $unpaidOrder->po_id }}">
-                                            {{ $unpaidOrder->po_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->due_date)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->total_balance, 2) }}
+                                        <option value="{{ $unpaidOrder->delivery_id }}">
+                                            {{ $unpaidOrder->delivery_id }} | {{ \Carbon\Carbon::parse($unpaidOrder->updated_at)->format('F j, Y') }} | ₱{{ number_format($unpaidOrder->total_balance, 2) }}
                                         </option>
-                                      
                                     @endforeach
                                 </select>
                             </div>
@@ -383,18 +382,14 @@
                                         </thead>
                                         <tbody>                             
                                             @foreach ($dels as $del)
-
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $del->delivered_date->format('F j, y g:i a') }}</td>
-                                                <td>{{ $del->po_id }}</td>
-                                                <td>{{ $del->balance }}</td>
-                                                <td>{{ $del->due_date}}</td>
-                                             
-                                            </tr>
+                                                <tr>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $del->delivered_date->format('F j, y g:i a') }}</td>
+                                                    <td>{{ $del->po_id }}</td>
+                                                    <td>₱{{ $del->deliveryItems->sum('balance') }}</td>
+                                                    <td>{{ $del->due_date}}</td>
+                                                </tr>
                                             @endforeach
-
-
                                         </tbody>
                                     </table>
                                 </div>

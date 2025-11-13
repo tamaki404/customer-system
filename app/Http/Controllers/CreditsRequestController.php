@@ -104,6 +104,7 @@ class CreditsRequestController extends Controller
         //     ->groupBy('purchase_requests.po_id')
         //     ->having('total_balance', '>', 0)
         //     ->get();
+
             $deliveryWithBalance = DeliveryRequest::select(
                     'delivery_requests.delivery_id',
                     DB::raw('SUM(delivery_item_requests.balance) AS total_balance')
@@ -111,7 +112,9 @@ class CreditsRequestController extends Controller
                 ->join('delivery_item_requests', 'delivery_requests.delivery_id', '=', 'delivery_item_requests.delivery_id')
                 ->where('delivery_requests.customer_id', $customer->customer_id)
                 ->where('delivery_requests.status', 'Delivered')
+                ->where('payment_status', 'Pending')
                 ->groupBy('delivery_requests.delivery_id')
+                ->orderBy('due_date', 'desc')
                 ->get();
 
             $purchaseRequests = PurchaseRequest::where('user_id', $customer->user_id)

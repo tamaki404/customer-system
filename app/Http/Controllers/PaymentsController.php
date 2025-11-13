@@ -30,7 +30,7 @@ class PaymentsController extends Controller
 
         try {
             $request->validate([
-                'po_id' => 'required|string|exists:purchase_requests,po_id',
+                'delivery_id' => 'required|string|exists:delivery_requests,delivery_id',
                 'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
             $user = Auth::user();
@@ -51,15 +51,16 @@ class PaymentsController extends Controller
 
             // Generate receipt id
             $date = date('Ymd');
+            $del = DeliveryRequest::where('delivery_id', $request->delivery_id)->first();
 
             $payment_id = 'PAY-' . $date . '-' . $this->randomBase36String(5);
             $history_id = 'PH-' . $date . '-' . $this->randomBase36String(5);
 
             $receipt = Payments::create([
                 'payment_id'  => $payment_id,
-                'po_id'       => $request->po_id,
+                'po_id'       => $del->po_id,
+                'delivery_id' => $request->delivery_id,
                 'customer_id' => $customer->customer_id,
-                'delivery_id' => "0",
                 'status'      => "Pending",
                 'label'       => "Payment",
                 'image'       => $imageBlob,
@@ -67,11 +68,11 @@ class PaymentsController extends Controller
 
 
             PurchaseHistory::create([
-                'po_id' => $request->po_id,
+                'po_id' =>  $del->po_id,
                 'customer_id' => $customer->customer_id,
                 'purchase_id' => $history_id,
                 'payment_id' => $receipt->payment_id,
-                'delivery_id' => "0",
+                'delivery_id' => $request->delivery_id,
                 'label' => "Payment",
                 'amount' => "0",
                 'status' => "Pending"
