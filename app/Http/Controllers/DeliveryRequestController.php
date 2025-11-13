@@ -253,9 +253,6 @@ class DeliveryRequestController extends Controller
         return view('franken.dlv.list', compact(
             'delivery',
             'user'
- 
         ));
-            
     }
-
 }

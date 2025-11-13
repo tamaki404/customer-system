@@ -78,19 +78,23 @@ class CreditsRequestController extends Controller
 
         $now = Carbon::now();
         $endDate = $now->copy()->addDays(15);
-
         // Get user's purchase request PO IDs
         $poIds = PurchaseRequest::where('user_id', $customer->user_id)
             ->pluck('po_id');
-
         // Get delivery IDs due in next 15 days
         $deliveriesDueSoonIds = DeliveryRequest::whereIn('po_id', $poIds)
             ->whereBetween('due_date', [$now, $endDate])
             ->pluck('delivery_id');
-
         // Sum all balances from DeliveryItemRequest
-        $totalDue = DeliveryItemRequest::whereIn('delivery_id', $deliveriesDueSoonIds)
+        $totalBalance = DeliveryItemRequest::whereIn('delivery_id', $deliveriesDueSoonIds)
             ->sum('balance');
+        // Sum of all verified payments for those same deliveries
+        $totalPaid = Payments::whereIn('delivery_id', $deliveriesDueSoonIds)
+            ->where('status', 'Verified')
+            ->sum('total_amount');
+        // Subtract payments from total balance to get the outstanding (due) amount
+        $totalDue = $totalBalance - $totalPaid;
+
 
 
         // Purchases that still have remaining balance
@@ -181,7 +185,7 @@ class CreditsRequestController extends Controller
 
                 // Select due_dates that are not past due
                 $upcomingDueDates = $unpaidDeliveries
-                    ->filter(fn ($delivery) => \Carbon\Carbon::parse($delivery->due_date)->isFuture())
+                    ->filter(fn ($delivery) => Carbon::parse($delivery->due_date)->isFuture())
                     ->pluck('due_date')
                     ->sort()
                     ->values();
