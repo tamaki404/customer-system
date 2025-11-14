@@ -55,145 +55,145 @@
                     <tbody>          
                     @if($varianceByDelivery->isNotEmpty())
                         @foreach($varianceByDelivery as $d)
-<div class="modal fade" id="scheduling-modal-{{ $d->delivery_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable"> 
-        <div class="modal-content">
+                            <div class="modal fade" id="scheduling-modal-{{ $d->delivery_id }}" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-scrollable"> 
+                                    <div class="modal-content">
 
-            <form method="POST" action="{{ route('rtn.create') }}">
-                @csrf
+                                        <form method="POST" action="{{ route('rtn.create') }}">
+                                            @csrf
 
-                <div class="modal-header">
-                    <p class="modal-title d-flex align-items-center gap-2" id="requestActionLabel">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">calendar_clock</span>
-                        <span style="font-size: 14px;">Schedule Delivery for Variance</span>
-                    </p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+                                            <div class="modal-header">
+                                                <p class="modal-title d-flex align-items-center gap-2" id="requestActionLabel">
+                                                    <span class="material-symbols-outlined" style="font-size: 18px;">calendar_clock</span>
+                                                    <span style="font-size: 14px;">Schedule Delivery for Variance</span>
+                                                </p>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
 
-                <div class="modal-body">
+                                            <div class="modal-body">
 
-                    {{-- Hidden Inputs --}}
-                    <input type="hidden" name="original_delivery_id" value="{{ $d->delivery_id }}">
-                    <input type="hidden" name="po_id" value="{{ $d->delivery->po_id }}">
-                    <input type="hidden" name="customer_id" value="{{ $d->delivery->customer_id }}">
+                                                {{-- Hidden Inputs --}}
+                                                <input type="hidden" name="original_delivery_id" value="{{ $d->delivery_id }}">
+                                                <input type="hidden" name="po_id" value="{{ $d->delivery->po_id }}">
+                                                <input type="hidden" name="customer_id" value="{{ $d->delivery->customer_id }}">
 
-                    {{-- Customer Section --}}
-                    <div class="mb-3">
-                        <div class="d-flex align-items-center gap-2">
-                            @php
-                                $imgSrc = $d->delivery->customer->user->image
-                                    ? ('data:' . $d->delivery->customer->user->image_mime_type . ';base64,' . base64_encode($d->delivery->customer->user->image))
-                                    : asset('images/default-avatar.png');
-                            @endphp
-                            <img src="{{ $imgSrc }}" style="height:40px; border-radius:20px; border:2px solid #f8912a;">
-                            <div>
-                                <strong style="color:#666;">{{ $d->delivery->customer->company_name }}</strong><br>
-                                <small style="color:#666;">{{ $d->delivery->customer->category }}</small>
+                                                {{-- Customer Section --}}
+                                                <div class="mb-3">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        @php
+                                                            $imgSrc = $d->delivery->customer->user->image
+                                                                ? ('data:' . $d->delivery->customer->user->image_mime_type . ';base64,' . base64_encode($d->delivery->customer->user->image))
+                                                                : asset('images/default-avatar.png');
+                                                        @endphp
+                                                        <img src="{{ $imgSrc }}" style="height:40px; border-radius:20px; border:2px solid #f8912a;">
+                                                        <div>
+                                                            <strong style="color:#666;">{{ $d->delivery->customer->company_name }}</strong><br>
+                                                            <small style="color:#666;">{{ $d->delivery->customer->category }}</small>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mt-3 p-2 border rounded">
+                                                        <p class="m-0"><span class="text-muted">PO ID: </span><strong>{{ $d->delivery->po_id }}</strong></p>
+                                                        <p class="m-0"><span class="text-muted">Original Delivery ID: </span><strong>{{ $d->delivery_id }}</strong></p>
+                                                        <p class="m-0"><span class="text-muted">Delivered at: </span>
+                                                            <strong>{{ $d->delivery->delivered_date->format('F j, Y g:i a') }}</strong>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Schedule Date --}}
+                                                <div class="p-2 border rounded mb-3">
+                                                    <label class="fw-bold text-muted">Scheduled Delivery Date *</label>
+                                                    <input type="datetime-local"
+                                                        name="scheduled_date"
+                                                        class="form-control"
+                                                        required
+                                                        min="{{ now()->format('Y-m-d\TH:i') }}">
+                                                </div>
+
+                                                {{-- Variance Items --}}
+                                                <div class="p-2 border rounded">
+
+                                                    @php
+                                                        $itemsWithVariance = \App\Models\DeliveryItemRequest::where('delivery_id', $d->delivery_id)
+                                                            ->whereRaw('planned_heads != received_heads OR planned_kilos != received_kilos')
+                                                            ->with('product')
+                                                            ->get();
+                                                    @endphp
+
+                                                    <p class="fw-bold text-muted">Select Items with Variance</p>
+
+                                                    @foreach($itemsWithVariance as $item)
+                                                        <div class="border rounded p-2 mb-3">
+
+                                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                                <input type="checkbox" 
+                                                                    name="selected_items[]" 
+                                                                    value="{{ $item->delivery_item_id }}"
+                                                                    id="item_{{ $item->delivery_item_id }}">
+                                                                <label for="item_{{ $item->delivery_item_id }}" class="fw-bold">
+                                                                    #{{ $loop->iteration }} — {{ $item->product->name }} (ID: {{ $item->delivery_item_id }})
+                                                                </label>
+                                                            </div>
+
+                                                            <div class="row small">
+                                                                <div class="col">
+                                                                    <p class="m-0">Planned Heads: <strong>{{ $item->planned_heads }}</strong></p>
+                                                                    <p class="m-0">Received Heads: <strong>{{ $item->received_heads }}</strong></p>
+                                                                    <p class="m-0 text-warning fw-bold">
+                                                                        Variance: {{ $item->planned_heads - $item->received_heads }}
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col">
+                                                                    <p class="m-0">Planned Kilos: <strong>{{ $item->planned_kilos }}</strong></p>
+                                                                    <p class="m-0">Received Kilos: <strong>{{ $item->received_kilos }}</strong></p>
+                                                                    <p class="m-0 text-warning fw-bold">
+                                                                        Variance: {{ number_format($item->planned_kilos - $item->received_kilos, 2) }} kg
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="mt-2 pt-2 border-top">
+                                                                <label class="small text-muted">New Delivery Quantities:</label>
+                                                                <div class="row">
+                                                                    <div class="col">
+                                                                        <input type="number" 
+                                                                            name="planned_heads[{{ $item->delivery_item_id }}]"
+                                                                            class="form-control form-control-sm"
+                                                                            value="{{ abs($item->planned_heads - $item->received_heads) }}"
+                                                                            min="0"
+                                                                            step="1">
+                                                                    </div>
+                                                                    <div class="col">
+                                                                        <input type="number"
+                                                                            name="planned_kilos[{{ $item->delivery_item_id }}]"
+                                                                            class="form-control form-control-sm"
+                                                                            value="{{ number_format(abs($item->planned_kilos - $item->received_kilos),2,'.','') }}"
+                                                                            min="0"
+                                                                            step="0.01">
+                                                                    </div>
+                                                                </div>
+
+                                                                <input type="hidden" name="product_ids[{{ $item->delivery_item_id }}]" value="{{ $item->product_id }}">
+                                                                <input type="hidden" name="set_ids[{{ $item->delivery_item_id }}]" value="{{ $item->set_id }}">
+                                                            </div>
+
+                                                        </div>
+                                                    @endforeach
+
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer bg-white">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="yellow-btn">Schedule Delivery</button>
+                                            </div>
+
+                                        </form>
+
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="mt-3 p-2 border rounded">
-                            <p class="m-0"><span class="text-muted">PO ID: </span><strong>{{ $d->delivery->po_id }}</strong></p>
-                            <p class="m-0"><span class="text-muted">Original Delivery ID: </span><strong>{{ $d->delivery_id }}</strong></p>
-                            <p class="m-0"><span class="text-muted">Delivered at: </span>
-                                <strong>{{ $d->delivery->delivered_date->format('F j, Y g:i a') }}</strong>
-                            </p>
-                        </div>
-                    </div>
-
-                    {{-- Schedule Date --}}
-                    <div class="p-2 border rounded mb-3">
-                        <label class="fw-bold text-muted">Scheduled Delivery Date *</label>
-                        <input type="datetime-local"
-                               name="scheduled_date"
-                               class="form-control"
-                               required
-                               min="{{ now()->format('Y-m-d\TH:i') }}">
-                    </div>
-
-                    {{-- Variance Items --}}
-                    <div class="p-2 border rounded">
-
-                        @php
-                            $itemsWithVariance = \App\Models\DeliveryItemRequest::where('delivery_id', $d->delivery_id)
-                                ->whereRaw('planned_heads != received_heads OR planned_kilos != received_kilos')
-                                ->with('product')
-                                ->get();
-                        @endphp
-
-                        <p class="fw-bold text-muted">Select Items with Variance</p>
-
-                        @foreach($itemsWithVariance as $item)
-                            <div class="border rounded p-2 mb-3">
-
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <input type="checkbox" 
-                                           name="selected_items[]" 
-                                           value="{{ $item->delivery_item_id }}"
-                                           id="item_{{ $item->delivery_item_id }}">
-                                    <label for="item_{{ $item->delivery_item_id }}" class="fw-bold">
-                                        #{{ $loop->iteration }} — {{ $item->product->name }} (ID: {{ $item->delivery_item_id }})
-                                    </label>
-                                </div>
-
-                                <div class="row small">
-                                    <div class="col">
-                                        <p class="m-0">Planned Heads: <strong>{{ $item->planned_heads }}</strong></p>
-                                        <p class="m-0">Received Heads: <strong>{{ $item->received_heads }}</strong></p>
-                                        <p class="m-0 text-warning fw-bold">
-                                            Variance: {{ $item->planned_heads - $item->received_heads }}
-                                        </p>
-                                    </div>
-                                    <div class="col">
-                                        <p class="m-0">Planned Kilos: <strong>{{ $item->planned_kilos }}</strong></p>
-                                        <p class="m-0">Received Kilos: <strong>{{ $item->received_kilos }}</strong></p>
-                                        <p class="m-0 text-warning fw-bold">
-                                            Variance: {{ number_format($item->planned_kilos - $item->received_kilos, 2) }} kg
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="mt-2 pt-2 border-top">
-                                    <label class="small text-muted">New Delivery Quantities:</label>
-                                    <div class="row">
-                                        <div class="col">
-                                            <input type="number" 
-                                                   name="planned_heads[{{ $item->delivery_item_id }}]"
-                                                   class="form-control form-control-sm"
-                                                   value="{{ abs($item->planned_heads - $item->received_heads) }}"
-                                                   min="0"
-                                                   step="1">
-                                        </div>
-                                        <div class="col">
-                                            <input type="number"
-                                                   name="planned_kilos[{{ $item->delivery_item_id }}]"
-                                                   class="form-control form-control-sm"
-                                                   value="{{ number_format(abs($item->planned_kilos - $item->received_kilos),2,'.','') }}"
-                                                   min="0"
-                                                   step="0.01">
-                                        </div>
-                                    </div>
-
-                                    <input type="hidden" name="product_ids[{{ $item->delivery_item_id }}]" value="{{ $item->product_id }}">
-                                    <input type="hidden" name="set_ids[{{ $item->delivery_item_id }}]" value="{{ $item->set_id }}">
-                                </div>
-
-                            </div>
-                        @endforeach
-
-                    </div>
-                </div>
-
-                <div class="modal-footer bg-white">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="yellow-btn">Schedule Delivery</button>
-                </div>
-
-            </form>
-
-        </div>
-    </div>
-</div>
 
 
                             {{-- Table Row --}}
