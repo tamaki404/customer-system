@@ -34,10 +34,18 @@ class DeliveryItemRequest extends Model
     /**
      * Get the delivery request for this item
      */
+
+         public function delivery()
+    {
+        return $this->belongsTo(Delivery::class, 'delivery_id');
+    }
+
+
     public function deliveryRequest()
     {
         return $this->belongsTo(DeliveryRequest::class, 'delivery_id', 'delivery_id');
     }
+
     public function product()
     {
         return $this->belongsTo(Products::class, 'product_id', 'product_id');

@@ -172,15 +172,20 @@
                                 {{-- Deliveries --}}
                                 <a class="nav-item{{ $currentRoute == 'dlv.list' ? ' active' : '' }}" href="{{ route(name: 'dlv.list') }}">
                                     <span class="material-symbols-outlined">diamond_shine</span>
-                                    <p>Deliveries summary</p>
+                                    <p>Deliveries summary</p>w
+                                    <div class="nav-indicator"></div>
+                                </a>
+                                <a class="nav-item{{ $currentRoute == 'rtn.list' ? ' active' : '' }}" href="{{ route(name: 'rtn.list') }}">
+                                    <span class="material-symbols-outlined">diamond_shine</span>
+                                    <p>Return reports</p>
                                     <div class="nav-indicator"></div>
                                 </a>
 
-                            <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
-                                <span class="material-symbols-outlined">store</span>
-                                <p>Products</p>
-                                <div class="nav-indicator"></div>
-                            </a>
+                                <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
+                                    <span class="material-symbols-outlined">store</span>
+                                    <p>Products</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
                         </div> 
 
                         <!-- Group 3: People -->

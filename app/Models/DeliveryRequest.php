@@ -33,7 +33,10 @@ class DeliveryRequest extends Model
     {
         return $this->hasMany(DeliveryItemRequest::class, 'delivery_id', 'delivery_id');
     }
-
+    public function item()
+    {
+        return $this->belongsTo(DeliveryItemRequest::class, 'delivery_id', 'delivery_id');
+    }
     public function payments()
     {
         return $this->hasMany(Payments::class, 'delivery_id', 'delivery_id');

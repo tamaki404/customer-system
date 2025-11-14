@@ -24,13 +24,14 @@ use App\Http\Controllers\{
     DeliveryController,
     SaleDiscountController,
     ErrorController,
-
     PurchaseRequestController,
     CreditsRequestController,
     DeliveryRequestController,
     PaymentsController,
     PromosController,
     CabraController,
+    ReturnsController,
+
 };
 
 /*
@@ -220,6 +221,10 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
     });
     Route::prefix('prd')->name('prd.')->group(function () {
         Route::get('/list', [CabraController::class, 'list'])
+            ->name('list');
+    });
+    Route::prefix('return')->name('rtn.')->group(function () {
+        Route::get('/list', [ReturnsController::class, 'list'])
             ->name('list');
     });
     /*
