@@ -512,7 +512,6 @@ class PurchaseRequestController extends Controller
             'sequence' => $sequence,
             'delivery_id' => $deliveryId
         ]);
-        
         return $deliveryId;
     }
     

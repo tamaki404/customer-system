@@ -195,6 +195,8 @@
         </div>
     </div>
 
+
+
    <div class="content-bg" style="display: flex; flex-direction: row; overflow: hidden;">
         <div class="left" style="width: 75%">
             <div class="content-header">
@@ -204,11 +206,14 @@
                     </p>
                 </div>
                 <div class="title-actions">
+
+
                     <p class="heading" >
                         <span>Delivery #{{ $delivery->delivery_id }}</span>
                         <span class="order-status"> {{ $delivery->status }} </span>
                     </p>
                     <div class="upper-con" style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
+                        
                         <div class="buttons">
                             <!-- Buttons -->
                             @if ($delivery->status === 'Scheduled' && Auth()->user()->role === 'Customer')
@@ -227,7 +232,21 @@
                     </div>
                 </div>  
                 <div class="details-box">
-                    <div class="first" style="justify-content: space-between">
+                    <div class="first" style="flex-direction: column; gap: 10px; align-items: flex-start;">
+                        <div style="display: flex; flex-direction: row; gap: 10px; align-items: center; ">
+                            @php
+                                $imgSrc =  $delivery->customer->user->image 
+                                    ? ('data:' . $delivery->customer->user->image_mime_type . ';base64,' . base64_encode($delivery->customer->user->image))
+                                    : asset('images/default-avatar.png');
+                            @endphp
+                            <img class="customer-image" src="{{ $imgSrc }}" alt="Profile Image" style="height: 40px; border: 2px solid #f8912a">                            
+                            <p style="margin: 0; color: #666; font-weight: bold;">{{ $delivery->customer->company_name }}</p>
+                            
+                            <a class="a-redirect-link" href="{{ route('customers.customer', $delivery->customer->customer_id) }}" style="text-decoration: none; color: #666; background-color: #cccccc7d; height: 20px; width: 20px; justify-content: center; border-radius: 5px; padding: 0px 5px; display: flex; align-items: center;">
+                                <span style="font-size: 14px;" class="material-symbols-outlined">call_made</span>
+                            </a>
+                 
+                        </div>
                         <div class="un-named" style="display: flex; flex-direction: row;  width: 100%; align-items: center; gap: 15px;">
                             <div>
                                 <span class="material-symbols-outlined" style="color: #666; font-size: 35px;">
@@ -252,9 +271,15 @@
                             @endif
                         </div>
                   
-                        <button class="collection-btn" style="min-width: 130px; background-color: #dc3545; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
+                        {{-- <button class="collection-btn" style="min-width: 130px; background-color: #dc3545; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
                             <span class="material-symbols-outlined" >assignment_returned</span> Return slip
-                        </button>   
+                        </button>    --}}
+
+                        <p style="display:flex; flex-direction: row: gap: 5px; margin:0;">
+                            <span style="color: #666">Feedback:</span>
+                            <span style="font-style: italic; margin-left: 5px">"{{ $delivery->feedback }}"</span>
+                        </p>
+                            
                     </div>
 
                 </div>

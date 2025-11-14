@@ -226,6 +226,7 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
     Route::prefix('return')->name('rtn.')->group(function () {
         Route::get('/list', [ReturnsController::class, 'list'])
             ->name('list');
+        Route::post('/create', [ReturnsController::class, 'create'])->name('create');
     });
     /*
     |--------------------------------------------------------------------------
