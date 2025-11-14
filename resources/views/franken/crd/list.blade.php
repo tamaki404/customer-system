@@ -3,7 +3,6 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/views/customer.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/views/dropdown.css') }}">
     <link rel="stylesheet" href="{{ asset('css/views/credits.css') }}">
 
 @endpush

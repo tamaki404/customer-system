@@ -78,6 +78,7 @@
                                     <th>PO ID</th>
                                     <th>Scheduled</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>    
@@ -96,7 +97,34 @@
                                             </td>
                                             <td>#{{ $del->po_id }}</td>
                                             <td>{{$del->delivery_date->format('F j, y')}}</td>
-                                            <td>{{ $del->status}}</td>
+                                            <td>{{$del->status}}</td>
+                                            
+                                            <td style="display: flex; align-items: center; justify-content: center;">
+                                                <div class="dropdown" style="display:flex; align-items: center; justify-content: center; width: auto;">
+                                                    <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px; ">
+                                                        <span class="material-symbols-outlined">
+                                                        expand_circle_down
+                                                        </span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                                >
+                                                                <span class="material-symbols-outlined">download</span>
+                                                                Delivery receipt
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                                >
+                                                                <span class="material-symbols-outlined">manufacturing</span>
+                                                                Process delivery
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+   
                                         </tr>
                                     @endforeach
                                 @else

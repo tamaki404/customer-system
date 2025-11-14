@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="{{ asset('css/layout/locked-tabs.css') }}">
     <link rel="stylesheet" href="{{ asset('css/layout/flash-message.css') }}">
     <link rel="stylesheet" href="{{ asset('css/franken/button.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/views/dropdown.css') }}">
 
      @stack('styles')
 
@@ -172,7 +173,7 @@
                                 {{-- Deliveries --}}
                                 <a class="nav-item{{ $currentRoute == 'dlv.list' ? ' active' : '' }}" href="{{ route(name: 'dlv.list') }}">
                                     <span class="material-symbols-outlined">diamond_shine</span>
-                                    <p>Deliveries summary</p>w
+                                    <p>Deliveries summary</p>
                                     <div class="nav-indicator"></div>
                                 </a>
                                 <a class="nav-item{{ $currentRoute == 'rtn.list' ? ' active' : '' }}" href="{{ route(name: 'rtn.list') }}">
