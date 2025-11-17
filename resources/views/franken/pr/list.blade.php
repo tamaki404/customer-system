@@ -454,7 +454,7 @@
                                                 }
                                             @endphp
 
-                                            <li class="dropdown-item" id="drop-down-li" style="color: #333; " >
+                                            <li class="dropdown-item hover-container" id="drop-down-li" style="color: #333; " >
                                                 <a href="{{ route('dlv.delivery', ['delivery_id' => $dr->delivery_id]) }}" target="_blank" style="display: flex; align-items: center; flex-direction: column; text-decoration: none; color: #333;">
                                                     <span style="color: #666">
                                                         #{{ $loop->iteration }} {{ $dr->delivery_id }}:
@@ -505,9 +505,87 @@
                                                             @endif
                                                         </strong>
                                                     </div>
+                                                    
                                                 </a>
+                                                <div class="popup-content-nested">
+                                                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                                                        <p>
+                                                            <span>ID:</span>
+                                                            <strong>#{{ $dr->delivery_id }}</strong>
+                                                        </p>
+                                                        <p style="margin-left: 15px">
+                                                            <strong>{{ $dr->status }}</strong>
+                                                        </p>
+                                                    </div>
+                                                
+                                                    <div>
+                                                        <p style="margin: 0">
+                                                            <span>Items ({{  $dr->items->count() }})</span>
+                                                        </p>
+                                                        <ul>
+                                                            @foreach ($dr->items as $item)
+                                                                <li style="display: flex; flex-direction: row;" class="li-delivery-items">
+                                                                    <p style="margin-right: 10px; font-weight: bold;">
+                                                                        <span>
+                                                                            {{ $item->product->name }}
+                                                                        </span>
+                                                                    </p>
+                                                                    <p class="font-size: 13px; margin-left: 10px; margin:0;">
+                                                                        (
+                                                                            <span>
+                                                                            @if ($item->product->measurement_type == 'Heads')
+                                                                                {{ $item->planned_heads }}H 
+                                                                            @elseif ($item->product->measurement_type == 'Kilos')
+                                                                                {{ $item->planned_kilos }}K
+                                                                            @else
+                                                                                {{ $item->planned_heads }}H - {{ $item->planned_kilos }}K
+                                                                            @endif
+                                                                        </span>
+                                                                        @if ($dr->status === "Delivered")
+                                                                            <span>--> </span>
+                                                                            <span>
+                                                                                @if ($item->product->measurement_type == 'Heads')
+                                                                                    @if ($item->planned_heads === $item->received_heads)
+                                                                                        <span style="color: green">{{ $item->received_heads }}H</span>
+                                                                                    @else
+                                                                                        <span style="color: #dc3545;">{{ $item->received_heads }}H</span>
+                                                                                    @endif
+                                                                                @elseif ($item->product->measurement_type == 'Kilos')
+                                                                                    @if ($item->planned_kilos === $item->received_kilos)
+                                                                                        <span style="color: green">{{ $item->received_kilos }}K</span>
+                                                                                    @else
+                                                                                        <span style="color: #dc3545;">{{ $item->received_kilos }}K</span>
+                                                                                    @endif
+                                                                                @elseif ($item->product->measurement_type == 'Heads&Kilos')
+                                                                                    {{ $item->received_heads }}H - {{ $item->received_kilos }}K
+                                                                                    @if ($item->planned_heads === $item->received_heads)
+                                                                                        <span style="color: green">{{ $item->received_heads }}H</span>
+                                                                                    @else
+                                                                                        <span style="color: #dc3545;">{{ $item->received_heads }}H</span>
+                                                                                    @endif
+                                                                                    @if ($item->planned_kilos === $item->received_kilos)
+                                                                                        <span style="color: green">{{ $item->received_kilos }}K</span>
+                                                                                    @else
+                                                                                        <span style="color: #dc3545;">{{ $item->received_kilos }}K</span>
+                                                                                    @endif
+                                                                                @endif
+
+                                                                        </span>
+                                                                    
+                                                                        @endif
+                                                                        )
+
+                                                                    </p>
+
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+
+                                                </div>
 
                                             </li>
+                                            
 
                                         @endforeach
 

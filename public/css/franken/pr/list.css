@@ -82,3 +82,35 @@
 .dropdown-div .dropdown-btn:hover{
     background-color: #df8124;
 }
+.popup-content-nested {
+  display: none; 
+  background-color: #fff;
+  padding: 10px;
+  position: absolute; 
+  top: -100%;
+  left: -100%;
+  height: auto;
+  overflow: auto;
+  max-height: 500px;
+  border-radius: 5px;
+  max-width: 500px;
+  width: auto;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+
+.hover-container {
+  position: relative; 
+  display: block; 
+}
+
+.hover-container:hover .popup-content-nested {
+  display: block; /* Show on hover */
+}
+.li-delivery-items{
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+}
+.li-delivery-items p{
+    margin: 0;
+}
