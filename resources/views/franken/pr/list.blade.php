@@ -561,7 +561,6 @@
                                                                                         <span style="color: #dc3545;">{{ $item->received_kilos }}K</span>
                                                                                     @endif
                                                                                 @elseif ($item->product->measurement_type == 'Heads&Kilos')
-                                                                                    {{ $item->received_heads }}H - {{ $item->received_kilos }}K
                                                                                     @if ($item->planned_heads === $item->received_heads)
                                                                                         <span style="color: green">{{ $item->received_heads }}H</span>
                                                                                     @else
@@ -575,9 +574,27 @@
                                                                                     @endif
                                                                                 @endif
                                                                                 {{-- display if there's variance --}}
-                                                                                @if ($item->received_heads != $item->planned_heads || $item->received_kilos != $item->planned_kilos)
-                                                                                    <span style="color: #dc3545">({{ $item->received_heads - $item->planned_heads }}H, {{ $item->received_kilos - $item->planned_kilos }}K)</span>
+
+                                                                                @if($item->product->measurement_type === 'Heads')
+                                                                                    @if($item->received_heads != $item->planned_heads)
+                                                                                        <span style="color: #dc3545">({{ $item->received_heads - $item->planned_heads }}H)</span>
+                                                                                    @endif
+                                                                                @elseif($item->product->measurement_type === 'Kilos')
+                                                                                    @if($item->received_kilos != $item->planned_kilos)
+                                                                                        <span style="color: #dc3545">({{ $item->received_kilos - $item->planned_kilos }}K)</span>
+                                                                                    @endif
+                                                                                @elseif($item->product->measurement_type === 'Heads&Kilos')
+                                                                                    @if($item->received_heads != $item->planned_heads)
+                                                                                        <span style="color: #dc3545">({{ $item->received_heads - $item->planned_heads }}H)</span>
+                                                                                    @endif
+                                                                                    @if($item->received_kilos != $item->planned_kilos)
+                                                                                        <span style="color: #dc3545">({{ $item->received_kilos - $item->planned_kilos }}K)</span>
+                                                                                    @endif
                                                                                 @endif
+
+                                                                                {{-- @if ($item->received_heads != $item->planned_heads || $item->received_kilos != $item->planned_kilos)
+                                                                                    <span style="color: #dc3545">({{ $item->received_heads - $item->planned_heads }}H, {{ $item->received_kilos - $item->planned_kilos }}K)</span>
+                                                                                @endif --}}
                                                                             </span>
                                                                     
                                                                         @endif
