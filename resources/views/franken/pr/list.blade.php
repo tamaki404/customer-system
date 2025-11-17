@@ -413,6 +413,7 @@
                     </thead>
                     <tbody>                                
                     @foreach ($requests as $request)
+                        {{-- <tr onclick="window.location.href='{{ route('pr.request', ['po_id' => $request->po_id]) }}'" style="cursor: pointer;"> --}}
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $request->updated_at->format('F j, Y, g:i a') }}</td>
@@ -427,7 +428,7 @@
                             <td>
                                 
                                 <div class="dropdown-div">
-                                    <button class="dropdown-btn btn btn-sm btn-secondary dropdown-toggle" type="button"
+                                    <button class="dropdown-btn btn btn-sm dropdown-toggle" type="button" style="color: #fff"
                                             id="dropdownMenuButton-{{ $request->po_id }}" data-bs-toggle="dropdown"
                                             aria-expanded="false">
                                         {{ $remaining_heads }} H | {{ $remaining_kilos }} K
@@ -453,22 +454,68 @@
                                                 }
                                             @endphp
 
-                                            <li class="dropdown-item" style="color: #333">
-                                                <strong style="color: #666">Del {{ $loop->iteration }} #{{ $dr->delivery_id }}:</strong><br>
-                                                {{ $heads }} H | {{ $kilos }} K
-                                                <strong>
-                                                    @if ($heads < $planned['heads'] || $kilos < $planned['kilos'])
-                                                        <span style="color: red;">Variance Detected</span>
-                                                    @endif
-                                                </strong>
+                                            <li class="dropdown-item" id="drop-down-li" style="color: #333; " >
+                                                <a href="{{ route('dlv.delivery', ['delivery_id' => $dr->delivery_id]) }}" target="_blank" style="display: flex; align-items: center; flex-direction: column; text-decoration: none; color: #333;">
+                                                    <span style="color: #666">
+                                                        #{{ $loop->iteration }} {{ $dr->delivery_id }}:
+                                                    </span>
+                                                    @php
+                                                        // Determine planned values for THIS delivery only
+                                                        $planned_heads = 0;
+                                                        $planned_kilos = 0;
+
+                                                        foreach ($dr->items as $item) {
+                                                            $product = $item->product;
+
+                                                            if ($product->measurement_type === 'Heads' || $product->measurement_type === 'Heads&Kilos') {
+                                                                $planned_heads += $item->planned_heads;
+                                                            }
+
+                                                            if ($product->measurement_type === 'Kilos' || $product->measurement_type === 'Heads&Kilos') {
+                                                                $planned_kilos += $item->planned_kilos;
+                                                            }
+                                                        }
+
+                                                        // Conditions
+                                                        $isVariance = ($heads != $planned_heads) || ($kilos != $planned_kilos);
+                                                        $isExact = ($heads == $planned_heads) && ($kilos == $planned_kilos);
+                                                        $isPending = ($dr->status === "Scheduled");
+                                                    @endphp
+                                                    <div style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
+                                                        <span>
+                                                            <strong>{{ $heads }}</strong>H
+                                                            | <strong>{{ $kilos }}</strong>K
+                                                        </span>
+                                                        
+
+                                                        <strong class="icon-display" style="display: flex; align-items: center;">
+                                                            @if ($dr->status === "Cancelled")
+                                                                <span class="material-symbols-outlined text-danger">cancel</span>
+
+                                                            @elseif ($isVariance && $dr->status !== "Scheduled")
+                                                                <span class="material-symbols-outlined text-warning">warning</span>
+                                                                <span style="color: #dc3545; font-size: 12px; margin-left: 5px;">({{ $heads - $planned_heads }}H | {{ $kilos - $planned_kilos }}K)</span>
+
+                                                            @elseif ($isExact)
+                                                                <span class="material-symbols-outlined text-success">check_circle</span>
+
+                                                            @elseif ($isPending)
+                                                                <span class="material-symbols-outlined " style="color: #f8912a">hourglass_top</span>
+
+                                                            @endif
+                                                        </strong>
+                                                    </div>
+                                                </a>
+
                                             </li>
+
                                         @endforeach
 
                                         <li><hr class="dropdown-divider"></li>
 
                                         <li class="dropdown-item">
                                             <strong style="font-size: 13px; color: #666;">Planned:</strong><br>
-                                            {{ $planned['heads'] }} heads | {{ $planned['kilos'] }} kilos
+                                            {{ $planned['heads'] }} H | {{ $planned['kilos'] }} K
                                         </li>
 
                                     </ul>
@@ -483,6 +530,19 @@
                                 @else
                                     {{ $request->status }}
                                 @endif
+                            </td>
+                            <td>
+                                <div class="dropdown" style="display:flex; align-items: center; justify-content: center;">
+                                    <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px; ">
+                                        <span class="material-symbols-outlined">
+                                        expand_circle_down
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('pr.request', ['po_id' => $request->po_id]) }}"><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
+                                    
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

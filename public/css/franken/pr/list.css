@@ -70,3 +70,15 @@
 .dropdown-div ul li{
     font-size: 13px
 }
+.icon-display span{
+    font-size: 14px;
+}
+#drop-down-li:active{
+    background-color: #e7f1ff;
+}
+.dropdown-div .dropdown-btn:focus{
+    background-color: #df8124;
+}
+.dropdown-div .dropdown-btn:hover{
+    background-color: #df8124;
+}
