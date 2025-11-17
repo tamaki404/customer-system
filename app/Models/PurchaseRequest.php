@@ -36,6 +36,33 @@ class PurchaseRequest extends Model
         return $this->hasMany(DeliveryRequest::class, 'po_id', 'po_id');
     }
 
+
+
+public function hasVariance()
+{
+    foreach ($this->deliveryRequests as $deliveryRequest) {
+
+        foreach ($deliveryRequest->Delitems as $item) {
+            $product = $item->product;
+
+            if ($product->measurement_type === 'Heads' || $product->measurement_type === 'Heads&Kilos') {
+                if ($item->planned_heads != $item->received_heads) {
+                    return true;
+                }
+            }
+
+            if ($product->measurement_type === 'Kilos' || $product->measurement_type === 'Heads&Kilos') {
+                if ($item->planned_kilos != $item->received_kilos) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+
     /**
      * Get the user who created this purchase request
      */

@@ -386,8 +386,13 @@
                                         --
                                     @endif
                                 </td>
-                                <td>{{ $request->status }}</td>
-                
+                                <td>
+                                    @if ($request->status == 'Completed' && $request->hasVariance())
+                                    Has Variance
+                                    @else
+                                        {{ $request->status }}
+                                    @endif
+                                </td>                
                             </tr>
                         @endforeach
                     </tbody>
@@ -407,16 +412,24 @@
                         </tr>
                     </thead>
                     <tbody>                                
-                        @foreach ($requests as $request)
-                            <tr onclick="window.location.href='{{ route('pr.request', ['po_id' => $request->po_id]) }}'" style="cursor: pointer;">
-                                <td>{{$loop->iteration}}</td>
-                                <td>{{ $request->updated_at->format('F j, Y, g:i a') }}</td>
-                                <td>{{$request->po_id}}</td>
-                                <td>--</td>
-                                <td>--</td>
-                                <td>{{ $request->status }}</td>
-                            </tr>
-                        @endforeach
+                    @foreach ($requests as $request)
+                        <tr onclick="window.location.href='{{ route('pr.request', ['po_id' => $request->po_id]) }}'" style="cursor: pointer;">
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $request->updated_at->format('F j, Y, g:i a') }}</td>
+                            <td>{{ $request->po_id }}</td>
+                            <td>--</td>
+                            <td>--</td>
+
+                            <td>
+                                @if ($request->status == 'Completed' && $request->hasVariance())
+                                   Has Variance
+                                @else
+                                    {{ $request->status }}
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+
                     </tbody>
                 </table>
 

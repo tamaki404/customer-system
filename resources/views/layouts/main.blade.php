@@ -126,11 +126,11 @@
                                     <p>Proof of payments</p>
                                     <div class="nav-indicator"></div>
                                 </a>                            
-                                <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
+                                {{-- <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
                                     <span class="material-symbols-outlined">receipt</span>
                                     <p>Proof of payments</p>
                                     <div class="nav-indicator"></div>
-                                </a>
+                                </a> --}}
                         </div>
                         <div class="nav-group">
                             <div class="nav-group-title">Promo</div>

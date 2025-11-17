@@ -60,6 +60,8 @@ public function delivery()
         return $this->hasOne(ProductSetting::class, 'set_id', 'set_id');
     }
 
+
+
     protected static function booted()
         {
             static::creating(function ($item) {

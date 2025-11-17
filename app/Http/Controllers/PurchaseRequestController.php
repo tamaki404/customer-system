@@ -26,7 +26,10 @@ class PurchaseRequestController extends Controller
 
             if ($user->role === 'Customer') {
                 $customer = Customers::where('user_id', $user->user_id)->first();
-                $requests = PurchaseRequest::where('user_id', $user->user_id)->orderBy('created_at', 'desc')->get();
+                $requests = PurchaseRequest::where('user_id', $user->user_id)
+                    ->with('deliveryRequests.items.product')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
                 $products = ProductSetting::where('customer_id', $customer->customer_id)->get();
                 $counts = PurchaseRequest::
                     selectRaw("status, COUNT(*) as total")
@@ -37,7 +40,10 @@ class PurchaseRequestController extends Controller
                 ]);
                 
             } elseif ($user->role !== 'Customer') {
-                $requests = PurchaseRequest::orderBy('created_at', 'desc')->get();
+                $requests = PurchaseRequest::with('deliveryRequests.items.product')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
                 $products = collect();
                 $counts = PurchaseRequest::
                     selectRaw("status, COUNT(*) as total")
@@ -437,7 +443,7 @@ class PurchaseRequestController extends Controller
                 DB::commit();
 
                 if ($request->action === 'Accepted') {
-                    return redirect()->back()->with('success', "Purchase order has been accepted successfully! Order ID: {$orderId}");
+                    return redirect()->back()->with('success', "Purchase order has been accepted successfully!");
                 } else {
                     return redirect()->back()->with('error', "Purchase order has been rejected successfully!");
                 }
