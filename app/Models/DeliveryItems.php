@@ -66,5 +66,9 @@ class DeliveryItems extends Model
         return $this->belongsTo(ProductSetting::class, 'product_id', 'product_id')
             ->whereColumn('customer_id', 'customer_id'); // match by customer
     }
+    public function deliveryItems()
+    {
+        return $this->hasMany(DeliveryItemRequest::class, 'delivery_id', 'delivery_id');
+    }
 
 }

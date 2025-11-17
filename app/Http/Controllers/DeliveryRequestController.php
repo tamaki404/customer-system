@@ -111,24 +111,38 @@ class DeliveryRequestController extends Controller
                                     ->first();
 
                     if ($deliveryItem && $deliveryItem->product) {
-                        $updateData = [];
+                     
 
                         $measurementType = strtolower($deliveryItem->product->measurement_type ?? '');
 
+                        // HEADS ONLY
                         if (($measurementType === 'heads' || $measurementType === 'head') 
                             && isset($receivedHeads[$deliveryItemId])) {
-                            $updateData['received_heads'] = $receivedHeads[$deliveryItemId];
+                            $deliveryItem->update(['received_heads' => $receivedHeads[$deliveryItemId]]);
                         }
 
+                        // KILOS ONLY
                         if (($measurementType === 'kilos' || $measurementType === 'kg') 
                             && isset($receivedKilos[$deliveryItemId])) {
-                            $updateData['received_kilos'] = $receivedKilos[$deliveryItemId];
+                            $deliveryItem->update(['received_kilos' => $receivedKilos[$deliveryItemId]]);
                         }
 
-                        // Only update if there is data to save
-                        if (!empty($updateData)) {
-                            $deliveryItem->update($updateData);
+                        // HEADS & KILOS (update BOTH)
+                        if ($measurementType === 'heads&kilos') {
+
+                            if (isset($receivedHeads[$deliveryItemId])) {
+                                $deliveryItem->update(['received_heads' => $receivedHeads[$deliveryItemId]]);
+                            }
+
+                            if (isset($receivedKilos[$deliveryItemId])) {
+                                $deliveryItem->update(['received_kilos' => $receivedKilos[$deliveryItemId]]);
+                            }
                         }
+
+
+
+
+
                     }
                 }
 
