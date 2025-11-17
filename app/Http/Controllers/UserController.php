@@ -586,7 +586,7 @@ class UserController extends Controller
                 'firstname'  => 'required|string|max:50',
                 'middlename' => 'nullable|string|max:50',
                 'action_by' => 'required|exists:users,user_id',
-                'role_type'  => 'required|string|in:sales_representative,procurement_officer,warehouse_staff,accounting_staff,system_admin,inventory_staff',
+                'role_type'  => 'required|string|in:sales_representative,procurement_officer,warehouse_staff,accounting_staff,system_administrator,inventory_staff',
             ], [
                 'password.min' => 'Password must be at least 6 characters long.',
                 'password.regex' => 'Password must contain at least one number and one special character.',
@@ -641,7 +641,7 @@ class UserController extends Controller
 
             // 1. Create User
             $role = 'Staff';
-            if ($request->role_type === "system_administrator") {
+            if ($request->role_type === "system_administratoristrator") {
                 $role = 'Admin';
             }
 

@@ -281,4 +281,61 @@ class DeliveryRequestController extends Controller
         ));
     }
 
+    public function receipt($delivery_id)
+    {
+        $delivery = DeliveryRequest::where('delivery_id', $delivery_id)->firstOrFail();
+
+        return view('franken.pdf.receipt', [
+            'delivery' => $delivery
+        ]);
+    }
+
+    public function update(Request $request, $delivery_id)
+    {
+        $request->validate([
+            'planned_heads' => 'array',
+            'planned_kilos' => 'array',
+        ]);
+
+        $delivery = DeliveryRequest::where('delivery_id', $delivery_id)->firstOrFail();
+
+        $plannedHeads = $request->input('planned_heads', []);
+        $plannedKilos = $request->input('planned_kilos', []);
+
+        foreach ($delivery->Delitems as $item) {
+
+            $newHeads = $plannedHeads[$item->delivery_item_id] ?? null;
+            $newKilos = $plannedKilos[$item->delivery_item_id] ?? null;
+
+            // ---- HEADS ONLY ----
+            if ($item->product->measurement_type === "Heads") {
+                if ($newHeads !== null) {
+                    $item->planned_heads = min($newHeads, $item->planned_heads); // cannot exceed original planned value
+                }
+            }
+
+            // ---- KILOS ONLY ----
+            elseif ($item->product->measurement_type === "Kilos") {
+                if ($newKilos !== null) {
+                    $item->planned_kilos = min($newKilos, $item->planned_kilos);
+                }
+            }
+
+            // ---- HEADS & KILOS ----
+            elseif ($item->product->measurement_type === "Heads&Kilos") {
+                if ($newHeads !== null) {
+                    $item->planned_heads = min($newHeads, $item->planned_heads);
+                }
+                if ($newKilos !== null) {
+                    $item->planned_kilos = min($newKilos, $item->planned_kilos);
+                }
+            }
+
+            $item->save();
+        }
+
+        return back()->with('success', 'Delivery quantities updated successfully.');
+    }
+
+
 }

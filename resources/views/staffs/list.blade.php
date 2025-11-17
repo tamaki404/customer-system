@@ -64,7 +64,7 @@
                             <option value="procurement_officer" {{ old('role_type') == 'procurement_officer' ? 'selected' : '' }}>Procurement officer</option>
                             <option value="warehouse_staff" {{ old('role_type') == 'warehouse_staff' ? 'selected' : '' }}>Warehouse staff</option>
                             <option value="accounting_staff" {{ old('role_type') == 'accounting_staff' ? 'selected' : '' }}>Accounting staff</option>
-                            <option value="system_admin" {{ old('role_type') == 'system_admin' ? 'selected' : '' }}>System administrator</option>
+                            <option value="system_administrator" {{ old('role_type') == 'system_administrator' ? 'selected' : '' }}>System administrator</option>
                         </select>
                         @error('role_type')
                             <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>

@@ -167,12 +167,12 @@
                         <div style="display: flex; flex-direction: column; gap: 5px; margin: 5px;">
                             <p style="margin: 0"><span>Print</span></p>
                     <div>
-                                <button type="button" 
-                                        data-bs-toggle="modal" data-bs-target="#pdfModal" 
-                                        data-url="{{ route('purchaseorders.pdf', $po->po_id) }}"
-                                        class="btn-transition">
-                                    Purchase Order
-                                </button>
+                    <button type="button" 
+                            data-bs-toggle="modal" data-bs-target="#pdfModal" 
+                            data-url="{{ route('purchaseorders.pdf', $po->po_id) }}"
+                            class="btn-transition">
+                        Purchase Order
+                    </button>
                                 
 
                             </div>

@@ -18,7 +18,7 @@ class StaffsController extends Controller
         public function staffsList(Request $request)
         {
             $user = Auth::user();
-            $staffs = Staffs::with('user')->whereRelation('user', 'role', 'Staff')->get();
+            $staffs = Staffs::orderBy('created_at', 'desc')->get();
 
             foreach ($staffs as $staff) {
                 $staff->contactNo = Customers::where('staff_id', $staff->staff_id)->count();

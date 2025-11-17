@@ -274,11 +274,12 @@
                         {{-- <button class="collection-btn" style="min-width: 130px; background-color: #dc3545; border-radius: 5px;box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;">
                             <span class="material-symbols-outlined" >assignment_returned</span> Return slip
                         </button>    --}}
-
-                        <p style="display:flex; flex-direction: row: gap: 5px; margin:0;">
-                            <span style="color: #666">Feedback:</span>
-                            <span style="font-style: italic; margin-left: 5px">"{{ $delivery->feedback }}"</span>
-                        </p>
+                        @if ($delivery->feedback)
+                            <p style="display:flex; flex-direction: row: gap: 5px; margin:0;">
+                                <span style="color: #666">Feedback:</span>
+                                <span style="font-style: italic; margin-left: 5px">"{{ $delivery->feedback }}"</span>
+                            </p>
+                        @endif
                             
                     </div>
 
