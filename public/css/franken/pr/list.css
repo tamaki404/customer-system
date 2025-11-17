@@ -59,3 +59,14 @@
 .collection-btn:hover {
     background-color: #df8124;
 }
+.dropdown-div{
+    border-radius: 5px;
+}
+.dropdown-div button{
+    font-size: 13px;
+    background-color: #f8912a;
+    border: none;
+}
+.dropdown-div ul li{
+    font-size: 13px
+}

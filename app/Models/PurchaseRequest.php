@@ -36,6 +36,55 @@ class PurchaseRequest extends Model
         return $this->hasMany(DeliveryRequest::class, 'po_id', 'po_id');
     }
 
+public function totalPlanned()
+{
+    $planned_heads = 0;
+    $planned_kilos = 0;
+
+    foreach ($this->deliveryRequests as $dr) {
+        foreach ($dr->Delitems as $item) {
+            $product = $item->product;
+
+            if ($product->measurement_type == 'Heads' || $product->measurement_type == 'Heads&Kilos') {
+                $planned_heads += $item->planned_heads;
+            }
+
+            if ($product->measurement_type == 'Kilos' || $product->measurement_type == 'Heads&Kilos') {
+                $planned_kilos += $item->planned_kilos;
+            }
+        }
+    }
+
+    return [
+        'heads' => $planned_heads,
+        'kilos' => $planned_kilos,
+    ];
+}
+
+public function totalDelivered()
+{
+    $del_heads = 0;
+    $del_kilos = 0;
+
+    foreach ($this->deliveryRequests as $dr) {
+        foreach ($dr->Delitems as $item) {
+            $product = $item->product;
+
+            if ($product->measurement_type == 'Heads' || $product->measurement_type == 'Heads&Kilos') {
+                $del_heads += $item->received_heads;
+            }
+
+            if ($product->measurement_type == 'Kilos' || $product->measurement_type == 'Heads&Kilos') {
+                $del_kilos += $item->received_kilos;
+            }
+        }
+    }
+
+    return [
+        'heads' => $del_heads,
+        'kilos' => $del_kilos,
+    ];
+}
 
 
 public function hasVariance()

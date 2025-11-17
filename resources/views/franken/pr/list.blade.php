@@ -413,11 +413,68 @@
                     </thead>
                     <tbody>                                
                     @foreach ($requests as $request)
-                        <tr onclick="window.location.href='{{ route('pr.request', ['po_id' => $request->po_id]) }}'" style="cursor: pointer;">
+                        <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $request->updated_at->format('F j, Y, g:i a') }}</td>
                             <td>{{ $request->po_id }}</td>
-                            <td>--</td>
+                            @php
+                                $planned = $request->totalPlanned();
+                                $delivered = $request->totalDelivered();
+
+                                $remaining_heads = $planned['heads'] - $delivered['heads'];
+                                $remaining_kilos = $planned['kilos'] - $delivered['kilos'];
+                            @endphp
+                            <td>
+                                
+                                <div class="dropdown-div">
+                                    <button class="dropdown-btn btn btn-sm btn-secondary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton-{{ $request->po_id }}" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                        {{ $remaining_heads }} H | {{ $remaining_kilos }} K
+                                    </button>
+
+                                    <ul class="dropdown-menu p-2" aria-labelledby="dropdownMenuButton-{{ $request->po_id }}" style="min-width: 250px;">
+                                        
+                                        @foreach ($request->deliveryRequests->sortByDesc('delivery_id') as $dr)
+                                            @php
+                                                $heads = 0;
+                                                $kilos = 0;
+
+                                                foreach ($dr->items as $item) {
+                                                    $product = $item->product;
+
+                                                    if ($product->measurement_type == 'Heads' || $product->measurement_type == 'Heads&Kilos') {
+                                                        $heads += $item->received_heads;
+                                                    }
+
+                                                    if ($product->measurement_type == 'Kilos' || $product->measurement_type == 'Heads&Kilos') {
+                                                        $kilos += $item->received_kilos;
+                                                    }
+                                                }
+                                            @endphp
+
+                                            <li class="dropdown-item" style="color: #333">
+                                                <strong style="color: #666">Del {{ $loop->iteration }} #{{ $dr->delivery_id }}:</strong><br>
+                                                {{ $heads }} H | {{ $kilos }} K
+                                                <strong>
+                                                    @if ($heads < $planned['heads'] || $kilos < $planned['kilos'])
+                                                        <span style="color: red;">Variance Detected</span>
+                                                    @endif
+                                                </strong>
+                                            </li>
+                                        @endforeach
+
+                                        <li><hr class="dropdown-divider"></li>
+
+                                        <li class="dropdown-item">
+                                            <strong style="font-size: 13px; color: #666;">Planned:</strong><br>
+                                            {{ $planned['heads'] }} heads | {{ $planned['kilos'] }} kilos
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </td>
+
                             <td>--</td>
 
                             <td>
