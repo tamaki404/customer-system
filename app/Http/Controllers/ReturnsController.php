@@ -29,17 +29,17 @@ class ReturnsController extends Controller
     {
         $user = Auth::user();
 
-        $varianceByDelivery = DeliveryItemRequest::select(
-                'delivery_id',
-                DB::raw('SUM(planned_heads - received_heads) AS heads_variance'),
-                DB::raw('SUM(planned_kilos - received_kilos) AS kilos_variance')
-            )
-            ->whereRaw('planned_heads != received_heads OR planned_kilos != received_kilos')
-            ->groupBy('delivery_id')
-            ->orderBy('delivery_id', 'desc')
-            ->paginate(25);
+$varianceByDelivery = DeliveryItemRequest::select(
+        'delivery_id',
+        DB::raw('SUM(planned_heads - received_heads) AS heads_variance'),
+        DB::raw('SUM(planned_kilos - received_kilos) AS kilos_variance')
+    )
+    ->whereRaw('planned_heads != received_heads OR planned_kilos != received_kilos')
+    ->groupBy('delivery_id')
+    ->with(['varianceItems.product'])   // 👈 eager-load the items here
+    ->orderBy('delivery_id', 'desc')
+    ->paginate(25);
 
-        
 
         return view('franken.rtn.list', compact(
             'user',

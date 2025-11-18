@@ -61,6 +61,11 @@ public function delivery()
     }
 
 
+public function varianceItems()
+{
+    return $this->hasMany(DeliveryItemRequest::class, 'delivery_id', 'delivery_id')
+        ->whereRaw('planned_heads != received_heads OR planned_kilos != received_kilos');
+}
 
     protected static function booted()
         {

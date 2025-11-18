@@ -65,7 +65,7 @@
                                             <div class="modal-header">
                                                 <p class="modal-title d-flex align-items-center gap-2" id="requestActionLabel">
                                                     <span class="material-symbols-outlined" style="font-size: 18px;">calendar_clock</span>
-                                                    <span style="font-size: 14px;">Schedule Delivery for Variance</span>
+                                                    <span style="font-size: 14px;">Schedule delivery for variance</span>
                                                 </p>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
@@ -103,27 +103,22 @@
 
                                                 {{-- Schedule Date --}}
                                                 <div class="p-2 border rounded mb-3">
-                                                    <label class="fw-bold text-muted">Scheduled Delivery Date *</label>
+                                                    <label class="fw-bold text-muted">Scheduled delivery date *</label>
                                                     <input type="datetime-local"
                                                         name="scheduled_date"
                                                         class="form-control"
                                                         required
+                                                        style="font-size: 13px"
                                                         min="{{ now()->format('Y-m-d\TH:i') }}">
                                                 </div>
 
                                                 {{-- Variance Items --}}
                                                 <div class="p-2 border rounded">
 
-                                                    @php
-                                                        $itemsWithVariance = \App\Models\DeliveryItemRequest::where('delivery_id', $d->delivery_id)
-                                                            ->whereRaw('planned_heads != received_heads OR planned_kilos != received_kilos')
-                                                            ->with('product')
-                                                            ->get();
-                                                    @endphp
+                                                    <p class="fw-bold text-muted">Select items with variance</p>
+                                                    @foreach($d->varianceItems as $item)
 
-                                                    <p class="fw-bold text-muted">Select Items with Variance</p>
 
-                                                    @foreach($itemsWithVariance as $item)
                                                         <div class="border rounded p-2 mb-3">
 
                                                             <div class="d-flex align-items-center gap-2 mb-2">
@@ -138,6 +133,8 @@
 
                                                             <div class="row small">
                                                                 <div class="col">
+                                                                    <p class="m-0">Delivery ID: <strong>{{ $item->delivery_id }}</strong></p>
+
                                                                     <p class="m-0">Planned Heads: <strong>{{ $item->planned_heads }}</strong></p>
                                                                     <p class="m-0">Received Heads: <strong>{{ $item->received_heads }}</strong></p>
                                                                     <p class="m-0 text-warning fw-bold">
@@ -154,7 +151,7 @@
                                                             </div>
 
                                                             <div class="mt-2 pt-2 border-top">
-                                                                <label class="small text-muted">New Delivery Quantities:</label>
+                                                                <label class="small text-muted">New delivery quantities:</label>
                                                                 <div class="row">
                                                                     <div class="col">
                                                                         <input type="number" 
@@ -178,6 +175,8 @@
                                                                 <input type="hidden" name="set_ids[{{ $item->delivery_item_id }}]" value="{{ $item->set_id }}">
                                                             </div>
 
+                                                            
+
                                                         </div>
                                                     @endforeach
 
@@ -186,7 +185,7 @@
 
                                             <div class="modal-footer bg-white">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                <button type="submit" class="yellow-btn">Schedule Delivery</button>
+                                                <button type="submit" class="yellow-btn">Schedule delivery</button>
                                             </div>
 
                                         </form>

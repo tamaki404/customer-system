@@ -76,6 +76,7 @@
                                     <th>Updated on</th>
                                     <th>Heads/Kilos</th>
                                     <th>PO ID</th>
+                                    <th>Delivery ID</th>
                                     <th>Scheduled</th>
                                     <th>Status</th>
                                     <th>Action</th>
@@ -182,6 +183,7 @@
                                                 {{ $sum_heads}} - {{ $sum_kilos}}
                                             </td>
                                             <td>#{{ $del->po_id }}</td>
+                                            <td>#{{ $del->delivery_id }}</td>
                                             <td>{{$del->delivery_date->format('F j, y')}}</td>
                                             <td>{{$del->status}}</td>
                                             
@@ -235,6 +237,7 @@
                                     <th>Updated on</th>
                                     <th>Customer</th>
                                     <th>PO ID</th>
+                                    <th>Delivery ID</th>
                                     <th>Heads/Kilos</th>
                                     <th>Scheduled</th>
                                     <th>Status</th>
@@ -324,6 +327,7 @@
                                             <td>{{ $del->updated_at->format('F j, y g:i a') }}</td>
                                             <td>{{ $del->customer->company_name}}</td>
                                             <td>#{{ $del->po_id }}</td>
+                                            <td>#{{ $del->delivery_id }}</td>
                                             <td>
                                                 @php
                                                     $sum_heads = $del->items->sum('planned_heads');
@@ -342,6 +346,14 @@
                                                         </span>
                                                     </button>
                                                     <ul class="dropdown-menu">
+                                                        
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('dlv.delivery', $del->delivery_id) }}">
+                                                                <span class="material-symbols-outlined">call_made</span>
+                                                                 Go to Delivery
+                                                            </a>
+                                                        </li>
                                                         <li>
                                                             <a class="dropdown-item"
                                                                 data-bs-toggle="modal" data-bs-target="#pdfModal-{{ $del->delivery_id }}">
