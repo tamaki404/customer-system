@@ -37,6 +37,10 @@ class Staffs extends Model
     {
         return $this->hasMany(AccountStatus::class, 'staff_id', 'staff_id');
     }
+    public function status()
+    {
+        return $this->hasOne(AccountStatus::class, 'user_id', 'user_id');
+    }
     public function receipt()
     {
         return $this->belongsTo(Receipts::class, 'action_by', 'user_id');

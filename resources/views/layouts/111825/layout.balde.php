@@ -107,17 +107,30 @@
                                 <p>Dashboard</p>
                                 <div class="nav-indicator"></div>
                             </a>
-
+                            {{-- <a class="nav-item{{ $currentRoute == 'profile.view' ? ' active' : '' }}" href="{{ route('profile.view') }}">
+                                <span class="material-symbols-outlined">person</span>
+                                <p>Profile</p>
+                                <div class="nav-indicator"></div>
+                            </a> --}}
                         </div>
 
                         <div class="nav-group">
                             <div class="nav-group-title">Credits & Receipts</div>
-
+                            {{-- <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
+                                <span class="material-symbols-outlined">credit_card</span>
+                                <p>Credits</p>
+                                <div class="nav-indicator"></div>
+                            </a> --}}
                                 <a class="nav-item{{ $currentRoute == 'pym.list' ? ' active' : '' }}" href="{{ route('pym.list') }}">
                                     <span class="material-symbols-outlined">diamond_shine</span>
                                     <p>Proof of payments</p>
                                     <div class="nav-indicator"></div>
                                 </a>                            
+                                {{-- <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
+                                    <span class="material-symbols-outlined">receipt</span>
+                                    <p>Proof of payments</p>
+                                    <div class="nav-indicator"></div>
+                                </a> --}}
                         </div>
                         <div class="nav-group">
                             <div class="nav-group-title">Promo</div>
@@ -130,14 +143,33 @@
                         <!-- Group 2: Orders & Inventory -->
                     <div class="nav-group">
                             <div class="nav-group-title">Orders & Inventory</div>
-     
+                            {{-- <a class="nav-item">
+                                <span class="material-symbols-outlined">receipt</span>
+                                <p>Receipts</p>
+                                <div class="nav-indicator"></div>
+                            </a>--}}
                             {{-- purchase request --}}
                             <a class="nav-item{{ $currentRoute == 'pr.list' ? ' active' : '' }}" href="{{ route('pr.list') }}">
                                 <span class="material-symbols-outlined">diamond_shine</span>
                                 <p>Purchase request</p>
                                 <div class="nav-indicator"></div>
                             </a>
-           
+                            {{-- <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
+                                <span class="material-symbols-outlined">shopping_bag</span>
+                                <p>Purchase orders</p>
+                                <div class="nav-indicator"></div>
+                            </a> --}}
+
+                            {{-- <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
+                                <span class="material-symbols-outlined">receipt_long</span>
+                                <p>Deliveries summary</p>
+                                <div class="nav-indicator"></div>
+                            </a> --}}
+                            {{-- <a class="nav-item{{ $currentRoute == 'deliveries.list' ? ' active' : '' }}" href="{{ route('deliveries.list') }}">
+                                <span class="material-symbols-outlined">delivery_truck_speed</span>
+                                <p>Deliveries</p>
+                                <div class="nav-indicator"></div>
+                            </a> --}}
                                 {{-- Deliveries --}}
                                 <a class="nav-item{{ $currentRoute == 'dlv.list' ? ' active' : '' }}" href="{{ route(name: 'dlv.list') }}">
                                     <span class="material-symbols-outlined">diamond_shine</span>
@@ -165,13 +197,8 @@
                                 <p>Customers</p>
                                 <div class="nav-indicator"></div>
                             </a>
-                            <a class="nav-item{{ $currentRoute == 'stff.list' ? ' active' : '' }}" href="{{ route('stff.list') }}">
-                                <span class="material-symbols-outlined">diamond_shine</span>
-                                <p>Staffs</p>
-                                <div class="nav-indicator"></div>
-                            </a>
-                            <a class="nav-item{{ $currentRoute == 'staffs.list' ? ' active' : '' }}" href="{{ route('staffs.list') }}">
-                                <span class="material-symbols-outlined">diamond_shine</span>
+                            <a class="nav-item{{ $currentRoute == 'staffs.list' ? ' active' : '' }}" href="{{ route('staffs.list') }}" >
+                                <span class="material-symbols-outlined">supervisor_account</span>
                                 <p>Staffs</p>
                                 <div class="nav-indicator"></div>
                             </a>
@@ -180,7 +207,11 @@
                         <!-- Group 4: Reports -->
                         <div class="nav-group">
                             <div class="nav-group-title">Reports & logs</div>
-                
+                            {{-- <a class="nav-item">
+                                <span class="material-symbols-outlined">bar_chart</span>
+                                <p>Reports</p>
+                                <div class="nav-indicator"></div>
+                            </a> --}}
                             <a class="nav-item{{ $currentRoute == 'logs.list' ? ' active' : '' }}" href="{{ route('logs.list') }}" >
                                 <span class="material-symbols-outlined">history</span>
 
@@ -239,7 +270,14 @@
                                         <p>Purchase request</p>
                                         <div class="nav-indicator"></div>
                                     </a>
-               
+                                {{-- Purchase Orders --}}
+                                {{-- @if(!empty($permissions['PO']) && $permissions['PO'])
+                                    <a class="nav-item{{ $currentRoute == 'purchaseorders.list' ? ' active' : '' }}" href="{{ route('purchaseorders.list') }}">
+                                        <span class="material-symbols-outlined">shopping_bag</span>
+                                        <p>Purchase orders</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                @endif --}}
 
                                 {{-- Deliveries --}}
                                 <a class="nav-item{{ $currentRoute == 'dlv.list' ? ' active' : '' }}" href="{{ route(name: 'dlv.list') }}">
@@ -247,13 +285,32 @@
                                     <p>Deliveries summary</p>
                                     <div class="nav-indicator"></div>
                                 </a>
-                 
+                                {{-- Orders --}}
+                                {{-- @if(!empty($permissions['Orders']) && $permissions['Orders'])
+                                    <a class="nav-item{{ $currentRoute == 'orders.list' ? ' active' : '' }}" href="{{ route('orders.list') }}">
+                                        <span class="material-symbols-outlined">receipt_long</span>
+                                        <p>Deliveries summary</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                @endif --}}
                                 <a class="nav-item{{ $currentRoute == 'prd.list' ? ' active' : '' }}" href="{{ route('prd.list') }}">
                                     <span class="material-symbols-outlined">diamond_shine</span>
                                     <p>Products</p>
                                     <div class="nav-indicator"></div>
                                 </a>
-                         
+                                {{-- Products --}}
+                                {{-- @if(!empty($permissions['Products']) && $permissions['Products'])
+                                    <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
+                                        <span class="material-symbols-outlined">store</span>
+                                        <p>Products</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                    <a class="nav-item" href="">
+                                        <span class="material-symbols-outlined">store</span>
+                                        <p>Variances</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                @endif --}}
                             @else
                                 <div class="locked">
                                     <p title="Please wait for a staff member to set it up.">
@@ -274,7 +331,22 @@
                                     <p>Credits</p>
                                     <div class="nav-indicator"></div>
                                 </a>
-                     
+                                {{-- @if(!empty($permissions['Credits']) && $permissions['Credits'])
+                                    <a class="nav-item{{ $currentRoute == 'credits.list' ? ' active' : '' }}" href="{{ route('credits.list') }}">
+                                        <span class="material-symbols-outlined">credit_card</span>
+                                        <p>Credits</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                @endif --}}
+
+                                {{-- Proof of Payments --}}
+                                {{-- @if(!empty($permissions['POP']) && $permissions['POP'])
+                                    <a class="nav-item{{ $currentRoute == 'receipts.list' ? ' active' : '' }}" href="{{ route('receipts.list') }}">
+                                        <span class="material-symbols-outlined">receipt</span>
+                                        <p>Proof of payments</p>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                @endif --}}
                             @else
                                 <div class="locked">
                                     <p title="Please wait for a staff member to set it up.">
