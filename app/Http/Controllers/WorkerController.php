@@ -118,7 +118,7 @@ class WorkerController extends Controller
 
             // 1. Create User
             $role = 'Staff';
-            if ($request->role_type === "system_administratoristrator") {
+            if ($request->role_type === "system_administrator") {
                 $role = 'Admin';
             }
 
@@ -173,7 +173,7 @@ class WorkerController extends Controller
 
             DB::commit();
 
-            return redirect()->route('staffs.list')
+            return redirect()->route('stff.list')
                 ->with('success', 'Staff member has been successfully registered and verification email has been sent.');
 
         } catch (\Exception $e) {

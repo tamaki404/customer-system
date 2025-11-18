@@ -234,13 +234,18 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
             ->name('list');
         Route::post('/create', [ReturnsController::class, 'create'])->name('create');
     });
-    Route::prefix('stff')->name('stff.')->group(function () {
+    Route::prefix('staff')->name('stff.')->group(function () {
         Route::get('/list', [WorkerController::class, 'list'])
             ->name('list');
         Route::get('/staff/{staff_id}', [WorkerController::class, 'staff'])
             ->name('staff');
         Route::post('/register', [WorkerController::class, 'register'])->name('register');
         Route::post('/modify', [WorkerController::class, 'modify'])->name('modify');
+    });
+    Route::prefix('lg')->name('lg.')->group(function () {
+        Route::get('/list', [LogsController::class, 'list'])
+            ->name('list');
+
     });
     /*
     |--------------------------------------------------------------------------

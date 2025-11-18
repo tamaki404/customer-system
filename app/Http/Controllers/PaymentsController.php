@@ -5,6 +5,7 @@ use App\Models\Customers;
 use App\Models\DeliveryRequest;
 use App\Models\DeliveryItemRequest;
 use App\Models\Credits;
+use App\Models\Logs;
 use App\Models\Payments;
 use App\Models\PurchaseHistory;
 use Illuminate\Support\Facades\DB;
@@ -67,7 +68,7 @@ class PaymentsController extends Controller
             ]);
 
 
-            PurchaseHistory::create([
+           PurchaseHistory::create([
                 'po_id' =>  $del->po_id,
                 'customer_id' => $customer->customer_id,
                 'purchase_id' => $history_id,
@@ -76,6 +77,20 @@ class PaymentsController extends Controller
                 'label' => "Payment",
                 'amount' => "0",
                 'status' => "Pending"
+            ]);
+
+
+            $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+            $user_ip = $_SERVER['REMOTE_ADDR'];
+            Logs::create([
+                'log_id' =>  $log_id,
+                'user_id' => $user->user_id,
+                'role' => $user->role,
+                'action' => "Added payment receipt",
+                'description' => $receipt->payment_id,
+                'ip_address' => $user_ip,
+                'entity' => "Payments",
+                'entity_id' => $receipt->id,
             ]);
 
             DB::commit();
@@ -159,6 +174,7 @@ class PaymentsController extends Controller
             'status'       => 'required|in:Verified,Rejected',
             'total_amount' => 'required|numeric',
         ]);
+        $user = Auth::user();
 
         try {
             $payment = Payments::where('payment_id', $request->payment_id)->firstOrFail();
@@ -214,6 +230,20 @@ class PaymentsController extends Controller
                     'label'        => 'Payment',
                     'amount'       => $request->total_amount,
                     'status'       => 'Successful',
+                ]);
+
+                $date = date('Ymd');
+                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                $user_ip = $_SERVER['REMOTE_ADDR'];
+                Logs::create([
+                    'log_id' =>  $log_id,
+                    'user_id' => $user->user_id,
+                    'role' => $user->role,
+                    'action' => "Verified a payment receipt",
+                    'description' => $payment->payment_id,
+                    'ip_address' => $user_ip,
+                    'entity' => "Payments",
+                    'entity_id' => $payment->id,
                 ]);
             }
 

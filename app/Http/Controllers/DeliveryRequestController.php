@@ -11,6 +11,8 @@ use App\Models\DeliveryRequest;
 use App\Models\Credits;
 use App\Models\PurchaseHistory;
 use App\Models\Promos;
+use App\Models\Logs;
+
 use Carbon\Carbon;
 
 class DeliveryRequestController extends Controller
@@ -249,6 +251,20 @@ class DeliveryRequestController extends Controller
                     'label' => "Delivery",
                     'amount' => $total_amount,
                     'status' => "Successful"
+                ]);
+
+                $date = date('Ymd');
+                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                $user_ip = $_SERVER['REMOTE_ADDR'];
+                Logs::create([
+                    'log_id' =>  $log_id,
+                    'user_id' => $user->user_id,
+                    'role' => $user->role,
+                    'action' => "Received a delivery",
+                    'description' => $delivery->delivery_id,
+                    'ip_address' => $user_ip,
+                    'entity' => "DeliveryRequest",
+                    'entity_id' => $delivery->id,
                 ]);
 
             return back()->with('success', 'Delivery successfully confirmed with variance recorded.');            

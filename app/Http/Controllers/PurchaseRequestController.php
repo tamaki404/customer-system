@@ -10,6 +10,8 @@ use App\Models\Customers;
 use App\Models\Receipts;
 use App\Models\Payments;
 use App\Models\Products;
+use App\Models\Logs;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +21,15 @@ use Exception;
 
 class PurchaseRequestController extends Controller
 {
+        public static function randomBase36String(int $length): string
+    {
+        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $str = '';
+        for ($i = 0; $i < $length; $i++) {
+            $str .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+        return $str;
+    }
     public function list(Request $request)
     {
         try {
@@ -135,6 +146,7 @@ class PurchaseRequestController extends Controller
 
         $delivery_scheduled = DeliveryRequest::where('po_id', $po_id)->with(['scheduled_items.product', 'customer'])->orderBy('delivery_date', 'desc')->get();
 
+
         return view('franken.pr.request', [
                 'user' => $user,
                 'request' => $request,
@@ -237,6 +249,21 @@ class PurchaseRequestController extends Controller
                 'notes' => $validated['notes'],
                 'action_by' => $user->user_id,
                 'action_at' => now(),
+            ]);
+
+
+            $date = date('Ymd');
+            $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+            $user_ip = $_SERVER['REMOTE_ADDR'];
+            Logs::create([
+                'log_id' =>  $log_id,
+                'user_id' => $user->user_id,
+                'role' => $user->role,
+                'action' => "Created purchase order",
+                'description' => $poId,
+                'ip_address' => $user_ip,
+                'entity' => "PurchaseRequest",
+                'entity_id' => $purchaseRequest->id,
             ]);
             
 
@@ -424,6 +451,19 @@ class PurchaseRequestController extends Controller
                         'updated_at' => now(),
                         'notes' => $request->notes,
                     ]);
+                    $date = date('Ymd');
+                    $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                    $user_ip = $_SERVER['REMOTE_ADDR'];
+                    Logs::create([
+                        'log_id' =>  $log_id,
+                        'user_id' => $user->user_id,
+                        'role' => $user->role,
+                        'action' => "Accepted a purchase order",
+                        'description' => $purchaseOrder->po_id,
+                        'ip_address' => $user_ip,
+                        'entity' => "PurchaseRequest",
+                        'entity_id' => $purchaseOrder->id,
+                    ]);                    
                     
                 } else {
                     // Update all items status to Rejected
@@ -437,8 +477,22 @@ class PurchaseRequestController extends Controller
                         'notes' => $request->notes,
                     ]);
 
-                    
+                    $date = date('Ymd');
+                    $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                    $user_ip = $_SERVER['REMOTE_ADDR'];
+                    Logs::create([
+                        'log_id' =>  $log_id,
+                        'user_id' => $user->user_id,
+                        'role' => $user->role,
+                        'action' => "Rejected a purchase order",
+                        'description' => $purchaseOrder->po_id,
+                        'ip_address' => $user_ip,
+                        'entity' => "PurchaseRequest",
+                        'entity_id' => $purchaseOrder->id,
+                    ]);
+
                 }
+
 
                 DB::commit();
 

@@ -15,7 +15,8 @@ class Logs extends Model
 
     protected $fillable = [
         'log_id',     
-        'user_id',     
+        'user_id',    
+        'role', 
         'action',      
         'description',
         'ip_address',
@@ -27,5 +28,9 @@ class Logs extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+    public function staff()
+    {
+        return $this->belongsTo(Staffs::class, 'user_id', 'user_id');
     }
 }

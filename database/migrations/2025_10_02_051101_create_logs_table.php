@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('log_id');
             $table->string('user_id');
+            $table->string('role');
             $table->string('action');
             $table->text('description')->nullable();
             $table->ipAddress('ip_address')->nullable();

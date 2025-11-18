@@ -93,21 +93,27 @@
 
                     <div class="modal-option-groups">
                         <p>Contact</p>
-                        <input type="text" placeholder="Mobile no." maxlength="11" name="mobile_no" required class="@error('mobile_no') is-invalid @enderror" value="{{ old('mobile_no') }}">
-                        @error('mobile_no')
-                            <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
-                        @enderror
-                        <input type="text" placeholder="Telephone no." maxlength="11" name="telephone_no" class="@error('telephone_no') is-invalid @enderror" value="{{ old('telephone_no') }}">
-                        @error('telephone_no')
-                            <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
-                        @enderror
+      
+
+                        <div class="form-group">
+                            <input type="text" placeholder="Mobile no." maxlength="11" name="mobile_no" required class="@error('mobile_no') is-invalid @enderror" value="{{ old('mobile_no') }}">
+                            @error('mobile_no')
+                                <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Telephone no." maxlength="11" name="telephone_no" class="@error('telephone_no') is-invalid @enderror" value="{{ old('telephone_no') }}">
+                            @error('telephone_no')
+                                <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                     </div>
 
                     <div class="modal-option-groups">
                         <p>Account security</p>
                         <div class="form-group">
-                            <input type="text" name="email_address" maxlength="50" placeholder="Email address" required class="@error('email_address') is-invalid @enderror" value="{{ old('email_address') }}">
+                            <input type="text" name="email_address" maxlength="50" placeholder="Email address" required class="@error('email_address') is-invalid @enderror" >
                             @error('email_address')
                                 <div class="invalid-feedback" style="color: #dc3545; font-size: 12px; margin-top: 5px;">{{ $message }}</div>
                             @enderror

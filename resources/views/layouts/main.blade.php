@@ -170,18 +170,14 @@
                                 <p>Staffs</p>
                                 <div class="nav-indicator"></div>
                             </a>
-                            <a class="nav-item{{ $currentRoute == 'staffs.list' ? ' active' : '' }}" href="{{ route('staffs.list') }}">
-                                <span class="material-symbols-outlined">diamond_shine</span>
-                                <p>Staffs</p>
-                                <div class="nav-indicator"></div>
-                            </a>
+                 
                         </div>
 
                         <!-- Group 4: Reports -->
                         <div class="nav-group">
                             <div class="nav-group-title">Reports & logs</div>
-                
-                            <a class="nav-item{{ $currentRoute == 'logs.list' ? ' active' : '' }}" href="{{ route('logs.list') }}" >
+
+                            <a class="nav-item{{ $currentRoute == 'lg.list' ? ' active' : '' }}" href="{{ route('lg.list') }}" >
                                 <span class="material-symbols-outlined">history</span>
 
                                 <p>Logs</p>
@@ -283,6 +279,18 @@
                                     </p>
                                 </div>
                             @endif
+
+                        </div>
+                        <div class="nav-group">
+                            <div class="nav-group-title">Reports & Logs</div>
+
+                                {{-- Logs --}}
+                                <a class="nav-item{{ $currentRoute == 'lg.list' ? ' active' : '' }}" href="{{ route('lg.list') }}">
+                                    <span class="material-symbols-outlined">diamond_shine</span>
+                                    <p>Logs</p>
+                                    <div class="nav-indicator"></div>
+                                </a>
+                     
 
                         </div>
                     </div>

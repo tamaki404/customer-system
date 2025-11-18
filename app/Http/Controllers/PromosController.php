@@ -7,11 +7,23 @@ use App\Models\Customers;
 use App\Models\Promos;
 use App\Models\Products;
 use Illuminate\Support\Str;
+use App\Models\Logs;
 
 use Illuminate\Support\Facades\Auth;
 
 class PromosController extends Controller
 {
+
+    public static function randomBase36String(int $length): string
+    {
+        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $str = '';
+        for ($i = 0; $i < $length; $i++) {
+            $str .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+        return $str;
+    } 
+
     public function list(Request $request){
         $user = Auth::user();
         if ($user->role === 'Customer') {
@@ -40,6 +52,8 @@ class PromosController extends Controller
 
     public function create(Request $request)
     {
+        $user = Auth::user();
+
         $request->validate([
             'name' => 'required|string|max:100',
             'description' => 'nullable|string|max:255',
@@ -69,16 +83,21 @@ class PromosController extends Controller
         ]);
 
         $product = $request->product;
+
         $date = date('Ymd');
-        function randomBase36String(int $length): string {
-            $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $str = '';
-            for ($i = 0; $i < $length; $i++) {
-                $str .= $chars[random_int(0, strlen($chars) - 1)];
-            }
-            return $str;
-        }
-                
+        $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+        $user_ip = $_SERVER['REMOTE_ADDR'];
+        Logs::create([
+            'log_id' =>  $log_id,
+            'user_id' => $user->user_id,
+            'role' => $user->role,
+            'action' => "Created a promo",
+            'description' => $promo->promo_id,
+            'ip_address' => $user_ip,
+            'entity' => "Promo",
+            'entity_id' => $promo->id,
+        ]);
+
         return redirect()->back()->with('success', 'Promo successfully listed!');
     }
     

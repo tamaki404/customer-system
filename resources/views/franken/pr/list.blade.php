@@ -366,6 +366,8 @@
                             <th>Heads and kilos</th>
                             <th>Deliveries</th>
                             <th>Status</th>
+                            <th>Action</th>
+
                         </tr>
                     </thead>
                     <tbody>                                
@@ -567,6 +569,18 @@
                                         {{ $request->status }}
                                     @endif
                                 </td>  
+                                <td>
+                                    <div class="dropdown" style="display:flex; align-items: center; justify-content: center;">
+                                        <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px; ">
+                                            <span class="material-symbols-outlined">
+                                            expand_circle_down
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('pr.request', ['po_id' => $request->po_id]) }}"><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
