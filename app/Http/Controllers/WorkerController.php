@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Customers;
 use App\Models\Staffs;
 use App\Models\User;
+use App\Models\Logs;
+
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -99,8 +101,8 @@ class WorkerController extends Controller
         }
 
         $staff_id = 'STAFF-' . $date . '-' . randomBase36String(5);
-        $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
         $user_id = 'USR-' . $date . '-' . randomBase36String(5);
+        $log_id = 'LOG-' . $date . '-' . randomBase36String(5);
 
         try {
             $imageBlob = null;
@@ -163,6 +165,7 @@ class WorkerController extends Controller
 
             $verifyUrl = url('/email/verify?token=' . $plainToken . '&uid=' . urlencode($user->user_id));
 
+
             try {
                 Mail::send('emails.verify', ['verifyUrl' => $verifyUrl], function($message) use ($user) {
                     $message->to($user->email_address)->subject('Verify your email address');
@@ -173,6 +176,17 @@ class WorkerController extends Controller
 
             DB::commit();
 
+            $user_ip = $_SERVER['REMOTE_ADDR'];
+            Logs::create([
+                'log_id' =>  $log_id,
+                'user_id' => $user->user_id,
+                'role' => $user->role,
+                'action' => "Registered a new staff member",
+                'description' => $staff->staff_id,
+                'ip_address' => $user_ip,
+                'entity' => "Staffs",
+                'entity_id' => $staff->id,
+            ]);
             return redirect()->route('stff.list')
                 ->with('success', 'Staff member has been successfully registered and verification email has been sent.');
 

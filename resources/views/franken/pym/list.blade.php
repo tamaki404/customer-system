@@ -60,7 +60,7 @@
                                         <td>{{ $pay->customer->company_name }}</td>
                                         <td>
                                             @if ($pay->total_amount !== "0.00")
-                                                {{ $pay->total_amount }}
+                                                ₱{{ number_format($pay->total_amount, 2) }}
                                             @else
                                                 --
                                             @endif
@@ -71,6 +71,7 @@
                                    
                             </tbody>
                     </table>
+                    {{ $payments->links() }}
 
                 </div>
             @endif

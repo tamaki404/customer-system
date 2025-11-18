@@ -10,9 +10,21 @@ use Exception;
 use App\Models\PurchaseRequest;
 use App\Models\DeliveryItemRequest;
 use App\Models\DeliveryRequest;
+use App\Models\Logs;
 
 class ReturnsController extends Controller
 {
+
+    public static function randomBase36String(int $length): string
+    {
+        $chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $str = '';
+        for ($i = 0; $i < $length; $i++) {
+            $str .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+        return $str;
+    } 
+
     public function list(Request $request)
     {
         $user = Auth::user();
@@ -146,8 +158,26 @@ class ReturnsController extends Controller
                         'planned_heads' => $plannedHeads,
                         'planned_kilos' => $plannedKilos
                     ]);
+
+
                 }
+
+
             }
+
+                $date = date('Ymd');
+                $log_id = 'LOG-' . $date . '-' . $this->randomBase36String(5);
+                $user_ip = $_SERVER['REMOTE_ADDR'];
+                Logs::create([
+                    'log_id' =>  $log_id,
+                    'user_id' => $user->user_id,
+                    'role' => $user->role,
+                    'action' => "Scheduled a return delivery",
+                    'description' => $deliveryRequest->delivery_id,
+                    'ip_address' => $user_ip,
+                    'entity' => "DeliveryRequest",
+                    'entity_id' => $deliveryRequest->id,
+                ]);
 
             return redirect()->back()->with('success', "Delivery {$delivery_id} scheduled successfully with {$itemsCreated} items.");
 
