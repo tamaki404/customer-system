@@ -40,7 +40,7 @@ class PurchaseRequestController extends Controller
                 $requests = PurchaseRequest::where('user_id', $user->user_id)
                     ->with('deliveryRequests.items.product')
                     ->orderBy('created_at', 'desc')
-                    ->get();
+                    ->paginate(50);
                 $products = ProductSetting::where('customer_id', $customer->customer_id)->get();
                 $counts = PurchaseRequest::
                     selectRaw("status, COUNT(*) as total")
@@ -53,7 +53,7 @@ class PurchaseRequestController extends Controller
             } elseif ($user->role !== 'Customer') {
                 $requests = PurchaseRequest::with('deliveryRequests.items.product')
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->paginate(50);
 
                 $products = collect();
                 $counts = PurchaseRequest::

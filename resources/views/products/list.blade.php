@@ -344,11 +344,9 @@
                             </div>
 
                             <div class="pagination-div">
-                                <p>50 out of 100 <span>2/3</span></p>
-                                <div>
-                                    <button>Previous</button>
-                                    <button>Next</button>
-                                </div>
+                                <p>Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} entries</p>
+                                {{ $products->links() }}
+                                
                             </div>
                         </div>
                     </div>

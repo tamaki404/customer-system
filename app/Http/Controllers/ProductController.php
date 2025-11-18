@@ -27,7 +27,7 @@ class ProductController extends Controller
             $user = Auth::user();
             $customer = Customers::where('user_id', $user->user_id)->first(); 
 
-            $products = Products::where('status', 'Listed')->get(); 
+            $products = Products::where('status', 'Listed')->paginate(15); 
             $setProducts = $customer 
                 ? ProductSetting::where('customer_id', $customer->customer_id)->get() 
                 : collect(); 
