@@ -12,7 +12,7 @@
 
     <div class="modal fade" id="modify-action" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="modal-content" method="POST" action="{{ route('staff.modify') }}" enctype="multipart/form-data">
+        <form class="modal-content" method="POST" action="{{ route('stff.modify') }}" enctype="multipart/form-data">
             <!-- Debug: Route URL -->
             <!-- Route URL: {{ route('staff.modify') }} -->
             @csrf
@@ -182,10 +182,10 @@
                         <div class="company-status" style="margin: 0; display: flex; align-items: start; flex-direction: column;">
                             <p class="company-name">{{  $staff->lastname }}, {{  $staff->firstname }} {{ $staff->middlename }} <span style="font-size: 14px; font-weight: normal;">({{$staff->user->role}})</span></p>
                             <p style="display: flex; flex-direction: column; font-size: 13px; color: #666; margin:0">
+                                <span>{{ $staff->status }}</span>
                                 <span>{{ $staff->user->email_address }}</span>
                                 <span>ID: <strong>#{{ $staff->user->user_id }}</strong></span>
                                 <span>Joined on: <strong>{{ $staff->user->updated_at->format('F j, y g:i a') }}</strong></span>
-
                             </p>
                         </div>
                     </div>
@@ -236,7 +236,40 @@
 
 
                 </div>
+                <div class="authorized-staffs" style="margin-top: 10px">
+                    <p style="margin-bottom: 5px">Logs</p>
+                    <div class="rep-sign-tables" style="width: 100%; display: flex; flex-direction: row; gap: 5px;">
+                        <div class="authorized-rep">
+                            <table style="width:100%; border-collapse:collapse; border: 1px solid #f7f7fa;">
+                                <thead style="background-color: #f9f9f9;">
+                                    <tr style="background:#f7f7fa; text-align: center; height: 30px">
+                                        <th>#</th>
+                                        <th>Timestamp</th>
+                                        <th>Model</th>
+                                        <th>Row</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if ($customers->isEmpty())
+                                        <tr>
+                                            <td colspan="6" style="text-align: center; padding: 10px; color: #666;">No logs stored.</td>
+                                        </tr>
+                                    @else
+                                      <tr>
 
+                                      </tr>
+                                    @endif
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+
+                </div>
             </div>
 
          

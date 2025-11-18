@@ -35,7 +35,7 @@
 
     <div class="modal fade" id="add-staff-modal" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form class="modal-content"  method="POST" action="{{ route('registration.staff.register') }}" enctype="multipart/form-data">
+            <form class="modal-content"  method="POST" action="{{ route('stff.register') }}" enctype="multipart/form-data">
                 @csrf
             
                 <div class="modal-header">
