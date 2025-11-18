@@ -284,12 +284,12 @@ class DeliveryRequestController extends Controller
                 ->whereNotIn('pr.status', ['Rejected', 'Cancelled', 'Pending'])
                 ->orderBy('delivery_requests.delivery_date', 'asc')
                 ->select('delivery_requests.*') 
-                ->get();
+                ->paginate(25);
 
         }elseif($user->role !== "Customer"){
             $delivery = DeliveryRequest:: where('status', 'Scheduled')
                 ->orderBy('delivery_date', 'asc')
-                ->get();
+                ->paginate(25);
         }        
         return view('franken.dlv.list', compact(
             'delivery',

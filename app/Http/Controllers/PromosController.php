@@ -35,7 +35,7 @@ class PromosController extends Controller
                 ->where('end_date', '>=', now())
                 ->where('quantity', '>', value: 0) 
                 ->orderBy('quantity', 'asc')
-                ->get();      
+                ->paginate(25);      
         }
         elseif ($user->role !== 'Customer') {
             $promos = Promos::with('product')
@@ -43,7 +43,7 @@ class PromosController extends Controller
                 ->orderBy('start_date', 'asc')
                 ->orderBy('end_date', 'asc')
                 ->where('status', 'Active', ) 
-                ->get();            
+                ->paginate(25);
             $products = Products::orderBy('name', 'desc')->get();
 
         }

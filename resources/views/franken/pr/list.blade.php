@@ -586,7 +586,6 @@
                     </tbody>
                 </table>
             </div>
-            {{ $requests->links() }}
 
         @elseif (auth()->user()->role === 'Customer')
             <div class="content-body" style="background: #fff">
@@ -818,9 +817,11 @@
                 </table>
 
             </div>
-            {{ $requests->links() }}
         @endif
-
+            <div class="pagination-div" style="margin-top: 15px;">
+                <p>Showing {{ $requests->firstItem() }} to {{ $requests->lastItem() }} of {{ $requests->total() }} entries</p>
+                {{ $requests->links() }}
+            </div>
     </div>
 
 

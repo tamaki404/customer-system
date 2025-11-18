@@ -208,6 +208,11 @@
                         </tbody>
                     </table>
                 </div>
+
+            <div class="pagination-div" style="margin-top: 15px;">
+                <p>Showing {{ $promos->firstItem() }} to {{ $promos->lastItem() }} of {{ $promos->total() }} entries</p>
+                {{ $promos->links() }}
+            </div>
         </div>
 
 

@@ -54,7 +54,7 @@
                             <tbody>    
                                 @foreach ($payments as  $pay)
                                     <tr onclick="window.location.href='{{ route('pym.payment', ['payment_id' => $pay->payment_id]) }}'">
-                                        <td>{{ $pay->id }}</td>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $pay->updated_at->format('F j, y ') }}</td>
                                         <td>{{ $pay->po_id }}</td>
                                         <td>{{ $pay->customer->company_name }}</td>
@@ -72,9 +72,13 @@
                     </table>
 
                 </div>
-                {{ $payments->links() }}
 
             @endif
+            <div class="pagination-div" style="margin-top: 15px;">
+                <p>Showing {{ $payments->firstItem() }} to {{ $payments->lastItem() }} of {{ $payments->total() }} entries</p>
+                {{ $payments->links() }}
+
+            </div>
         </div>
 @endsection
 

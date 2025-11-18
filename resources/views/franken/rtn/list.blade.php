@@ -241,7 +241,11 @@
                     </tbody>
                 </table>
             </div>
-          
+
+            <div class="pagination-div" style="margin-top: 15px;">
+                <p>Showing {{ $varianceByDelivery->firstItem() }} to {{ $varianceByDelivery->lastItem() }} of {{ $varianceByDelivery->total() }} entries</p>
+                {{ $varianceByDelivery->links() }}
+            </div>
         </div>
 @endsection
 

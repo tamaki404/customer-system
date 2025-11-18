@@ -15,11 +15,11 @@ class LogsController extends Controller
             return redirect()->route('login');
         }
         if ($user->role === 'Customer') {
-            $logs = Logs::where('user_id', $user->user_id)->orderBy('created_at', 'desc')->get();
+            $logs = Logs::where('user_id', $user->user_id)->orderBy('created_at', 'desc')->paginate(50);
 
         }
         elseif ($user->role === 'Admin' || $user->role === 'Staff') {
-            $logs = Logs::where('role', "Admin")->orWhere('role', "Staff")->orderBy('created_at', 'desc')->get();
+            $logs = Logs::where('role', "Admin")->orWhere('role', "Staff")->orderBy('created_at', 'desc')->paginate(50);
 
         }
         return view('franken.lg.list', [

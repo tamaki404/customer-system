@@ -375,8 +375,10 @@
                         </table>
                     </div>
                 @endif
-
-
+                    <div class="pagination-div" style="margin-top: 15px;">
+                        <p>Showing {{ $delivery->firstItem() }} to {{ $delivery->lastItem() }} of {{ $delivery->total() }} entries</p>
+                        {{ $delivery->links() }}
+                    </div>
 
         </div>
 

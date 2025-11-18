@@ -24,7 +24,7 @@ class WorkerController extends Controller
     public function list(Request $request)
     {
         $user = Auth::user();
-        $staffs = Staffs::orderBy('created_at', 'desc')->get();
+        $staffs = Staffs::orderBy('created_at', 'desc')->paginate(25);
         foreach ($staffs as $staff) {
             $staff->contactNo = Customers::where('staff_id', $staff->staff_id)->count();
         }

@@ -99,6 +99,10 @@
                 </tbody>
             </table>
         </div>
+        <div class="pagination-div" style="margin-top: 15px;">
+            <p>Showing {{ $logs->firstItem() }} to {{ $logs->lastItem() }} of {{ $logs->total() }} entries</p>
+            {{ $logs->links() }}
+       </div>
     </div>
 
 

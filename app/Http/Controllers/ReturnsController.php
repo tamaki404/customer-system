@@ -37,7 +37,7 @@ class ReturnsController extends Controller
             ->whereRaw('planned_heads != received_heads OR planned_kilos != received_kilos')
             ->groupBy('delivery_id')
             ->orderBy('delivery_id', 'desc')
-            ->get();
+            ->paginate(25);
 
         
 

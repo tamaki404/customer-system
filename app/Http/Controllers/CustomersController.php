@@ -46,7 +46,7 @@ class CustomersController extends Controller
                     ->with('user')
                     ->whereRelation('user', 'role', 'customer')
                     ->orderBy('created_at', 'desc')
-                    ->get();
+                    ->paginate(50);
 
             return view('customers.list', [
                 'user' => $user,

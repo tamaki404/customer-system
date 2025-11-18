@@ -236,8 +236,13 @@
                     @endforeach
                 </tbody>
             </table>
+
         </div>
-    </div>
+            <div class="pagination-div" style="margin-top: 15px;">
+                <p>Showing {{ $staffs->firstItem() }} to {{ $staffs->lastItem() }} of {{ $staffs->total() }} entries</p>
+                {{ $staffs->links() }}
+            </div>
+        </div>
 
 
 @endsection
