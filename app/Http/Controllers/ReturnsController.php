@@ -29,25 +29,25 @@ class ReturnsController extends Controller
     {
         $user = Auth::user();
 
-$varianceByDelivery = DeliveryItemRequest::select(
-        'delivery_item_requests.delivery_id',
-        DB::raw('SUM(planned_heads - received_heads) AS heads_variance'),
-        DB::raw('SUM(planned_kilos - received_kilos) AS kilos_variance')
-    )
-    ->join('purchase_requests', 'purchase_requests.po_id', '=', 'delivery_item_requests.po_id')
-    ->where('purchase_requests.status', 'Completed')
-    ->whereRaw('planned_heads != received_heads OR planned_kilos != received_kilos')
-    ->groupBy('delivery_item_requests.delivery_id')
-    ->with(['varianceItems.product'])
-    ->orderBy('delivery_item_requests.delivery_id', 'desc')
-    ->paginate(25);
-
+        $varianceByDelivery = DeliveryItemRequest::select(
+                'delivery_item_requests.delivery_id',
+                DB::raw('SUM(planned_heads - received_heads) AS heads_variance'),
+                DB::raw('SUM(planned_kilos - received_kilos) AS kilos_variance')
+            )
+            ->join('purchase_requests', 'purchase_requests.po_id', '=', 'delivery_item_requests.po_id')
+            ->where('purchase_requests.status', 'Completed')
+            ->whereRaw('planned_heads != received_heads OR planned_kilos != received_kilos')
+            ->groupBy('delivery_item_requests.delivery_id')
+            ->with(['varianceItems.product'])
+            ->orderBy('delivery_item_requests.updated_at', 'desc')
+            ->paginate(25);
 
         return view('franken.rtn.list', compact(
             'user',
             'varianceByDelivery',
         ));
     }
+
     private function generatePoId(): string
     {
         try {
