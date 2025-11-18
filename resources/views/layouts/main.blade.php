@@ -150,8 +150,8 @@
                                     <div class="nav-indicator"></div>
                                 </a>
 
-                                <a class="nav-item{{ $currentRoute == 'products.list' ? ' active' : '' }}" href="{{ route('products.list') }}">
-                                    <span class="material-symbols-outlined">store</span>
+                                <a class="nav-item{{ $currentRoute == 'prd.list' ? ' active' : '' }}" href="{{ route('prd.list') }}">
+                                    <span class="material-symbols-outlined">diamond_shine</span>
                                     <p>Products</p>
                                     <div class="nav-indicator"></div>
                                 </a>

@@ -51,51 +51,67 @@
             </div>
 
            
-                @if (auth()->user()->role === 'Customer')
-
-                    <div class="content-body" style="background: #fff">
-                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
-                            <thead style="background-color: #fff;">
-                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
-                                    <th>#</th>
-                                    <th>Product ID</th>
-                                    <th>Name</th>
-                                    <th>Category</th>
-                                    <th>Measurement</th>
-                                    <th>Price</th>
+            <div class="content-body" style="background: #fff; padding: 0;">
+                <table style="width:100%; border-collapse:collapse;  padding: 0;">
+                    <thead style="background-color: #fff;padding: 0;">
+                        <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc; position: sticky; top: 0; z-index: 1;">
+                            <th>#</th>
+                            <th>Product ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Measurement</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Auth::user()->role !== 'Customer')
+                            @foreach ($products as $prod)
+                                <tr>
+                                    <td>{{$loop->iteration}}</td>
+                                    <td>#{{ $prod->product_id }}</td>
+                                    <td>{{ $prod->name }}</td>
+                                    <td>{{ $prod->category }}</td>
+                                    <td>{{ $prod->measurement_type }}</td>
+                                    <td>₱{{ $prod->base_price }}</td>
+                                    
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($setProducts as $prod)
-                                    <tr>
-                                        <td>{{$loop->iteration}}</td>
-                                        <td>#{{ $prod->product->product_id }}</td>
-                                        <td>{{ $prod->product->name }}</td>
-                                        <td>{{ $prod->product->category }}</td>
-                                        <td>{{ $prod->product->measurement_type }}</td>
-                                        <td style="display: flex; flex-direction: column;">
+                            @endforeach 
 
-                                            @if ($prod->promo && $prod->promo->value_type === "Fixed")
-                                                <span style="color: #f8912a">₱{{$prod->promo->value}} </span>
-                                            @elseif ($prod->promo && $prod->promo->value_type === "Percentage")
-                                                @php
-                                                    $decimal = $prod->promo->value/100;
-                                                    $percentValue = $decimal * $prod->nego_price;
-                                                @endphp
-                                                <span style="color: #f8912a">₱{{$percentValue}} </span>
-                                                <span style="text-decoration: line-through">₱{{ $prod->nego_price }}</span>
-                                            @else
-                                                ₱{{ $prod->nego_price }}
-                                            @endif
-                                            
-                                        </td>
-                                    </tr>
-                                @endforeach 
-                            </tbody>
-                        </table>
-                    </div>
+                        @elseif (Auth::user()->role === 'Customer')
+                            @foreach ($setProducts as $prod)
+                                <tr>
+                                    <td>{{$loop->iteration}}</td>
+                                    <td>#{{ $prod->product->product_id }}</td>
+                                    <td>{{ $prod->product->name }}</td>
+                                    <td>{{ $prod->product->category }}</td>
+                                    <td>{{ $prod->product->measurement_type }}</td>
+                                    <td style="display: flex; flex-direction: column;">
+                                        @if ($prod->promo && $prod->promo->value_type === "Fixed")
+                                            <span style="color: #f8912a">₱{{$prod->promo->value}} </span>
+                                        @elseif ($prod->promo && $prod->promo->value_type === "Percentage")
+                                            @php
+                                                $decimal = $prod->promo->value/100;
+                                                $percentValue = $decimal * $prod->nego_price;
+                                            @endphp
+                                            <span style="color: #f8912a">₱{{$percentValue}} </span>
+                                            <span style="text-decoration: line-through">₱{{ $prod->nego_price }}</span>
+                                        @else
+                                            ₱{{ $prod->nego_price }}
+                                        @endif
+                                        
+                                    </td>
+                                </tr>
+                            @endforeach 
+                            
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-div" style="margin-top: 15px;">
+                <p>Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} entries</p>
+                {{ $products->links() }}
+            </div>
 
-                @endif
 
         </div>
 

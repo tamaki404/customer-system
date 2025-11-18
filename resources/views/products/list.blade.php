@@ -248,7 +248,7 @@
                                                 <span class="material-symbols-outlined" style="font-size: 16px">
                                                     price_change
                                                 </span>
-                                                Active Promos & Discounts
+                                                Active Promos
                                             </th>
                                             <th>{{ $activePromosCount }}</th>
                                         </tr>

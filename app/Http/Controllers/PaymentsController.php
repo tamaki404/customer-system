@@ -119,9 +119,9 @@ class PaymentsController extends Controller
 
         if ($user->role === "Customer") {        
             $customer = Customers::where('user_id',  $user->user_id)->firstOrFail();
-            $payments = Payments::where('customer_id', $customer->customer_id)->paginate(10);
+            $payments = Payments::where('customer_id', $customer->customer_id)->orderBy('updated_at', 'desc')->paginate(25);
         } else {
-            $payments = Payments::orderBy('updated_at', 'desc')->paginate(1);
+            $payments = Payments::orderBy('updated_at', 'desc')->paginate(25);
         }
 
         return view('franken.pym.list', compact(
@@ -186,6 +186,7 @@ class PaymentsController extends Controller
                 'action_by'    => Auth::user()->user_id,
                 'action_at'    => now(),
                 'total_amount' => $request->total_amount,
+                'updated_at'    => now(),
             ]);
 
             // Recalculate remaining balance for the delivery

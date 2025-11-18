@@ -227,10 +227,10 @@
                         
                     </div>
                 @elseif($user->role !== "Customer")
-                    <div class="content-body" style="background: #fff">
-                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff;">
+                    <div class="content-body" style="background: #fff;">
+                        <table style="width:100%; border-collapse:collapse; border: 1px solid #fff; overflow: hidden;" >
                             <thead style="background-color: #fff;">
-                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc;">
+                                <tr style="background:#fff; text-align: center; height: 30px; border-bottom: 1px solid #ccc; ">
                                     <th>#</th>
                                     <th>Updated on</th>
                                     <th>Customer</th>

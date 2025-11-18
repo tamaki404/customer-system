@@ -14,7 +14,7 @@ class CabraController extends Controller
     {
         $user = Auth::user();
         $customer = Customers::where('user_id', $user->user_id)->first(); 
-        $products = Products::where('status', 'Listed')->get(); 
+        $products = Products::orderBy('name', 'asc')->paginate(25); 
 
         $setProducts = $customer 
             ? ProductSetting::where('customer_id', $customer->customer_id)->get() 
