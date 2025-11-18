@@ -119,6 +119,7 @@ class ReturnsController extends Controller
                 'delivery_date' => $validated['scheduled_date'],
                 'status' => 'Scheduled',
                 'action_by' => $user->user_id,
+                'label' => 'Return',
                 'action_at' => now(),
             ]);
 
@@ -127,6 +128,10 @@ class ReturnsController extends Controller
                 'original_delivery_id' => $validated['original_delivery_id'],
                 'scheduled_date' => $validated['scheduled_date']
             ]);
+
+            $originalDelivery = DeliveryRequest::where('delivery_id', $validated['original_delivery_id'])->first();
+            $originalDelivery->return_status = 'Resolved';
+            $originalDelivery->save();
 
             // Create delivery items for selected items
             $itemsCreated = 0;

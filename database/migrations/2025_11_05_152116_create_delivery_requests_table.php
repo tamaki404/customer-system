@@ -19,6 +19,8 @@ return new class extends Migration
             $table->decimal('sum_balance', 15, 2);
             $table->enum('status', ['Scheduled', 'Delivered', 'Cancelled', 'Pending', 'Rejected'])->default('Pending');
             $table->enum('return_status', ['Unresolved', 'Resolved', 'Resolved with balance'])->default('Unresolved');
+            $table->enum('label', ['Return', 'Delivery'])->default('Delivery');
+
             $table->string('action_by', 255)->required();
             $table->string('action_at', 255)->required();
             $table->string('feedback')->nullable();

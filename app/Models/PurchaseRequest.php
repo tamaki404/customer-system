@@ -42,6 +42,12 @@ public function totalPlanned()
     $planned_kilos = 0;
 
     foreach ($this->deliveryRequests as $dr) {
+
+        // Skip returns for planned quantity
+        if ($dr->label === 'Return') {
+            continue;
+        }
+
         foreach ($dr->Delitems as $item) {
             $product = $item->product;
 
@@ -67,6 +73,12 @@ public function totalDelivered()
     $del_kilos = 0;
 
     foreach ($this->deliveryRequests as $dr) {
+
+        // Only count items if delivery status is Delivered
+        if ($dr->status !== 'Delivered') {
+            continue;
+        }
+
         foreach ($dr->Delitems as $item) {
             $product = $item->product;
 
@@ -87,29 +99,51 @@ public function totalDelivered()
 }
 
 
+
 public function hasVariance()
 {
+    $total_planned_heads = 0;
+    $total_planned_kilos = 0;
+    $total_received_heads = 0;
+    $total_received_kilos = 0;
+
     foreach ($this->deliveryRequests as $deliveryRequest) {
 
-        foreach ($deliveryRequest->Delitems as $item) {
-            $product = $item->product;
+        // Only count received quantities for delivered items
+        if ($deliveryRequest->status === 'Delivered') {
+            foreach ($deliveryRequest->Delitems as $item) {
+                $product = $item->product;
 
-            if ($product->measurement_type === 'Heads' || $product->measurement_type === 'Heads&Kilos') {
-                if ($item->planned_heads != $item->received_heads) {
-                    return true;
+                if ($product->measurement_type === 'Heads' || $product->measurement_type === 'Heads&Kilos') {
+                    $total_received_heads += $item->received_heads;
+                }
+
+                if ($product->measurement_type === 'Kilos' || $product->measurement_type === 'Heads&Kilos') {
+                    $total_received_kilos += $item->received_kilos;
                 }
             }
+        }
 
-            if ($product->measurement_type === 'Kilos' || $product->measurement_type === 'Heads&Kilos') {
-                if ($item->planned_kilos != $item->received_kilos) {
-                    return true;
+        // Count planned quantities, but skip deliveries labeled 'Return'
+        if ($deliveryRequest->label !== 'Return') {
+            foreach ($deliveryRequest->Delitems as $item) {
+                $product = $item->product;
+
+                if ($product->measurement_type === 'Heads' || $product->measurement_type === 'Heads&Kilos') {
+                    $total_planned_heads += $item->planned_heads;
+                }
+
+                if ($product->measurement_type === 'Kilos' || $product->measurement_type === 'Heads&Kilos') {
+                    $total_planned_kilos += $item->planned_kilos;
                 }
             }
         }
     }
 
-    return false;
+    // Check if any variance exists
+    return ($total_planned_heads != $total_received_heads) || ($total_planned_kilos != $total_received_kilos);
 }
+
 
 
     /**

@@ -202,7 +202,7 @@
                                 <td>{{ $d->delivery->customer->company_name }}</td>
                                 <td>#{{ $d->delivery_id }}</td>
                                 <td>{{ $d->heads_variance }} - {{ number_format($d->kilos_variance, 2) }}kg</td>
-                                <td>Unresolved</td>
+                                <td>{{ $d->delivery->return_status }}</td>
                                 <td>
                                     <div class="dropdown" style="display:flex; align-items: center; justify-content: center;">
                                         <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 13px;">

@@ -295,6 +295,7 @@ class PurchaseRequestController extends Controller
                         'status' => 'Scheduled',
                         'action_by' => $user->user_id,
                         'action_at' => now(),
+                        'label' => 'Delivery'
                     ]);
                     
                     Log::info('Delivery request created', [
