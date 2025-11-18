@@ -54,7 +54,7 @@
                             <tbody>    
                                 @foreach ($payments as  $pay)
                                     <tr onclick="window.location.href='{{ route('pym.payment', ['payment_id' => $pay->payment_id]) }}'">
-                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $pay->id }}</td>
                                         <td>{{ $pay->updated_at->format('F j, y ') }}</td>
                                         <td>{{ $pay->po_id }}</td>
                                         <td>{{ $pay->customer->company_name }}</td>
@@ -68,12 +68,12 @@
                                         <td>{{ $pay->status }}</td>
                                     </tr>
                                 @endforeach
-                                   
                             </tbody>
                     </table>
-                    {{ $payments->links() }}
 
                 </div>
+                {{ $payments->links() }}
+
             @endif
         </div>
 @endsection
