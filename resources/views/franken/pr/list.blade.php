@@ -357,7 +357,7 @@
                             <div class="modal fade" id="scheduling-modal-{{ $request->po_id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
-                                <form method="POST" action="{{ route('schd.create') }}">
+                                <form method="POST" action="{{ route('rtn.schedule') }}">
                                     @csrf
                                     <input type="hidden" name="po_id" value="{{ $request->po_id }}">
 
@@ -376,35 +376,50 @@
 
                                     <!-- Products from previous deliveries -->
                                     <div class="list-group">
+                       
                                         @php
                                             $deliveryItems = \App\Models\DeliveryItemRequest::where('po_id', $request->po_id)
-                                                ->with('product')
-                                                ->get()
-                                                ->groupBy('product_id');
+                                                                ->with('set') // <-- load the ProductSetting
+                                                                ->get()
+                                                                ->groupBy('product_id');
                                         @endphp
 
                                         @foreach($deliveryItems as $product_id => $items)
-                                        @php
-                                            $product = $items->first()->product;
-                                        @endphp
+                                            @php
+                                                $productSetting = $items->first()->set; // ProductSetting instance
+                                                if(!$productSetting) continue; // skip if no related product
+                                            @endphp
 
-                                        <a href="#" class="list-group-item list-group-item-action product-item" data-product-id="{{ $product_id }}">
-                                            {{ $product->name ?? 'No Product' }}
-                                        </a>
+                                            <a href="#" class="list-group-item list-group-item-action product-item" data-product-id="{{ $product_id }}">
+                                                {{ $productSetting->product->name ?? 'No Product Name' }}
+                                            </a>
 
-                                        <!-- Hidden input div -->
-                                        <div class="mt-2 ms-3 d-none" id="input-{{ $product_id }}">
-                                            @if(in_array($product->measurement_type, ['Heads', 'Heads & Kilos']))
-                                            <span>Planned Heads:</span>
-                                            <input type="number" class="form-control mb-2" name="items[{{ $product_id }}][planned_heads]" min="0" placeholder="Enter heads">
-                                            @endif
-                                            @if(in_array($product->measurement_type, ['Kilos', 'Heads & Kilos']))
-                                            <span>Planned Kilos:</span>
-                                            <input type="number" class="form-control" name="items[{{ $product_id }}][planned_kilos]" min="0" placeholder="Enter kilos">
-                                            @endif
-                                        </div>
+                                            <div class="mt-2 ms-3 d-none" id="input-{{ $product_id }}">
+
+                                                {{-- Hidden set_id --}}
+                                                <input type="hidden"
+                                                    name="items[{{ $product_id }}][set_id]"
+                                                    value="{{ $productSetting->set_id }}">
+
+                                                @if(in_array($productSetting->product->measurement_type, ['Heads', 'Heads & Kilos']))
+                                                    <label>Planned Heads:</label>
+                                                    <input type="number" class="form-control mb-2"
+                                                        name="items[{{ $product_id }}][planned_heads]"
+                                                        min="0" placeholder="Enter heads">
+                                                @endif
+
+                                                @if(in_array($productSetting->product->measurement_type, ['Kilos', 'Heads & Kilos']))
+                                                    <label>Planned Kilos:</label>
+                                                    <input type="number" class="form-control"
+                                                        name="items[{{ $product_id }}][planned_kilos]"
+                                                        min="0" placeholder="Enter kilos">
+                                                @endif
+                                            </div>
 
                                         @endforeach
+
+
+                                    
                                     </div>
 
                                     </div>
@@ -882,17 +897,19 @@
 @endsection
 
 @push('scripts')
+    <script src="{{ asset('js\pr\list.js') }}"></script>
+
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.product-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.dataset.productId;
-            const inputDiv = document.getElementById('input-' + productId);
-            inputDiv.classList.toggle('d-none');
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.product-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productId = this.dataset.productId;
+                const inputDiv = document.getElementById('input-' + productId);
+                inputDiv.classList.toggle('d-none');
+            });
         });
     });
-});
 </script>
 
 

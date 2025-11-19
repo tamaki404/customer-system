@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Customers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -24,6 +25,93 @@ class ReturnsController extends Controller
         }
         return $str;
     } 
+    public function schedule(Request $request)
+    {
+        // Debug: incoming request
+        \Log::info('Schedule Request Received:', $request->all());
+
+        $request->validate([
+            'po_id' => 'required|exists:purchase_requests,po_id',
+            'delivery_date' => 'required|date',
+            'items' => 'required|array',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $user = Auth::user();
+            $date = date('Ymd');
+
+            // Fetch PurchaseRequest
+            $po = PurchaseRequest::where('po_id', $request->po_id)->firstOrFail();
+            $customer = Customers::where('user_id', $po->user_id)->first();
+
+            // Generate Delivery ID
+            $deliveryId = 'DLV-' . $date . '-' . $this->randomBase36String(5);
+
+            // Create DeliveryRequest
+            $delivery = DeliveryRequest::create([
+                'po_id'         => $po->po_id,
+                'delivery_id'   => $deliveryId,
+                'customer_id'   => $customer->customer_id,
+                'delivery_date' => $request->delivery_date,
+                'label'         => 'Return',
+                'status'        => 'Scheduled',
+                'action_by'     => $user->user_id,
+                'action_at'     => now(),
+            ]);
+
+            \Log::info('DeliveryRequest Created:', $delivery->toArray());
+
+            // Loop through each submitted product
+            foreach ($request->items as $product_id => $data) {
+
+                $itemId = 'ITEM-' . $date . '-' . $this->randomBase36String(5);
+
+                \Log::info('Processing Product Item:', [
+                    'product_id' => $product_id,
+                    'item_id'    => $itemId,
+                    'data'       => $data
+                ]);
+
+                // Create DeliveryItemRequest
+                DeliveryItemRequest::create([
+                    'delivery_id'       => $deliveryId,
+                    'delivery_item_id'  => $itemId,
+                    'po_id'             => $po->po_id,
+                    'customer_id'       => $customer->customer_id,
+                    'product_id'        => $product_id,
+                    'set_id'            => $data['set_id'],
+                    'planned_heads'     => $data['planned_heads'] ?? 0,
+                    'planned_kilos'     => $data['planned_kilos'] ?? 0,
+                    'balance'           => '0'
+                ]);
+            }
+
+            DB::commit();
+
+            \Log::info('Schedule Completed Successfully:', [
+                'delivery_id' => $deliveryId,
+                'po_id'       => $po->po_id
+            ]);
+
+            return redirect()->back()->with('success', 'Delivery scheduled successfully!');
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            \Log::error('Schedule Error:', [
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->with('error', 'Error scheduling delivery.');
+        }
+    }
+
+
+
 
     public function list(Request $request)
     {

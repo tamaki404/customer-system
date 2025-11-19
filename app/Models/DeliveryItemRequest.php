@@ -59,7 +59,10 @@ public function delivery()
     {
         return $this->hasOne(ProductSetting::class, 'set_id', 'set_id');
     }
-
+    public function set()
+    {
+        return $this->belongsTo(ProductSetting::class, 'set_id', 'set_id');
+    }
 
 public function varianceItems()
 {

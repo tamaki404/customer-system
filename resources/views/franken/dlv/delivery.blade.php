@@ -159,7 +159,7 @@
                                                 <span style="color: #f8912a">₱{{ number_format($discountedPrice, 2) }}</span>
                                                 <span style="text-decoration: line-through">₱{{ number_format($item->productSetting->nego_price, 2) }}</span>
                                             @else
-                                                ₱{{ $item->productSetting->nego_price }}
+                                                ₱{{ $item->productSetting->nego_price ?? NULL }}
                                             @endif
                                         </td>
                                         {{-- VARIANCE --}}

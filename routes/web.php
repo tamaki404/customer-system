@@ -234,6 +234,8 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
         Route::get('/list', [ReturnsController::class, 'list'])
             ->name('list');
         Route::post('/create', [ReturnsController::class, 'create'])->name('create');
+        Route::post('/schedule/create', [ReturnsController::class, 'schedule'])
+            ->name('schedule');
     });
     Route::prefix('staff')->name('stff.')->group(function () {
         Route::get('/list', [WorkerController::class, 'list'])
@@ -248,11 +250,8 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
             ->name('list');
 
     });
-    Route::prefix('schd')->name('schd.')->group(function () {
-        Route::post('/create', [SchedController::class, 'create'])
-            ->name('create');
 
-    });
+
     /*
     |--------------------------------------------------------------------------
     | Dashboard (with Representative Permission Check)
