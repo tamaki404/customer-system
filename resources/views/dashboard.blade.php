@@ -1,7 +1,8 @@
 
 @extends('layouts.main')
 
-<link rel="stylesheet" href="{{ asset('css/view/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/view/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fraken/dashboard.css') }}">
 
 @section('content')
 
@@ -15,7 +16,7 @@
                 <p class="heading">
                     <span class="greet">Goodmorning, </span>
                     @if (Auth()->user()->role !== "Customer")
-                            <span class="company-name">{{ auth()->user()->staff->lastname }} 👋 !</span>
+                            <span class="company-name"> {{ auth()->user()->staff->lastname }} 👋 !</span>
                 
                     @else
                         <span class="company-name">{{ auth()->user()->customer->company_name }} 👋 !</span>
@@ -70,8 +71,74 @@
                         </p>
                         <p>Credits</p>
                     </div>
-                @endif
 
+                @elseif(auth()->user()->role !== 'Customer')
+                    @php
+                        //Purchases
+                        $allPurchases = App\Models\PurchaseRequest::where('status', 'Pending')
+                                            ->whereDate('created_at', '!=', today())
+                                            ->count();
+                        $purchaseToday = App\Models\PurchaseRequest::where('status', 'Pending')
+                                            ->whereDate('created_at', today())
+                                            ->count();
+                        //Receipts
+                        $allReceipts = App\Models\Payments::where('status', 'Pending')
+                                            ->whereDate('created_at', '!=', today())
+                                            ->count();
+                        $receiptsToday = App\Models\Payments::where('status', 'Pending')
+                                            ->whereDate('created_at', today())
+                                            ->count();
+                        //deliveries
+                        $allDeliveries = App\Models\DeliveryRequest::where('status', 'Scheduled')
+                                            ->whereDate('delivery_date', '!=', today())
+                                            ->count();
+                        $deliveryToday = App\Models\DeliveryRequest::where('status', 'Scheduled')
+                                            ->whereDate('delivery_date', today())
+                                            ->count();
+
+                    @endphp
+
+                    <a class="card" href="{{ route('pr.list') }}">
+                        <p class="card-head">
+                            <span>Oct 1 - 30</span>
+                        </p>
+                        <p class="card-content">
+                            <span class="material-symbols-outlined icon">local_mall</span>
+                            <span class="data">{{$allPurchases}}</span>
+                            @if ($purchaseToday)
+                                <span class="addition">+{{$purchaseToday}}</span>
+                            @endif
+                        </p>
+                        <p>Purchase requests</p>
+                    </a>
+                    <a class="card" href="{{ route('pym.list') }}">
+                        <p class="card-head">
+                            <span>Oct 1 - 30</span>
+                        </p>
+                        <p class="card-content">
+                            <span class="material-symbols-outlined icon">receipt_long</span>
+                            <span class="data">{{$allReceipts}}</span>
+                            @if ($receiptsToday)
+                                <span class="addition">+{{$receiptsToday}}</span>
+                            @endif
+                        </p>
+                        <p>Payments</p>
+                    </a>
+                    <a class="card" href="{{ route('dlv.list') }}">
+                        <p class="card-head">
+                            <span>Oct 1 - 30</span>
+                        </p>
+                        <p class="card-content">
+                            <span class="material-symbols-outlined icon">delivery_truck_speed</span>
+                            <span class="data">{{$allDeliveries}}</span>
+                            @if ($deliveryToday)
+                                <span class="addition">+{{$deliveryToday}}</span>
+                            @endif
+                        </p>
+                        <p>Deliveries</p>
+                    </a>
+
+                @endif
 
             </div>
 

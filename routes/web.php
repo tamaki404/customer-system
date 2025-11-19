@@ -32,7 +32,7 @@ use App\Http\Controllers\{
     CabraController,
     ReturnsController,
     WorkerController,
-    SchedController
+    PdfController
 };
 
 /*
@@ -250,7 +250,14 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
             ->name('list');
 
     });
-
+    Route::prefix('pdf')->name('pdf.')->group(function () {
+        Route::get('/receipt/{delivery_id}', [PdfController::class, 'receipt'])
+            ->name('receipt');
+    });
+    Route::prefix('dash')->name('dash.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'dashboard'])
+            ->name('dashboard');
+    });
 
     /*
     |--------------------------------------------------------------------------

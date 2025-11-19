@@ -1,0 +1,17 @@
+.user-dash .card{
+    width: 250px;
+    text-decoration: none;
+    cursor:pointer;
+}
+.user-dash .card-content{
+    font-size: 2em; 
+    display: flex; 
+    align-items:center; 
+    gap: 10px;
+}
+.card-content .addition{
+    font-size: 18px; 
+    color: green;
+}
+.user-dash .card:hover{
+box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;}

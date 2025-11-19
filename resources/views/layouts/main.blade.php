@@ -102,8 +102,8 @@
                         <!-- Group 1: Main Navigation -->
                         <div class="nav-group">
                             <div class="nav-group-title">Main Navigation</div>
-                            <a class="nav-item{{ $currentRoute == 'dashboard.view' ? ' active' : '' }}" href="{{ route('dashboard.view') }}">
-                                <span class="material-symbols-outlined">dashboard</span>
+                            <a class="nav-item{{ $currentRoute == 'dash.dashboard' ? ' active' : '' }}" href="{{ route('dash.dashboard') }}">
+                                <span class="material-symbols-outlined">diamond_shine</span>
                                 <p>Dashboard</p>
                                 <div class="nav-indicator"></div>
                             </a>

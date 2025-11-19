@@ -30,6 +30,7 @@
             {{ session('success') ?? session('error') }}
         </div>
     @endif
+    
 
     
         <div class="content-bg">
@@ -346,22 +347,40 @@
                                                         </span>
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                        
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('dlv.delivery', $del->delivery_id) }}">
-                                                                <span class="material-symbols-outlined">call_made</span>
-                                                                 Go to Delivery
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a class="dropdown-item"
-                                                                data-bs-toggle="modal" data-bs-target="#pdfModal-{{ $del->delivery_id }}">
-                                                                <span class="material-symbols-outlined">download</span>
-                                                                 Delivery receipt
-                                                            </a>
-                                                        </li>
-                                                        @if ($del->status === 'Scheduled')
+                                                        @if($del->status === "Delivered")
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('dlv.delivery', $del->delivery_id) }}">
+                                                                    <span class="material-symbols-outlined">call_made</span>
+                                                                    Go to Delivery
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    data-bs-toggle="modal" data-bs-target="#pdfModal-{{ $del->delivery_id }}">
+                                                                    <span class="material-symbols-outlined">download</span>
+                                                                    Proof of delivery
+                                                                </a>
+                                                            </li>
+                                                        @elseif($del->status === "Scheduled")
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('dlv.delivery', $del->delivery_id) }}">
+                                                                    <span class="material-symbols-outlined">call_made</span>
+                                                                    Go to Delivery
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#pdfModal-{{ $del->delivery_id }}">
+                                                                    <span class="material-symbols-outlined">download</span>
+                                                                    Delivery receipt
+                                                                
+                                                                </a>
+
+
+                                                            </li>
                                                             <li>
                                                                 <a class="dropdown-item"
                                                                     data-bs-toggle="modal" data-bs-target="#process-{{ $del->delivery_id }}">
@@ -369,14 +388,18 @@
                                                                     Process delivery
                                                                 </a>
                                                             </li>
+                                                        @else
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                    href="{{ route('dlv.delivery', $del->delivery_id) }}">
+                                                                    <span class="material-symbols-outlined">call_made</span>
+                                                                    Go to Delivery
+                                                                </a>
+                                                            </li>
                                                         @endif
-
-
-                                                        
                                                     </ul>
                                                 </div>
                                             </td>
-                                            
                                         </tr>
                                     @endforeach
                                 @else
@@ -391,9 +414,27 @@
                         <p>Showing {{ $delivery->firstItem() }} to {{ $delivery->lastItem() }} of {{ $delivery->total() }} entries</p>
                         {{ $delivery->links() }}
                     </div>
+                    
 
         </div>
 
+        <!-- Receipt PDF Modal -->
+        <div class="modal fade" id="pdfModal-{{ $del->delivery_id }}" tabindex="-1">
+            <div class="modal-dialog"> 
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title">Delivery receipt</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-0" style="height: 80vh;">
+                        <iframe 
+                            src="{{ route('pdf.receipt', $del->delivery_id) }}"
+                            style="width: 100%; height: 100%; border: none;">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 @endsection
 
