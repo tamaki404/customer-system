@@ -64,6 +64,7 @@ public function delivery()
         return $this->belongsTo(ProductSetting::class, 'set_id', 'set_id');
     }
 
+
 public function varianceItems()
 {
     return $this->hasMany(DeliveryItemRequest::class, 'delivery_id', 'delivery_id')
