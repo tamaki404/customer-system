@@ -373,123 +373,149 @@
                                         </p>
 
 
-                                    <!-- Delivery Date -->
-{{-- Summarized Variance Section --}}
-<div style="box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px; padding: 10px; border-radius: 5px; display: flex; flex-direction: column;">
-    @php
-        $planned = $request->totalPlanned();
-        $delivered = $request->totalDelivered();
+                                    {{-- Summarized Variance Section --}}
+                                    <div style="box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px; padding: 10px; border-radius: 5px; display: flex; flex-direction: column;">
+                                        @php
+                                            $planned = $request->totalPlanned();
+                                            $delivered = $request->totalDelivered();
 
-        $remaining_heads = $planned['heads'] - $delivered['heads'];
-        $remaining_kilos = $planned['kilos'] - $delivered['kilos'];
-        
-        // Get all delivered items with variances
-        $itemsWithVariance = collect();
-        foreach ($request->deliveryRequests->where('status', 'Delivered') as $dr) {
-            foreach ($dr->Delitems as $item) {
-                $hasVariance = false;
-                
-                if ($item->product->measurement_type === 'Heads' && $item->received_heads != $item->planned_heads) {
-                    $hasVariance = true;
-                } elseif ($item->product->measurement_type === 'Kilos' && $item->received_kilos != $item->planned_kilos) {
-                    $hasVariance = true;
-                } elseif ($item->product->measurement_type === 'Heads&Kilos' && 
-                         ($item->received_heads != $item->planned_heads || $item->received_kilos != $item->planned_kilos)) {
-                    $hasVariance = true;
-                }
-                
-                if ($hasVariance) {
-                    $itemsWithVariance->push($item);
-                }
-            }
-        }
-    @endphp
-    
-    @if ($request->status == 'Completed' && $request->hasVariance())
-        <p style="margin: 0 0 10px 0; font-weight: bold; color: #dc3545;">
-            <span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px;">warning</span>
-            Summarized Variance
-        </p>
-        
-        <div style="background-color: #fff3cd; padding: 8px; border-radius: 4px; border-left: 4px solid #ffc107; margin-bottom: 10px;">
-            <p style="margin: 0; font-size: 13px; color: #856404;">
-                <strong>Total Remaining:</strong> 
-                <span style="color: #dc3545;">{{ $remaining_heads }} H | {{ $remaining_kilos }} K</span>
-            </p>
-        </div>
-        
-        @if($itemsWithVariance->count() > 0)
-            <div style="margin-top: 10px;">
-                <p style="margin: 0 0 8px 0; font-weight: 600; font-size: 13px;">Items with Variance:</p>
-                <ul style="margin: 0; padding-left: 20px; font-size: 13px;">
-                    @foreach ($itemsWithVariance as $item)
-                        <li style="margin-bottom: 8px; line-height: 1.5;">
-                            <strong>{{ $item->product->name }}</strong>
-                            <div style="margin-left: 10px; color: #666;">
-                                Planned: 
-                                @if ($item->product->measurement_type == 'Heads')
-                                    {{ $item->planned_heads }}H
-                                @elseif ($item->product->measurement_type == 'Kilos')
-                                    {{ $item->planned_kilos }}K
-                                @else
-                                    {{ $item->planned_heads }}H, {{ $item->planned_kilos }}K
-                                @endif
-                                
-                                <span style="margin: 0 5px;">→</span>
-                                
-                                Received: 
-                                @if ($item->product->measurement_type == 'Heads')
-                                    <span style="color: {{ $item->planned_heads === $item->received_heads ? 'green' : '#dc3545' }}">
-                                        {{ $item->received_heads }}H
-                                    </span>
-                                    @if($item->received_heads != $item->planned_heads)
-                                        <span style="color: #dc3545; font-weight: 600;">
-                                            ({{ $item->received_heads - $item->planned_heads > 0 ? '+' : '' }}{{ $item->received_heads - $item->planned_heads }}H)
-                                        </span>
-                                    @endif
-                                @elseif ($item->product->measurement_type == 'Kilos')
-                                    <span style="color: {{ $item->planned_kilos === $item->received_kilos ? 'green' : '#dc3545' }}">
-                                        {{ $item->received_kilos }}K
-                                    </span>
-                                    @if($item->received_kilos != $item->planned_kilos)
-                                        <span style="color: #dc3545; font-weight: 600;">
-                                            ({{ $item->received_kilos - $item->planned_kilos > 0 ? '+' : '' }}{{ number_format($item->received_kilos - $item->planned_kilos, 2) }}K)
-                                        </span>
-                                    @endif
-                                @else
-                                    <span style="color: {{ $item->planned_heads === $item->received_heads ? 'green' : '#dc3545' }}">
-                                        {{ $item->received_heads }}H
-                                    </span>
-                                    @if($item->received_heads != $item->planned_heads)
-                                        <span style="color: #dc3545; font-weight: 600;">
-                                            ({{ $item->received_heads - $item->planned_heads > 0 ? '+' : '' }}{{ $item->received_heads - $item->planned_heads }}H)
-                                        </span>
-                                    @endif,
-                                    <span style="color: {{ $item->planned_kilos === $item->received_kilos ? 'green' : '#dc3545' }}">
-                                        {{ $item->received_kilos }}K
-                                    </span>
-                                    @if($item->received_kilos != $item->planned_kilos)
-                                        <span style="color: #dc3545; font-weight: 600;">
-                                            ({{ $item->received_kilos - $item->planned_kilos > 0 ? '+' : '' }}{{ number_format($item->received_kilos - $item->planned_kilos, 2) }}K)
-                                        </span>
-                                    @endif
-                                @endif
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-    @else
-        <p style="font-size:13px; color: green; margin: 0;">
-            <span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px;">check_circle</span>
-            Delivery has no variance.
-        </p>
-    @endif
-</div>
+                                            $remaining_heads = $planned['heads'] - $delivered['heads'];
+                                            $remaining_kilos = $planned['kilos'] - $delivered['kilos'];
+                                            
+                                            // Group all delivered items by product_id and calculate variances
+                                            $productVariances = collect();
+                                            
+                                            foreach ($request->deliveryRequests->where('status', 'Delivered') as $dr) {
+                                                foreach ($dr->Delitems as $item) {
+                                                    $productId = $item->product_id;
+                                                    
+                                                    if (!$productVariances->has($productId)) {
+                                                        $productVariances->put($productId, [
+                                                            'product' => $item->product,
+                                                            'planned_heads' => 0,
+                                                            'planned_kilos' => 0,
+                                                            'received_heads' => 0,
+                                                            'received_kilos' => 0,
+                                                        ]);
+                                                    }
+                                                    
+                                                    $current = $productVariances->get($productId);
+                                                    $current['planned_heads'] += $item->planned_heads ?? 0;
+                                                    $current['planned_kilos'] += $item->planned_kilos ?? 0;
+                                                    $current['received_heads'] += $item->received_heads ?? 0;
+                                                    $current['received_kilos'] += $item->received_kilos ?? 0;
+                                                    
+                                                    $productVariances->put($productId, $current);
+                                                }
+                                            }
+                                            
+                                            // Filter only products with variance
+                                            $itemsWithVariance = $productVariances->filter(function($item) {
+                                                $hasVariance = false;
+                                                
+                                                if ($item['product']->measurement_type === 'Heads' && $item['received_heads'] != $item['planned_heads']) {
+                                                    $hasVariance = true;
+                                                } elseif ($item['product']->measurement_type === 'Kilos' && $item['received_kilos'] != $item['planned_kilos']) {
+                                                    $hasVariance = true;
+                                                } elseif ($item['product']->measurement_type === 'Heads&Kilos' && 
+                                                        ($item['received_heads'] != $item['planned_heads'] || $item['received_kilos'] != $item['planned_kilos'])) {
+                                                    $hasVariance = true;
+                                                }
+                                                
+                                                return $hasVariance;
+                                            });
+                                        @endphp
+                                        
+                                        @if ($request->status == 'Completed' && $request->hasVariance())
+                                            <p style="margin: 0 0 10px 0; font-weight: bold; color: #dc3545;">
+                                                <span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px;">warning</span>
+                                                Summarized Variance
+                                            </p>
+                                            
+                                            <div style="background-color: #fff3cd; padding: 8px; border-radius: 4px; border-left: 4px solid #ffc107; margin-bottom: 10px;">
+                                                <p style="margin: 0; font-size: 13px; color: #856404;">
+                                                    <strong>Total Remaining:</strong> 
+                                                    <span style="color: #dc3545;">{{ $remaining_heads }} H | {{ $remaining_kilos }} K</span>
+                                                </p>
+                                            </div>
+                                            
+                                            @if($itemsWithVariance->count() > 0)
+                                                <div style="margin-top: 10px;">
+                                                    <p style="margin: 0 0 8px 0; font-weight: 600; font-size: 13px;">Products with Variance ({{ $itemsWithVariance->count() }}):</p>
+                                                    <ul style="margin: 0; padding-left: 20px; font-size: 13px;">
+                                                        @foreach ($itemsWithVariance as $productId => $data)
+                                                            @php
+                                                                $product = $data['product'];
+                                                                $variance_heads = $data['received_heads'] - $data['planned_heads'];
+                                                                $variance_kilos = $data['received_kilos'] - $data['planned_kilos'];
+                                                            @endphp
+                                                            <li style="margin-bottom: 8px; line-height: 1.5;">
+                                                                <strong>{{ $product->name }}</strong>
+                                                                <div style="margin-left: 10px; color: #666;">
+                                                                    Planned: 
+                                                                    @if ($product->measurement_type == 'Heads')
+                                                                        {{ $data['planned_heads'] }}H
+                                                                    @elseif ($product->measurement_type == 'Kilos')
+                                                                        {{ number_format($data['planned_kilos'], 2) }}K
+                                                                    @else
+                                                                        {{ $data['planned_heads'] }}H, {{ number_format($data['planned_kilos'], 2) }}K
+                                                                    @endif
+                                                                    
+                                                                    <span style="margin: 0 5px;">→</span>
+                                                                    
+                                                                    Received: 
+                                                                    @if ($product->measurement_type == 'Heads')
+                                                                        <span style="color: {{ $data['planned_heads'] === $data['received_heads'] ? 'green' : '#dc3545' }}">
+                                                                            {{ $data['received_heads'] }}H
+                                                                        </span>
+                                                                        @if($variance_heads != 0)
+                                                                            <span style="color: #dc3545; font-weight: 600;">
+                                                                                ({{ $variance_heads > 0 ? '+' : '' }}{{ $variance_heads }}H)
+                                                                            </span>
+                                                                        @endif
+                                                                    @elseif ($product->measurement_type == 'Kilos')
+                                                                        <span style="color: {{ $data['planned_kilos'] === $data['received_kilos'] ? 'green' : '#dc3545' }}">
+                                                                            {{ number_format($data['received_kilos'], 2) }}K
+                                                                        </span>
+                                                                        @if($variance_kilos != 0)
+                                                                            <span style="color: #dc3545; font-weight: 600;">
+                                                                                ({{ $variance_kilos > 0 ? '+' : '' }}{{ number_format($variance_kilos, 2) }}K)
+                                                                            </span>
+                                                                        @endif
+                                                                    @else
+                                                                        <span style="color: {{ $data['planned_heads'] === $data['received_heads'] ? 'green' : '#dc3545' }}">
+                                                                            {{ $data['received_heads'] }}H
+                                                                        </span>
+                                                                        @if($variance_heads != 0)
+                                                                            <span style="color: #dc3545; font-weight: 600;">
+                                                                                ({{ $variance_heads > 0 ? '+' : '' }}{{ $variance_heads }}H)
+                                                                            </span>
+                                                                        @endif,
+                                                                        <span style="color: {{ $data['planned_kilos'] === $data['received_kilos'] ? 'green' : '#dc3545' }}">
+                                                                            {{ number_format($data['received_kilos'], 2) }}K
+                                                                        </span>
+                                                                        @if($variance_kilos != 0)
+                                                                            <span style="color: #dc3545; font-weight: 600;">
+                                                                                ({{ $variance_kilos > 0 ? '+' : '' }}{{ number_format($variance_kilos, 2) }}K)
+                                                                            </span>
+                                                                        @endif
+                                                                    @endif
+                                                                </div>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <p style="font-size:13px; color: green; margin: 0;">
+                                                <span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px;">check_circle</span>
+                                                Delivery has no variance.
+                                            </p>
+                                        @endif
+                                    </div>
 
                                     <div class="mb-3">
-                                        <p for="delivery_date_{{ $request->po_id }}" style="margin:0px;" class="form-span"> <span class="req-asterisk">*</span>  Delivery date</p>
+                                        <p for="delivery_date_{{ $request->po_id }}" style="margin:0px; margin-top: 5px;" class="form-span"> <span class="req-asterisk">*</span>  Delivery date</p>
                                         <input type="date" class="form-control" style="font-size: 13px" name="delivery_date" id="delivery_date_{{ $request->po_id }}" required>
                                     </div>
 
