@@ -34,13 +34,13 @@
   
     {{-- create order --}}
     @if (auth()->user()->role === 'Customer')
-        <div class="modal fade" id="create-order-modal" style="overflow: hidden;" tabindex="-1" aria-labelledby="requestActionLabel" aria-hidden="true">
+        <div class="modal fade" id="create-order-modal" style="overflow: hidden;" tabindex="-1" aria-spanledby="requestActionspan" aria-hidden="true">
             <div class="modal-dialog modal-xl" style="overflow: hidden; height: 90%; overflow: auto;">
                 <form class="modal-content" method="POST" style="width: 900px; overflow: auto;" action="{{ route('pr.create') }}" id="purchaseRequestForm">
                     @csrf
                     <div class="modal-header">
-                        <p class="modal-title" id="requestActionLabel">Create purchase order</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <p class="modal-title" id="requestActionspan">Create purchase order</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-span="Close"></button>
                     </div>
                     
                     <div class="modal-body">
@@ -51,16 +51,16 @@
 
                         <!-- Notes Section -->
                         <div class="form-group" style="margin-bottom: 20px; flex-direction: column; display: flex;">
-                            <label for="notes">Notes (Optional)</label>
+                            <span for="notes">Notes (Optional)</span>
                             <textarea name="notes" style="font-size: 14px; padding: 8px;" id="notes" rows="3" placeholder="Add any additional notes for this purchase order..."></textarea>
                         </div>
 
                         <!-- Preferred Days Selection -->
                         <div style="margin-bottom: 25px;">
-                            <label style="font-weight: 600; margin-bottom: 10px; display: block;">
+                            <span style="font-weight: 600; margin-bottom: 10px; display: block;">
                                 <span class="material-symbols-outlined" style="vertical-align: middle; font-size: 20px;">calendar_month</span>
                                 Choose preferred delivery days <span style="color: #dc3545;">*</span>
-                            </label>
+                            </span>
                             <div id="preferredDaysContainer" style="display: flex; flex-wrap: wrap; gap: 10px;">
                                 <!-- Days will be generated here -->
                             </div>
@@ -70,7 +70,7 @@
 
                         <!-- Products Table -->
                         <div style="margin-bottom: 20px;">
-                            <label style="font-weight: 600; margin-bottom: 10px; display: block;">Select Products <span style="color: #dc3545;">*</span></label>
+                            <span style="font-weight: 600; margin-bottom: 10px; display: block;">Select Products <span style="color: #dc3545;">*</span></span>
                             <div style="overflow-x: auto;">
                                 <table class="table table-bordered" id="productsTable">
                                     <thead style="background-color: #f8f9fa;">
@@ -149,17 +149,17 @@
 
     @endif
     {{-- Set Sale & Discounts Modal --}}
-    <div class="modal fade" id="set-promo-modal" tabindex="-1" aria-labelledby="setPromoLabel" aria-hidden="true">
+    <div class="modal fade" id="set-promo-modal" tabindex="-1" aria-spanledby="setPromospan" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <form class="modal-content shadow-sm border-0" method="POST" action="{{ route('set.sale_discount') }}">
                     @csrf
             
                     <div class="modal-header">
-                        <p class="modal-title" id="requestActionLabel"> 
+                        <p class="modal-title" id="requestActionspan"> 
                         
                             Set sale & discounts
                         </p>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-span="Close"></button>
                     </div>
 
                     {{-- Body --}}
@@ -171,9 +171,9 @@
 
                         {{-- Type --}}
                         <div class="form-group mt-3">
-                            <label for="type" class="form-label">
+                            <span for="type" class="form-span">
                                 <span class="req-asterisk">*</span> What will it be?
-                            </label>
+                            </span>
                             <select id="type" name="type" class="form-select" required>
                                 <option value="" disabled {{ old('type') ? '' : 'selected' }}>-- Select type --</option>
                                 <option value="Sale" {{ old('type') == 'Sale' ? 'selected' : '' }}>Sale</option>
@@ -183,23 +183,23 @@
 
                         {{-- Name --}}
                         <div class="form-group mt-3">
-                            <label for="name" class="form-label">
+                            <span for="name" class="form-span">
                                 <span class="req-asterisk">*</span> What would you like it to be called?
-                            </label>
+                            </span>
                             <input type="text" id="name" name="name" class="form-control" maxlength="100" placeholder="e.g. Summer Sale, Dealer Discount" required>
                         </div>
 
                         {{-- Description --}}
                         <div class="form-group mt-3">
-                            <label for="description" class="form-label">Add a description (Recommended)</label>
+                            <span for="description" class="form-span">Add a description (Recommended)</span>
                             <textarea id="description" name="description" maxlength="255" class="form-control" rows="2" placeholder="Optional short description...">{{ old('description') }}</textarea>
                         </div>
 
                         {{-- Value --}}
                         <div class="form-group mt-3">
-                            <label class="form-label">
+                            <span class="form-span">
                                 <span class="req-asterisk">*</span> How many is available to sell?
-                            </label>
+                            </span>
                             <div class="d-flex gap-2 align-items-center">
                                 <input type="number" name="quantity" class="form-control" placeholder="Enter quantity" required>
                             </div>
@@ -207,9 +207,9 @@
 
                         {{-- Value --}}
                         <div class="form-group mt-3">
-                            <label class="form-label">
+                            <span class="form-span">
                                 <span class="req-asterisk">*</span> Set value
-                            </label>
+                            </span>
                             <div class="d-flex gap-2 align-items-center">
                                 <input type="number" name="value" class="form-control" min="0" step="0.01" placeholder="Enter value" required>
                                 <select name="value_type" id="value_type" class="form-select w-auto" required>
@@ -221,9 +221,9 @@
 
                         {{-- Account Type --}}
                         <div class="form-group mt-3">
-                            <label for="category" class="form-label">
+                            <span for="category" class="form-span">
                                 <span class="req-asterisk">*</span> Select account type to apply to
-                            </label>
+                            </span>
                             <select name="category" id="category" class="form-select" required>
                                 <option value="" disabled {{ old('category') ? '' : 'selected' }}>-- Select account type --</option>
                                 <option value="Wholesale" {{ old('category') == 'Wholesale' ? 'selected' : '' }}>Wholesale</option>
@@ -235,9 +235,9 @@
 
                         {{-- Product --}}
                         <div class="form-group mt-3">
-                            <label for="product" class="form-label">
+                            <span for="product" class="form-span">
                                 <span class="req-asterisk">*</span> Select product to apply to
-                            </label>
+                            </span>
                             <select name="product" id="product" class="form-select" required>
                                 <option value="" disabled {{ old('product') ? '' : 'selected' }}>-- Select product --</option>
                                 @foreach($products as $product)
@@ -248,14 +248,14 @@
 
                         {{-- Effectivity Dates --}}
                         <div class="form-group mt-4 p-3 border rounded-3" style="background: #fafafa;">
-                            <label class="form-label  mb-2">Effectivity Period</label>
+                            <span class="form-span  mb-2">Effectivity Period</span>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="start_date" class="form-label small">Start Date</label>
+                                    <span for="start_date" class="form-span small">Start Date</span>
                                     <input type="datetime-local" id="start_date" name="start_date" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="end_date" class="form-label small">End Date</label>
+                                    <span for="end_date" class="form-span small">End Date</span>
                                     <input type="datetime-local" id="end_date" name="end_date" class="form-control" required>
                                 </div>
                             </div>
@@ -277,81 +277,62 @@
     <div class="content-bg" >
         <div class="content-header">
             <div class="contents-display">
-                        <form action="{{ route('purchaseorders.list') }}" id="text-search" class="search-text-con" method="GET">
-                            <input type="text" name="search" class="search-bar"
-                                placeholder="Search by PO ID, Customer, Status"
-                                value="{{ request('search') }}"
-                                style="outline:none;"
-                            >
-                            <button type="submit" class="search-btn"><span class="material-symbols-outlined">search</span></button>
-                        </form>
-                        <form action="{{ route('purchaseorders.list') }}" class="date-search" id="from-to-date" method="GET">
-                            <p>Date range</p>
-                            <div class="from-to-picker">
-                                <div class="month-div">
-                                    <span>From</span>
-                                    <input type="date" name="from_date" class="input-date"
-                                        value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
-                                        onchange="this.form.submit()">
-                                </div>
-                                <div class="month-div">
-                                    <span>To</span>
-                                    <input type="date" name="to_date" class="input-date"
-                                        value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
-                                        onchange="this.form.submit()">
-                                </div>
-                            </div>
-                        </form>
+                <form action="{{ route('purchaseorders.list') }}" id="text-search" class="search-text-con" method="GET">
+                    <input type="text" name="search" class="search-bar"
+                        placeholder="Search by PO ID, Customer, Status"
+                        value="{{ request('search') }}"
+                        style="outline:none;"
+                    >
+                    <button type="submit" class="search-btn"><span class="material-symbols-outlined">search</span></button>
+                </form>
+                <form action="{{ route('purchaseorders.list') }}" class="date-search" id="from-to-date" method="GET">
+                    <p>Date range</p>
+                    <div class="from-to-picker">
+                        <div class="month-div">
+                            <span>From</span>
+                            <input type="date" name="from_date" class="input-date"
+                                value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                                onchange="this.form.submit()">
+                        </div>
+                        <div class="month-div">
+                            <span>To</span>
+                            <input type="date" name="to_date" class="input-date"
+                                value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                                onchange="this.form.submit()">
+                        </div>
+                    </div>
+                </form>
             </div>
             <div style="display: flex; flex-direction: column;">
-                        <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
-                            <p class="heading">Purchase requests</p>
-                            @if ( auth()->user()->role === 'Customer')
-                                <div style="display:flex; flex-direction:column; flex-wrap: wrap;">
-                                    <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
-                                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
-                                        Create PO
-                                    </button>
-                                    {{-- <button class="add-staff-btn btn-transition w3-disabled" disabled title="Maximum credit limit reached, kindly settle payment first.">
-                                        <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">lock</span>
-                                        Create PO
-                                    </button> --}}
-
-                                </div>
-
-                            @endif
+                <div class="heading" style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;">
+                    <p class="heading">Purchase requests</p>
+                    @if ( auth()->user()->role === 'Customer')
+                        <div style="display:flex; flex-direction:column; flex-wrap: wrap;">
+                            <button class="add-staff-btn btn-transition" data-bs-toggle="modal" data-bs-target="#create-order-modal">
+                                <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">add</span>
+                                Create PO
+                            </button>
+                            {{-- <button class="add-staff-btn btn-transition w3-disabled" disabled title="Maximum credit limit reached, kindly settle payment first.">
+                                <span style="font-size: 15px; margin: 0" class="material-symbols-outlined">lock</span>
+                                Create PO
+                            </button> --}}
                         </div>
-
-                        <div class="status-btn">
-                            <button class="pending">
-                                <span>Pending</span>
-                                <span>({{ $counts['Pending'] ?? 0 }}) </span>
-                            </button>
-                            <button>
-                                <span>Accepted</span>
-                                <span>({{ $counts['Accepted'] ?? 0 }}) </span>
-                            </button>
-                            <button>
-                                <span>Progressing</span>
-                                <span>({{ $counts['Progressing'] ?? 0 }} )</span>
-                            </button>
-                            <button>
-                                <span>Completed</span>
-                                <span>({{ $counts['Completed'] ?? 0 }} )</span>
-                            </button>
-                            <button>
-                                <span>Cancelled</span>
-                                <span>({{ $counts['Cancelled'] ?? 0 }} )</span>
-                            </button>
-                            <button>
-                                <span>Rejected</span>
-                                <span>({{ $counts['counts'] ?? 0 }}) </span>
-                            </button>
-                        </div>
-
-
+                    @endif
+                </div>
+                <div class="status-btn">
+                    <button class="pending"><span>Pending</span><span>({{ $counts['Pending'] ?? 0 }}) </span></button>
+                    <button><span>Accepted</span><span>({{ $counts['Accepted'] ?? 0 }}) </span></button>
+                    <button><span>Progressing</span><span>({{ $counts['Progressing'] ?? 0 }} )</span></button>
+                    <button><span>Completed</span><span>({{ $counts['Completed'] ?? 0 }} )</span></button>
+                    <button><span>Cancelled</span><span>({{ $counts['Cancelled'] ?? 0 }} )</span></button>
+                    <button>
+                        <span>Rejected</span>
+                        <span>({{ $counts['counts'] ?? 0 }}) </span>
+                    </button>
+                </div>
             </div>
         </div>
+
 
 
         @if (auth()->user()->role !== 'Customer')
@@ -372,7 +353,71 @@
                     </thead>
                     <tbody>                                
                         @foreach ($requests as $request)
-                            {{-- <tr onclick="window.location.href='{{ route('pr.request', ['po_id' => $request->po_id]) }}'" style="cursor: pointer;"> --}}
+
+                            <div class="modal fade" id="scheduling-modal-{{ $request->po_id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                <form method="POST" action="{{ route('schd.create') }}">
+                                    @csrf
+                                    <input type="hidden" name="po_id" value="{{ $request->po_id }}">
+
+                                    <div class="modal-header">
+                                    <h5 class="modal-title">Schedule a Delivery</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+
+                                    <!-- Delivery Date -->
+                                    <div class="mb-3">
+                                        <span for="delivery_date_{{ $request->po_id }}" class="form-span">Delivery Date</span>
+                                        <input type="date" class="form-control" name="delivery_date" id="delivery_date_{{ $request->po_id }}" required>
+                                    </div>
+
+                                    <!-- Products from previous deliveries -->
+                                    <div class="list-group">
+                                        @php
+                                            $deliveryItems = \App\Models\DeliveryItemRequest::where('po_id', $request->po_id)
+                                                ->with('product')
+                                                ->get()
+                                                ->groupBy('product_id');
+                                        @endphp
+
+                                        @foreach($deliveryItems as $product_id => $items)
+                                        @php
+                                            $product = $items->first()->product;
+                                        @endphp
+
+                                        <a href="#" class="list-group-item list-group-item-action product-item" data-product-id="{{ $product_id }}">
+                                            {{ $product->name ?? 'No Product' }}
+                                        </a>
+
+                                        <!-- Hidden input div -->
+                                        <div class="mt-2 ms-3 d-none" id="input-{{ $product_id }}">
+                                            @if(in_array($product->measurement_type, ['Heads', 'Heads & Kilos']))
+                                            <span>Planned Heads:</span>
+                                            <input type="number" class="form-control mb-2" name="items[{{ $product_id }}][planned_heads]" min="0" placeholder="Enter heads">
+                                            @endif
+                                            @if(in_array($product->measurement_type, ['Kilos', 'Heads & Kilos']))
+                                            <span>Planned Kilos:</span>
+                                            <input type="number" class="form-control" name="items[{{ $product_id }}][planned_kilos]" min="0" placeholder="Enter kilos">
+                                            @endif
+                                        </div>
+
+                                        @endforeach
+                                    </div>
+
+                                    </div>
+
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Create Delivery</button>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                            </div>
+
                             <tr>
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{ $request->created_at->format('F j, y') }}</td>
@@ -392,7 +437,7 @@
                                             {{ $remaining_heads }} H | {{ $remaining_kilos }} K   
                                         </button>
                         
-                                        <ul class="dropdown-menu p-2" aria-labelledby="dropdownMenuButton-{{ $request->po_id }}" style="min-width: 250px;">
+                                        <ul class="dropdown-menu p-2" aria-spanledby="dropdownMenuButton-{{ $request->po_id }}" style="min-width: 250px;">
                                             
                                             @foreach ($request->deliveryRequests->sortByDesc('delivery_id') as $dr)
         
@@ -578,6 +623,14 @@
                                         </button>
                                         <ul class="dropdown-menu">
                                             <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('pr.request', ['po_id' => $request->po_id]) }}"><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#scheduling-modal-{{ $request->po_id }}">
+                                                    <span class="material-symbols-outlined">calendar_clock</span>
+                                                    Schedule a delivery
+                                                </a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </td>
@@ -586,6 +639,7 @@
                     </tbody>
                 </table>
             </div>
+
 
         @elseif (auth()->user()->role === 'Customer')
             <div class="content-body" style="background: #fff">
@@ -621,7 +675,7 @@
                                         {{ $remaining_heads }} H | {{ $remaining_kilos }} K   
                                     </button>
                      
-                                    <ul class="dropdown-menu p-2" aria-labelledby="dropdownMenuButton-{{ $request->po_id }}" style="min-width: 250px;">
+                                    <ul class="dropdown-menu p-2" aria-spanledby="dropdownMenuButton-{{ $request->po_id }}" style="min-width: 250px;">
                                         
                                         @foreach ($request->deliveryRequests->sortByDesc('delivery_id') as $dr)
     
@@ -828,7 +882,18 @@
 @endsection
 
 @push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.product-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.dataset.productId;
+            const inputDiv = document.getElementById('input-' + productId);
+            inputDiv.classList.toggle('d-none');
+        });
+    });
+});
+</script>
 
-    <script src="{{ asset('js/pr/list.js') }}"></script>
 
 @endpush

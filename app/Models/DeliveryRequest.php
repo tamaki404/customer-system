@@ -49,7 +49,10 @@ public function Delitems()
 {
     return $this->hasMany(DeliveryItemRequest::class, 'delivery_id', 'delivery_id');
 }
-
+public function poItem()
+{
+    return $this->hasMany(DeliveryItemRequest::class, 'delivery_id', 'delivery_id');
+}
     /**
      * Get the purchase request for this delivery
      */

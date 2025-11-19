@@ -31,7 +31,8 @@ use App\Http\Controllers\{
     PromosController,
     CabraController,
     ReturnsController,
-    WorkerController
+    WorkerController,
+    SchedController
 };
 
 /*
@@ -245,6 +246,11 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
     Route::prefix('lg')->name('lg.')->group(function () {
         Route::get('/list', [LogsController::class, 'list'])
             ->name('list');
+
+    });
+    Route::prefix('schd')->name('schd.')->group(function () {
+        Route::post('/create', [SchedController::class, 'create'])
+            ->name('create');
 
     });
     /*

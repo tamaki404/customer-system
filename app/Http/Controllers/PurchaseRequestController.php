@@ -51,19 +51,61 @@ class PurchaseRequestController extends Controller
                 ]);
                 
             } elseif ($user->role !== 'Customer') {
-                $requests = PurchaseRequest::with('deliveryRequests.items.product')
-                ->orderBy('created_at', 'desc')
-                ->paginate(50);
+$requests = PurchaseRequest::with([
+    'items.product',
+    'deliveryRequests.deliveryItems.product'
+])->orderBy('created_at', 'desc')->paginate(50);
 
-                $products = collect();
-                $counts = PurchaseRequest::
-                    selectRaw("status, COUNT(*) as total")
-                    ->groupBy('status')
-                    ->pluck('total', 'status');
+foreach ($requests as $request) {
+    $request->groupedVariance = collect();
+    
+    foreach ($request->deliveryRequests as $delivery) {
+        // Only look at DELIVERED items (they might have variance)
+        if ($delivery->status !== 'Delivered') {
+            continue;
+        }
+        
+        foreach ($delivery->deliveryItems as $item) {
+            // Calculate the shortage (negative variance means shortage)
+            $varH = $item->planned_heads - $item->received_heads;
+            $varK = $item->planned_kilos - $item->received_kilos;
+            
+            // Only if there's a SHORTAGE (positive variance)
+            if ($varH > 0 || $varK > 0) {
+                // Check if this product already exists in groupedVariance
+                $existing = $request->groupedVariance->firstWhere('product_id', $item->product_id);
+                
+                if ($existing) {
+                    // Add to existing variance (accumulate shortages)
+                    $existing->variance_heads += $varH; // Don't use abs(), keep the shortage amount
+                    $existing->variance_kilos += $varK;
+                } else {
+                    // Add new product with variance
+                    $request->groupedVariance->push((object)[
+                        'id' => $item->id,
+                        'product_id' => $item->product_id,
+                        'product' => $item->product,
+                        'variance_heads' => $varH, // The shortage amount
+                        'variance_kilos' => $varK,
+                    ]);
+                }
+            }
+        }
+    }
+}
+
+$products = collect();
+$counts = PurchaseRequest::selectRaw("status, COUNT(*) as total")
+    ->groupBy('status')
+    ->pluck('total', 'status');
+                // Log
                 Log::info('Staff purchase requests loaded', [
                     'requests_count' => $requests->count()
                 ]);
-            }
+
+
+
+                    }
 
             return view('franken.pr.list', compact(
                 'user',
