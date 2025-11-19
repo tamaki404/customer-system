@@ -110,9 +110,6 @@ class ReturnsController extends Controller
         }
     }
 
-
-
-
     public function list(Request $request)
     {
         $user = Auth::user();

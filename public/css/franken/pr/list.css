@@ -167,3 +167,20 @@
     flex-direction: row;
     justify-content: space-between;
 }
+
+#input-form{
+    font-size: 13px;
+    color: #333;
+    border-radius: 5px;
+    width: auto;
+    margin-bottom: 2px;
+    padding: 5px;
+    border: none;
+    outline: none;
+box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+}
+.label-mea-tit{
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+}

@@ -362,39 +362,64 @@
                                     <input type="hidden" name="po_id" value="{{ $request->po_id }}">
 
                                     <div class="modal-header">
-                                    <h5 class="modal-title">Schedule a Delivery</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        <p class="modal-title" style="margin:0px;">Schedule a Delivery</p>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
 
-                                    <div class="modal-body">
+                                    <div class="modal-body" style="height: 500px; display: flex; flex-direction: column; overflow-y: auto;">
+                                        <p class="note-notify">
+                                            <span class="material-symbols-outlined"> info </span>
+                                            <span> You may able to schedule a delivery for items with variances</span>
+                                        </p>
+
 
                                     <!-- Delivery Date -->
+
+                                        <div>
+                                            @php
+                                                $planned = $request->totalPlanned();
+                                                $delivered = $request->totalDelivered();
+
+                                                $remaining_heads = $planned['heads'] - $delivered['heads'];
+                                                $remaining_kilos = $planned['kilos'] - $delivered['kilos'];
+                                            @endphp                                            
+                                            @if ($request->status == 'Completed' && $request->hasVariance())
+                                                <strong>Summarized variance</strong>
+                                                <span>Heads: {{ $remaining_heads }} H | {{ $remaining_kilos }} K  </span>
+                                                <span>Kilos: </span>                                            
+                                            @else
+                                                <p style="font-size:13px; color: green;">Delivery has no variance. </p>
+                                            @endif
+
+                                        </div>
+
                                     <div class="mb-3">
-                                        <span for="delivery_date_{{ $request->po_id }}" class="form-span">Delivery Date</span>
-                                        <input type="date" class="form-control" name="delivery_date" id="delivery_date_{{ $request->po_id }}" required>
+                                        <p for="delivery_date_{{ $request->po_id }}" style="margin:0px;" class="form-span"> <span class="req-asterisk">*</span>  Delivery date</p>
+                                        <input type="date" class="form-control" style="font-size: 13px" name="delivery_date" id="delivery_date_{{ $request->po_id }}" required>
                                     </div>
 
                                     <!-- Products from previous deliveries -->
                                     <div class="list-group">
-                       
+                                        <p for="delivery_date_{{ $request->po_id }}" style="margin:0px;" class="form-span"> <span class="req-asterisk">*</span>  Select products</p>
+
                                         @php
                                             $deliveryItems = \App\Models\DeliveryItemRequest::where('po_id', $request->po_id)
-                                                                ->with('set') // <-- load the ProductSetting
+                                                                ->with('set') 
                                                                 ->get()
                                                                 ->groupBy('product_id');
                                         @endphp
 
                                         @foreach($deliveryItems as $product_id => $items)
                                             @php
-                                                $productSetting = $items->first()->set; // ProductSetting instance
-                                                if(!$productSetting) continue; // skip if no related product
+                                                $productSetting = $items->first()->set; 
+                                                if(!$productSetting) continue; 
                                             @endphp
 
-                                            <a href="#" class="list-group-item list-group-item-action product-item" data-product-id="{{ $product_id }}">
-                                                {{ $productSetting->product->name ?? 'No Product Name' }}
+                                            <a href="#" class="list-group-item list-group-item-action product-item" data-product-id="{{ $product_id }}" style="border-radisu:5px; box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px; border: 5px;">
+                                                #{{ $loop->iteration }}  {{ $productSetting->product->name ?? 'No Product Name' }}
                                             </a>
 
-                                            <div class="mt-2 ms-3 d-none" id="input-{{ $product_id }}">
+                                            <div class="ms-3 d-none" id="input-{{ $product_id }}" style="background-color: #f2f2f2; display: flex; flex-direction: row; padding: 5px; gap: 10px; align-items: center;">
 
                                                 {{-- Hidden set_id --}}
                                                 <input type="hidden"
@@ -402,15 +427,13 @@
                                                     value="{{ $productSetting->set_id }}">
 
                                                 @if(in_array($productSetting->product->measurement_type, ['Heads', 'Heads & Kilos']))
-                                                    <label>Planned Heads:</label>
-                                                    <input type="number" class="form-control mb-2"
+                                                    <input type="number" id="input-form" class=" mb-2"
                                                         name="items[{{ $product_id }}][planned_heads]"
                                                         min="0" placeholder="Enter heads">
                                                 @endif
 
                                                 @if(in_array($productSetting->product->measurement_type, ['Kilos', 'Heads & Kilos']))
-                                                    <label>Planned Kilos:</label>
-                                                    <input type="number" class="form-control"
+                                                    <input type="number" id="input-form" class=""
                                                         name="items[{{ $product_id }}][planned_kilos]"
                                                         min="0" placeholder="Enter kilos">
                                                 @endif
@@ -439,6 +462,7 @@
                                 <td>{{ $request->customer->company_name }}</td>
                                 <td>#{{ $request->po_id }}</td>
                                 @php
+
                                     $planned = $request->totalPlanned();
                                     $delivered = $request->totalDelivered();
 
@@ -638,14 +662,17 @@
                                         </button>
                                         <ul class="dropdown-menu">
                                             <li><a class="dropdown-item"  style="color:#f8a01d" href="{{ route('pr.request', ['po_id' => $request->po_id]) }}"><span class="material-symbols-outlined">package_2</span>Purchase order</a></li>
-                                            <li>
-                                                <a class="dropdown-item"
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#scheduling-modal-{{ $request->po_id }}">
-                                                    <span class="material-symbols-outlined">calendar_clock</span>
-                                                    Schedule a delivery
-                                                </a>
-                                            </li>
+                                            @if ($request->status == 'Completed' && $request->hasVariance())
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#scheduling-modal-{{ $request->po_id }}">
+                                                        <span class="material-symbols-outlined">calendar_clock</span>
+                                                        Schedule a delivery
+                                                    </a>
+                                                </li>                                                                               
+                                            @endif
+
                                         </ul>
                                     </div>
                                 </td>
