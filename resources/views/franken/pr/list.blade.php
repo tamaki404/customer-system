@@ -769,7 +769,18 @@
                                 </td>
                                 <td>
                                     @if ($request->status == 'Completed' && $request->hasVariance())
-                                    Has Variance
+                                        @php
+                                            $hasOngoingReturn = \App\Models\DeliveryRequest::where('po_id', $request->po_id)
+                                                ->where('label', 'return')
+                                                ->whereIn('status', ['Scheduled', 'Pending', 'In Transit'])
+                                                ->exists();
+                                        @endphp
+                                        
+                                        @if ($hasOngoingReturn)
+                                            Ongoing return
+                                        @else
+                                            Has Variance
+                                        @endif
                                     @else
                                         {{ $request->status }}
                                     @endif
