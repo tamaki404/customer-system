@@ -56,7 +56,7 @@
 
 
                 @if(auth()->user()->role === 'Customer')
-                    <div class="card">
+                    {{-- <div class="card">
                         <p class="card-head">
                             <span>Oct 1 - 30</span>
                         </p>
@@ -85,7 +85,7 @@
                             <span class="data">₱{{ number_format($remainingBalance, 2) }}</span>
                         </p>
                         <p>Credits</p>
-                    </div>
+                    </div> --}}
 
                 @elseif(auth()->user()->role !== 'Customer')
                     @php
@@ -168,40 +168,35 @@
                             </thead>
                             <tbody >
                                 
-                                @foreach ($payments as $payment)
+                                @foreach ($histories as $history)
                                     <tr>
                                         <td>
                                             <div style="display: flex; flex-direction: row; gap: 5px;">
                                                 @php
-                                                    $imgSrc = $payment->customer->user->image 
-                                                        ? ('data:' . $payment->customer->user->image_mime_type . ';base64,' . base64_encode($payment->customer->user->image))
+                                                    $imgSrc = $history->customer->user->image 
+                                                        ? ('data:' . $history->customer->user->image_mime_type . ';base64,' . base64_encode($history->customer->user->image))
                                                         : asset('assets/default-company-logo.png');
                                                 @endphp
                                                 <img src="{{ $imgSrc }}" alt="Profile Image" style="height: 30px; border-radius: 9999%;">
                                                 <p style="margin: 0; display: flex; flex-direction: column; align-items: start;">
-                                                    <span style="font-size: 13px; color: #333;">{{$payment->customer->company_name}}</span>
-                                                    <span style="font-size: 12px; color: #888;">{{ $payment->updated_at->format('F j g:i a') }}</span>
+                                                    <span style="font-size: 13px; color: #333;">{{$history->customer->company_name}}</span>
+                                                    <span style="font-size: 12px; color: #888;">{{ $history->updated_at->format('F j g:i a') }}</span>
                                                 </p>
                                             </div>
                                         </td>
                                         <td>
                                             <p style="margin: 0;font-size: 12px; color: #888;">
-                                                @if ( $payment->status === "Pending")
-                                                    <span style="color: #666">{{ $payment->label }} {{ $payment->status }}</span>
-                                                @elseif ( $payment->status === "Successful")
-                                                    <span style="color: green">{{ $payment->label }} {{ $payment->status }}</span>
-
-                                                
-                                                @endif
+                                                <span style="color: #666">{{ $history->label }} {{ $history->status }}</span>
                                             </p>
                                             
                                         </td>
                                         <td>
                                             <p style="margin: 0; font-size: 13px;">
-                                                @if ($payment->label === "Delivery")
-                                                    <span style="color: red">- ₱{{ number_format($payment->amount, 2) }}</span>
-                                                @elseif ($payment->label === "Payment" && $payment->status !== "Pending")
-                                                    <span style="color: green">+ ₱{{ number_format($payment->amount, 2) }}</span>
+                                                @if ($history->label === "Delivery")
+                                                    <span style="color: red">- ₱{{ number_format($history->amount, 2) }}</span>
+                                                @elseif ($history->label === "Payment")
+                                                    <span style="color: green">+ ₱{{ number_format($history->amount, 2) }}</span>
+                                                    <span style="color: green">+ ₱{{ number_format($history->id, 2) }}</span>
                                                 @else
                                                     <span style="color: #888">--</span>
                                                 @endif

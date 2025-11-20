@@ -125,7 +125,17 @@
                                     
                                 >
                             </div>
-
+                            <div class="modal-option-groups" id="credit_term">
+                                <p>Add credit term</p>
+                                  <input 
+                                    type="text" 
+                                    name="credit_term" 
+                                    id="credit_term" 
+                                    placeholder="Enter credit term"
+                                    class="input-form"
+                                    style="width:300px; font-size: 14px;"
+                                >
+                            </div>
                             
                                 <div id="ceiling_price">
                                     @if ($ceilingPrice)

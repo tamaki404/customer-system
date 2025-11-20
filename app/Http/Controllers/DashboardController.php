@@ -31,14 +31,15 @@ class DashboardController extends Controller
         $purchaseCount = PurchaseRequest::count();
         $deliveryCount = DeliveryRequest::count();
         $receiptCount = Receipts::count();
-        $payments = Payments::limit(5)->get();
+        $histories = PurchaseHistory::limit(5)->get();
+        
         
         return view('dashboard', compact(
             'user',
             'purchaseCount',
             'deliveryCount',
             'receiptCount',
-            'payments'
+            'histories'
         ));
     }
 
@@ -47,12 +48,12 @@ class DashboardController extends Controller
         $user = Auth::user();
         $customer = $user ? Customers::where('user_id', $user->user_id)->first() : null;
 
-        $purchasesCount = 0;
-        $totalReceipts = 0;
-        $totalOrders = 0;
-        $remainingBalance = 0;
-        $deliveryCount = 0;
-        $documentCount = $customer ? Documents::where('customer_id', $customer->customer_id)->count() : 0;
+        // $purchasesCount = 0;
+        // $totalReceipts = 0;
+        // $totalOrders = 0;
+        // $remainingBalance = 0;
+        // $deliveryCount = 0;
+        // $documentCount = $customer ? Documents::where('customer_id', $customer->customer_id)->count() : 0;
 
         if ($user->role === 'Customer') {
             $totalOrders = Orders::where('customer_id', $customer->customer_id)->count();
@@ -109,7 +110,7 @@ class DashboardController extends Controller
         $purchaseCount = PurchaseRequest::count();
         $deliveryCount = DeliveryRequest::count();
         $receiptCount = Receipts::count();
-        $payments = PurchaseHistory::limit(5)->get();
+        $histories = PurchaseHistory::limit(5)->get();
         
 
         }
@@ -127,7 +128,7 @@ class DashboardController extends Controller
             'purchaseCount',
             'deliveryCount',
             'receiptCount',
-            'payments'
+            'histories'
         ));
     }
 

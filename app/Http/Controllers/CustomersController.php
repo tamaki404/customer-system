@@ -154,6 +154,8 @@ class CustomersController extends Controller
                 'user_id'           => 'required|exists:users,user_id',
                 'staff_id'          => 'nullable|required_if:account_status,Accepted|exists:staffs,staff_id', 
                 'credit_limit'      => 'required_if:account_status,Accepted|numeric|min:0',
+                'credit_term'      => 'required_if:account_status,Accepted|numeric|min:0',
+
                 'account_status'    => 'required|string|max:100',
 
                 'products'          => 'sometimes|required_if:account_status,Accepted|array',
@@ -242,6 +244,8 @@ class CustomersController extends Controller
                             'status'      => 'Active',
                             'balance'     => 0,
                             'credit_limit'=> $request->credit_limit,
+                            'credit_term'=> $request->credit_term,
+
                         ]
                     );
                 }
