@@ -8,10 +8,7 @@
 
 
    <div class="content-bg" >
-        <div class="content-header">
-            <div class="contents-display">
-            </div>
-
+        <div class="content-header upper-header">
             <div class="title-row">
                 <p class="heading">
                     <span class="greet">Goodmorning, </span>
@@ -26,10 +23,28 @@
                 <p class="sub-heading">Here's your dashboard overview</p>
             </div>
 
+            <form action="{{ route('purchaseorders.list') }}" class="date-search" id="from-to-date" method="GET">
+                <p>Date range</p>
+                <div class="from-to-picker">
+                    <div class="month-div">
+                        <span>From</span>
+                        <input type="date" name="from_date" class="input-date"
+                            value="{{ request('from_date', now()->startOfMonth()->format('Y-m-d')) }}"
+                            onchange="this.form.submit()">
+                    </div>
+                    <div class="month-div">
+                        <span>To</span>
+                        <input type="date" name="to_date" class="input-date"
+                            value="{{ request('to_date', now()->endOfMonth()->format('Y-m-d')) }}"
+                            onchange="this.form.submit()">
+                    </div>
+                </div>
+            </form>
+
 
         </div>
 
-            <div class="content-body user-dash" style="padding: 10px; border: none; height: auto; display: flex; flex-direction: row; gap: 5px">
+            <div class="content-body user-dash">
 
                 {{-- <p style="font-size: 17px; border-left: 4px solid red; width: 50%; background-color: #fff; padding: 10px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;">
                     <span class="material-symbols-outlined" style="font-size: 15px;">
@@ -97,46 +112,126 @@
                                             ->count();
 
                     @endphp
+                    <section class="card-container">
+                        <a class="card" href="{{ route('pr.list') }}">
+                            <p class="card-head">
+                                <span>Oct 1 - 30</span>
+                            </p>
+                            <p class="card-content">
+                                <span class="material-symbols-outlined icon">local_mall</span>
+                                <span class="data">{{$allPurchases}}</span>
+                                @if ($purchaseToday)
+                                    <span class="addition">+{{$purchaseToday}}</span>
+                                @endif
+                            </p>
+                            <p>Purchase requests</p>
+                        </a>
+                        <a class="card" href="{{ route('pym.list') }}">
+                            <p class="card-head">
+                                <span>Oct 1 - 30</span>
+                            </p>
+                            <p class="card-content">
+                                <span class="material-symbols-outlined icon">receipt_long</span>
+                                <span class="data">{{$allReceipts}}</span>
+                                @if ($receiptsToday)
+                                    <span class="addition">+{{$receiptsToday}}</span>
+                                @endif
+                            </p>
+                            <p>Payments</p>
+                        </a>
+                        <a class="card" href="{{ route('dlv.list') }}">
+                            <p class="card-head">
+                                <span>Oct 1 - 30</span>
+                            </p>
+                            <p class="card-content">
+                                <span class="material-symbols-outlined icon">delivery_truck_speed</span>
+                                <span class="data">{{$allDeliveries}}</span>
+                                @if ($deliveryToday)
+                                    <span class="addition">+{{$deliveryToday}}</span>
+                                @endif
+                            </p>
+                            <p>Deliveries</p>
+                        </a>
+                    </section>  
+                    <section class="logs">
+                        <div class="header">
+                            <p>Recent transactions</p>
+                            <a href="">See all</a>
+                        </div>
+                        <table class="table-data">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody >
+                                
+                                @foreach ($payments as $payment)
+                                    <tr>
+                                        <td>
+                                            <div style="display: flex; flex-direction: row; gap: 5px;">
+                                                @php
+                                                    $imgSrc = $payment->customer->user->image 
+                                                        ? ('data:' . $payment->customer->user->image_mime_type . ';base64,' . base64_encode($payment->customer->user->image))
+                                                        : asset('assets/default-company-logo.png');
+                                                @endphp
+                                                <img src="{{ $imgSrc }}" alt="Profile Image" style="height: 30px; border-radius: 9999%;">
+                                                <p style="margin: 0; display: flex; flex-direction: column; align-items: start;">
+                                                    <span style="font-size: 13px; color: #333;">{{$payment->customer->company_name}}</span>
+                                                    <span style="font-size: 12px; color: #888;">{{ $payment->updated_at->format('F j g:i a') }}</span>
+                                                </p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p style="margin: 0;font-size: 12px; color: #888;">
+                                                @if ( $payment->status === "Pending")
+                                                    <span style="color: #666">{{ $payment->label }} {{ $payment->status }}</span>
+                                                @elseif ( $payment->status === "Successful")
+                                                    <span style="color: green">{{ $payment->label }} {{ $payment->status }}</span>
 
-                    <a class="card" href="{{ route('pr.list') }}">
-                        <p class="card-head">
-                            <span>Oct 1 - 30</span>
-                        </p>
-                        <p class="card-content">
-                            <span class="material-symbols-outlined icon">local_mall</span>
-                            <span class="data">{{$allPurchases}}</span>
-                            @if ($purchaseToday)
-                                <span class="addition">+{{$purchaseToday}}</span>
-                            @endif
-                        </p>
-                        <p>Purchase requests</p>
-                    </a>
-                    <a class="card" href="{{ route('pym.list') }}">
-                        <p class="card-head">
-                            <span>Oct 1 - 30</span>
-                        </p>
-                        <p class="card-content">
-                            <span class="material-symbols-outlined icon">receipt_long</span>
-                            <span class="data">{{$allReceipts}}</span>
-                            @if ($receiptsToday)
-                                <span class="addition">+{{$receiptsToday}}</span>
-                            @endif
-                        </p>
-                        <p>Payments</p>
-                    </a>
-                    <a class="card" href="{{ route('dlv.list') }}">
-                        <p class="card-head">
-                            <span>Oct 1 - 30</span>
-                        </p>
-                        <p class="card-content">
-                            <span class="material-symbols-outlined icon">delivery_truck_speed</span>
-                            <span class="data">{{$allDeliveries}}</span>
-                            @if ($deliveryToday)
-                                <span class="addition">+{{$deliveryToday}}</span>
-                            @endif
-                        </p>
-                        <p>Deliveries</p>
-                    </a>
+                                                
+                                                @endif
+                                            </p>
+                                            
+                                        </td>
+                                        <td>
+                                            <p style="margin: 0; font-size: 13px;">
+                                                @if ($payment->label === "Delivery")
+                                                    <span style="color: red">- ₱{{ number_format($payment->amount, 2) }}</span>
+                                                @elseif ($payment->label === "Payment" && $payment->status !== "Pending")
+                                                    <span style="color: green">+ ₱{{ number_format($payment->amount, 2) }}</span>
+                                                @else
+                                                    <span style="color: #888">--</span>
+                                                @endif
+                                            </p>
+
+                                            
+                                        </td>
+                                    </tr>
+                                @endforeach
+
+
+                            </tbody>
+                            {{-- <div class="row">
+                                <div class="user-date">
+                                    <img src="" alt="">
+                                    <p>
+                                        <span class="name"></span>
+                                        <span class="date"></span>
+                                    </p>
+                                </div>
+                                <div class="status">
+
+                                </div>
+                                <div class="amount">
+                                    <p></p>
+                                </div>
+
+                            </div> --}}
+                        </table>
+                    </section>
 
                 @endif
 

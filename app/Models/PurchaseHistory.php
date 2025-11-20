@@ -21,4 +21,8 @@ class PurchaseHistory extends Model
     {
         return $this->belongsTo( Payments::class, 'payment_id', 'payment_id');
     }
+    public function customer()
+    {
+        return $this->belongsTo( Customers::class, 'customer_id', 'customer_id');
+    }
 }

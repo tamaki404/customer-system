@@ -78,7 +78,7 @@ class UserController extends Controller
         // Login the representative using the representative guard
         Auth::guard('representative')->login($rep);
 
-        return redirect()->route('dashboard.view')->with('success', 'Representative signed in successfully.');
+        return redirect()->route('dashboard')->with('success', 'Representative signed in successfully.');
     }
     public function registerCustomer(Request $request)
         {
@@ -939,7 +939,7 @@ class UserController extends Controller
         // Redirect based on role
         return match ($user->role) {
             'Customer' => redirect()->route('choose.accounts'),
-            default => redirect()->route('dashboard.view'),
+            default => redirect()->route('dashboard'),
         };
     }
 

@@ -6,7 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use App\Models\Session; 
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -62,7 +62,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Staffs::class, 'user_id', 'user_id');
     }
-
+    public function sessions()
+    {
+        return $this->hasMany(Session::class);
+    }
 
     /**
      * Get the attributes that should be cast.

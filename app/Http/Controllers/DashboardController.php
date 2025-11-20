@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DeliveryItemRequest;
 use App\Models\DeliveryRequest;
+use App\Models\PurchaseHistory;
 use App\Models\PurchaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +15,11 @@ use App\Models\Receipts;
 use App\Models\Credits;
 use App\Models\Representatives;
 use App\Models\Delivery;
+use App\Models\Payments;
+
 use Carbon\Carbon;
+use App\Models\User;
+
 use Session;
 
 class DashboardController extends Controller
@@ -26,12 +31,14 @@ class DashboardController extends Controller
         $purchaseCount = PurchaseRequest::count();
         $deliveryCount = DeliveryRequest::count();
         $receiptCount = Receipts::count();
-
+        $payments = Payments::limit(5)->get();
+        
         return view('dashboard', compact(
             'user',
             'purchaseCount',
             'deliveryCount',
-            'receiptCount'
+            'receiptCount',
+            'payments'
         ));
     }
 
@@ -98,16 +105,13 @@ class DashboardController extends Controller
         // }
 
         } elseif (in_array($user->role, ['Admin', 'Staff'])) {
-            $today = Carbon::today();
-            $totalOrders = Orders::count();
-            $pendingOrders = Orders::where('status', 'Pending')->count();
-            $deliveryCount = Delivery::where('delivery_date', $today)->count();
-            $totalReceipts = Receipts::count();
-            $deliveryToday = Delivery::where('delivery_date', $today)->count();
-            $pendingReceipts = Receipts::where('status', "Pending")->count();
-            $verifiedReceipts = Receipts::where('status', "Verified")->count();
-            $deliveries = Delivery::where('delivery_date', $today)->get();
-            $orderCount = Orders::where('status', "Completed")->count();
+        $user = Auth::user();
+        $purchaseCount = PurchaseRequest::count();
+        $deliveryCount = DeliveryRequest::count();
+        $receiptCount = Receipts::count();
+        $payments = PurchaseHistory::limit(5)->get();
+        
+
         }
 
         return view('dashboard', compact(
@@ -118,7 +122,12 @@ class DashboardController extends Controller
             'documentCount',
             'totalOrders',
             'totalReceipts',
-            'deliveryCount'
+            'deliveryCount',
+
+            'purchaseCount',
+            'deliveryCount',
+            'receiptCount',
+            'payments'
         ));
     }
 

@@ -255,8 +255,8 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
             ->name('receipt');
     });
     Route::prefix('dash')->name('dash.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'dashboard'])
-            ->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'dashboardView'])
+            ->name('dashboard')->middleware('auth');
     });
 
     /*
@@ -264,6 +264,8 @@ Route::middleware(['auth', 'role:Customer|Admin|Staff'])->group(function () {
     | Dashboard (with Representative Permission Check)
     |--------------------------------------------------------------------------
     */
+        Route::get('/dashboard', [DashboardController::class, 'dashboard'])
+            ->name('dashboard')->middleware('auth');
     Route::get('/dashboard/view', [DashboardController::class, 'dashboardView'])
         ->middleware(['auth', 'check.rep.permission:Dashboard'])
         ->name('dashboard.view');
